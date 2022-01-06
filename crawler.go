@@ -43,7 +43,7 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 		}
 
 		if pageReport.RedirectURL != "" {
-			q.AddURL(pageReport.RedirectURL)
+			q.AddURL(r.Request.AbsoluteURL(pageReport.RedirectURL))
 		}
 
 		for _, l := range pageReport.Scripts {
@@ -64,14 +64,6 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 
 		if pageReport.Canonical != "" {
 			q.AddURL(r.Request.AbsoluteURL(pageReport.Canonical))
-		}
-
-		if pageReport.Refresh != "" {
-			u := strings.Split(pageReport.Refresh, ";")
-			if len(u) > 1 && strings.ToLower(u[1][:4]) == "url=" {
-				url := strings.ReplaceAll(u[1][4:], "'", "")
-				q.AddURL(r.Request.AbsoluteURL(url))
-			}
 		}
 	}
 

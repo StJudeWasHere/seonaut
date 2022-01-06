@@ -85,11 +85,11 @@ func TestPageReportHTML(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	headers := http.Header{
+	headers := &http.Header{
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport := NewPageReport(u, statusCode, &headers, body)
+	pageReport := NewPageReport(u, statusCode, headers, body)
 
 	if pageReport.Lang != "en" {
 		t.Error("Lang != en")
@@ -107,8 +107,27 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("len(Links) != 3")
 	}
 
+	if len(pageReport.Links) > 0 {
+		if pageReport.Links[0].URL != "https://example.com/link1" {
+			t.Error("pageReport.Links[0].URL != https://example.com/link1")
+		}
+		if pageReport.Links[0].Text != "link1" {
+			t.Error("pageReport.Links[0].Text != link1")
+		}
+		if pageReport.Links[0].Rel != "nofollow" {
+			t.Error("pageReport.Links[0].Rel != nofollow")
+		}
+		if pageReport.Links[0].External != false {
+			t.Error("pageReport.Links[0].External != false")
+		}
+	}
+
 	if pageReport.Refresh != "0;URL='https://example.com/'" {
 		t.Error("Refresh != 0;URL='https://example.com/'")
+	}
+
+	if pageReport.RedirectURL != "https://example.com/" {
+		t.Error("RedirectURL != https://example.com/")
 	}
 
 	if pageReport.Robots != "noindex, nofollow" {
@@ -135,6 +154,14 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Hreflang != 1")
 	}
 
+	if len(pageReport.Hreflangs) == 1 && pageReport.Hreflangs[0].URL != "http://example.com/fr" {
+		t.Error("Hreglangs[0].URL != http://example.com/fr")
+	}
+
+	if len(pageReport.Hreflangs) == 1 && pageReport.Hreflangs[0].Lang != "fr" {
+		t.Error("Hreglangs[0].URL != fr")
+	}
+
 	if len(pageReport.Images) != 1 {
 		t.Error("Images != 1")
 	}
@@ -143,7 +170,15 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Scripts != 1")
 	}
 
+	if len(pageReport.Scripts) == 1 && pageReport.Scripts[0] != "/js/app.js" {
+		t.Error("Scripts[0] != /js/app.js")
+	}
+
 	if len(pageReport.Styles) != 1 {
 		t.Error("Styles != 1")
+	}
+
+	if len(pageReport.Styles) == 1 && pageReport.Styles[0] != "/css/style.css" {
+		t.Error("Styles[0] != /css/style.css")
 	}
 }

@@ -121,6 +121,10 @@ func (pageReport *PageReport) parse() {
 	refresh := htmlquery.Find(doc, "//head/meta[@http-equiv=\"refresh\"]/@content")
 	if len(refresh) > 0 {
 		pageReport.Refresh = htmlquery.SelectAttr(refresh[0], "content")
+		u := strings.Split(pageReport.Refresh, ";")
+		if len(u) > 1 && strings.ToLower(u[1][:4]) == "url=" {
+			pageReport.RedirectURL = strings.ReplaceAll(u[1][4:], "'", "")
+		}
 	}
 
 	// ---

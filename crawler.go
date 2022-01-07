@@ -76,7 +76,9 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 	co.OnResponse(handleResponse)
 
 	co.OnError(func(r *colly.Response, err error) {
-		handleResponse(r)
+		if r.StatusCode > 0 && r.Headers != nil {
+			handleResponse(r)
+		}
 	})
 
 	co.SetRedirectHandler(func(r *http.Request, via []*http.Request) error {

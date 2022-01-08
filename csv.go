@@ -70,6 +70,8 @@ func handlePageReport(r PageReport) {
 		strconv.Itoa(len(internal)),
 		strconv.Itoa(len(external)),
 	})
+
+	writer.Flush()
 }
 
 func byteToKByte(b int) float64 {

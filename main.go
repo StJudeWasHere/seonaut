@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
 	"net/url"
 	"os"
@@ -23,15 +24,15 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.ServeFile(w, r, "home.html")
+	//	http.ServeFile(w, r, "home.html")
+
+	pageReports := FindPageReports()
+
+	var templates = template.Must(template.ParseFiles("home.html"))
+	templates.ExecuteTemplate(w, "home.html", pageReports)
 }
 
 func main() {
-
-	pageReports := FindPageReports()
-	for _, p := range pageReports {
-		fmt.Printf("%d\t%s\t%s\t(%s)\n", p.StatusCode, p.ContentType, p.Title, p.URL)
-	}
 
 	http.HandleFunc("/", serveHome)
 
@@ -66,7 +67,7 @@ func startCrawler() {
 
 	for r := range pageReport {
 		crawled++
-		handlePageReport(r)
+		// handlePageReport(r)
 		savePageReport(&r)
 	}
 

@@ -53,7 +53,7 @@ func handlePageReport(r PageReport) {
 
 	writer.Write([]string{
 		fmt.Sprintf("%d", r.StatusCode),
-		r.URL.String(),
+		r.URL,
 		r.RedirectURL,
 		r.ContentType,
 		r.Canonical,

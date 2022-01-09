@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"time"
+	//"time"
 )
 
 const (
@@ -27,22 +27,26 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+
+	pageReports := FindPageReports()
+	for _, p := range pageReports {
+		fmt.Printf("%d\t%s\t%s\t(%s)\n", p.StatusCode, p.ContentType, p.Title, p.URL)
+	}
+
+	http.HandleFunc("/", serveHome)
+
+	fmt.Printf("Starting at %s on port %d...\n", host, port)
+
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	/*
-		http.HandleFunc("/", serveHome)
-
-		fmt.Printf("Starting at %s on port %d...\n", host, port)
-
-		err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)
-		if err != nil {
-			fmt.Println(err)
-		}
+		start := time.Now()
+		startCrawler()
+		fmt.Println(time.Since(start))
 	*/
-
-	start := time.Now()
-
-	startCrawler()
-
-	fmt.Println(time.Since(start))
 }
 
 func startCrawler() {

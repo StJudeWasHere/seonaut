@@ -3,9 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
-
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 )
 
 var db *sql.DB
@@ -26,7 +25,7 @@ func init() {
 func savePageReport(r *PageReport) {
 	stmt, _ := db.Prepare("INSERT INTO pagereports (url, redirect_url, refresh, status_code, content_type, lang, title, description, robots, canonical, h1, h2, words, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	res, err := stmt.Exec(
-		r.URL.String(),
+		r.URL,
 		r.RedirectURL,
 		r.Refresh,
 		r.StatusCode,
@@ -70,7 +69,7 @@ func savePageReport(r *PageReport) {
 	}
 
 	if len(r.Hreflangs) > 0 {
-		sqlString := "INSERT INTO hreflangs (pagereport_id, url, lang ) values "
+		sqlString := "INSERT INTO hreflangs (pagereport_id, url, lang) values "
 		v := []interface{}{}
 		for _, h := range r.Hreflangs {
 			sqlString += "(?, ?, ?),"
@@ -134,4 +133,97 @@ func savePageReport(r *PageReport) {
 			log.Fatal(err)
 		}
 	}
+}
+
+func FindPageReports() []PageReport {
+	var pageReports []PageReport
+
+	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports"
+	rows, err := db.Query(sqlStr)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		var pid int
+		err := rows.Scan(&pid, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		lrows, err := db.Query("SELECT url, rel, text, external FROM links WHERE pagereport_id = ?", pid)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for lrows.Next() {
+			l := Link{}
+			err = lrows.Scan(&l.URL, &l.Rel, &l.Text, &l.External)
+			if err != nil {
+				log.Fatal(err)
+			}
+			p.Links = append(p.Links, l)
+		}
+
+		hrows, err := db.Query("SELECT url, lang FROM hreflangs WHERE pagereport_id = ?", pid)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		for hrows.Next() {
+			h := Hreflang{}
+			err = hrows.Scan(&h.URL, h.Lang)
+			if err != nil {
+				log.Fatal(err)
+			}
+			p.Hreflangs = append(p.Hreflangs, h)
+		}
+
+		irows, err := db.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", pid)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for irows.Next() {
+			i := Image{}
+			err = irows.Scan(&i.URL, &i.Alt)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			p.Images = append(p.Images, i)
+		}
+
+		scrows, err := db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", pid)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for scrows.Next() {
+			var url string
+			err = scrows.Scan(&url)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			p.Scripts = append(p.Scripts, url)
+		}
+
+		strows, err := db.Query("SELECT url FROM styles WHERE pagereport_id = ?", pid)
+		if err != nil {
+			log.Fatal(err)
+		}
+		for strows.Next() {
+			var url string
+			err = strows.Scan(&url)
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			p.Styles = append(p.Styles, url)
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
 }

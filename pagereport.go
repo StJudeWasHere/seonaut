@@ -14,7 +14,8 @@ import (
 )
 
 type PageReport struct {
-	URL         *url.URL
+	URL         string
+	parsedURL   *url.URL
 	RedirectURL string
 	Refresh     string
 	StatusCode  int
@@ -30,6 +31,7 @@ type PageReport struct {
 	Words       int
 	Hreflangs   []Hreflang
 	Body        []byte
+	Size        int
 	Images      []Image
 	Scripts     []string
 	Styles      []string
@@ -54,10 +56,12 @@ type Image struct {
 
 func NewPageReport(url *url.URL, status int, headers *http.Header, body []byte) *PageReport {
 	pageReport := PageReport{
-		URL:         url,
+		URL:         url.String(),
+		parsedURL:   url,
 		StatusCode:  status,
 		ContentType: headers.Get("Content-Type"),
 		Body:        body,
+		Size:        len(body),
 	}
 
 	if pageReport.StatusCode >= http.StatusMultipleChoices && pageReport.StatusCode < http.StatusBadRequest {
@@ -243,7 +247,7 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 		URL:      href,
 		Rel:      htmlquery.SelectAttr(n, "rel"),
 		Text:     htmlquery.InnerText(n),
-		External: u.Host != "" && u.Host != p.URL.Host,
+		External: u.Host != "" && u.Host != p.parsedURL.Host,
 	}
 
 	return l, nil

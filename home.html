@@ -1,13 +1,96 @@
 <html>
 <head>
 	<title>Reports</title>
+	<style>
+		body {
+			font-family: monospace, monospace;
+			font-size: 1rem;
+		}
+	</style>
 </head>
 <body>
-home
 
+<h1>Crawled Pages</h1>
+
+<p><b>Total crawled pages: </b>{{ .TotalCount }}</p>
+
+<p><b>Total crawled by media type: </b></p>
+
+<ul>
+	{{ range $i, $a := .MediaCount }}
+	<li>{{ $i }}: {{ $a }}</li>
+	{{ end }}
+</ul>
+
+<p><b>Total crawled by status code: </b></p>
+
+<ul>
+	{{ range $i, $a := .StatusCodeCount }}
+	<li>{{ $i }}: {{ $a }}</li>
+	{{ end }}
+</ul>
+
+
+<h1>Empty Title</h1>
+<ul>
+{{ range .EmptyTitle }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+<h1>Short Title</h1>
+<ul>
+{{ range .ShortTitle }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+
+<h1>Long Title</h1>
+<ul>
+{{ range .LongTitle }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+
+<h1>Duplicated Title</h1>
+<ul>
+{{ range .DuplicatedTitle }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+<hr>
+
+<h1>Empty Description</h1>
+<ul>
+{{ range .EmptyDescription }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+
+<h1>Short Description</h1>
+<ul>
+{{ range .ShortDescription }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+
+<h1>Long Description</h1>
+<ul>
+{{ range .LongDescription }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+
+<h1>Duplicated Description</h1>
+<ul>
+{{ range .DuplicatedDescription }}
+	<li>{{ .Title }} ({{ .URL }})</li>
+{{ end }}
+</ul>
+
+<hr>
 <h1>Page Report</h1>
 
-{{ range . }}
+{{ range .PageReports }}
 	<a href="{{ .URL }}" target="_blank">{{ .URL }}</a><br>
 	<b>Status code:</b> {{ .StatusCode }}<br>
 	<b>Title:</b> {{ .Title }}<br>

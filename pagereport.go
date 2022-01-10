@@ -20,6 +20,7 @@ type PageReport struct {
 	Refresh     string
 	StatusCode  int
 	ContentType string
+	MediaType   string
 	Lang        string
 	Title       string
 	Description string
@@ -74,6 +75,8 @@ func NewPageReport(url *url.URL, status int, headers *http.Header, body []byte) 
 		fmt.Println(err)
 		return &pageReport
 	}
+
+	pageReport.MediaType = mediaType
 
 	if mediaType == "text/html" {
 		pageReport.parse()

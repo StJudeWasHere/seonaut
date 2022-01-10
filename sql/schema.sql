@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.36)
 # Database: seo
-# Generation Time: 2022-01-07 11:51:07 +0000
+# Generation Time: 2022-01-10 09:29:02 +0000
 # ************************************************************
 
 
@@ -79,6 +79,7 @@ CREATE TABLE `pagereports` (
   `refresh` varchar(2000) DEFAULT NULL,
   `status_code` int(11) NOT NULL,
   `content_type` varchar(100) DEFAULT NULL,
+  `media_type` varchar(100) DEFAULT NULL,
   `lang` varchar(10) DEFAULT NULL,
   `title` varchar(2000) DEFAULT NULL,
   `description` varchar(2000) DEFAULT NULL,

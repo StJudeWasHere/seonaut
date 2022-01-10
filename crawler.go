@@ -18,6 +18,29 @@ const (
 
 type Crawler struct{}
 
+func startCrawler(s string) {
+	var crawled int
+
+	pageReport := make(chan PageReport)
+	c := &Crawler{}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	go c.Crawl(u, pageReport)
+
+	for r := range pageReport {
+		crawled++
+		// handlePageReport(r)
+		savePageReport(&r)
+	}
+
+	fmt.Printf("%d pages crawled.\n", crawled)
+}
+
 func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 	defer close(pr)
 

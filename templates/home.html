@@ -1,0 +1,47 @@
+{{ template "head" . }}
+<h1>Crawled Pages</h1>
+
+<p><b>Total crawled pages: </b>{{ .TotalCount }}</p>
+
+<p><b>Total crawled by media type: </b></p>
+{{ template "list" .MediaCount }}
+
+<p><b>Total crawled by status code: </b></p>
+{{ template "list" .StatusCodeCount }}
+
+
+<h1>Empty Title</h1>
+{{ template "url_list" .EmptyTitle }}
+
+<h1>Short Title</h1>
+{{ template "url_list" .ShortTitle }}
+
+<h1>Long Title</h1>
+{{ template "url_list" .LongTitle }}
+
+<h1>Duplicated Title</h1>
+{{ template "url_list" .DuplicatedTitle }}
+
+<hr>
+
+<h1>Empty Description</h1>
+{{ template "url_list" .EmptyDescription }}
+
+<h1>Short Description</h1>
+{{ template "url_list" .ShortDescription }}
+
+<h1>Long Description</h1>
+{{ template "url_list" .LongDescription }}
+
+<h1>Duplicated Description</h1>
+{{ template "url_list" .DuplicatedDescription }}
+
+<hr>
+<h1>Page Report</h1>
+
+{{ range .PageReports }}
+ {{ template "pagereport" . }}
+	<hr>
+{{ end }}
+
+{{ template "footer" . }}

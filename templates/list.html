@@ -1,0 +1,7 @@
+{{ define "list" }}
+<ul>
+	{{ range $k, $v := . }}
+	<li>{{ $k }}: {{ $v }}</li>
+	{{ end }}
+</ul>
+{{ end }}

@@ -1,0 +1,51 @@
+{{ define "pagereport" }}
+	<a href="{{ .URL }}" target="_blank">{{ .URL }}</a><br>
+	<b>Status code:</b> {{ .StatusCode }}<br>
+	<b>Title:</b> {{ .Title }}<br>
+	<b>Description:</b> {{ .Description }}<br>
+	<b>Robots:</b> {{ .Robots }}<br>
+	<b>Redirect URL:</b> {{ .RedirectURL }}<br>
+	<b>Refresh:</b> {{ .Refresh }}<br>
+	<b>Content Type:</b> {{ .ContentType }}<br>
+	<b>Lang:</b> {{ .Lang }}<br>
+	<b>Canonical:</b> {{ .Canonical }}<br>
+	<b>H1:</b> {{ .H1 }}<br>
+	<b>H2:</b> {{ .H2 }}<br>
+	<b>Words:</b> {{ .Words }}<br>
+	<b>Size:</b> {{ .Size }}<br>
+	<b>Links:</b>
+	<ul>
+	{{ range .Links }}
+		<li>{{ .URL }}</li>
+	{{ end }}
+	</ul>
+	
+	<b>Images:</b>
+	<ul>
+	{{ range .Images }}
+		<li>{{ .URL }} - {{ .Alt }}</li>
+	{{ end }}
+	</ul>
+	
+	<b>Hreflang:</b>
+	<ul>
+	{{ range .Hreflangs }}
+		<li>{{ .URL }} - {{ .Lang }}</li>
+	{{ end }}
+	</ul>
+	
+	
+	<b>Scripts:</b>
+	<ul>
+	{{ range .Scripts }}
+		<li>{{ . }}</li>
+	{{ end }}
+	</ul>
+	
+	<b>Styles:</b>
+	<ul>
+	{{ range .Styles }}
+		<li>{{ . }}</li>
+	{{ end }}
+	</ul>
+{{ end }}

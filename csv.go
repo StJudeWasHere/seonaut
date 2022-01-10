@@ -10,7 +10,7 @@ import (
 
 var writer *csv.Writer
 
-func init() {
+func initHandler() {
 	f, e := os.Create("./seo.csv")
 	if e != nil {
 		fmt.Println(e)

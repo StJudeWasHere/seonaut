@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"time"
 )
 
 type PageReportView struct {
@@ -33,7 +34,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := PageReportView{
-		PageReports:           FindPageReports(),
+		//		PageReports:           FindPageReports(),
 		EmptyTitle:            FindPageReportsWithEmptyTitle(),
 		ShortTitle:            FindPageReportsWithShortTitle(),
 		LongTitle:             FindPageReportsWithLongTitle(),
@@ -53,6 +54,34 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	))
 
 	err := templates.ExecuteTemplate(w, "home.html", view)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func serveCrawl(w http.ResponseWriter, r *http.Request) {
+	var url string
+
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			fmt.Println(err)
+		}
+		url = r.FormValue("url")
+		fmt.Printf("Crawling %s...\n", url)
+		go func() {
+			start := time.Now()
+			startCrawler(url)
+			fmt.Println(time.Since(start))
+		}()
+	}
+
+	var templates = template.Must(template.ParseFiles(
+		"templates/crawl.html", "templates/head.html", "templates/footer.html", "templates/list.html",
+		"templates/url_list.html", "templates/pagereport.html",
+	))
+
+	err := templates.ExecuteTemplate(w, "crawl.html", struct{ URL string }{URL: url})
 	if err != nil {
 		fmt.Println(err)
 	}

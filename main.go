@@ -24,6 +24,7 @@ func main() {
 	}
 
 	http.HandleFunc("/", serveHome)
+	http.HandleFunc("/crawl", serveCrawl)
 
 	fmt.Printf("Starting server at %s on port %d...\n", host, port)
 

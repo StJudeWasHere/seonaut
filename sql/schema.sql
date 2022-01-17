@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.36)
 # Database: seo
-# Generation Time: 2022-01-10 09:29:02 +0000
+# Generation Time: 2022-01-17 15:43:17 +0000
 # ************************************************************
 
 
@@ -18,6 +18,21 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+
+# Dump of table crawls
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `crawls`;
+
+CREATE TABLE `crawls` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `url` varchar(2048) NOT NULL DEFAULT '',
+  `start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `end` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 
 
 # Dump of table hreflangs
@@ -74,6 +89,7 @@ DROP TABLE IF EXISTS `pagereports`;
 
 CREATE TABLE `pagereports` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `crawl_id` int(11) unsigned NOT NULL,
   `url` varchar(2000) NOT NULL DEFAULT '',
   `redirect_url` varchar(2000) DEFAULT NULL,
   `refresh` varchar(2000) DEFAULT NULL,
@@ -89,7 +105,9 @@ CREATE TABLE `pagereports` (
   `h2` varchar(1000) DEFAULT NULL,
   `words` int(11) DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `crawl` (`crawl_id`),
+  CONSTRAINT `crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

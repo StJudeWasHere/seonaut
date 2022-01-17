@@ -8,6 +8,7 @@ import (
 )
 
 type PageReportView struct {
+	Crawl                 Crawl
 	PageReports           []PageReport
 	EmptyTitle            []PageReport
 	ShortTitle            []PageReport
@@ -22,6 +23,17 @@ type PageReportView struct {
 	StatusCodeCount       map[int]int
 }
 
+type Crawl struct {
+	Id    int
+	URL   string
+	Start time.Time
+	End   time.Time
+}
+
+func (c Crawl) TotalTime() time.Duration {
+	return c.End.Sub(c.Start)
+}
+
 func serveHome(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != "/" {
 		http.Error(w, "Not found", http.StatusNotFound)
@@ -33,19 +45,23 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	crawl := getLastCrawl()
+	cid := crawl.Id
+
 	view := PageReportView{
 		//		PageReports:           FindPageReports(),
-		EmptyTitle:            FindPageReportsWithEmptyTitle(),
-		ShortTitle:            FindPageReportsWithShortTitle(),
-		LongTitle:             FindPageReportsWithLongTitle(),
-		DuplicatedTitle:       FindPageReportsWithDuplicatedTitle(),
-		EmptyDescription:      FindPageReportsWithEmptyDescription(),
-		ShortDescription:      FindPageReportsWithShortDescription(),
-		LongDescription:       FindPageReportsWithLongDescription(),
-		DuplicatedDescription: FindPageReportsWithDuplicatedDescription(),
-		TotalCount:            CountCrawled(),
-		MediaCount:            CountByMediaType(),
-		StatusCodeCount:       CountByStatusCode(),
+		Crawl:                 crawl,
+		EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
+		ShortTitle:            FindPageReportsWithShortTitle(cid),
+		LongTitle:             FindPageReportsWithLongTitle(cid),
+		DuplicatedTitle:       FindPageReportsWithDuplicatedTitle(cid),
+		EmptyDescription:      FindPageReportsWithEmptyDescription(cid),
+		ShortDescription:      FindPageReportsWithShortDescription(cid),
+		LongDescription:       FindPageReportsWithLongDescription(cid),
+		DuplicatedDescription: FindPageReportsWithDuplicatedDescription(cid),
+		TotalCount:            CountCrawled(cid),
+		MediaCount:            CountByMediaType(cid),
+		StatusCodeCount:       CountByStatusCode(cid),
 	}
 
 	var templates = template.Must(template.ParseFiles(

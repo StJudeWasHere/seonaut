@@ -1,6 +1,11 @@
 {{ template "head" . }}
-<h1>Crawled Pages</h1>
+<h1>Crawl</h1>
 
+<p><b>URL:</b> {{ .Crawl.URL }}
+<p><b>Crawl started:</b> {{ .Crawl.Start.Format "Jan 02, 2006" }}</p>
+<p><b>Crawl ended:</b> {{ .Crawl.End.Format "Jan 02, 2006" }}</p>
+<p><b>Total time:</b> {{ .Crawl.TotalTime }}
+	
 <p><b>Total crawled pages: </b>{{ .TotalCount }}</p>
 
 <p><b>Total crawled by media type: </b></p>

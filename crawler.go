@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
@@ -30,13 +31,17 @@ func startCrawler(s string) {
 		return
 	}
 
+	cid := saveCrawl(s)
+
 	go c.Crawl(u, pageReport)
 
 	for r := range pageReport {
 		crawled++
 		// handlePageReport(r)
-		savePageReport(&r)
+		savePageReport(&r, cid)
 	}
+
+	saveEndCrawl(cid, time.Now())
 
 	fmt.Printf("%d pages crawled.\n", crawled)
 }

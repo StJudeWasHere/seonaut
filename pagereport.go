@@ -65,14 +65,14 @@ func NewPageReport(url *url.URL, status int, headers *http.Header, body []byte) 
 		Size:        len(body),
 	}
 
-	if pageReport.StatusCode >= http.StatusMultipleChoices && pageReport.StatusCode < http.StatusBadRequest {
-		pageReport.RedirectURL = headers.Get("Location")
-		return &pageReport
-	}
-
 	mediaType, _, err := mime.ParseMediaType(pageReport.ContentType)
 	if err != nil {
 		fmt.Println(err)
+		return &pageReport
+	}
+
+	if pageReport.StatusCode >= http.StatusMultipleChoices && pageReport.StatusCode < http.StatusBadRequest {
+		pageReport.RedirectURL = headers.Get("Location")
 		return &pageReport
 	}
 

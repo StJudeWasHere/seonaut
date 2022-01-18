@@ -19,11 +19,12 @@ func main() {
 	if *crawl != "" {
 		fmt.Printf("Crawling %s...\n", string(*crawl))
 		start := time.Now()
-		startCrawler(string(*crawl))
+		startCrawler(Project{URL: string(*crawl)})
 		fmt.Println(time.Since(start))
 	}
 
 	http.HandleFunc("/", serveHome)
+	http.HandleFunc("/new-project", serveProjectAdd)
 	http.HandleFunc("/crawl", serveCrawl)
 
 	fmt.Printf("Starting server at %s on port %d...\n", host, port)

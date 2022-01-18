@@ -19,19 +19,19 @@ const (
 
 type Crawler struct{}
 
-func startCrawler(s string) {
+func startCrawler(p Project) {
 	var crawled int
 
 	pageReport := make(chan PageReport)
 	c := &Crawler{}
 
-	u, err := url.Parse(s)
+	u, err := url.Parse(p.URL)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	cid := saveCrawl(s)
+	cid := saveCrawl(p)
 
 	go c.Crawl(u, pageReport)
 

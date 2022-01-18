@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strconv"
 	"time"
 )
 
 type PageReportView struct {
+	Projects              []Project
 	Crawl                 Crawl
 	PageReports           []PageReport
 	EmptyTitle            []PageReport
@@ -30,6 +32,12 @@ type Crawl struct {
 	End   time.Time
 }
 
+type Project struct {
+	Id      int
+	URL     string
+	Created time.Time
+}
+
 func (c Crawl) TotalTime() time.Duration {
 	return c.End.Sub(c.Start)
 }
@@ -45,11 +53,14 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	projects := findProjects()
+
 	crawl := getLastCrawl()
 	cid := crawl.Id
 
 	view := PageReportView{
 		//		PageReports:           FindPageReports(),
+		Projects:              projects,
 		Crawl:                 crawl,
 		EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
 		ShortTitle:            FindPageReportsWithShortTitle(cid),
@@ -75,7 +86,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func serveCrawl(w http.ResponseWriter, r *http.Request) {
+func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 	var url string
 
 	if r.Method == http.MethodPost {
@@ -84,20 +95,36 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 		url = r.FormValue("url")
-		fmt.Printf("Crawling %s...\n", url)
-		go func() {
-			start := time.Now()
-			startCrawler(url)
-			fmt.Println(time.Since(start))
-		}()
+		saveProject(url)
+
 	}
 
 	var templates = template.Must(template.ParseFiles(
-		"templates/crawl.html", "templates/head.html", "templates/footer.html",
+		"templates/project_add.html", "templates/head.html", "templates/footer.html",
 	))
 
-	err := templates.ExecuteTemplate(w, "crawl.html", struct{ URL string }{URL: url})
+	err := templates.ExecuteTemplate(w, "project_add.html", struct{ URL string }{URL: url})
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+func serveCrawl(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query()["pid"][0])
+	fmt.Println(pid)
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/", 303)
+	}
+
+	p := findProjectById(pid)
+	fmt.Println(p)
+	fmt.Printf("Crawling %s...\n", p.URL)
+	go func() {
+		start := time.Now()
+		startCrawler(p)
+		fmt.Println(time.Since(start))
+	}()
+
+	http.Redirect(w, r, "/", 303)
 }

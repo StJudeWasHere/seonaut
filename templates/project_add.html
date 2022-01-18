@@ -1,13 +1,13 @@
 {{ template "head" . }}
-<h1>Crawl Page</h1>
+<h1>Add project</h1>
 
 {{ if eq .URL "" }}
 	<form method="POST">
 		<input type="text" name="url">
-		<input type="submit" value="Crawl">
+		<input type="submit" value="Add">
 	</form>
 {{ else }}
-	Crawling {{ .URL }}...
+	Project added: {{ .URL }}
 {{ end }}
 
 {{ template "footer" . }}

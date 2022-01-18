@@ -1,5 +1,11 @@
 {{ template "head" . }}
-<h1>Crawl</h1>
+<h1>Projects</h1>
+
+<ul>
+{{ range .Projects }}
+	<li>{{ .URL }} - <a href="/crawl?pid={{ .Id }}">crawl now</a></li>
+{{ end }}
+</ul>
 
 <p><b>URL:</b> {{ .Crawl.URL }}
 <p><b>Crawl started:</b> {{ .Crawl.Start.Format "Jan 02, 2006" }}</p>

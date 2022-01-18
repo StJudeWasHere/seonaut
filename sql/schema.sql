@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.36)
 # Database: seo
-# Generation Time: 2022-01-17 15:43:17 +0000
+# Generation Time: 2022-01-18 09:00:43 +0000
 # ************************************************************
 
 
@@ -27,10 +27,13 @@ DROP TABLE IF EXISTS `crawls`;
 
 CREATE TABLE `crawls` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `url` varchar(2048) NOT NULL DEFAULT '',
+  `project_id` int(11) unsigned NOT NULL,
   `start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `project` (`project_id`),
+  CONSTRAINT `page_reports` FOREIGN KEY (`id`) REFERENCES `pagereports` (`crawl_id`),
+  CONSTRAINT `project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -109,6 +112,20 @@ CREATE TABLE `pagereports` (
   KEY `crawl` (`crawl_id`),
   CONSTRAINT `crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table projects
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `projects`;
+
+CREATE TABLE `projects` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `url` varchar(2048) NOT NULL DEFAULT '',
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 

@@ -492,8 +492,8 @@ func saveEndCrawl(cid int64, t time.Time) {
 	}
 }
 
-func getLastCrawl() Crawl {
-	row := db.QueryRow("SELECT id, start, end FROM crawls ORDER BY end DESC LIMIT 1")
+func getLastCrawl(p *Project) Crawl {
+	row := db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY end DESC LIMIT 1", p.Id)
 
 	crawl := Crawl{}
 	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)

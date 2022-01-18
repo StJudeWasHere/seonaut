@@ -1,87 +1,23 @@
 {{ template "head" . }}
-<h1>Projects</h1>
 
-<ul>
-{{ range .Projects }}
-	<li>{{ .URL }} - <a href="/crawl?pid={{ .Id }}">crawl now</a></li>
+<h1 class="title">Projects <a href="/new-project">+ Add Project</a></h1>
+
+{{ range . }}
+<div class="project">
+	<h2 class="project-title">{{ .Project.URL }}</h2>
+	<div>
+		<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}, crawl duration was {{ .Crawl.TotalTime }}.</small><br>
+		<b>{{ .TotalCount }}</b> pages crawled.<br>
+	</div>
+	<p><b>Total crawled by media type: </b></p>
+	{{ template "list" .MediaCount }}
+	<p><b>Total crawled by status code: </b></p>
+	{{ template "list" .StatusCodeCount }}
+	<p class="actions">
+		<a class="button" href="/crawl?pid={{ .Project.Id }}">Crawl Now</a>
+		<a class="button" href="/issues?cid={{ .Crawl.Id }}">View Issues</a>
+	</p>
+</div>
 {{ end }}
-</ul>
-
-<p><b>URL:</b> {{ .Crawl.URL }}
-<p><b>Crawl started:</b> {{ .Crawl.Start.Format "Jan 02, 2006" }}</p>
-<p><b>Crawl ended:</b> {{ .Crawl.End.Format "Jan 02, 2006" }}</p>
-<p><b>Total time:</b> {{ .Crawl.TotalTime }}
-	
-<p><b>Total crawled pages: </b>{{ .TotalCount }}</p>
-
-<p><b>Total crawled by media type: </b></p>
-{{ template "list" .MediaCount }}
-
-<p><b>Total crawled by status code: </b></p>
-{{ template "list" .StatusCodeCount }}
-
-<hr>
-
-<h1>ISSUES</h1>
-
-<h1>Empty Title</h1>
-{{ if .EmptyTitle }}
-	{{ template "url_list" .EmptyTitle }}
-{{ else }}
-	Ok
-{{ end }}
-
-<h1>Short Title</h1>
-{{ if .ShortTitle }}
-	{{ template "url_list" .ShortTitle }}
-{{ else }}
-	Ok
-{{ end }}
-
-<h1>Long Title</h1>
-{{ if .LongTitle }}
-	{{ template "url_list" .LongTitle }}
-{{ else }}
-	Ok
-{{ end }}
-
-<h1>Duplicated Title</h1>
-{{ if .DuplicatedTitle }}
-	{{ template "url_list" .DuplicatedTitle }}
-{{ else }}
-	Ok
-{{ end }}
-
-<hr>
-
-<h1>Empty Description</h1>
-{{ if .EmptyDescription }}
-	{{ template "url_list" .EmptyDescription }}
-{{ else }}
-	Ok
-{{ end }}
-
-<h1>Short Description</h1>
-{{ if .ShortDescription }}
-	{{ template "url_list" .ShortDescription }}
-{{ else }}
-	Ok
-{{ end }}
-
-<h1>Long Description</h1>
-{{ if .LongDescription }}
-	{{ template "url_list" .LongDescription }}
-{{ else }}
-	Ok
-{{ end }}
-
-<h1>Duplicated Description</h1>
-{{ if .DuplicatedDescription }}
-	{{ template "url_list" .DuplicatedDescription }}
-{{ else }}
-	 Ok
-{{ end }}
-
-<hr>
 
 {{ template "footer" . }}

@@ -8,6 +8,14 @@ import (
 	"time"
 )
 
+type ProjectView struct {
+	Project         Project
+	Crawl           Crawl
+	TotalCount      int
+	MediaCount      map[string]int
+	StatusCodeCount map[int]int
+}
+
 type PageReportView struct {
 	Projects              []Project
 	Crawl                 Crawl
@@ -53,34 +61,26 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var views []ProjectView
 	projects := findProjects()
 
-	crawl := getLastCrawl()
-	cid := crawl.Id
-
-	view := PageReportView{
-		//		PageReports:           FindPageReports(),
-		Projects:              projects,
-		Crawl:                 crawl,
-		EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
-		ShortTitle:            FindPageReportsWithShortTitle(cid),
-		LongTitle:             FindPageReportsWithLongTitle(cid),
-		DuplicatedTitle:       FindPageReportsWithDuplicatedTitle(cid),
-		EmptyDescription:      FindPageReportsWithEmptyDescription(cid),
-		ShortDescription:      FindPageReportsWithShortDescription(cid),
-		LongDescription:       FindPageReportsWithLongDescription(cid),
-		DuplicatedDescription: FindPageReportsWithDuplicatedDescription(cid),
-		TotalCount:            CountCrawled(cid),
-		MediaCount:            CountByMediaType(cid),
-		StatusCodeCount:       CountByStatusCode(cid),
+	for _, p := range projects {
+		c := getLastCrawl(&p)
+		pv := ProjectView{
+			Project:         p,
+			Crawl:           c,
+			TotalCount:      CountCrawled(c.Id),
+			MediaCount:      CountByMediaType(c.Id),
+			StatusCodeCount: CountByStatusCode(c.Id),
+		}
+		views = append(views, pv)
 	}
 
 	var templates = template.Must(template.ParseFiles(
 		"templates/home.html", "templates/head.html", "templates/footer.html", "templates/list.html",
-		"templates/url_list.html", "templates/pagereport.html",
 	))
 
-	err := templates.ExecuteTemplate(w, "home.html", view)
+	err := templates.ExecuteTemplate(w, "home.html", views)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -111,7 +111,6 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 
 func serveCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query()["pid"][0])
-	fmt.Println(pid)
 	if err != nil {
 		fmt.Println(err)
 		http.Redirect(w, r, "/", 303)
@@ -127,4 +126,36 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	http.Redirect(w, r, "/", 303)
+}
+
+func serveIssues(w http.ResponseWriter, r *http.Request) {
+	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/", 303)
+	}
+
+	view := PageReportView{
+		EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
+		ShortTitle:            FindPageReportsWithShortTitle(cid),
+		LongTitle:             FindPageReportsWithLongTitle(cid),
+		DuplicatedTitle:       FindPageReportsWithDuplicatedTitle(cid),
+		EmptyDescription:      FindPageReportsWithEmptyDescription(cid),
+		ShortDescription:      FindPageReportsWithShortDescription(cid),
+		LongDescription:       FindPageReportsWithLongDescription(cid),
+		DuplicatedDescription: FindPageReportsWithDuplicatedDescription(cid),
+		TotalCount:            CountCrawled(cid),
+		MediaCount:            CountByMediaType(cid),
+		StatusCodeCount:       CountByStatusCode(cid),
+	}
+
+	var templates = template.Must(template.ParseFiles(
+		"templates/issues.html", "templates/head.html", "templates/footer.html", "templates/list.html",
+		"templates/url_list.html", "templates/pagereport.html",
+	))
+
+	err = templates.ExecuteTemplate(w, "issues.html", view)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

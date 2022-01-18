@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.36)
 # Database: seo
-# Generation Time: 2022-01-18 09:00:43 +0000
+# Generation Time: 2022-01-18 09:43:33 +0000
 # ************************************************************
 
 
@@ -32,7 +32,6 @@ CREATE TABLE `crawls` (
   `end` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `project` (`project_id`),
-  CONSTRAINT `page_reports` FOREIGN KEY (`id`) REFERENCES `pagereports` (`crawl_id`),
   CONSTRAINT `project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

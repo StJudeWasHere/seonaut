@@ -8,6 +8,31 @@
 			font-size: 1rem;
 			padding: 1rem 2rem;
 		}
+		.title {
+			border-bottom: 4px solid;
+			font-size: 3rem;
+			line-height: 3.5rem;
+		}
+		.title a {
+			color: black;
+			font-weight: normal;
+			font-size: 1rem;
+			text-decoration: none;
+			float: right;
+		}
+		.actions {
+			margin-top: 3rem;
+		}
+		.button {
+			background-color: white;
+			border-top: 1px solid black;
+			border-left: 1px solid black;
+			border-right: 4px solid black;
+			border-bottom: 4px solid black;
+			padding: .5rem;
+			color: black;
+			margin-right: 1rem;
+		}
 		.logo a {
 			color: white;
 			font-weight: bold;
@@ -19,14 +44,19 @@
 		.logo a:hover {
 			text-decoration: none;
 		}
+		.project {
+			background-color: rgb(245,245,245);
+			padding: .5rem 1.5rem;
+			margin-bottom: 1.5rem;
+		}
+		.project-title {
+			margin: 0rem;
+			font-size: 2rem;
+		}
 	</style>
 </head>
 <body>
 	<div id="header">
 		<span class="logo"><a href="/">SEO</a></span>
-		<ul>
-			<li><a href="/">Home</a></li>
-			<li><a href="/new-project">Add project</a></li>
-		</ul>
 	</div>
 {{ end }}

@@ -26,6 +26,7 @@ func main() {
 	http.HandleFunc("/", serveHome)
 	http.HandleFunc("/new-project", serveProjectAdd)
 	http.HandleFunc("/crawl", serveCrawl)
+	http.HandleFunc("/issues", serveIssues)
 
 	fmt.Printf("Starting server at %s on port %d...\n", host, port)
 

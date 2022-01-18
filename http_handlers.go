@@ -19,6 +19,10 @@ type ProjectView struct {
 type PageReportView struct {
 	Projects              []Project
 	Crawl                 Crawl
+	Error30x              []PageReport
+	Error40x              []PageReport
+	Error50x              []PageReport
+	LittleContent         []PageReport
 	PageReports           []PageReport
 	EmptyTitle            []PageReport
 	ShortTitle            []PageReport
@@ -136,6 +140,10 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 	}
 
 	view := PageReportView{
+		Error30x:              Find30xPageReports(cid),
+		Error40x:              Find40xPageReports(cid),
+		Error50x:              Find50xPageReports(cid),
+		LittleContent:         FindPageReportsWithLittleContent(cid),
 		EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
 		ShortTitle:            FindPageReportsWithShortTitle(cid),
 		LongTitle:             FindPageReportsWithLongTitle(cid),

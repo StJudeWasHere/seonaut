@@ -2,28 +2,56 @@
 
 <h1 class="title">ISSUES<a href="/">&larr; Back</a></h1>
 
-<h1>Empty Title</h1>
+<h2>30x Redirects</h2>
+{{ if .Error30x }}
+	{{ template "url_list" .Error30x }}
+{{ else }}
+	Ok
+{{ end }}
+
+<h2>40x Errors</h2>
+{{ if .Error40x }}
+	{{ template "url_list" .Error40x }}
+{{ else }}
+	Ok
+{{ end }}
+
+<h2>50x Errors</h2>
+{{ if .Error50x }}
+	{{ template "url_list" .Error50x }}
+{{ else }}
+	Ok
+{{ end }}
+
+<h2>Pages with little content</h2>
+{{ if .LittleContent }}
+	{{ template "url_list" .LittleContent }}
+{{ else }}
+	Ok
+{{ end }}
+
+<h2>Empty Title</h2>
 {{ if .EmptyTitle }}
 	{{ template "url_list" .EmptyTitle }}
 {{ else }}
 	Ok
 {{ end }}
 
-<h1>Short Title</h1>
+<h2>Short Title</h2>
 {{ if .ShortTitle }}
 	{{ template "url_list" .ShortTitle }}
 {{ else }}
 	Ok
 {{ end }}
 
-<h1>Long Title</h1>
+<h2>Long Title</h2>
 {{ if .LongTitle }}
 	{{ template "url_list" .LongTitle }}
 {{ else }}
 	Ok
 {{ end }}
 
-<h1>Duplicated Title</h1>
+<h2>Duplicated Title</h2>
 {{ if .DuplicatedTitle }}
 	{{ template "url_list" .DuplicatedTitle }}
 {{ else }}
@@ -32,28 +60,28 @@
 
 <hr>
 
-<h1>Empty Description</h1>
+<h2>Empty Description</h2>
 {{ if .EmptyDescription }}
 	{{ template "url_list" .EmptyDescription }}
 {{ else }}
 	Ok
 {{ end }}
 
-<h1>Short Description</h1>
+<h2>Short Description</h2>
 {{ if .ShortDescription }}
 	{{ template "url_list" .ShortDescription }}
 {{ else }}
 	Ok
 {{ end }}
 
-<h1>Long Description</h1>
+<h2>Long Description</h2>
 {{ if .LongDescription }}
 	{{ template "url_list" .LongDescription }}
 {{ else }}
 	Ok
 {{ end }}
 
-<h1>Duplicated Description</h1>
+<h2>Duplicated Description</h2>
 {{ if .DuplicatedDescription }}
 	{{ template "url_list" .DuplicatedDescription }}
 {{ else }}

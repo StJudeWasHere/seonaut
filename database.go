@@ -269,6 +269,98 @@ func FindPageReportsWithEmptyTitle(cid int) []PageReport {
 	return pageReports
 }
 
+func Find40xPageReports(cid int) []PageReport {
+	var pageReports []PageReport
+
+	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE status_code >= 400 AND status_code < 500 AND crawl_id = ?"
+	rows, err := db.Query(sqlStr, cid)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		var pid int
+		err := rows.Scan(&pid, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
+func Find30xPageReports(cid int) []PageReport {
+	var pageReports []PageReport
+
+	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE status_code >= 300 AND status_code < 400 AND crawl_id = ?"
+	rows, err := db.Query(sqlStr, cid)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		var pid int
+		err := rows.Scan(&pid, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
+func Find50xPageReports(cid int) []PageReport {
+	var pageReports []PageReport
+
+	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE status_code >= 500 AND crawl_id = ?"
+	rows, err := db.Query(sqlStr, cid)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		var pid int
+		err := rows.Scan(&pid, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
+func FindPageReportsWithLittleContent(cid int) []PageReport {
+	var pageReports []PageReport
+
+	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE words < 200 AND status_code >= 200 AND status_code < 300 AND media_type = \"text/html\" AND crawl_id = ?"
+	rows, err := db.Query(sqlStr, cid)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		var pid int
+		err := rows.Scan(&pid, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
 func FindPageReportsWithShortTitle(cid int) []PageReport {
 	var pageReports []PageReport
 

@@ -14,32 +14,67 @@
 <p><b>Total crawled by status code: </b></p>
 {{ template "list" .StatusCodeCount }}
 
+<hr>
+
+<h1>ISSUES</h1>
 
 <h1>Empty Title</h1>
-{{ template "url_list" .EmptyTitle }}
+{{ if .EmptyTitle }}
+	{{ template "url_list" .EmptyTitle }}
+{{ else }}
+	Ok
+{{ end }}
 
 <h1>Short Title</h1>
-{{ template "url_list" .ShortTitle }}
+{{ if .ShortTitle }}
+	{{ template "url_list" .ShortTitle }}
+{{ else }}
+	Ok
+{{ end }}
 
 <h1>Long Title</h1>
-{{ template "url_list" .LongTitle }}
+{{ if .LongTitle }}
+	{{ template "url_list" .LongTitle }}
+{{ else }}
+	Ok
+{{ end }}
 
 <h1>Duplicated Title</h1>
-{{ template "url_list" .DuplicatedTitle }}
+{{ if .DuplicatedTitle }}
+	{{ template "url_list" .DuplicatedTitle }}
+{{ else }}
+	Ok
+{{ end }}
 
 <hr>
 
 <h1>Empty Description</h1>
-{{ template "url_list" .EmptyDescription }}
+{{ if .EmptyDescription }}
+	{{ template "url_list" .EmptyDescription }}
+{{ else }}
+	Ok
+{{ end }}
 
 <h1>Short Description</h1>
-{{ template "url_list" .ShortDescription }}
+{{ if .ShortDescription }}
+	{{ template "url_list" .ShortDescription }}
+{{ else }}
+	Ok
+{{ end }}
 
 <h1>Long Description</h1>
-{{ template "url_list" .LongDescription }}
+{{ if .LongDescription }}
+	{{ template "url_list" .LongDescription }}
+{{ else }}
+	Ok
+{{ end }}
 
 <h1>Duplicated Description</h1>
-{{ template "url_list" .DuplicatedDescription }}
+{{ if .DuplicatedDescription }}
+	{{ template "url_list" .DuplicatedDescription }}
+{{ else }}
+	 Ok
+{{ end }}
 
 <hr>
 

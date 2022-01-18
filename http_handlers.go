@@ -93,8 +93,7 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var templates = template.Must(template.ParseFiles(
-		"templates/crawl.html", "templates/head.html", "templates/footer.html", "templates/list.html",
-		"templates/url_list.html", "templates/pagereport.html",
+		"templates/crawl.html", "templates/head.html", "templates/footer.html",
 	))
 
 	err := templates.ExecuteTemplate(w, "crawl.html", struct{ URL string }{URL: url})

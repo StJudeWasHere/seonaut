@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"log"
 	"time"
 )
 
@@ -23,7 +24,13 @@ func init() {
 }
 
 func savePageReport(r *PageReport, cid int64) {
-	stmt, _ := db.Prepare("INSERT INTO pagereports (crawl_id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO pagereports (crawl_id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer stmt.Close()
+
 	res, err := stmt.Exec(
 		cid,
 		r.URL,
@@ -62,9 +69,14 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, l.URL, l.Rel, l.Text, l.External)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = db.Prepare(sqlString)
+		stmt, err := db.Prepare(sqlString)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer stmt.Close()
 
-		_, err := stmt.Exec(v...)
+		_, err = stmt.Exec(v...)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -78,7 +90,8 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, h.URL, h.Lang)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = db.Prepare(sqlString)
+		stmt, _ := db.Prepare(sqlString)
+		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
@@ -95,6 +108,7 @@ func savePageReport(r *PageReport, cid int64) {
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ = db.Prepare(sqlString)
+		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
@@ -110,7 +124,8 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, s)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = db.Prepare(sqlString)
+		stmt, _ := db.Prepare(sqlString)
+		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
@@ -128,7 +143,8 @@ func savePageReport(r *PageReport, cid int64) {
 
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = db.Prepare(sqlString)
+		stmt, _ := db.Prepare(sqlString)
+		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
@@ -468,6 +484,7 @@ func CountByStatusCode(cid int) map[int]int {
 
 func saveCrawl(p Project) int64 {
 	stmt, _ := db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
+	defer stmt.Close()
 	res, err := stmt.Exec(p.Id)
 
 	if err != nil {
@@ -486,6 +503,7 @@ func saveCrawl(p Project) int64 {
 
 func saveEndCrawl(cid int64, t time.Time) {
 	stmt, _ := db.Prepare("UPDATE crawls SET end = ? WHERE id = ?")
+	defer stmt.Close()
 	_, err := stmt.Exec(t, cid)
 	if err != nil {
 		fmt.Println(err)
@@ -506,6 +524,7 @@ func getLastCrawl(p *Project) Crawl {
 
 func saveProject(s string) {
 	stmt, _ := db.Prepare("INSERT INTO projects (url) VALUES (?)")
+	defer stmt.Close()
 	_, err := stmt.Exec(s)
 	if err != nil {
 		fmt.Println(err)

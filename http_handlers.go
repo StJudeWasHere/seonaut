@@ -23,6 +23,7 @@ type PageReportView struct {
 	Error40x              []PageReport
 	Error50x              []PageReport
 	LittleContent         []PageReport
+	ImagesWithNoAlt       []PageReport
 	PageReports           []PageReport
 	EmptyTitle            []PageReport
 	ShortTitle            []PageReport
@@ -155,6 +156,7 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 		TotalCount:            CountCrawled(cid),
 		MediaCount:            CountByMediaType(cid),
 		StatusCodeCount:       CountByStatusCode(cid),
+		ImagesWithNoAlt:       FindImagesWithNoAlt(cid),
 	}
 
 	var templates = template.Must(template.ParseFiles(

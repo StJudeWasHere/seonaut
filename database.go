@@ -552,6 +552,30 @@ func CountByMediaType(cid int) map[string]int {
 	return m
 }
 
+func FindImagesWithNoAlt(cid int) []PageReport {
+	pr := []PageReport{}
+
+	rows, err := db.Query("select pagereports.id, pagereports.url, pagereports.title from pagereports left join images on images.pagereport_id = pagereports.id where images.alt = \"\" and pagereports.crawl_id = ? group by pagereports.id", cid)
+	if err != nil {
+		fmt.Println(err)
+		return pr
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		var i int
+		err := rows.Scan(&i, &p.URL, &p.Title)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		pr = append(pr, p)
+	}
+
+	return pr
+}
+
 func CountByStatusCode(cid int) map[int]int {
 	m := make(map[int]int)
 

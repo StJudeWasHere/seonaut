@@ -2,6 +2,13 @@
 
 <h1 class="title">ISSUES<a href="/">&larr; Back</a></h1>
 
+<h2>Contains Images Without Alt Attribute</h2>
+{{ if .ImagesWithNoAlt }}
+	{{ template "url_list" .ImagesWithNoAlt }}
+{{ else }}
+	Ok
+{{ end }}
+
 <h2>30x Redirects</h2>
 {{ if .Error30x }}
 	{{ template "url_list" .Error30x }}

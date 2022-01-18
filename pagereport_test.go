@@ -29,8 +29,12 @@ func TestNewPageReport(t *testing.T) {
 
 	pageReport := NewPageReport(u, statusCode, &headers, body)
 
-	if pageReport.URL != u {
-		t.Error("NewPageReport URL != u")
+	if pageReport.URL != testURL {
+		t.Error("NewPageReport URL != testURL")
+	}
+
+	if pageReport.parsedURL != u {
+		t.Error("NewPageReport parsedURL != u")
 	}
 
 	if pageReport.StatusCode != statusCode {

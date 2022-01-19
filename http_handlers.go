@@ -122,7 +122,6 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	p := findProjectById(pid)
-	fmt.Println(p)
 	fmt.Printf("Crawling %s...\n", p.URL)
 	go func() {
 		start := time.Now()
@@ -140,31 +139,35 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", 303)
 	}
 
-	view := PageReportView{
-		Error30x:              Find30xPageReports(cid),
-		Error40x:              Find40xPageReports(cid),
-		Error50x:              Find50xPageReports(cid),
-		LittleContent:         FindPageReportsWithLittleContent(cid),
-		EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
-		ShortTitle:            FindPageReportsWithShortTitle(cid),
-		LongTitle:             FindPageReportsWithLongTitle(cid),
-		DuplicatedTitle:       FindPageReportsWithDuplicatedTitle(cid),
-		EmptyDescription:      FindPageReportsWithEmptyDescription(cid),
-		ShortDescription:      FindPageReportsWithShortDescription(cid),
-		LongDescription:       FindPageReportsWithLongDescription(cid),
-		DuplicatedDescription: FindPageReportsWithDuplicatedDescription(cid),
-		TotalCount:            CountCrawled(cid),
-		MediaCount:            CountByMediaType(cid),
-		StatusCodeCount:       CountByStatusCode(cid),
-		ImagesWithNoAlt:       FindImagesWithNoAlt(cid),
-	}
+	issueGroups := findIssues(cid)
+
+	/*
+		view := PageReportView{
+			Error30x:              Find30xPageReports(cid),
+			Error40x:              Find40xPageReports(cid),
+			Error50x:              Find50xPageReports(cid),
+			LittleContent:         FindPageReportsWithLittleContent(cid),
+			EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
+			ShortTitle:            FindPageReportsWithShortTitle(cid),
+			LongTitle:             FindPageReportsWithLongTitle(cid),
+			DuplicatedTitle:       FindPageReportsWithDuplicatedTitle(cid),
+			EmptyDescription:      FindPageReportsWithEmptyDescription(cid),
+			ShortDescription:      FindPageReportsWithShortDescription(cid),
+			LongDescription:       FindPageReportsWithLongDescription(cid),
+			DuplicatedDescription: FindPageReportsWithDuplicatedDescription(cid),
+			TotalCount:            CountCrawled(cid),
+			MediaCount:            CountByMediaType(cid),
+			StatusCodeCount:       CountByStatusCode(cid),
+			ImagesWithNoAlt:       FindImagesWithNoAlt(cid),
+		}
+	*/
 
 	var templates = template.Must(template.ParseFiles(
 		"templates/issues.html", "templates/head.html", "templates/footer.html", "templates/list.html",
 		"templates/url_list.html", "templates/pagereport.html",
 	))
 
-	err = templates.ExecuteTemplate(w, "issues.html", view)
+	err = templates.ExecuteTemplate(w, "issues.html", issueGroups)
 	if err != nil {
 		fmt.Println(err)
 	}

@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.36)
 # Database: seo
-# Generation Time: 2022-01-18 09:43:33 +0000
+# Generation Time: 2022-01-19 17:52:49 +0000
 # ************************************************************
 
 
@@ -31,8 +31,8 @@ CREATE TABLE `crawls` (
   `start` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `end` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `project` (`project_id`),
-  CONSTRAINT `project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
+  KEY `crawl_project` (`project_id`),
+  CONSTRAINT `crawl_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -64,6 +64,26 @@ CREATE TABLE `images` (
   `alt` varchar(1000) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table issues
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `issues`;
+
+CREATE TABLE `issues` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `pagereport_id` int(11) unsigned NOT NULL,
+  `crawl_id` int(11) unsigned NOT NULL,
+  `error_type` varchar(50) NOT NULL DEFAULT '',
+  `level` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `issue_crawl` (`crawl_id`),
+  KEY `issue_pagereport` (`pagereport_id`),
+  CONSTRAINT `issue_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `issue_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -108,8 +128,8 @@ CREATE TABLE `pagereports` (
   `words` int(11) DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `crawl` (`crawl_id`),
-  CONSTRAINT `crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE
+  KEY `pagereport_crawl` (`crawl_id`),
+  CONSTRAINT `pagereport_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

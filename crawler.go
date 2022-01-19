@@ -42,6 +42,7 @@ func startCrawler(p Project) {
 	}
 
 	saveEndCrawl(cid, time.Now())
+	createIssues(int(cid))
 
 	fmt.Printf("%d pages crawled.\n", crawled)
 }

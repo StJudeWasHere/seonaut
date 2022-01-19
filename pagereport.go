@@ -14,6 +14,7 @@ import (
 )
 
 type PageReport struct {
+	Id          int
 	URL         string
 	parsedURL   *url.URL
 	RedirectURL string

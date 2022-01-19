@@ -409,7 +409,7 @@ func FindPageReportsWithLongTitle(cid int) []PageReport {
 
 func FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 	var pageReports []PageReport
-	sqlStr := "SELECT y.id, y.url, y.title FROM pagereports y INNER JOIN (select title, count(*) AS c FROM pagereports WHERE crawl_id = ? AND canonical = \"\" OR canonical = url GROUP BY title HAVING c > 1) d on d.title = y.title where media_type = \"text/html\" AND length(y.title) > 0 AND crawl_id = ?"
+	sqlStr := "SELECT y.id, y.url, y.title FROM pagereports y INNER JOIN (select title, count(*) AS c FROM pagereports WHERE crawl_id = ? AND (canonical = \"\" OR canonical = url) GROUP BY title HAVING c > 1) d on d.title = y.title where media_type = \"text/html\" AND length(y.title) > 0 AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid, cid)
 	if err != nil {
 		fmt.Println(err)
@@ -500,7 +500,7 @@ func FindPageReportsWithLongDescription(cid int) []PageReport {
 
 func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 	var pageReports []PageReport
-	sqlStr := "SELECT y.id, y.url, y.description FROM pagereports y INNER JOIN (select description, count(*) AS c FROM pagereports WHERE crawl_id = ? AND canonical = \"\" OR canonical = url GROUP BY description HAVING c > 1) d ON d.description = y.description where media_type = \"text/html\" AND length(y.description) > 0 AND crawl_id = ?"
+	sqlStr := "SELECT y.id, y.url, y.description FROM pagereports y INNER JOIN (select description, count(*) AS c FROM pagereports WHERE crawl_id = ? AND (canonical = \"\" OR canonical = url) GROUP BY description HAVING c > 1) d ON d.description = y.description where media_type = \"text/html\" AND length(y.description) > 0 AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid, cid)
 	if err != nil {
 		fmt.Println(err)

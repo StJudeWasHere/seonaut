@@ -59,7 +59,7 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 		pr <- *pageReport
 
 		for _, l := range pageReport.Links {
-			if l.External {
+			if l.External || strings.Contains(l.Rel, "nofollow") {
 				continue
 			}
 			u := l.URL
@@ -95,7 +95,13 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 		}
 	}
 
-	co := colly.NewCollector(colly.AllowedDomains(u.Host), colly.UserAgent(userAgent))
+	co := colly.NewCollector(
+		colly.AllowedDomains(u.Host),
+		colly.UserAgent(userAgent),
+		func(c *colly.Collector) {
+			c.IgnoreRobotsTxt = false
+		},
+	)
 
 	co.OnRequest(func(r *colly.Request) {
 		fmt.Println("Visiting: ", r.URL.String())

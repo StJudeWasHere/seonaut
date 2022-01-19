@@ -103,7 +103,7 @@ func (pageReport *PageReport) parse() {
 	// The title element in the head section defines the page title
 	// ex. <title>Test Page Title</title>
 	// ---
-	title := htmlquery.Find(doc, "//head/title")
+	title := htmlquery.Find(doc, "//title")
 	if len(title) > 0 {
 		t := htmlquery.InnerText(title[0])
 		pageReport.Title = strings.TrimSpace(t)
@@ -113,7 +113,7 @@ func (pageReport *PageReport) parse() {
 	// The description meta tag defines the page description
 	// ex. <meta name="description" content="Test Page Description" />
 	// ---
-	description := htmlquery.Find(doc, "//head/meta[@name=\"description\"]/@content")
+	description := htmlquery.Find(doc, "//meta[@name=\"description\"]/@content")
 	if len(description) > 0 {
 		d := htmlquery.SelectAttr(description[0], "content")
 		pageReport.Description = strings.TrimSpace(d)
@@ -123,7 +123,7 @@ func (pageReport *PageReport) parse() {
 	// The refresh meta tag refreshes current page or redirects to a different one
 	// ex. <meta http-equiv="refresh" content="0;URL='https://example.com/'" />
 	// ---
-	refresh := htmlquery.Find(doc, "//head/meta[@http-equiv=\"refresh\"]/@content")
+	refresh := htmlquery.Find(doc, "//meta[@http-equiv=\"refresh\"]/@content")
 	if len(refresh) > 0 {
 		pageReport.Refresh = htmlquery.SelectAttr(refresh[0], "content")
 		u := strings.Split(pageReport.Refresh, ";")
@@ -136,7 +136,7 @@ func (pageReport *PageReport) parse() {
 	// The robots meta provides information to crawlers
 	// ex. <meta name="robots" content="noindex, nofollow" />
 	// ---
-	robots := htmlquery.Find(doc, "//head/meta[@name=\"robots\"]/@content")
+	robots := htmlquery.Find(doc, "//meta[@name=\"robots\"]/@content")
 	if len(robots) > 0 {
 		pageReport.Robots = htmlquery.SelectAttr(robots[0], "content")
 	}

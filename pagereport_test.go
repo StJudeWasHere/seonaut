@@ -61,7 +61,8 @@ func TestNewRedirectPageReport(t *testing.T) {
 	redirectURL := "https://example.com/redirect"
 
 	headers := http.Header{
-		"Location": []string{redirectURL},
+		"Location":     []string{redirectURL},
+		"Content-Type": []string{"text/html"},
 	}
 
 	pageReport := NewPageReport(u, statusCode, &headers, body)
@@ -107,8 +108,8 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Description != Test Page Description")
 	}
 
-	if len(pageReport.Links) != 3 {
-		t.Error("len(Links) != 3")
+	if len(pageReport.Links) != 4 {
+		t.Error("len(Links) != 4")
 	}
 
 	if len(pageReport.Links) > 0 {
@@ -123,6 +124,9 @@ func TestPageReportHTML(t *testing.T) {
 		}
 		if pageReport.Links[0].External != false {
 			t.Error("pageReport.Links[0].External != false")
+		}
+		if pageReport.Links[3].Text != "" {
+			t.Error("pageReport.Links[3].Text != \"\"")
 		}
 	}
 
@@ -166,8 +170,8 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Hreglangs[0].URL != fr")
 	}
 
-	if len(pageReport.Images) != 1 {
-		t.Error("Images != 1")
+	if len(pageReport.Images) != 2 {
+		t.Error("Images != 2")
 	}
 
 	if len(pageReport.Scripts) != 1 {

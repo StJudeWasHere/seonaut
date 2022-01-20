@@ -2,10 +2,10 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
-	_ "github.com/go-sql-driver/mysql"
 	"log"
 	"time"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
@@ -18,7 +18,7 @@ func init() {
 	}
 
 	if err := db.Ping(); err != nil {
-		fmt.Printf("unable to reach database: %v", err)
+		log.Printf("Unable to reach database: %v\n", err)
 	}
 }
 
@@ -56,7 +56,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 	lid, err := res.LastInsertId()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
@@ -159,46 +159,52 @@ func FindPageReportById(rid int) PageReport {
 	p := PageReport{}
 	err := row.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	lrows, err := db.Query("SELECT url, rel, text, external FROM links WHERE pagereport_id = ?", rid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for lrows.Next() {
 		l := Link{}
 		err = lrows.Scan(&l.URL, &l.Rel, &l.Text, &l.External)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
+
 		p.Links = append(p.Links, l)
 	}
 
 	hrows, err := db.Query("SELECT url, lang FROM hreflangs WHERE pagereport_id = ?", rid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for hrows.Next() {
 		h := Hreflang{}
 		err = hrows.Scan(&h.URL, h.Lang)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
+
 		p.Hreflangs = append(p.Hreflangs, h)
 	}
 
 	irows, err := db.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", rid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
+
 	for irows.Next() {
 		i := Image{}
 		err = irows.Scan(&i.URL, &i.Alt)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		p.Images = append(p.Images, i)
@@ -206,13 +212,15 @@ func FindPageReportById(rid int) PageReport {
 
 	scrows, err := db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", rid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
+
 	for scrows.Next() {
 		var url string
 		err = scrows.Scan(&url)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		p.Scripts = append(p.Scripts, url)
@@ -220,13 +228,15 @@ func FindPageReportById(rid int) PageReport {
 
 	strows, err := db.Query("SELECT url FROM styles WHERE pagereport_id = ?", rid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
+
 	for strows.Next() {
 		var url string
 		err = strows.Scan(&url)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		p.Styles = append(p.Styles, url)
@@ -241,14 +251,15 @@ func FindPageReportsWithEmptyTitle(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE (title = \"\" OR title is NULL) AND media_type = \"text/html\" AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -263,14 +274,15 @@ func Find40xPageReports(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE status_code >= 400 AND status_code < 500 AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -285,14 +297,15 @@ func Find30xPageReports(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE status_code >= 300 AND status_code < 400 AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -307,14 +320,15 @@ func Find50xPageReports(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE status_code >= 500 AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -329,14 +343,15 @@ func FindPageReportsWithLittleContent(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE words < 200 AND status_code >= 200 AND status_code < 300 AND media_type = \"text/html\" AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -351,14 +366,15 @@ func FindPageReportsWithShortTitle(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE length(title) > 0 AND length(title) < 20 AND media_type = \"text/html\" AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -373,14 +389,15 @@ func FindPageReportsWithLongTitle(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE length(title) > 60 AND media_type = \"text/html\" AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -394,14 +411,15 @@ func FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 	sqlStr := "SELECT y.id, y.url, y.title FROM pagereports y INNER JOIN (select title, count(*) AS c FROM pagereports WHERE crawl_id = ? AND status_code >= 200 AND status_code < 300 AND (canonical = \"\" OR canonical = url) GROUP BY title HAVING c > 1) d on d.title = y.title where media_type = \"text/html\" AND length(y.title) > 0 AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -416,14 +434,15 @@ func FindPageReportsWithEmptyDescription(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE (description = \"\" OR description is NULL) AND media_type = \"text/html\" AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -438,14 +457,15 @@ func FindPageReportsWithShortDescription(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE length(description) > 0 AND length(description) < 80 AND media_type = \"text/html\" AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -460,14 +480,15 @@ func FindPageReportsWithLongDescription(cid int) []PageReport {
 	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE length(description) > 160 AND media_type = \"text/html\" AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -481,14 +502,15 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 	sqlStr := "SELECT y.id, y.url, y.description FROM pagereports y INNER JOIN (select description, count(*) AS c FROM pagereports WHERE crawl_id = ? AND status_code >= 200 AND status_code < 300 AND (canonical = \"\" OR canonical = url) GROUP BY description HAVING c > 1) d ON d.description = y.description where media_type = \"text/html\" AND length(y.description) > 0 AND crawl_id = ?"
 	rows, err := db.Query(sqlStr, cid, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	for rows.Next() {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
 
 		pageReports = append(pageReports, p)
@@ -501,7 +523,7 @@ func CountCrawled(cid int) int {
 	row := db.QueryRow("SELECT count(*) FROM pagereports WHERE crawl_id = ?", cid)
 	var c int
 	if err := row.Scan(&c); err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	return c
@@ -512,7 +534,7 @@ func CountByMediaType(cid int) map[string]int {
 
 	rows, err := db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return m
 	}
 
@@ -521,7 +543,7 @@ func CountByMediaType(cid int) map[string]int {
 		var v int
 		err := rows.Scan(&i, &v)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 		m[i] = v
@@ -534,7 +556,7 @@ func FindImagesWithNoAlt(cid int) []PageReport {
 
 	rows, err := db.Query("select pagereports.id, pagereports.url, pagereports.title from pagereports left join images on images.pagereport_id = pagereports.id where images.alt = \"\" and pagereports.crawl_id = ? group by pagereports.id", cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return pr
 	}
 
@@ -542,7 +564,7 @@ func FindImagesWithNoAlt(cid int) []PageReport {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 
@@ -557,7 +579,7 @@ func CountByStatusCode(cid int) map[int]int {
 
 	rows, err := db.Query("SELECT status_code, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY status_code", cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return m
 	}
 
@@ -566,7 +588,7 @@ func CountByStatusCode(cid int) map[int]int {
 		var v int
 		err := rows.Scan(&i, &v)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 		m[i] = v
@@ -586,7 +608,7 @@ func saveCrawl(p Project) int64 {
 
 	cid, err := res.LastInsertId()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return 0
 	}
 
@@ -598,7 +620,7 @@ func saveEndCrawl(cid int64, t time.Time) {
 	defer stmt.Close()
 	_, err := stmt.Exec(t, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
@@ -608,7 +630,7 @@ func getLastCrawl(p *Project) Crawl {
 	crawl := Crawl{}
 	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	return crawl
@@ -619,8 +641,7 @@ func saveProject(s string) {
 	defer stmt.Close()
 	_, err := stmt.Exec(s)
 	if err != nil {
-		fmt.Println(err)
-		return
+		log.Println(err)
 	}
 }
 
@@ -628,7 +649,7 @@ func findProjects() []Project {
 	var projects []Project
 	rows, err := db.Query("SELECT id, url, created FROM projects")
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return projects
 	}
 
@@ -636,8 +657,10 @@ func findProjects() []Project {
 		p := Project{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Created)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
+
 		projects = append(projects, p)
 	}
 
@@ -650,7 +673,7 @@ func findProjectById(id int) Project {
 	p := Project{}
 	err := row.Scan(&p.Id, &p.URL, &p.Created)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	return p
@@ -663,9 +686,9 @@ func saveIssues(issues []Issue, cid int) {
 	for _, i := range issues {
 		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType, i.Level)
 		if err != nil {
-			fmt.Println(err)
-			fmt.Printf("saveIssues -> ID: %s ERROR: %s LEVEL: %d CRAWL: %d\n", i.PageReportId, i.ErrorType, i.Level, cid)
-			return
+			log.Println(err)
+			log.Printf("saveIssues -> ID: %s ERROR: %s LEVEL: %d CRAWL: %d\n", i.PageReportId, i.ErrorType, i.Level, cid)
+			continue
 		}
 	}
 }
@@ -673,9 +696,9 @@ func saveIssues(issues []Issue, cid int) {
 func findIssues(cid int) map[string]IssueGroup {
 	var issues map[string]IssueGroup
 
-	rows, err := db.Query("select error_type, level, count(*) from issues where crawl_id = ? group by error_type, level order by level ASC", cid)
+	rows, err := db.Query("SELECT error_type, count(*) FROM issues WHERE crawl_id = ? GROUP BY error_type", cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return issues
 	}
 
@@ -683,8 +706,10 @@ func findIssues(cid int) map[string]IssueGroup {
 		ig := IssueGroup{}
 		err := rows.Scan(&ig.ErrorType, &ig.Level, &ig.Count)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
+			continue
 		}
+
 		issues[ig.ErrorType] = ig
 	}
 
@@ -696,7 +721,7 @@ func findPageReportIssues(cid int, errorType string) []PageReport {
 
 	rows, err := db.Query("select id, url, title from pagereports where id in (select pagereport_id from issues where error_type = ?  and crawl_id  = ?)", errorType, cid)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return pr
 	}
 
@@ -704,7 +729,7 @@ func findPageReportIssues(cid int, errorType string) []PageReport {
 		p := PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			continue
 		}
 

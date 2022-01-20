@@ -680,14 +680,14 @@ func findProjectById(id int) Project {
 }
 
 func saveIssues(issues []Issue, cid int) {
-	stmt, _ := db.Prepare("INSERT INTO issues (pagereport_id, crawl_id, error_type, level) VALUES (?, ?, ?, ?)")
+	stmt, _ := db.Prepare("INSERT INTO issues (pagereport_id, crawl_id, error_type) VALUES (?, ?, ?)")
 	defer stmt.Close()
 
 	for _, i := range issues {
-		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType, i.Level)
+		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType)
 		if err != nil {
 			log.Println(err)
-			log.Printf("saveIssues -> ID: %s ERROR: %s LEVEL: %d CRAWL: %d\n", i.PageReportId, i.ErrorType, i.Level, cid)
+			log.Printf("saveIssues -> ID: %s ERROR: %s CRAWL: %d\n", i.PageReportId, i.ErrorType, cid)
 			continue
 		}
 	}
@@ -704,7 +704,7 @@ func findIssues(cid int) map[string]IssueGroup {
 
 	for rows.Next() {
 		ig := IssueGroup{}
-		err := rows.Scan(&ig.ErrorType, &ig.Level, &ig.Count)
+		err := rows.Scan(&ig.ErrorType, &ig.Count)
 		if err != nil {
 			log.Println(err)
 			continue

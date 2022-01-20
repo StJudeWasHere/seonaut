@@ -77,7 +77,6 @@ CREATE TABLE `issues` (
   `pagereport_id` int(11) unsigned NOT NULL,
   `crawl_id` int(11) unsigned NOT NULL,
   `error_type` varchar(50) NOT NULL DEFAULT '',
-  `level` int(11) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `issue_crawl` (`crawl_id`),
   KEY `issue_pagereport` (`pagereport_id`),

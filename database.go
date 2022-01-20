@@ -20,7 +20,6 @@ func init() {
 	if err := db.Ping(); err != nil {
 		fmt.Printf("unable to reach database: %v", err)
 	}
-	fmt.Println("database is reachable")
 }
 
 func savePageReport(r *PageReport, cid int64) {
@@ -51,7 +50,7 @@ func savePageReport(r *PageReport, cid int64) {
 	)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("Error in SavePageReport\nCID: %v\n Report: %+v\nError: %+v\n", cid, r, err)
 		return
 	}
 
@@ -78,7 +77,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err = stmt.Exec(v...)
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("Error in SavePageReport\nCID: %v\n Links: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 
@@ -95,7 +94,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("Error in SavePageReport\nCID: %v\n Hreflangs: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 
@@ -112,7 +111,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("Error in SavePageReport\nCID: %v\n Images: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 
@@ -129,7 +128,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("Error in SavePageReport\nCID: %v\n Scripts: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 
@@ -148,7 +147,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			fmt.Println(err)
+			log.Printf("Error in SavePageReport\nCID: %v\n Styles: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 }
@@ -581,7 +580,7 @@ func saveCrawl(p Project) int64 {
 	res, err := stmt.Exec(p.Id)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("Error in SaveCrawl\nProject: %+v\nError: %+v\n", p)
 		return 0
 	}
 
@@ -665,7 +664,7 @@ func saveIssues(issues []Issue, cid int) {
 		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType, i.Level)
 		if err != nil {
 			fmt.Println(err)
-			fmt.Printf("saveIssues -> ID: %s ERROR: %s LEVEL: %d CRAWL: %d\n", i.PageReportId, i.ErrorType)
+			fmt.Printf("saveIssues -> ID: %s ERROR: %s LEVEL: %d CRAWL: %d\n", i.PageReportId, i.ErrorType, i.Level, cid)
 			return
 		}
 	}
@@ -713,6 +712,4 @@ func findPageReportIssues(cid int, errorType string) []PageReport {
 	}
 
 	return pr
-
-	//
 }

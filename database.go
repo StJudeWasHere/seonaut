@@ -153,97 +153,87 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 }
 
-func FindPageReports() []PageReport {
-	var pageReports []PageReport
+func FindPageReportById(rid int) PageReport {
+	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports WHERE id = ?"
+	row := db.QueryRow(sqlStr, rid)
 
-	sqlStr := "SELECT id, url, redirect_url, refresh, status_code, content_type, media_type, lang, title, description, robots, canonical, h1, h2, words, size FROM pagereports"
-	rows, err := db.Query(sqlStr)
+	p := PageReport{}
+	err := row.Scan(&p.Id, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	for rows.Next() {
-		p := PageReport{}
-		var pid int
-		err := rows.Scan(&pid, &p.URL, &p.RedirectURL, &p.Refresh, &p.StatusCode, &p.ContentType, &p.MediaType, &p.Lang, &p.Title, &p.Description, &p.Robots, &p.Canonical, &p.H1, &p.H2, &p.Words, &p.Size)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		lrows, err := db.Query("SELECT url, rel, text, external FROM links WHERE pagereport_id = ?", pid)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		for lrows.Next() {
-			l := Link{}
-			err = lrows.Scan(&l.URL, &l.Rel, &l.Text, &l.External)
-			if err != nil {
-				fmt.Println(err)
-			}
-			p.Links = append(p.Links, l)
-		}
-
-		hrows, err := db.Query("SELECT url, lang FROM hreflangs WHERE pagereport_id = ?", pid)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		for hrows.Next() {
-			h := Hreflang{}
-			err = hrows.Scan(&h.URL, h.Lang)
-			if err != nil {
-				fmt.Println(err)
-			}
-			p.Hreflangs = append(p.Hreflangs, h)
-		}
-
-		irows, err := db.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", pid)
-		if err != nil {
-			fmt.Println(err)
-		}
-		for irows.Next() {
-			i := Image{}
-			err = irows.Scan(&i.URL, &i.Alt)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			p.Images = append(p.Images, i)
-		}
-
-		scrows, err := db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", pid)
-		if err != nil {
-			fmt.Println(err)
-		}
-		for scrows.Next() {
-			var url string
-			err = scrows.Scan(&url)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			p.Scripts = append(p.Scripts, url)
-		}
-
-		strows, err := db.Query("SELECT url FROM styles WHERE pagereport_id = ?", pid)
-		if err != nil {
-			fmt.Println(err)
-		}
-		for strows.Next() {
-			var url string
-			err = strows.Scan(&url)
-			if err != nil {
-				fmt.Println(err)
-			}
-
-			p.Styles = append(p.Styles, url)
-		}
-
-		pageReports = append(pageReports, p)
+	lrows, err := db.Query("SELECT url, rel, text, external FROM links WHERE pagereport_id = ?", rid)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	return pageReports
+	for lrows.Next() {
+		l := Link{}
+		err = lrows.Scan(&l.URL, &l.Rel, &l.Text, &l.External)
+		if err != nil {
+			fmt.Println(err)
+		}
+		p.Links = append(p.Links, l)
+	}
+
+	hrows, err := db.Query("SELECT url, lang FROM hreflangs WHERE pagereport_id = ?", rid)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	for hrows.Next() {
+		h := Hreflang{}
+		err = hrows.Scan(&h.URL, h.Lang)
+		if err != nil {
+			fmt.Println(err)
+		}
+		p.Hreflangs = append(p.Hreflangs, h)
+	}
+
+	irows, err := db.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", rid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for irows.Next() {
+		i := Image{}
+		err = irows.Scan(&i.URL, &i.Alt)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		p.Images = append(p.Images, i)
+	}
+
+	scrows, err := db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", rid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for scrows.Next() {
+		var url string
+		err = scrows.Scan(&url)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		p.Scripts = append(p.Scripts, url)
+	}
+
+	strows, err := db.Query("SELECT url FROM styles WHERE pagereport_id = ?", rid)
+	if err != nil {
+		fmt.Println(err)
+	}
+	for strows.Next() {
+		var url string
+		err = strows.Scan(&url)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		p.Styles = append(p.Styles, url)
+	}
+
+	return p
 }
 
 func FindPageReportsWithEmptyTitle(cid int) []PageReport {

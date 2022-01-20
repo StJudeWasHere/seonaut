@@ -48,6 +48,11 @@ type PageReportView struct {
 	StatusCodeCount       map[int]int
 }
 
+type ResourcesView struct {
+	PageReport PageReport
+	Cid        int
+}
+
 type Crawl struct {
 	Id    int
 	URL   string
@@ -183,6 +188,32 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = templates.ExecuteTemplate(w, "issues_view.html", view)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func serveResourcesView(w http.ResponseWriter, r *http.Request) {
+	rid, err := strconv.Atoi(r.URL.Query()["rid"][0])
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/", 303)
+	}
+
+	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/", 303)
+	}
+
+	pageReport := FindPageReportById(rid)
+
+	var templates = template.Must(template.ParseFiles(
+		"templates/resources.html", "templates/head.html", "templates/footer.html", "templates/list.html",
+		"templates/url_list.html", "templates/pagereport.html",
+	))
+
+	err = templates.ExecuteTemplate(w, "resources.html", ResourcesView{PageReport: pageReport, Cid: cid})
 	if err != nil {
 		fmt.Println(err)
 	}

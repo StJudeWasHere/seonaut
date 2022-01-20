@@ -678,7 +678,6 @@ func saveIssues(issues []Issue, cid int) {
 			fmt.Printf("saveIssues -> ID: %s ERROR: %s LEVEL: %d CRAWL: %d\n", i.PageReportId, i.ErrorType)
 			return
 		}
-
 	}
 }
 
@@ -701,4 +700,29 @@ func findIssues(cid int) []IssueGroup {
 	}
 
 	return issues
+}
+
+func findPageReportIssues(cid int, errorType string) []PageReport {
+	pr := []PageReport{}
+
+	rows, err := db.Query("select id, url, title from pagereports where id in (select pagereport_id from issues where error_type = ?  and crawl_id  = ?)", errorType, cid)
+	if err != nil {
+		fmt.Println(err)
+		return pr
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		pr = append(pr, p)
+	}
+
+	return pr
+
+	//
 }

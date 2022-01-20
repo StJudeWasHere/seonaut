@@ -16,6 +16,16 @@ type ProjectView struct {
 	StatusCodeCount map[int]int
 }
 
+type IssuesGroupView struct {
+	IssuesGroups []IssueGroup
+	Cid          int
+}
+
+type IssuesView struct {
+	PageReports []PageReport
+	Cid         int
+}
+
 type PageReportView struct {
 	Projects              []Project
 	Crawl                 Crawl
@@ -141,33 +151,38 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	issueGroups := findIssues(cid)
 
-	/*
-		view := PageReportView{
-			Error30x:              Find30xPageReports(cid),
-			Error40x:              Find40xPageReports(cid),
-			Error50x:              Find50xPageReports(cid),
-			LittleContent:         FindPageReportsWithLittleContent(cid),
-			EmptyTitle:            FindPageReportsWithEmptyTitle(cid),
-			ShortTitle:            FindPageReportsWithShortTitle(cid),
-			LongTitle:             FindPageReportsWithLongTitle(cid),
-			DuplicatedTitle:       FindPageReportsWithDuplicatedTitle(cid),
-			EmptyDescription:      FindPageReportsWithEmptyDescription(cid),
-			ShortDescription:      FindPageReportsWithShortDescription(cid),
-			LongDescription:       FindPageReportsWithLongDescription(cid),
-			DuplicatedDescription: FindPageReportsWithDuplicatedDescription(cid),
-			TotalCount:            CountCrawled(cid),
-			MediaCount:            CountByMediaType(cid),
-			StatusCodeCount:       CountByStatusCode(cid),
-			ImagesWithNoAlt:       FindImagesWithNoAlt(cid),
-		}
-	*/
-
 	var templates = template.Must(template.ParseFiles(
 		"templates/issues.html", "templates/head.html", "templates/footer.html", "templates/list.html",
 		"templates/url_list.html", "templates/pagereport.html",
 	))
 
-	err = templates.ExecuteTemplate(w, "issues.html", issueGroups)
+	err = templates.ExecuteTemplate(w, "issues.html", IssuesGroupView{IssuesGroups: issueGroups, Cid: cid})
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+func serveIssuesView(w http.ResponseWriter, r *http.Request) {
+	eid := r.URL.Query()["eid"][0]
+	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	if err != nil {
+		fmt.Println(err)
+		http.Redirect(w, r, "/", 303)
+	}
+
+	var templates = template.Must(template.ParseFiles(
+		"templates/issues_view.html", "templates/head.html", "templates/footer.html", "templates/list.html",
+		"templates/url_list.html", "templates/pagereport.html",
+	))
+
+	issues := findPageReportIssues(cid, eid)
+
+	view := IssuesView{
+		Cid:         cid,
+		PageReports: issues,
+	}
+
+	err = templates.ExecuteTemplate(w, "issues_view.html", view)
 	if err != nil {
 		fmt.Println(err)
 	}

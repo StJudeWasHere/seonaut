@@ -670,8 +670,8 @@ func saveIssues(issues []Issue, cid int) {
 	}
 }
 
-func findIssues(cid int) []IssueGroup {
-	var issues []IssueGroup
+func findIssues(cid int) map[string]IssueGroup {
+	var issues map[string]IssueGroup
 
 	rows, err := db.Query("select error_type, level, count(*) from issues where crawl_id = ? group by error_type, level order by level ASC", cid)
 	if err != nil {
@@ -685,7 +685,7 @@ func findIssues(cid int) []IssueGroup {
 		if err != nil {
 			fmt.Println(err)
 		}
-		issues = append(issues, ig)
+		issues[ig.ErrorType] = ig
 	}
 
 	return issues

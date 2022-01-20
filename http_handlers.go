@@ -17,7 +17,7 @@ type ProjectView struct {
 }
 
 type IssuesGroupView struct {
-	IssuesGroups []IssueGroup
+	IssuesGroups map[string]IssueGroup
 	Cid          int
 }
 

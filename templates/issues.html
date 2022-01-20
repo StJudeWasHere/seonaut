@@ -2,55 +2,118 @@
 
 <h1 class="title">ISSUES<a href="/">&larr; Back</a></h1>
 
-{{ $cid := .Cid }}
-{{ range .IssuesGroups }}
+	{{ $cid := .Cid }}
+
 	{{/* Status code issues */}}
-	{{ if eq .ErrorType "ERROR_30x" }}
-		<p>🔥 <span>{{ .Count }}</span> Redirected pages <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_30x") }}
+		{{ if ne .Count 0 }}
+			<p>🔥 <span>{{ .Count }} </span> Redirected pages
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">view</a>
+			</p>
+		{{ end }}
 	{{ end }}
-	{{ if eq .ErrorType "ERROR_40x" }}
-		<p>🔥 <span>{{ .Count }}</span> Pages not found <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_40x") }}
+		{{ if ne .Count 0 }}
+			<p>🔥 <span>{{ .Count }}</span> Pages not found
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">view</a>
+			</p>
+		{{ end }}
 	{{ end }}
-	{{ if eq .ErrorType "ERROR_50x" }}
-		<p>🔥 <span>{{ .Count }}</span> Error pages <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_50x") }}
+		{{ if ne .Count 0 }}
+			<p>🔥 <span>{{ .Count }}</span> Error pages
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">view</a>
+			</p>
+		{{ end }}
 	{{ end }}
 	
 	{{/* Title issues */}}
-	{{ if eq .ErrorType "ERROR_DUPLICATED_TITLE" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with duplicated title <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_DUPLICATED_TITLE") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with duplicated title
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">view</a>
+			</p>
+		{{ end }}
 	{{ end }}
-	{{ if eq .ErrorType "ERROR_LONG_TITLE" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with long title <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_LONG_TITLE") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with long title
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
-	{{ if eq .ErrorType "ERROR_SHORT_TITLE" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with short title <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_SHORT_TITLE") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span>Pages with short title
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
-	{{ if eq .ErrorType "ERROR_EMMPTY_TITLE" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with empty title <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_EMMPTY_TITLE") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with empty title
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
 
 	{{/* Description issues */}}
-	{{ if eq .ErrorType "ERROR_DUPLICATED_DESCRIPTION" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with duplicated description <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_DUPLICATED_DESCRIPTION") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with duplicated description
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
-	{{ if eq .ErrorType "ERROR_LONG_DESCRIPTION" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with long description <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_LONG_DESCRIPTION") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with long description
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
-	{{ if eq .ErrorType "ERROR_SHORT_DESCRIPTION" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with short description <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_SHORT_DESCRIPTION") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with short description
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
-	{{ if eq .ErrorType "ERROR_EMPTY_DESCRIPTION" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with empty description <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_EMPTY_DESCRIPTION") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with empty description
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
 
 	{{/* Other issues */}}
-	{{ if eq .ErrorType "ERROR_LITTLE_CONTENT" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages with little content <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_LITTLE_CONTENT") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages with little content
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
-	{{ if eq .ErrorType "ERROR_IMAGES_NO_ALT" }}
-		<p>⚠️ <span>{{ .Count }}</span> Pages containing images with no alt attribute <a href="/issues/view?cid={{ $cid }}&eid={{ .ErrorType }}">view</a></p>
+
+	{{ with (index .IssuesGroups "ERROR_IMAGES_NO_ALT") }}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <span>{{ .Count }}</span> Pages containing images with no alt attribute
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">view</a>
+			</p>
+		{{ end }}
 	{{ end}}
-	
-{{ end }}
 
 {{ template "footer" . }}

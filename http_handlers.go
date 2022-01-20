@@ -157,8 +157,7 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 	issueGroups := findIssues(cid)
 
 	var templates = template.Must(template.ParseFiles(
-		"templates/issues.html", "templates/head.html", "templates/footer.html", "templates/list.html",
-		"templates/url_list.html", "templates/pagereport.html",
+		"templates/issues.html", "templates/head.html", "templates/footer.html",
 	))
 
 	err = templates.ExecuteTemplate(w, "issues.html", IssuesGroupView{IssuesGroups: issueGroups, Cid: cid})
@@ -176,8 +175,7 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var templates = template.Must(template.ParseFiles(
-		"templates/issues_view.html", "templates/head.html", "templates/footer.html", "templates/list.html",
-		"templates/url_list.html", "templates/pagereport.html",
+		"templates/issues_view.html", "templates/head.html", "templates/footer.html",
 	))
 
 	issues := findPageReportIssues(cid, eid)
@@ -209,8 +207,7 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	pageReport := FindPageReportById(rid)
 
 	var templates = template.Must(template.ParseFiles(
-		"templates/resources.html", "templates/head.html", "templates/footer.html", "templates/list.html",
-		"templates/url_list.html", "templates/pagereport.html",
+		"templates/resources.html", "templates/head.html", "templates/footer.html", "templates/pagereport.html",
 	))
 
 	err = templates.ExecuteTemplate(w, "resources.html", ResourcesView{PageReport: pageReport, Cid: cid})

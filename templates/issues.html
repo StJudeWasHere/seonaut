@@ -6,10 +6,10 @@
 
 	{{/* Status code issues */}}
 
-	{{ with (index .IssuesGroups "ERROR_30x") }}
+	{{ with (index .IssuesGroups "ERROR_50x") }}
 		{{ if ne .Count 0 }}
-			<p>🔥 <span>{{ .Count }} </span> Redirected pages
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">view</a>
+			<p>🔥 <span>{{ .Count }}</span> Error pages
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">view</a>
 			</p>
 		{{ end }}
 	{{ end }}
@@ -22,14 +22,22 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_50x") }}
+	{{ with (index .IssuesGroups "ERROR_30x") }}
 		{{ if ne .Count 0 }}
-			<p>🔥 <span>{{ .Count }}</span> Error pages
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">view</a>
+			<p>🔥 <span>{{ .Count }} </span> Redirected pages
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">view</a>
 			</p>
 		{{ end }}
 	{{ end }}
-	
+
+	{{ with (index .IssuesGroups "ERROR_REDIRECT_CHAIN") }}
+		{{ if ne .Count 0 }}
+			<p>🔥 <span>{{ .Count }} </span> Redirect chains
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">view</a>
+			</p>
+		{{ end }}
+	{{ end }}
+
 	{{/* Title issues */}}
 
 	{{ with (index .IssuesGroups "ERROR_DUPLICATED_TITLE") }}

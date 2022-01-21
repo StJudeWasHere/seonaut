@@ -738,3 +738,31 @@ func findPageReportIssues(cid int, errorType string) []PageReport {
 
 	return pr
 }
+
+func findRedirectChains(cid int) []PageReport {
+	pr := []PageReport{}
+	query := `
+		SELECT
+			a.id,
+			a.url,
+		FROM pagereports AS a
+		LEFT JOIN pagereports AS b ON a.redirect_url = b.url
+		WHERE a.redirect_url != "" AND b.redirect_url  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return pr
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(&p.Id, &p.URL)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+	}
+
+	return pr
+}

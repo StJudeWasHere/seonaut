@@ -18,6 +18,7 @@ const (
 	ErrorLongDescription       = "ERROR_LONG_DESCRIPTION"
 	ErrorLittleContent         = "ERROR_LITTLE_CONTENT"
 	ErrorImagesWithNoAlt       = "ERROR_IMAGES_NO_ALT"
+	ErrorRedirectChain         = "ERROR_REDIRECT_CHAIN"
 )
 
 type Issue struct {
@@ -91,6 +92,10 @@ func createIssues(cid int) {
 		IssueCallback{
 			Callback:  FindImagesWithNoAlt,
 			ErrorType: ErrorImagesWithNoAlt,
+		},
+		IssueCallback{
+			Callback:  FindImagesWithNoAlt,
+			ErrorType: ErrorRedirectChain,
 		},
 	}
 

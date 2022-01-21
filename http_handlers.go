@@ -133,7 +133,7 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query()["pid"][0])
 	if err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "/", 303)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	p := findProjectById(pid)
@@ -144,14 +144,14 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(time.Since(start))
 	}()
 
-	http.Redirect(w, r, "/", 303)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func serveIssues(w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "/", 303)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	issueGroups := findIssues(cid)
@@ -171,7 +171,7 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "/", 303)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	var templates = template.Must(template.ParseFiles(
@@ -195,13 +195,13 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	rid, err := strconv.Atoi(r.URL.Query()["rid"][0])
 	if err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "/", 303)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		fmt.Println(err)
-		http.Redirect(w, r, "/", 303)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	pageReport := FindPageReportById(rid)

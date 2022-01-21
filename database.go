@@ -1251,3 +1251,28 @@ func findRedirectChains(cid int) []PageReport {
 
 	return pr
 }
+
+func userSignup(user, password string) {
+	query := `INSERT INTO users (email, password) VALUES (?, ?)`
+	stmt, _ := db.Prepare(query)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(user, password)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func findUserByEmail(email string) *User {
+	u := User{}
+	query := `SELECT id, email, password FROM users WHERE email = ?`
+
+	row := db.QueryRow(query, email)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	if err != nil {
+		log.Println(err)
+		return &u
+	}
+
+	return &u
+}

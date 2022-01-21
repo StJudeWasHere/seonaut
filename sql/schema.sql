@@ -5,9 +5,9 @@
 # http://www.sequelpro.com/
 # https://github.com/sequelpro/sequelpro
 #
-# Host: 0.0.0.0 (MySQL 5.7.36)
+# Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-19 17:52:49 +0000
+# Generation Time: 2022-01-21 15:18:02 +0000
 # ************************************************************
 
 
@@ -172,6 +172,20 @@ CREATE TABLE `styles` (
   `url` varchar(2000) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+# Dump of table users
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `users`;
+
+CREATE TABLE `users` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `email` varchar(256) NOT NULL DEFAULT '',
+  `password` varchar(512) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 

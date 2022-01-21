@@ -3,10 +3,19 @@ package main
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
 )
+
+type User struct {
+	Id       int
+	Email    string
+	Password string
+}
 
 type ProjectView struct {
 	Project         Project
@@ -213,5 +222,77 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	err = templates.ExecuteTemplate(w, "resources.html", ResourcesView{PageReport: pageReport, Cid: cid})
 	if err != nil {
 		fmt.Println(err)
+	}
+}
+
+func serveSignup(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+		}
+
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			log.Println(err)
+			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+		}
+
+		userSignup(email, string(hashedPassword))
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	var templates = template.Must(template.ParseFiles(
+		"templates/signup.html", "templates/head.html", "templates/footer.html",
+	))
+
+	err := templates.ExecuteTemplate(w, "signup.html", struct{}{})
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func serveSignin(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			log.Println(err)
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+		}
+
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+
+		fmt.Println(email, password)
+
+		u := findUserByEmail(email)
+		if u.Id == 0 {
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
+		}
+
+		if err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
+			// w.WriteHeader(http.StatusUnauthorized)
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
+		}
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	var templates = template.Must(template.ParseFiles(
+		"templates/signin.html", "templates/head.html", "templates/footer.html",
+	))
+
+	err := templates.ExecuteTemplate(w, "signin.html", struct{}{})
+	if err != nil {
+		log.Println(err)
 	}
 }

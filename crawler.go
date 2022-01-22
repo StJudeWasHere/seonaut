@@ -105,7 +105,7 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 	)
 
 	co.OnRequest(func(r *colly.Request) {
-		fmt.Println("Visiting: ", r.URL.String())
+		fmt.Printf("Visiting %s\n", r.URL.String())
 	})
 
 	co.OnResponse(handleResponse)

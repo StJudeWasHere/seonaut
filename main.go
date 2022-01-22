@@ -1,10 +1,9 @@
 package main
 
 import (
-	"flag"
 	"fmt"
+	"log"
 	"net/http"
-	"time"
 )
 
 const (
@@ -13,22 +12,12 @@ const (
 )
 
 func main() {
-	crawl := flag.String("crawl", "", "Site to crawl")
-	flag.Parse()
-
-	if *crawl != "" {
-		fmt.Printf("Crawling %s...\n", string(*crawl))
-		start := time.Now()
-		startCrawler(Project{URL: string(*crawl)})
-		fmt.Println(time.Since(start))
-	}
-
-	http.HandleFunc("/", serveHome)
-	http.HandleFunc("/new-project", serveProjectAdd)
-	http.HandleFunc("/crawl", serveCrawl)
-	http.HandleFunc("/issues", serveIssues)
-	http.HandleFunc("/issues/view", serveIssuesView)
-	http.HandleFunc("/resources", serveResourcesView)
+	http.HandleFunc("/", requireAuth(serveHome))
+	http.HandleFunc("/new-project", requireAuth(serveProjectAdd))
+	http.HandleFunc("/crawl", requireAuth(serveCrawl))
+	http.HandleFunc("/issues", requireAuth(serveIssues))
+	http.HandleFunc("/issues/view", requireAuth(serveIssuesView))
+	http.HandleFunc("/resources", requireAuth(serveResourcesView))
 	http.HandleFunc("/signup", serveSignup)
 	http.HandleFunc("/signin", serveSignin)
 
@@ -36,6 +25,13 @@ func main() {
 
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+	}
+}
+
+func requireAuth(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Calling f...")
+		f(w, r)
 	}
 }

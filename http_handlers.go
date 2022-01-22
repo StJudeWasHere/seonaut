@@ -35,28 +35,6 @@ type IssuesView struct {
 	Cid         int
 }
 
-type PageReportView struct {
-	Projects              []Project
-	Crawl                 Crawl
-	Error30x              []PageReport
-	Error40x              []PageReport
-	Error50x              []PageReport
-	LittleContent         []PageReport
-	ImagesWithNoAlt       []PageReport
-	PageReports           []PageReport
-	EmptyTitle            []PageReport
-	ShortTitle            []PageReport
-	LongTitle             []PageReport
-	DuplicatedTitle       []PageReport
-	EmptyDescription      []PageReport
-	ShortDescription      []PageReport
-	LongDescription       []PageReport
-	DuplicatedDescription []PageReport
-	TotalCount            int
-	MediaCount            map[string]int
-	StatusCodeCount       map[int]int
-}
-
 type ResourcesView struct {
 	PageReport PageReport
 	Cid        int
@@ -80,11 +58,6 @@ func (c Crawl) TotalTime() time.Duration {
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.Error(w, "Not found", http.StatusNotFound)
-		return
-	}
-
 	if r.Method != http.MethodGet {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
@@ -226,7 +199,6 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveSignup(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
@@ -258,7 +230,6 @@ func serveSignup(w http.ResponseWriter, r *http.Request) {
 }
 
 func serveSignin(w http.ResponseWriter, r *http.Request) {
-
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {

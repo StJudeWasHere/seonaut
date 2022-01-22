@@ -37,9 +37,9 @@ type IssueCallback struct {
 }
 
 func createIssues(cid int) {
-	var issues []Issue
-	fmt.Println("Creating issues...")
+	fmt.Printf("Creating issues for crawl id %d.\n", cid)
 
+	var issues []Issue
 	callbacks := []IssueCallback{
 		IssueCallback{
 			Callback:  Find30xPageReports,

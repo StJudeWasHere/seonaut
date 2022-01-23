@@ -8,32 +8,32 @@
 
 	{{ with (index .IssuesGroups "ERROR_50x") }}
 		{{ if ne .Count 0 }}
-			<p>🔥 <span>{{ .Count }}</span> Error pages
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">view</a>
+			<p>🔥 <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">Error pages</a>
 			</p>
 		{{ end }}
 	{{ end }}
 
 	{{ with (index .IssuesGroups "ERROR_40x") }}
 		{{ if ne .Count 0 }}
-			<p>🔥 <span>{{ .Count }}</span> Pages not found
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">view</a>
+			<p>🔥 <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">Pages not found</a>
 			</p>
 		{{ end }}
 	{{ end }}
 
 	{{ with (index .IssuesGroups "ERROR_30x") }}
 		{{ if ne .Count 0 }}
-			<p>🔥 <span>{{ .Count }} </span> Redirected pages
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">view</a>
+			<p>🔥 <b>{{ .Count }} </b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">Redirected pages</a>
 			</p>
 		{{ end }}
 	{{ end }}
 
 	{{ with (index .IssuesGroups "ERROR_REDIRECT_CHAIN") }}
 		{{ if ne .Count 0 }}
-			<p>🔥 <span>{{ .Count }} </span> Redirect chains
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">view</a>
+			<p>🔥 <b>{{ .Count }} </b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">Redirect chains</a>
 			</p>
 		{{ end }}
 	{{ end }}
@@ -42,32 +42,32 @@
 
 	{{ with (index .IssuesGroups "ERROR_DUPLICATED_TITLE") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with duplicated title
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Pages with duplicated title</a>
 			</p>
 		{{ end }}
 	{{ end }}
 
 	{{ with (index .IssuesGroups "ERROR_LONG_TITLE") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with long title
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Pages with long title</a>
 			</p>
 		{{ end }}
 	{{ end}}
 
 	{{ with (index .IssuesGroups "ERROR_SHORT_TITLE") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span>Pages with short title
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Pages with short title</a>
 			</p>
 		{{ end }}
 	{{ end}}
 
 	{{ with (index .IssuesGroups "ERROR_EMMPTY_TITLE") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with empty title
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">Pages with empty title</a>
 			</p>
 		{{ end }}
 	{{ end}}
@@ -76,32 +76,32 @@
 
 	{{ with (index .IssuesGroups "ERROR_DUPLICATED_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with duplicated description
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Pages with duplicated description</a>
 			</p>
 		{{ end }}
 	{{ end}}
 
 	{{ with (index .IssuesGroups "ERROR_LONG_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with long description
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Pages with long description</a>
 			</p>
 		{{ end }}
 	{{ end}}
 
 	{{ with (index .IssuesGroups "ERROR_SHORT_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with short description
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Pages with short description</a>
 			</p>
 		{{ end }}
 	{{ end}}
 
 	{{ with (index .IssuesGroups "ERROR_EMPTY_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with empty description
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Pages with empty description</a>
 			</p>
 		{{ end }}
 	{{ end}}
@@ -110,16 +110,16 @@
 
 	{{ with (index .IssuesGroups "ERROR_LITTLE_CONTENT") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages with little content
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Pages with little content</a>
 			</p>
 		{{ end }}
 	{{ end}}
 
 	{{ with (index .IssuesGroups "ERROR_IMAGES_NO_ALT") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <span>{{ .Count }}</span> Pages containing images with no alt attribute
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">view</a>
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Pages containing images with no alt attribute</a>
 			</p>
 		{{ end }}
 	{{ end}}

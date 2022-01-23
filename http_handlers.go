@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -53,6 +54,12 @@ type Project struct {
 	Created time.Time
 }
 
+var cookie *sessions.CookieStore
+
+func init() {
+	cookie = sessions.NewCookieStore([]byte("SESSION_ID"))
+}
+
 func (c Crawl) TotalTime() time.Duration {
 	return c.End.Sub(c.Start)
 }
@@ -84,7 +91,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 
 	err := templates.ExecuteTemplate(w, "home.html", views)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
@@ -94,7 +101,7 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			fmt.Println(err)
+			log.Println(err)
 		}
 		url = r.FormValue("url")
 		saveProject(url)
@@ -107,15 +114,17 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 
 	err := templates.ExecuteTemplate(w, "project_add.html", struct{ URL string }{URL: url})
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
 func serveCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query()["pid"][0])
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
 	}
 
 	p := findProjectById(pid)
@@ -132,8 +141,10 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 func serveIssues(w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
 	}
 
 	issueGroups := findIssues(cid)
@@ -144,7 +155,7 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	err = templates.ExecuteTemplate(w, "issues.html", IssuesGroupView{IssuesGroups: issueGroups, Cid: cid})
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
@@ -152,8 +163,10 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	eid := r.URL.Query()["eid"][0]
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
 	}
 
 	var templates = template.Must(template.ParseFiles(
@@ -169,21 +182,25 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 
 	err = templates.ExecuteTemplate(w, "issues_view.html", view)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
 func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	rid, err := strconv.Atoi(r.URL.Query()["rid"][0])
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
 	}
 
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
 	}
 
 	pageReport := FindPageReportById(rid)
@@ -194,7 +211,7 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 
 	err = templates.ExecuteTemplate(w, "resources.html", ResourcesView{PageReport: pageReport, Cid: cid})
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 }
 
@@ -204,6 +221,8 @@ func serveSignup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+
+			return
 		}
 
 		email := r.FormValue("email")
@@ -212,11 +231,14 @@ func serveSignup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			http.Redirect(w, r, "/signup", http.StatusSeeOther)
+
+			return
 		}
 
 		userSignup(email, string(hashedPassword))
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
 	var templates = template.Must(template.ParseFiles(
@@ -235,6 +257,8 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+
+			return
 		}
 
 		email := r.FormValue("email")
@@ -249,10 +273,13 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
-			// w.WriteHeader(http.StatusUnauthorized)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
 		}
+
+		session, _ := cookie.Get(r, "SESSION_ID")
+		session.Values["authenticated"] = true
+		session.Save(r, w)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -265,5 +292,22 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 	err := templates.ExecuteTemplate(w, "signin.html", struct{}{})
 	if err != nil {
 		log.Println(err)
+	}
+}
+
+func requireAuth(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := cookie.Get(r, "SESSION_ID")
+		var authenticated interface{} = session.Values["authenticated"]
+		if authenticated != nil {
+			isAuthenticated := session.Values["authenticated"].(bool)
+			if isAuthenticated {
+				f(w, r)
+
+				return
+			}
+		}
+
+		http.Redirect(w, r, "/signin", http.StatusSeeOther)
 	}
 }

@@ -22,16 +22,8 @@ func main() {
 	http.HandleFunc("/signin", serveSignin)
 
 	fmt.Printf("Starting server at %s on port %d...\n", host, port)
-
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)
 	if err != nil {
 		log.Println(err)
-	}
-}
-
-func requireAuth(f http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("Calling f...")
-		f(w, r)
 	}
 }

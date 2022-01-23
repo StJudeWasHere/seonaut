@@ -131,8 +131,12 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Crawling %s...\n", p.URL)
 	go func() {
 		start := time.Now()
-		startCrawler(p)
+		cid := startCrawler(p)
 		fmt.Println(time.Since(start))
+		fmt.Printf("Creating issues for crawl id %d.\n", cid)
+		rm := NewReportManager()
+		rm.createIssues(cid)
+		fmt.Println("Done.")
 	}()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)

@@ -19,7 +19,7 @@ const (
 
 type Crawler struct{}
 
-func startCrawler(p Project) {
+func startCrawler(p Project) int {
 	var crawled int
 
 	pageReport := make(chan PageReport)
@@ -28,7 +28,7 @@ func startCrawler(p Project) {
 	u, err := url.Parse(p.URL)
 	if err != nil {
 		fmt.Println(err)
-		return
+		return 0
 	}
 
 	cid := saveCrawl(p)
@@ -42,9 +42,9 @@ func startCrawler(p Project) {
 	}
 
 	saveEndCrawl(cid, time.Now())
-	createIssues(int(cid))
-
 	fmt.Printf("%d pages crawled.\n", crawled)
+
+	return int(cid)
 }
 
 func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {

@@ -1,9 +1,5 @@
 package main
 
-import (
-	"fmt"
-)
-
 const (
 	Error30x                   = "ERROR_30x"
 	Error40x                   = "ERROR_40x"
@@ -36,70 +32,39 @@ type IssueCallback struct {
 	ErrorType string
 }
 
-func createIssues(cid int) {
-	fmt.Printf("Creating issues for crawl id %d.\n", cid)
+type ReportManager struct {
+	callbacks []IssueCallback
+}
 
+func NewReportManager() *ReportManager {
+	r := ReportManager{}
+
+	r.addReporter(Find30xPageReports, Error30x)
+	r.addReporter(Find40xPageReports, Error40x)
+	r.addReporter(Find50xPageReports, Error50x)
+	r.addReporter(FindPageReportsWithDuplicatedTitle, ErrorDuplicatedTitle)
+	r.addReporter(FindPageReportsWithDuplicatedTitle, ErrorDuplicatedDescription)
+	r.addReporter(FindPageReportsWithEmptyTitle, ErrorEmptyTitle)
+	r.addReporter(FindPageReportsWithShortTitle, ErrorShortTitle)
+	r.addReporter(FindPageReportsWithLongTitle, ErrorLongTitle)
+	r.addReporter(FindPageReportsWithEmptyDescription, ErrorEmptyDescription)
+	r.addReporter(FindPageReportsWithShortDescription, ErrorShortDescription)
+	r.addReporter(FindPageReportsWithLongDescription, ErrorLongDescription)
+	r.addReporter(FindPageReportsWithLittleContent, ErrorLittleContent)
+	r.addReporter(FindImagesWithNoAlt, ErrorImagesWithNoAlt)
+	r.addReporter(FindImagesWithNoAlt, ErrorRedirectChain)
+
+	return &r
+}
+
+func (r *ReportManager) addReporter(c func(int) []PageReport, t string) {
+	r.callbacks = append(r.callbacks, IssueCallback{Callback: c, ErrorType: t})
+}
+
+func (r *ReportManager) createIssues(cid int) {
 	var issues []Issue
-	callbacks := []IssueCallback{
-		IssueCallback{
-			Callback:  Find30xPageReports,
-			ErrorType: Error30x,
-		},
-		IssueCallback{
-			Callback:  Find40xPageReports,
-			ErrorType: Error30x,
-		},
-		IssueCallback{
-			Callback:  Find50xPageReports,
-			ErrorType: Error30x,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithDuplicatedTitle,
-			ErrorType: ErrorDuplicatedTitle,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithDuplicatedTitle,
-			ErrorType: ErrorDuplicatedDescription,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithEmptyTitle,
-			ErrorType: ErrorEmptyTitle,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithShortTitle,
-			ErrorType: ErrorShortTitle,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithLongTitle,
-			ErrorType: ErrorLongTitle,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithEmptyDescription,
-			ErrorType: ErrorEmptyDescription,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithShortDescription,
-			ErrorType: ErrorShortDescription,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithLongDescription,
-			ErrorType: ErrorLongDescription,
-		},
-		IssueCallback{
-			Callback:  FindPageReportsWithLittleContent,
-			ErrorType: ErrorLittleContent,
-		},
-		IssueCallback{
-			Callback:  FindImagesWithNoAlt,
-			ErrorType: ErrorImagesWithNoAlt,
-		},
-		IssueCallback{
-			Callback:  FindImagesWithNoAlt,
-			ErrorType: ErrorRedirectChain,
-		},
-	}
 
-	for _, c := range callbacks {
+	for _, c := range r.callbacks {
 		for _, p := range c.Callback(cid) {
 			i := Issue{
 				PageReportId: p.Id,

@@ -3,49 +3,73 @@
 	<b>Status code:</b> {{ .StatusCode }}<br>
 	<b>Title:</b> {{ .Title }}<br>
 	<b>Description:</b> {{ .Description }}<br>
-	<b>Robots:</b> {{ .Robots }}<br>
-	<b>Redirect URL:</b> {{ .RedirectURL }}<br>
-	<b>Refresh:</b> {{ .Refresh }}<br>
+
+	{{ if .Robots }}
+		<b>Robots:</b> {{ .Robots }}<br>
+	{{ end }}
+
+	{{ if .RedirectURL }}
+		<b>Redirect URL:</b> {{ .RedirectURL }}<br>
+	{{ end }}
+
+	{{ if .Refresh }}
+		<b>Refresh:</b> {{ .Refresh }}<br>
+	{{ end }}
+
 	<b>Content Type:</b> {{ .ContentType }}<br>
 	<b>Lang:</b> {{ .Lang }}<br>
-	<b>Canonical:</b> {{ .Canonical }}<br>
+
+	{{ if .Canonical }}
+		<b>Canonical:</b> {{ .Canonical }}<br>
+	{{ end }}
+
 	<b>H1:</b> {{ .H1 }}<br>
 	<b>H2:</b> {{ .H2 }}<br>
 	<b>Words:</b> {{ .Words }}<br>
 	<b>Size:</b> {{ .Size }}<br>
-	<b>Links:</b>
-	<ul>
-	{{ range .Links }}
-		<li>{{ .URL }}</li>
+
+	{{ if .Links }}
+		<b>Links:</b>
+		<ul>
+			{{ range .Links }}
+			<li>{{ .URL }}</li>
+			{{ end }}
+		</ul>
 	{{ end }}
-	</ul>
-	
-	<b>Images:</b>
-	<ul>
-	{{ range .Images }}
-		<li>{{ .URL }} - {{ .Alt }}</li>
+
+	{{ if .Images }}
+		<b>Images:</b>
+		<ul>
+			{{ range .Images }}
+			<li>{{ .URL }} - {{ .Alt }}</li>
+			{{ end }}
+		</ul>
 	{{ end }}
-	</ul>
-	
-	<b>Hreflang:</b>
-	<ul>
-	{{ range .Hreflangs }}
-		<li>{{ .URL }} - {{ .Lang }}</li>
+
+	{{ if .Hreflangs }}
+		<b>Hreflang:</b>
+		<ul>
+			{{ range .Hreflangs }}
+			<li>{{ .URL }} - {{ .Lang }}</li>
+			{{ end }}
+		</ul>
 	{{ end }}
-	</ul>
-	
-	
-	<b>Scripts:</b>
-	<ul>
-	{{ range .Scripts }}
-		<li>{{ . }}</li>
+
+	{{ if .Scripts }}
+		<b>Scripts:</b>
+		<ul>
+			{{ range .Scripts }}
+			<li>{{ . }}</li>
+			{{ end }}
+		</ul>
 	{{ end }}
-	</ul>
-	
-	<b>Styles:</b>
-	<ul>
-	{{ range .Styles }}
-		<li>{{ . }}</li>
+
+	{{ if .Styles }}
+		<b>Styles:</b>
+		<ul>
+			{{ range .Styles }}
+			<li>{{ . }}</li>
+			{{ end }}
+		</ul>
 	{{ end }}
-	</ul>
 {{ end }}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
 	"log"
 	"net/http"
 	"strconv"
@@ -85,14 +84,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		views = append(views, pv)
 	}
 
-	var templates = template.Must(template.ParseFiles(
-		"templates/home.html", "templates/head.html", "templates/footer.html", "templates/list.html",
-	))
-
-	err := templates.ExecuteTemplate(w, "home.html", views)
-	if err != nil {
-		log.Println(err)
-	}
+	renderTemplate(w, "home", views)
 }
 
 func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
@@ -108,14 +100,7 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	var templates = template.Must(template.ParseFiles(
-		"templates/project_add.html", "templates/head.html", "templates/footer.html",
-	))
-
-	err := templates.ExecuteTemplate(w, "project_add.html", struct{ URL string }{URL: url})
-	if err != nil {
-		log.Println(err)
-	}
+	renderTemplate(w, "project_add", struct{ URL string }{URL: url})
 }
 
 func serveCrawl(w http.ResponseWriter, r *http.Request) {
@@ -153,14 +138,7 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	issueGroups := findIssues(cid)
 
-	var templates = template.Must(template.ParseFiles(
-		"templates/issues.html", "templates/head.html", "templates/footer.html",
-	))
-
-	err = templates.ExecuteTemplate(w, "issues.html", IssuesGroupView{IssuesGroups: issueGroups, Cid: cid})
-	if err != nil {
-		log.Println(err)
-	}
+	renderTemplate(w, "issues", IssuesGroupView{IssuesGroups: issueGroups, Cid: cid})
 }
 
 func serveIssuesView(w http.ResponseWriter, r *http.Request) {
@@ -173,10 +151,6 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var templates = template.Must(template.ParseFiles(
-		"templates/issues_view.html", "templates/head.html", "templates/footer.html",
-	))
-
 	issues := findPageReportIssues(cid, eid)
 
 	view := IssuesView{
@@ -184,10 +158,7 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		PageReports: issues,
 	}
 
-	err = templates.ExecuteTemplate(w, "issues_view.html", view)
-	if err != nil {
-		log.Println(err)
-	}
+	renderTemplate(w, "issues_view", view)
 }
 
 func serveResourcesView(w http.ResponseWriter, r *http.Request) {
@@ -209,14 +180,7 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 
 	pageReport := FindPageReportById(rid)
 
-	var templates = template.Must(template.ParseFiles(
-		"templates/resources.html", "templates/head.html", "templates/footer.html", "templates/pagereport.html",
-	))
-
-	err = templates.ExecuteTemplate(w, "resources.html", ResourcesView{PageReport: pageReport, Cid: cid})
-	if err != nil {
-		log.Println(err)
-	}
+	renderTemplate(w, "resources", ResourcesView{PageReport: pageReport, Cid: cid})
 }
 
 func serveSignup(w http.ResponseWriter, r *http.Request) {
@@ -245,14 +209,7 @@ func serveSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var templates = template.Must(template.ParseFiles(
-		"templates/signup.html", "templates/head.html", "templates/footer.html",
-	))
-
-	err := templates.ExecuteTemplate(w, "signup.html", struct{}{})
-	if err != nil {
-		log.Println(err)
-	}
+	renderTemplate(w, "signup", struct{}{})
 }
 
 func serveSignin(w http.ResponseWriter, r *http.Request) {
@@ -289,14 +246,7 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var templates = template.Must(template.ParseFiles(
-		"templates/signin.html", "templates/head.html", "templates/footer.html",
-	))
-
-	err := templates.ExecuteTemplate(w, "signin.html", struct{}{})
-	if err != nil {
-		log.Println(err)
-	}
+	renderTemplate(w, "sigin", struct{}{})
 }
 
 func requireAuth(f http.HandlerFunc) http.HandlerFunc {

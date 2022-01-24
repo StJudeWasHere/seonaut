@@ -1100,18 +1100,18 @@ func getLastCrawl(p *Project) Crawl {
 	return crawl
 }
 
-func saveProject(s string) {
-	stmt, _ := db.Prepare("INSERT INTO projects (url) VALUES (?)")
+func saveProject(s string, uid int) {
+	stmt, _ := db.Prepare("INSERT INTO projects (url, user_id) VALUES (?, ?)")
 	defer stmt.Close()
-	_, err := stmt.Exec(s)
+	_, err := stmt.Exec(s, uid)
 	if err != nil {
 		log.Println(err)
 	}
 }
 
-func findProjects() []Project {
+func findProjectsByUser(uid int) []Project {
 	var projects []Project
-	rows, err := db.Query("SELECT id, url, created FROM projects")
+	rows, err := db.Query("SELECT id, url, created FROM projects WHERE user_id = ?", uid)
 	if err != nil {
 		log.Println(err)
 		return projects
@@ -1131,16 +1131,17 @@ func findProjects() []Project {
 	return projects
 }
 
-func findProjectById(id int) Project {
-	row := db.QueryRow("SELECT id, url, created FROM projects WHERE id = ?", id)
+func findProjectById(id int, uid int) (Project, error) {
+	row := db.QueryRow("SELECT id, url, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
 
 	p := Project{}
 	err := row.Scan(&p.Id, &p.URL, &p.Created)
 	if err != nil {
 		log.Println(err)
+		return p, err
 	}
 
-	return p
+	return p, nil
 }
 
 func saveIssues(issues []Issue, cid int) {
@@ -1229,7 +1230,7 @@ func findRedirectChains(cid int) []PageReport {
 	query := `
 		SELECT
 			a.id,
-			a.url,
+			a.url
 		FROM pagereports AS a
 		LEFT JOIN pagereports AS b ON a.redirect_url = b.url
 		WHERE a.redirect_url != "" AND b.redirect_url  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
@@ -1275,4 +1276,26 @@ func findUserByEmail(email string) *User {
 	}
 
 	return &u
+}
+
+func findCrawlUserId(cid int) (*User, error) {
+	u := User{}
+	query := `
+		SELECT 
+			users.id,
+			users.email,
+			users.password
+		FROM crawls
+		LEFT JOIN projects ON projects.id = crawls.project_id
+		LEFT JOIN users ON projects.user_id = users.id
+		WHERE crawls.id = ?`
+
+	row := db.QueryRow(query, cid)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	if err != nil {
+		log.Println(err)
+		return &u, err
+	}
+
+	return &u, nil
 }

@@ -2,6 +2,10 @@
 
 <h1 class="title">Projects <a href="/new-project">+ Add Project</a></h1>
 
+{{ if not . }}
+	<p>There are not projects yet, you can <a href="/new-project">add one</a> now
+{{ end }}
+
 {{ range . }}
 <div class="project">
 	<h2 class="project-title">{{ .Project.URL }}</h2>

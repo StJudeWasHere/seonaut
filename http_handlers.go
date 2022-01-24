@@ -69,8 +69,11 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session, _ := cookie.Get(r, "SESSION_ID")
+	uid := session.Values["uid"].(int)
+
 	var views []ProjectView
-	projects := findProjects()
+	projects := findProjectsByUser(uid)
 
 	for _, p := range projects {
 		c := getLastCrawl(&p)
@@ -96,8 +99,11 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		url = r.FormValue("url")
-		saveProject(url)
 
+		session, _ := cookie.Get(r, "SESSION_ID")
+		uid := session.Values["uid"].(int)
+
+		saveProject(url, uid)
 	}
 
 	renderTemplate(w, "project_add", struct{ URL string }{URL: url})
@@ -112,7 +118,15 @@ func serveCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := findProjectById(pid)
+	session, _ := cookie.Get(r, "SESSION_ID")
+	uid := session.Values["uid"].(int)
+
+	p, err := findProjectById(pid, uid)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	fmt.Printf("Crawling %s...\n", p.URL)
 	go func() {
 		start := time.Now()
@@ -136,6 +150,15 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	session, _ := cookie.Get(r, "SESSION_ID")
+	uid := session.Values["uid"].(int)
+	u, err := findCrawlUserId(cid)
+	if err != nil || u.Id != uid {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
 	issueGroups := findIssues(cid)
 
 	renderTemplate(w, "issues", IssuesGroupView{IssuesGroups: issueGroups, Cid: cid})
@@ -146,6 +169,15 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	session, _ := cookie.Get(r, "SESSION_ID")
+	uid := session.Values["uid"].(int)
+	u, err := findCrawlUserId(cid)
+	if err != nil || u.Id != uid {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -173,6 +205,15 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	session, _ := cookie.Get(r, "SESSION_ID")
+	uid := session.Values["uid"].(int)
+	u, err := findCrawlUserId(cid)
+	if err != nil || u.Id != uid {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -225,8 +266,6 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		fmt.Println(email, password)
-
 		u := findUserByEmail(email)
 		if u.Id == 0 {
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
@@ -240,13 +279,14 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 
 		session, _ := cookie.Get(r, "SESSION_ID")
 		session.Values["authenticated"] = true
+		session.Values["uid"] = u.Id
 		session.Save(r, w)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	renderTemplate(w, "sigin", struct{}{})
+	renderTemplate(w, "signin", struct{}{})
 }
 
 func requireAuth(f http.HandlerFunc) http.HandlerFunc {

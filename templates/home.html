@@ -10,21 +10,28 @@
 <div class="project">
 	<h2 class="project-title">{{ .Project.URL }}</h2>
 	{{ if .Crawl.Id }}
-	<div>
-		<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}, crawl duration was {{ .Crawl.TotalTime }}.</small><br>
-		<b>{{ .TotalCount }}</b> pages crawled.<br>
-	</div>
-	<p><b>Total crawled by media type: </b></p>
-	{{ template "list" .MediaCount }}
-	<p><b>Total crawled by status code: </b></p>
-	{{ template "list" .StatusCodeCount }}
+		{{ if .Crawl.End.Valid }}
+			<div>
+				<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}, crawl duration was {{ .Crawl.TotalTime }}.</small><br>
+				<b>{{ .TotalCount }}</b> pages crawled.<br>
+				</div>
+				<p><b>Total crawled by media type: </b></p>
+				{{ template "list" .MediaCount }}
+				<p><b>Total crawled by status code: </b></p>
+				{{ template "list" .StatusCodeCount }}
+				<p class="actions">
+					<a class="button" href="/crawl?pid={{ .Project.Id }}">Crawl Now</a>
+					<a class="button" href="/issues?cid={{ .Crawl.Id }}">View Issues</a>
+				</p>
+		{{ else }}
+		<p><b>Now crawling...</b></p>
+		{{ end }}
 	{{ else }}
-	<div><b>This project has not been crawled yet.</b></div>
+		<div><b>This project has not been crawled yet.</b></div>
+		<p class="actions">
+			<a class="button" href="/crawl?pid={{ .Project.Id }}">Crawl Now</a>
+		</p>
 	{{ end }}
-	<p class="actions">
-		<a class="button" href="/crawl?pid={{ .Project.Id }}">Crawl Now</a>
-		<a class="button" href="/issues?cid={{ .Crawl.Id }}">View Issues</a>
-	</p>
 </div>
 {{ end }}
 

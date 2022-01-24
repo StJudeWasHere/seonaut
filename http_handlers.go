@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -44,7 +45,7 @@ type Crawl struct {
 	Id    int
 	URL   string
 	Start time.Time
-	End   time.Time
+	End   sql.NullTime
 }
 
 type Project struct {
@@ -60,7 +61,11 @@ func init() {
 }
 
 func (c Crawl) TotalTime() time.Duration {
-	return c.End.Sub(c.Start)
+	if c.End.Valid {
+		return c.End.Time.Sub(c.Start)
+	}
+
+	return 0
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {

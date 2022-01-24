@@ -1259,6 +1259,29 @@ func countIssuesByCrawl(cid int) int {
 
 	return c
 }
+
+func findErrorTypesByPage(pid, cid int) []string {
+	var et []string
+	query := `SELECT error_type FROM issues WHERE pagereport_id = ? and crawl_id = ?`
+	rows, err := db.Query(query, pid, cid)
+	if err != nil {
+		log.Println(err)
+		return et
+	}
+
+	for rows.Next() {
+		var s string
+		err := rows.Scan(&s)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		et = append(et, s)
+	}
+
+	return et
+}
+
 func findPageReportIssues(cid int, errorType string) []PageReport {
 	pr := []PageReport{}
 	query := `

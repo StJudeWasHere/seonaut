@@ -2,6 +2,58 @@
 
 <h1 class="title">Resources<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a></h1>
 
+<h2>Issues:</h2>
+<ul>
+{{ range .ErrorTypes }}
+	{{ if eq . "ERROR_30x" }}
+		<li>Redirected page</li>
+	{{ end }}
+	{{ if eq . "ERROR_40x" }}
+		<li>Page not found</li>
+	{{ end }}
+	{{ if eq . "ERROR_50x" }}
+		<li>Error loading page</li>
+	{{ end }}
+	{{ if eq . "ERROR_DUPLICATED_TITLE" }}
+		<li>Duplicated title</li>
+	{{ end }}
+	{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
+		<li>duplicated description</li>
+	{{ end }}
+	{{ if eq . "ERROR_EMPTY_TITLE" }}
+		<li>Empty or missing title</li>
+	{{ end }}
+	{{ if eq . "ERROR_SHORT_TITLE" }}
+		<li>Short title</li>
+	{{ end }}
+	{{ if eq . "ERROR_LONG_TITLE" }}
+		<li>Long title</li>
+	{{ end }}
+	{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
+		<li>Empty or missing description</li>
+	{{ end }}
+	{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
+		<li>Short description</li>
+	{{ end }}
+	{{ if eq . "ERROR_LONG_DESCRIPTION" }}
+		<li>Long description</li>
+	{{ end }}
+	{{ if eq . "ERROR_LITTLE_CONTENT" }}
+		<li>Page with little content</li>
+	{{ end }}
+	{{ if eq . "ERROR_IMAGES_NO_ALT" }}
+		<li>Contains images with no alt attribute</li>
+	{{ end }}
+	{{ if eq . "ERROR_REDIRECT_CHAIN" }}
+		<li>Redirect chain</li>
+	{{ end }}
+	{{ if eq . "ERROR_NO_H1" }}
+		<li>Page doesn't have any H1 heading</li>
+	{{ end }}
+{{ end }}
+</ul>
+
+<h2>Resources</h2>
 {{ template "pagereport" .PageReport }}
 
 {{ template "footer" . }}

@@ -41,6 +41,7 @@ type IssuesView struct {
 type ResourcesView struct {
 	PageReport PageReport
 	Cid        int
+	ErrorTypes []string
 }
 
 type Crawl struct {
@@ -224,8 +225,9 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageReport := FindPageReportById(rid)
+	errorTypes := findErrorTypesByPage(rid, cid)
 
-	renderTemplate(w, "resources", ResourcesView{PageReport: pageReport, Cid: cid})
+	renderTemplate(w, "resources", ResourcesView{PageReport: pageReport, Cid: cid, ErrorTypes: errorTypes})
 }
 
 func serveSignup(w http.ResponseWriter, r *http.Request) {

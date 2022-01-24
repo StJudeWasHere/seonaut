@@ -295,6 +295,15 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "signin", struct{}{})
 }
 
+func serveSignout(w http.ResponseWriter, r *http.Request) {
+	session, _ := cookie.Get(r, "SESSION_ID")
+	session.Values["authenticated"] = false
+	session.Values["uid"] = nil
+	session.Save(r, w)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
 func requireAuth(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, _ := cookie.Get(r, "SESSION_ID")

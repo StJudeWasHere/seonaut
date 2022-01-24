@@ -20,6 +20,7 @@ func main() {
 	http.HandleFunc("/resources", requireAuth(serveResourcesView))
 	http.HandleFunc("/signup", serveSignup)
 	http.HandleFunc("/signin", serveSignin)
+	http.HandleFunc("/signout", requireAuth(serveSignout))
 
 	fmt.Printf("Starting server at %s on port %d...\n", host, port)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", host, port), nil)

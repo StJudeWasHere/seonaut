@@ -34,6 +34,7 @@ type IssuesGroupView struct {
 type IssuesView struct {
 	PageReports []PageReport
 	Cid         int
+	Eid         string
 }
 
 type ResourcesView struct {
@@ -192,6 +193,7 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 
 	view := IssuesView{
 		Cid:         cid,
+		Eid:         eid,
 		PageReports: issues,
 	}
 

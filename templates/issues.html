@@ -48,9 +48,17 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_LONG_TITLE") }}
+	{{ with (index .IssuesGroups "ERROR_EMMPTY_TITLE") }}
 		{{ if ne .Count 0 }}
 			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">Pages with empty title</a>
+			</p>
+		{{ end }}
+	{{ end}}
+
+	{{ with (index .IssuesGroups "ERROR_LONG_TITLE") }}
+		{{ if ne .Count 0 }}
+			<p>🧐 <b>{{ .Count }}</b>
 				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Pages with long title</a>
 			</p>
 		{{ end }}
@@ -58,16 +66,8 @@
 
 	{{ with (index .IssuesGroups "ERROR_SHORT_TITLE") }}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <b>{{ .Count }}</b>
+			<p>🧐 <b>{{ .Count }}</b>
 				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Pages with short title</a>
-			</p>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssuesGroups "ERROR_EMMPTY_TITLE") }}
-		{{ if ne .Count 0 }}
-			<p>⚠️ <b>{{ .Count }}</b>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">Pages with empty title</a>
 			</p>
 		{{ end }}
 	{{ end}}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"mime"
 	"net/http"
@@ -243,6 +244,10 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	u, err := url.Parse(href)
 	if err != nil {
 		return Link{}, err
+	}
+
+	if u.Scheme != "" && u.Scheme != "http" && u.Scheme != "https" {
+		return Link{}, errors.New("Protocol not supported")
 	}
 
 	l := Link{

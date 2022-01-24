@@ -24,6 +24,7 @@ type ProjectView struct {
 	TotalCount      int
 	MediaCount      map[string]int
 	StatusCodeCount map[int]int
+	TotalIssues     int
 }
 
 type IssuesGroupView struct {
@@ -70,11 +71,6 @@ func (c Crawl) TotalTime() time.Duration {
 }
 
 func serveHome(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
 	session, _ := cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 
@@ -89,6 +85,7 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 			TotalCount:      CountCrawled(c.Id),
 			MediaCount:      CountByMediaType(c.Id),
 			StatusCodeCount: CountByStatusCode(c.Id),
+			TotalIssues:     countIssuesByCrawl(c.Id),
 		}
 		views = append(views, pv)
 	}

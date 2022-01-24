@@ -1250,6 +1250,15 @@ func findIssues(cid int) map[string]IssueGroup {
 	return issues
 }
 
+func countIssuesByCrawl(cid int) int {
+	var c int
+	row := db.QueryRow("SELECT count(*) FROM issues WHERE crawl_id = ?", cid)
+	if err := row.Scan(&c); err != nil {
+		log.Println(err)
+	}
+
+	return c
+}
 func findPageReportIssues(cid int, errorType string) []PageReport {
 	pr := []PageReport{}
 	query := `

@@ -21,7 +21,11 @@
 				{{ template "list" .StatusCodeCount }}
 				<p class="actions">
 					<a class="button" href="/crawl?pid={{ .Project.Id }}">Crawl Now</a>
-					<a class="button" href="/issues?cid={{ .Crawl.Id }}">View Issues</a>
+					{{ if gt .TotalIssues 0 }}
+						<a class="button" href="/issues?cid={{ .Crawl.Id }}">View Issues</a>
+					{{ else }}
+						<p><b>🎉 Well done! this project does not have any issue.</b></p>
+					{{ end }}
 				</p>
 		{{ else }}
 		<p><b>Now crawling...</b></p>

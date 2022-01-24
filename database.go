@@ -1125,7 +1125,7 @@ func saveCrawl(p Project) int64 {
 	res, err := stmt.Exec(p.Id)
 
 	if err != nil {
-		log.Printf("Error in SaveCrawl\nProject: %+v\nError: %+v\n", p)
+		log.Printf("Error in SaveCrawl\nProject: %+v\nError: %+v\n", p, err)
 		return 0
 	}
 
@@ -1215,7 +1215,7 @@ func saveIssues(issues []Issue, cid int) {
 		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType)
 		if err != nil {
 			log.Println(err)
-			log.Printf("saveIssues -> ID: %s ERROR: %s CRAWL: %d\n", i.PageReportId, i.ErrorType, cid)
+			log.Printf("saveIssues -> ID: %d ERROR: %s CRAWL: %d\n", i.PageReportId, i.ErrorType, cid)
 			continue
 		}
 	}

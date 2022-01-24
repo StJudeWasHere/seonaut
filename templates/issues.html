@@ -108,6 +108,13 @@
 
 	{{/* Other issues */}}
 
+	{{ with (index .IssuesGroups "ERROR_NO_H1" )}}
+		{{ if ne .Count 0 }}
+			<p>⚠️ <b>{{ .Count }}</b>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Pages with no H1 heading</a>
+			</p>
+		{{ end }}
+	{{ end }}
 	{{ with (index .IssuesGroups "ERROR_LITTLE_CONTENT") }}
 		{{ if ne .Count 0 }}
 			<p>⚠️ <b>{{ .Count }}</b>

@@ -15,6 +15,7 @@ const (
 	ErrorLittleContent         = "ERROR_LITTLE_CONTENT"
 	ErrorImagesWithNoAlt       = "ERROR_IMAGES_NO_ALT"
 	ErrorRedirectChain         = "ERROR_REDIRECT_CHAIN"
+	ErrorNoH1                  = "ERROR_NO_H1"
 )
 
 type Issue struct {
@@ -52,7 +53,8 @@ func NewReportManager() *ReportManager {
 	r.addReporter(FindPageReportsWithLongDescription, ErrorLongDescription)
 	r.addReporter(FindPageReportsWithLittleContent, ErrorLittleContent)
 	r.addReporter(FindImagesWithNoAlt, ErrorImagesWithNoAlt)
-	r.addReporter(FindImagesWithNoAlt, ErrorRedirectChain)
+	r.addReporter(findRedirectChains, ErrorRedirectChain)
+	r.addReporter(FindPageReportsWithoutH1, ErrorNoH1)
 
 	return &r
 }

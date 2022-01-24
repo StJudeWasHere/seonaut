@@ -41,7 +41,7 @@
 		<b>Images:</b>
 		<ul>
 			{{ range .Images }}
-			<li>{{ .URL }} - {{ .Alt }}</li>
+			<li> {{ if .Alt}}{{ .Alt }}:{{ end }} {{ .URL }}</li>
 			{{ end }}
 		</ul>
 	{{ end }}
@@ -50,7 +50,7 @@
 		<b>Hreflang:</b>
 		<ul>
 			{{ range .Hreflangs }}
-			<li>{{ .URL }} - {{ .Lang }}</li>
+			<li>{{ .Lang }}: {{ .URL }}</li>
 			{{ end }}
 		</ul>
 	{{ end }}

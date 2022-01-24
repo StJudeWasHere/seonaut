@@ -751,6 +751,65 @@ func FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 	return pageReports
 }
 
+func FindPageReportsWithoutH1(cid int) []PageReport {
+	var pageReports []PageReport
+	query := `
+		SELECT
+			id,
+			url,
+			redirect_url,
+			refresh,
+			status_code,
+			content_type,
+			media_type,
+			lang,
+			title,
+			description,
+			robots,
+			canonical,
+			h1,
+			h2,
+			words,
+			size
+		FROM pagereports
+		WHERE (h1 = "" OR h1 IS NULL) AND media_type = "text/html" AND crawl_id = ?`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(
+			&p.Id,
+			&p.URL,
+			&p.RedirectURL,
+			&p.Refresh,
+			&p.StatusCode,
+			&p.ContentType,
+			&p.MediaType,
+			&p.Lang,
+			&p.Title,
+			&p.Description,
+			&p.Robots,
+			&p.Canonical,
+			&p.H1,
+			&p.H2,
+			&p.Words,
+			&p.Size,
+		)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
 func FindPageReportsWithEmptyDescription(cid int) []PageReport {
 	var pageReports []PageReport
 	query := `
@@ -1235,7 +1294,7 @@ func findRedirectChains(cid int) []PageReport {
 		LEFT JOIN pagereports AS b ON a.redirect_url = b.url
 		WHERE a.redirect_url != "" AND b.redirect_url  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
 
-	rows, err := db.Query(query, cid)
+	rows, err := db.Query(query, cid, cid)
 	if err != nil {
 		log.Println(err)
 		return pr

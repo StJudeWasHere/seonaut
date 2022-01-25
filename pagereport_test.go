@@ -133,7 +133,6 @@ func TestPageReportHTML(t *testing.T) {
 		}
 	}
 
-	fmt.Println(pageReport.ExternalLinks)
 	if len(pageReport.ExternalLinks) != 1 {
 		t.Error("len(pageReport.ExternalLinks) != 1")
 	}
@@ -170,8 +169,8 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Hreflang != 1")
 	}
 
-	if len(pageReport.Hreflangs) == 1 && pageReport.Hreflangs[0].URL != "http://example.com/fr" {
-		t.Error("Hreglangs[0].URL != http://example.com/fr")
+	if len(pageReport.Hreflangs) == 1 && pageReport.Hreflangs[0].URL != "https://example.com/fr" {
+		t.Error("Hreglangs[0].URL != https://example.com/fr")
 	}
 
 	if len(pageReport.Hreflangs) == 1 && pageReport.Hreflangs[0].Lang != "fr" {
@@ -182,19 +181,23 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Images != 2")
 	}
 
+	if pageReport.Images[0].URL != "https://example.com/img/logo.png" {
+		t.Error("pageReport.Images[0].URL != https://example.com/img/logo.png")
+	}
+
 	if len(pageReport.Scripts) != 1 {
 		t.Error("Scripts != 1")
 	}
 
-	if len(pageReport.Scripts) == 1 && pageReport.Scripts[0] != "/js/app.js" {
-		t.Error("Scripts[0] != /js/app.js")
+	if len(pageReport.Scripts) == 1 && pageReport.Scripts[0] != "https://example.com/js/app.js" {
+		t.Error("Scripts[0] != https://example.com/js/app.js")
 	}
 
 	if len(pageReport.Styles) != 1 {
 		t.Error("Styles != 1")
 	}
 
-	if len(pageReport.Styles) == 1 && pageReport.Styles[0] != "/css/style.css" {
-		t.Error("Styles[0] != /css/style.css")
+	if len(pageReport.Styles) == 1 && pageReport.Styles[0] != "https://example.com/css/style.css" {
+		t.Error("Styles[0] != https://example.com/css/style.css")
 	}
 }

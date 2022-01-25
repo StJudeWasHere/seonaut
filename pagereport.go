@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -210,8 +211,15 @@ func (pageReport *PageReport) parse() {
 	// ---
 	images := htmlquery.Find(doc, "//img")
 	for _, n := range images {
+		url, err := url.Parse(htmlquery.SelectAttr(n, "src"))
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		url = pageReport.absoluteURL(url)
 		i := Image{
-			URL: htmlquery.SelectAttr(n, "src"),
+			URL: url.String(),
 			Alt: htmlquery.SelectAttr(n, "alt"),
 		}
 
@@ -224,7 +232,14 @@ func (pageReport *PageReport) parse() {
 	// ---
 	scripts := htmlquery.Find(doc, "//script[@src]/@src")
 	for _, n := range scripts {
-		pageReport.Scripts = append(pageReport.Scripts, htmlquery.SelectAttr(n, "src"))
+		url, err := url.Parse(htmlquery.SelectAttr(n, "src"))
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		url = pageReport.absoluteURL(url)
+		pageReport.Scripts = append(pageReport.Scripts, url.String())
 	}
 
 	// ---
@@ -233,7 +248,14 @@ func (pageReport *PageReport) parse() {
 	// ---
 	styles := htmlquery.Find(doc, "//link[@rel=\"stylesheet\"]/@href")
 	for _, n := range styles {
-		pageReport.Styles = append(pageReport.Styles, htmlquery.SelectAttr(n, "href"))
+		url, err := url.Parse(htmlquery.SelectAttr(n, "href"))
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		url = pageReport.absoluteURL(url)
+		pageReport.Styles = append(pageReport.Styles, url.String())
 	}
 
 	// ---
@@ -256,6 +278,19 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 		return Link{}, errors.New("Protocol not supported")
 	}
 
+	u = p.absoluteURL(u)
+
+	l := Link{
+		URL:      u.String(),
+		Rel:      htmlquery.SelectAttr(n, "rel"),
+		Text:     htmlquery.InnerText(n),
+		External: u.Host != p.parsedURL.Host,
+	}
+
+	return l, nil
+}
+
+func (p *PageReport) absoluteURL(u *url.URL) *url.URL {
 	if u.Scheme == "" {
 		u.Scheme = p.parsedURL.Scheme
 	}
@@ -272,14 +307,7 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 		u.Path = basePath + u.Path
 	}
 
-	l := Link{
-		URL:      u.String(),
-		Rel:      htmlquery.SelectAttr(n, "rel"),
-		Text:     htmlquery.InnerText(n),
-		External: u.Host != p.parsedURL.Host,
-	}
-
-	return l, nil
+	return u
 }
 
 func countWords(n *html.Node) int {

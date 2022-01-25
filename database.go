@@ -27,6 +27,7 @@ func savePageReport(r *PageReport, cid int64) {
 		INSERT INTO pagereports (
 			crawl_id,
 			url,
+			scheme,
 			redirect_url,
 			refresh,
 			status_code,
@@ -42,7 +43,7 @@ func savePageReport(r *PageReport, cid int64) {
 			words,
 			size
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -54,6 +55,7 @@ func savePageReport(r *PageReport, cid int64) {
 	res, err := stmt.Exec(
 		cid,
 		r.URL,
+		r.parsedURL.Scheme,
 		r.RedirectURL,
 		r.Refresh,
 		r.StatusCode,
@@ -82,11 +84,11 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Links) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, url, rel, text, external) values "
+		sqlString := "INSERT INTO links (pagereport_id, url, scheme, rel, text, external) values "
 		v := []interface{}{}
 		for _, l := range r.Links {
-			sqlString += "(?, ?, ?, ?, ?),"
-			v = append(v, lid, l.URL, l.Rel, l.Text, l.External)
+			sqlString += "(?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := db.Prepare(sqlString)
@@ -103,11 +105,11 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.ExternalLinks) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, url, rel, text, external) values "
+		sqlString := "INSERT INTO links (pagereport_id, url,scheme,  rel, text, external) values "
 		v := []interface{}{}
 		for _, l := range r.ExternalLinks {
-			sqlString += "(?, ?, ?, ?, ?),"
-			v = append(v, lid, l.URL, l.Rel, l.Text, l.External)
+			sqlString += "(?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := db.Prepare(sqlString)
@@ -1161,6 +1163,40 @@ func FindPageReportsWithNoLangAttr(cid int) []PageReport {
 	}
 
 	return pr
+}
+
+func FindPageReportsWithHTTPLinks(cid int) []PageReport {
+	pr := []PageReport{}
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		LEFT JOIN links ON links.pagereport_id = pagereports.id
+		WHERE pagereports.scheme = "https" AND links.scheme = "http" AND crawl_id = ? AND links.external = false
+		GROUP BY links.pagereport_id
+		HAVING count(links.pagereport_id) > 1`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return pr
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pr = append(pr, p)
+	}
+
+	return pr
+
 }
 
 func FindInLinks(s string, cid int) []PageReport {

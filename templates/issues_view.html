@@ -99,6 +99,14 @@
 	<p><b>👷 Take action:</b> Add the language attribute so your users see your pages in their language.</p>
 {{ end }}
 
+{{ if eq .Eid "ERROR_HTTP_LINKS" }}
+	<h2>Links from pages using HTTPS to pages using HTTP</h2>
+	<p>Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.</p>
+	<p><b>👷 Take action:</b> Change the links so they use HTTPS.</p>
+{{ end }}
+
+
+
 {{ $cid := .Cid }}
 {{ $eid := .Eid }}
 {{ if .PageReports }}

@@ -17,6 +17,7 @@ const (
 	ErrorRedirectChain         = "ERROR_REDIRECT_CHAIN"
 	ErrorNoH1                  = "ERROR_NO_H1"
 	ErrorNoLang                = "ERROR_NO_LANG"
+	ErrorHTTPLinks             = "ERROR_HTTP_LINKS"
 )
 
 type Issue struct {
@@ -57,6 +58,7 @@ func NewReportManager() *ReportManager {
 	r.addReporter(findRedirectChains, ErrorRedirectChain)
 	r.addReporter(FindPageReportsWithoutH1, ErrorNoH1)
 	r.addReporter(FindPageReportsWithNoLangAttr, ErrorNoLang)
+	r.addReporter(FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
 
 	return &r
 }

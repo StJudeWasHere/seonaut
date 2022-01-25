@@ -43,10 +43,11 @@ type PageReport struct {
 }
 
 type Link struct {
-	URL      string
-	Rel      string
-	Text     string
-	External bool
+	URL       string
+	parsedUrl *url.URL
+	Rel       string
+	Text      string
+	External  bool
 }
 
 type Hreflang struct {
@@ -278,10 +279,11 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	}
 
 	l := Link{
-		URL:      u.String(),
-		Rel:      htmlquery.SelectAttr(n, "rel"),
-		Text:     htmlquery.InnerText(n),
-		External: u.Host != p.parsedURL.Host,
+		URL:       u.String(),
+		parsedUrl: u,
+		Rel:       htmlquery.SelectAttr(n, "rel"),
+		Text:      htmlquery.InnerText(n),
+		External:  u.Host != p.parsedURL.Host,
 	}
 
 	return l, nil

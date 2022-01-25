@@ -49,55 +49,56 @@
 	{{ end }}
 
 	{{ if .Links }}
-		<b>Internal Links:</b>
-		<ul>
+		<p><b>Internal Links:</b></p>
+		<ul class="url-list">
 			{{ range .Links }}
-			<li>{{ .URL }}</li>
+			<li class="url">{{ .URL }}</li>
 			{{ end }}
 		</ul>
 	{{ end }}
 
 	{{ if .ExternalLinks }}
-		<b>External Links:</b>
-		<ul>
+		<p><b>External Links:</b></p>
+		<ul class="url-list">
 			{{ range .ExternalLinks }}
-			<li>{{ .URL }}</li>
+			<li class="url">{{ .URL }}</li>
 			{{ end }}
 		</ul>
 	{{ end }}
 
 	{{ if .Images }}
-		<b>Images:</b>
-		<ul>
+		<p><b>Images:</b></p>
+		<ul class="url-list">
 			{{ range .Images }}
-			<li> {{ if .Alt}}{{ .Alt }}:{{ end }} {{ .URL }}</li>
+			<li>
+				{{ if .Alt}}<b>{{ .Alt }}</b><br>{{ end }} <span class="url">{{ .URL }}</span></li>
 			{{ end }}
 		</ul>
 	{{ end }}
 
 	{{ if .Hreflangs }}
-		<b>Hreflang:</b>
-		<ul>
+		<p><b>Hreflang:</b></p>
+		<ul class="url-list">
 			{{ range .Hreflangs }}
-			<li>{{ .Lang }}: {{ .URL }}</li>
+			<li>{{ if .Lang }}<b>{{ .Lang }}<b><br/>{{ end }} <span class="url">{{ .URL }}</span></li>
 			{{ end }}
 		</ul>
 	{{ end }}
 
 	{{ if .Scripts }}
-		<b>Scripts:</b>
-		<ul>
+		<p><b>Scripts:</b></p>
+		<ul class="url-list">
 			{{ range .Scripts }}
-			<li>{{ . }}</li>
+			<li class="url">{{ . }}</li>
 			{{ end }}
 		</ul>
 	{{ end }}
 
 	{{ if .Styles }}
-		<b>Styles:</b>
-		<ul>
+		<p><b>Styles:</b></p>
+		<ul class="url-list">
 			{{ range .Styles }}
-			<li>{{ . }}</li>
+			<li class="url">{{ . }}</li>
 			{{ end }}
 		</ul>
 	{{ end }}

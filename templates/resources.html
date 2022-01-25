@@ -3,6 +3,7 @@
 <h1 class="title">Resources<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a></h1>
 {{ $cid := .Cid }}
 <h2>Issues:</h2>
+<p>This are the issues found in this page:</p>
 <ul>
 {{ range .ErrorTypes }}
 	{{ if eq . "ERROR_30x" }}

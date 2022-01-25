@@ -323,7 +323,8 @@ func FindPageReportsWithEmptyTitle(cid int) []PageReport {
 			words,
 			size
 		FROM pagereports
-		WHERE (title = "" OR title IS NULL) AND media_type = "text/html" AND crawl_id = ?`
+		WHERE (title = "" OR title IS NULL) AND media_type = "text/html"
+		AND status_code >=200 AND status_code < 300 AND crawl_id = ?`
 
 	rows, err := db.Query(query, cid)
 	if err != nil {
@@ -772,7 +773,8 @@ func FindPageReportsWithoutH1(cid int) []PageReport {
 			words,
 			size
 		FROM pagereports
-		WHERE (h1 = "" OR h1 IS NULL) AND media_type = "text/html" AND crawl_id = ?`
+		WHERE (h1 = "" OR h1 IS NULL) AND media_type = "text/html"
+		AND status_code >= 200 AND status_code < 300 AND crawl_id = ?`
 
 	rows, err := db.Query(query, cid)
 	if err != nil {
@@ -831,7 +833,8 @@ func FindPageReportsWithEmptyDescription(cid int) []PageReport {
 			words,
 			size
 		FROM pagereports
-		WHERE (description = "" OR description IS NULL) AND media_type = "text/html" AND crawl_id = ?`
+		WHERE (description = "" OR description IS NULL) AND media_type = "text/html"
+		AND status_code >= 200 AND status_code < 300 AND crawl_id = ?`
 
 	rows, err := db.Query(query, cid)
 	if err != nil {
@@ -993,6 +996,7 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 		SELECT
 			y.id,
 			y.url,
+			y.title
 			y.description
 		FROM pagereports y
 		INNER JOIN (
@@ -1014,7 +1018,7 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 
 	for rows.Next() {
 		p := PageReport{}
-		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		err := rows.Scan(&p.Id, &p.URL, &p.Title, &p.Description)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -1064,7 +1068,8 @@ func FindImagesWithNoAlt(cid int) []PageReport {
 		SELECT
 			pagereports.id,
 			pagereports.url,
-			pagereports.title
+			pagereports.title,
+			pagereports.description
 		FROM pagereports
 		LEFT JOIN images ON images.pagereport_id = pagereports.id
 		WHERE images.alt = "" AND pagereports.crawl_id = ?
@@ -1078,7 +1083,7 @@ func FindImagesWithNoAlt(cid int) []PageReport {
 
 	for rows.Next() {
 		p := PageReport{}
-		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		err := rows.Scan(&p.Id, &p.URL, &p.Title, &p.Description)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -1148,7 +1153,7 @@ func saveEndCrawl(cid int64, t time.Time) {
 }
 
 func getLastCrawl(p *Project) Crawl {
-	row := db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY end DESC LIMIT 1", p.Id)
+	row := db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY start DESC LIMIT 1", p.Id)
 
 	crawl := Crawl{}
 	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)
@@ -1288,7 +1293,8 @@ func findPageReportIssues(cid int, errorType string) []PageReport {
 		SELECT
 			id,
 			url,
-			title
+			title,
+			description
 		FROM pagereports
 		WHERE id IN (
 			SELECT pagereport_id
@@ -1304,7 +1310,7 @@ func findPageReportIssues(cid int, errorType string) []PageReport {
 
 	for rows.Next() {
 		p := PageReport{}
-		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		err := rows.Scan(&p.Id, &p.URL, &p.Title, &p.Description)
 		if err != nil {
 			log.Println(err)
 			continue

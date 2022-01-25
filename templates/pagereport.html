@@ -1,8 +1,14 @@
 {{ define "pagereport" }}
-	<a href="{{ .URL }}" target="_blank">{{ .URL }}</a><br>
+	<b>URL:</b> {{ .URL }} (<a href="{{ .URL }}" target="_blank">visit</a>)<br>
 	<b>Status code:</b> {{ .StatusCode }}<br>
-	<b>Title:</b> {{ .Title }}<br>
-	<b>Description:</b> {{ .Description }}<br>
+	
+	{{ if .Title }}
+		<b>Title:</b> {{ .Title }}<br>
+	{{ end }}
+
+	{{ if .Description }}
+		<b>Description:</b> {{ .Description }}<br>
+	{{ end }}
 
 	{{ if .Robots }}
 		<b>Robots:</b> {{ .Robots }}<br>
@@ -17,16 +23,30 @@
 	{{ end }}
 
 	<b>Content Type:</b> {{ .ContentType }}<br>
-	<b>Lang:</b> {{ .Lang }}<br>
+	
+	{{ if .Lang }}
+		<b>Lang:</b> {{ .Lang }}<br>
+	{{ end }}
 
 	{{ if .Canonical }}
 		<b>Canonical:</b> {{ .Canonical }}<br>
 	{{ end }}
 
-	<b>H1:</b> {{ .H1 }}<br>
-	<b>H2:</b> {{ .H2 }}<br>
-	<b>Words:</b> {{ .Words }}<br>
-	<b>Size:</b> {{ .Size }}<br>
+	{{ if .H1 }}
+		<b>H1:</b> {{ .H1 }}<br>
+	{{ end }}
+
+	{{ if .H2 }}
+		<b>H2:</b> {{ .H2 }}<br>
+	{{ end }}
+
+	{{ if .Words }}
+		<b>Words:</b> {{ .Words }}<br>
+	{{ end }}
+
+	{{ if .Size }}
+		<b>Size:</b> {{ .Size }}<br>
+	{{ end }}
 
 	{{ if .Links }}
 		<b>Links:</b>

@@ -95,9 +95,15 @@
 
 {{ $cid := .Cid }}
 {{ if .PageReports }}
-	<ul>
+	<ul class="url-list">
 	{{ range .PageReports }}
-		<li><a href="/resources?cid={{ $cid }}&rid={{ .Id }}">{{ .URL }}</li>
+		<li>
+			<div>
+				{{ if .Title }}<b><a href="/resources?cid={{ $cid }}&rid={{ .Id }}">{{ .Title }}</a></b><br />{{ end }}
+				<a class="url" href="/resources?cid={{ $cid }}&rid={{ .Id }}">{{ .URL }}</a><br>
+				{{ if .Description }}<div class="description">{{ .Description }}</div>{{ end }}
+			<div>
+		</li>
 	{{ end }}
 	</ul>
 {{ else }}

@@ -110,7 +110,7 @@
 
 	{{ with (index .IssuesGroups "ERROR_NO_LANG" )}}
 		{{ if ne .Count 0 }}
-			<p>⚠️ <b>{{ .Count }}</b>
+			<p>🙊 <b>{{ .Count }}</b>
 				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">Pages with no language attribute</a>
 			</p>
 		{{ end }}

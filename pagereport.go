@@ -316,6 +316,13 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 	return u, nil
 }
 
+func (p PageReport) SizeInKB() string {
+	v := p.Size / (1 << 10)
+	r := p.Size % (1 << 10)
+
+	return fmt.Sprintf("%.2f", float64(v)+float64(r)/float64(1<<10))
+}
+
 func countWords(n *html.Node) int {
 	var output func(*bytes.Buffer, *html.Node)
 	output = func(buf *bytes.Buffer, n *html.Node) {

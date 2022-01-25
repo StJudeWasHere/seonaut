@@ -1163,6 +1163,38 @@ func FindPageReportsWithNoLangAttr(cid int) []PageReport {
 	return pr
 }
 
+func FindInLinks(s string, cid int) []PageReport {
+	pr := []PageReport{}
+	query := `
+		SELECT 
+			pagereports.id,
+			pagereports.url,
+			pagereports.Title
+		FROM links
+		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
+		WHERE links.url = ? AND pagereports.url != ? AND pagereports.crawl_id = ?
+		GROUP BY pagereports.id`
+
+	rows, err := db.Query(query, s, s, cid)
+	if err != nil {
+		log.Println(err)
+		return pr
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pr = append(pr, p)
+	}
+
+	return pr
+}
+
 func CountByStatusCode(cid int) map[int]int {
 	m := make(map[int]int)
 	query := `

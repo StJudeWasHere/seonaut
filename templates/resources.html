@@ -54,7 +54,71 @@
 {{ end }}
 </ul>
 
-<h2>Resources</h2>
+	<h2>Page details</h2>
+
+	{{ with .PageReport }}
+	<b>URL:</b> {{ .URL }} (<a href="{{ .URL }}" target="_blank">visit</a>)<br>
+	<b>Status code:</b> {{ .StatusCode }}<br>
+	
+	{{ if .Title }}
+		<b>Title:</b> {{ .Title }}<br>
+	{{ end }}
+
+	{{ if .Description }}
+		<b>Description:</b> {{ .Description }}<br>
+	{{ end }}
+
+	{{ if .Robots }}
+		<b>Robots:</b> {{ .Robots }}<br>
+	{{ end }}
+
+	{{ if .RedirectURL }}
+		<b>Redirect URL:</b> {{ .RedirectURL }}<br>
+	{{ end }}
+
+	{{ if .Refresh }}
+		<b>Refresh:</b> {{ .Refresh }}<br>
+	{{ end }}
+
+	<b>Content Type:</b> {{ .ContentType }}<br>
+	
+	{{ if .Lang }}
+		<b>Lang:</b> {{ .Lang }}<br>
+	{{ end }}
+
+	{{ if .Canonical }}
+		<b>Canonical:</b> {{ .Canonical }}<br>
+	{{ end }}
+
+	{{ if .H1 }}
+		<b>H1:</b> {{ .H1 }}<br>
+	{{ end }}
+
+	{{ if .H2 }}
+		<b>H2:</b> {{ .H2 }}<br>
+	{{ end }}
+
+	{{ if .Words }}
+		<b>Words:</b> {{ .Words }}<br>
+	{{ end }}
+
+	{{ if .Size }}
+		<b>Size:</b> {{ .SizeInKB }}KB<br>
+	{{ end }}
+	{{ end }}
+
+	{{ if .InLinks }}
+		<h2>Incoming Links:</h2>
+		<ul class="url-list">
+			{{ range .InLinks }}
+			<li>
+				{{ if .Title }}<b>{{ .Title }}</b><br/>{{ end }}
+				<span class="url">{{ .URL }}</span>
+			</li>
+			{{ end }}
+		</ul>
+	{{ end }}
+
 {{ template "pagereport" .PageReport }}
 
 {{ template "footer" . }}

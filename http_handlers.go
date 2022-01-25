@@ -41,6 +41,7 @@ type IssuesView struct {
 type ResourcesView struct {
 	PageReport PageReport
 	Cid        int
+	Eid        string
 	ErrorTypes []string
 }
 
@@ -215,6 +216,8 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	eid := r.URL.Query()["eid"][0]
+
 	session, _ := cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 	u, err := findCrawlUserId(cid)
@@ -227,7 +230,7 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	pageReport := FindPageReportById(rid)
 	errorTypes := findErrorTypesByPage(rid, cid)
 
-	renderTemplate(w, "resources", ResourcesView{PageReport: pageReport, Cid: cid, ErrorTypes: errorTypes})
+	renderTemplate(w, "resources", ResourcesView{PageReport: pageReport, Cid: cid, Eid: eid, ErrorTypes: errorTypes})
 }
 
 func serveSignup(w http.ResponseWriter, r *http.Request) {

@@ -100,13 +100,14 @@
 {{ end }}
 
 {{ $cid := .Cid }}
+{{ $eid := .Eid }}
 {{ if .PageReports }}
 	<ul class="url-list">
 	{{ range .PageReports }}
 		<li>
 			<div>
-				{{ if .Title }}<b><a href="/resources?cid={{ $cid }}&rid={{ .Id }}">{{ .Title }}</a></b><br />{{ end }}
-				<a class="url" href="/resources?cid={{ $cid }}&rid={{ .Id }}">{{ .URL }}</a><br>
+				{{ if .Title }}<b><a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .Title }}</a></b><br />{{ end }}
+				<a class="url" href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .URL }}</a><br>
 				{{ if .Description }}<div class="description">{{ .Description }}</div>{{ end }}
 			<div>
 		</li>

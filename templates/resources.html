@@ -1,54 +1,54 @@
 {{ template "head" . }}
 
-<h1 class="title">Resources<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a></h1>
-
+<h1 class="title">Resources<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a></h1>
+{{ $cid := .Cid }}
 <h2>Issues:</h2>
 <ul>
 {{ range .ErrorTypes }}
 	{{ if eq . "ERROR_30x" }}
-		<li>Redirected page</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">Redirected page</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_40x" }}
-		<li>Page not found</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">Page not found</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_50x" }}
-		<li>Error loading page</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">Error loading page</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_DUPLICATED_TITLE" }}
-		<li>Duplicated title</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Duplicated title</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
-		<li>duplicated description</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Duplicated description</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_EMPTY_TITLE" }}
-		<li>Empty or missing title</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">Empty or missing title</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_SHORT_TITLE" }}
-		<li>Short title</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Short title</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_LONG_TITLE" }}
-		<li>Long title</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Long title</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
-		<li>Empty or missing description</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Empty or missing description</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
-		<li>Short description</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Short description</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_LONG_DESCRIPTION" }}
-		<li>Long description</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Long description</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_LITTLE_CONTENT" }}
-		<li>Page with little content</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Page with little content</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_IMAGES_NO_ALT" }}
-		<li>Contains images with no alt attribute</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Contains images with no alt attribute</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_REDIRECT_CHAIN" }}
-		<li>Redirect chain</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">Redirect chain</a></li>
 	{{ end }}
 	{{ if eq . "ERROR_NO_H1" }}
-		<li>Page doesn't have any H1 heading</li>
+		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Page doesn't have any H1 heading</a></li>
 	{{ end }}
 {{ end }}
 </ul>

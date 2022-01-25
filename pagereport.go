@@ -211,13 +211,13 @@ func (pageReport *PageReport) parse() {
 	// ---
 	images := htmlquery.Find(doc, "//img")
 	for _, n := range images {
-		url, err := url.Parse(htmlquery.SelectAttr(n, "src"))
+		s := htmlquery.SelectAttr(n, "src")
+		url, err := pageReport.absoluteURL(s)
 		if err != nil {
-			log.Println(err)
+			log.Printf("%s: %v\n", s, err)
 			continue
 		}
 
-		url = pageReport.absoluteURL(url)
 		i := Image{
 			URL: url.String(),
 			Alt: htmlquery.SelectAttr(n, "alt"),
@@ -232,13 +232,13 @@ func (pageReport *PageReport) parse() {
 	// ---
 	scripts := htmlquery.Find(doc, "//script[@src]/@src")
 	for _, n := range scripts {
-		url, err := url.Parse(htmlquery.SelectAttr(n, "src"))
+		s := htmlquery.SelectAttr(n, "src")
+		url, err := pageReport.absoluteURL(s)
 		if err != nil {
-			log.Println(err)
+			log.Printf("%s: %v\n", s, err)
 			continue
 		}
 
-		url = pageReport.absoluteURL(url)
 		pageReport.Scripts = append(pageReport.Scripts, url.String())
 	}
 
@@ -248,13 +248,14 @@ func (pageReport *PageReport) parse() {
 	// ---
 	styles := htmlquery.Find(doc, "//link[@rel=\"stylesheet\"]/@href")
 	for _, n := range styles {
-		url, err := url.Parse(htmlquery.SelectAttr(n, "href"))
+		s := htmlquery.SelectAttr(n, "href")
+
+		url, err := pageReport.absoluteURL(s)
 		if err != nil {
-			log.Println(err)
+			log.Printf("%s: %v\n", s, err)
 			continue
 		}
 
-		url = pageReport.absoluteURL(url)
 		pageReport.Styles = append(pageReport.Styles, url.String())
 	}
 
@@ -269,16 +270,12 @@ func (pageReport *PageReport) parse() {
 
 func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	href := htmlquery.SelectAttr(n, "href")
-	u, err := url.Parse(href)
+
+	u, err := p.absoluteURL(href)
 	if err != nil {
+		log.Printf("%s: %v\n", href, err)
 		return Link{}, err
 	}
-
-	if u.Scheme != "" && u.Scheme != "http" && u.Scheme != "https" {
-		return Link{}, errors.New("Protocol not supported")
-	}
-
-	u = p.absoluteURL(u)
 
 	l := Link{
 		URL:      u.String(),
@@ -290,7 +287,16 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	return l, nil
 }
 
-func (p *PageReport) absoluteURL(u *url.URL) *url.URL {
+func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
+	u, err := url.Parse(s)
+	if err != nil {
+		return &url.URL{}, err
+	}
+
+	if u.Scheme != "" && u.Scheme != "http" && u.Scheme != "https" {
+		return &url.URL{}, errors.New("Protocol not supported")
+	}
+
 	if u.Scheme == "" {
 		u.Scheme = p.parsedURL.Scheme
 	}
@@ -307,7 +313,7 @@ func (p *PageReport) absoluteURL(u *url.URL) *url.URL {
 		u.Path = basePath + u.Path
 	}
 
-	return u
+	return u, nil
 }
 
 func countWords(n *html.Node) int {

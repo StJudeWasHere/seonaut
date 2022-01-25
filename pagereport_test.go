@@ -116,6 +116,9 @@ func TestPageReportHTML(t *testing.T) {
 		if pageReport.Links[0].URL != "https://example.com/link1" {
 			t.Error("pageReport.Links[0].URL != https://example.com/link1")
 		}
+		if pageReport.Links[1].URL != "https://example.com/test-page/link2" {
+			t.Error("pageReport.Links[1].URL != https://example.com/test-page/link2")
+		}
 		if pageReport.Links[0].Text != "link1" {
 			t.Error("pageReport.Links[0].Text != link1")
 		}

@@ -250,11 +250,27 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 		return Link{}, errors.New("Protocol not supported")
 	}
 
+	if u.Scheme == "" {
+		u.Scheme = p.parsedURL.Scheme
+	}
+
+	if u.Host == "" {
+		u.Host = p.parsedURL.Host
+	}
+
+	if !strings.HasPrefix(u.Path, "/") {
+		basePath := p.parsedURL.Path
+		if !strings.HasSuffix(basePath, "/") {
+			basePath = basePath + "/"
+		}
+		u.Path = basePath + u.Path
+	}
+
 	l := Link{
-		URL:      href,
+		URL:      u.String(),
 		Rel:      htmlquery.SelectAttr(n, "rel"),
 		Text:     htmlquery.InnerText(n),
-		External: u.Host != "" && u.Host != p.parsedURL.Host,
+		External: u.Host != p.parsedURL.Host,
 	}
 
 	return l, nil

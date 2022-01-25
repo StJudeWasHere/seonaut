@@ -63,12 +63,8 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 			if l.External || strings.Contains(l.Rel, "nofollow") {
 				continue
 			}
-			u := l.URL
-			if strings.Contains(u, "#") {
-				u = strings.Split(u, "#")[0]
-			}
 
-			q.AddURL(r.Request.AbsoluteURL(u))
+			q.AddURL(r.Request.AbsoluteURL(l.URL))
 		}
 
 		if pageReport.RedirectURL != "" {

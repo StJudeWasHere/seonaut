@@ -133,6 +133,11 @@ func TestPageReportHTML(t *testing.T) {
 		}
 	}
 
+	fmt.Println(pageReport.ExternalLinks)
+	if len(pageReport.ExternalLinks) != 1 {
+		t.Error("len(pageReport.ExternalLinks) != 1")
+	}
+
 	if pageReport.Refresh != "0;URL='https://example.com/'" {
 		t.Error("Refresh != 0;URL='https://example.com/'")
 	}

@@ -15,29 +15,30 @@ import (
 )
 
 type PageReport struct {
-	Id          int
-	URL         string
-	parsedURL   *url.URL
-	RedirectURL string
-	Refresh     string
-	StatusCode  int
-	ContentType string
-	MediaType   string
-	Lang        string
-	Title       string
-	Description string
-	Robots      string
-	Canonical   string
-	H1          string
-	H2          string
-	Links       []Link
-	Words       int
-	Hreflangs   []Hreflang
-	Body        []byte
-	Size        int
-	Images      []Image
-	Scripts     []string
-	Styles      []string
+	Id            int
+	URL           string
+	parsedURL     *url.URL
+	RedirectURL   string
+	Refresh       string
+	StatusCode    int
+	ContentType   string
+	MediaType     string
+	Lang          string
+	Title         string
+	Description   string
+	Robots        string
+	Canonical     string
+	H1            string
+	H2            string
+	Links         []Link
+	ExternalLinks []Link
+	Words         int
+	Hreflangs     []Hreflang
+	Body          []byte
+	Size          int
+	Images        []Image
+	Scripts       []string
+	Styles        []string
 }
 
 type Link struct {
@@ -153,7 +154,12 @@ func (pageReport *PageReport) parse() {
 		if err != nil {
 			continue
 		}
-		pageReport.Links = append(pageReport.Links, l)
+
+		if l.External {
+			pageReport.ExternalLinks = append(pageReport.ExternalLinks, l)
+		} else {
+			pageReport.Links = append(pageReport.Links, l)
+		}
 	}
 
 	// ---

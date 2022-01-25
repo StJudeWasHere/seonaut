@@ -49,9 +49,18 @@
 	{{ end }}
 
 	{{ if .Links }}
-		<b>Links:</b>
+		<b>Internal Links:</b>
 		<ul>
 			{{ range .Links }}
+			<li>{{ .URL }}</li>
+			{{ end }}
+		</ul>
+	{{ end }}
+
+	{{ if .ExternalLinks }}
+		<b>External Links:</b>
+		<ul>
+			{{ range .ExternalLinks }}
 			<li>{{ .URL }}</li>
 			{{ end }}
 		</ul>

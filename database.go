@@ -102,6 +102,27 @@ func savePageReport(r *PageReport, cid int64) {
 		}
 	}
 
+	if len(r.ExternalLinks) > 0 {
+		sqlString := "INSERT INTO links (pagereport_id, url, rel, text, external) values "
+		v := []interface{}{}
+		for _, l := range r.ExternalLinks {
+			sqlString += "(?, ?, ?, ?, ?),"
+			v = append(v, lid, l.URL, l.Rel, l.Text, l.External)
+		}
+		sqlString = sqlString[0 : len(sqlString)-1]
+		stmt, err := db.Prepare(sqlString)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		defer stmt.Close()
+
+		_, err = stmt.Exec(v...)
+		if err != nil {
+			log.Printf("Error in SavePageReport\nCID: %v\n Links: %+v\nError: %+v\n", cid, v, err)
+		}
+	}
+
 	if len(r.Hreflangs) > 0 {
 		sqlString := "INSERT INTO hreflangs (pagereport_id, url, lang) values "
 		v := []interface{}{}
@@ -219,7 +240,7 @@ func FindPageReportById(rid int) PageReport {
 		log.Println(err)
 	}
 
-	lrows, err := db.Query("SELECT url, rel, text, external FROM links WHERE pagereport_id = ?", rid)
+	lrows, err := db.Query("SELECT url, rel, text, external FROM links WHERE external = false AND pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -233,6 +254,22 @@ func FindPageReportById(rid int) PageReport {
 		}
 
 		p.Links = append(p.Links, l)
+	}
+
+	lrows, err = db.Query("SELECT url, rel, text, external FROM links WHERE external = true AND pagereport_id = ?", rid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for lrows.Next() {
+		l := Link{}
+		err = lrows.Scan(&l.URL, &l.Rel, &l.Text, &l.External)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		p.ExternalLinks = append(p.ExternalLinks, l)
 	}
 
 	hrows, err := db.Query("SELECT url, lang FROM hreflangs WHERE pagereport_id = ?", rid)

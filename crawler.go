@@ -60,7 +60,7 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 		pr <- *pageReport
 
 		for _, l := range pageReport.Links {
-			if l.External || strings.Contains(l.Rel, "nofollow") {
+			if strings.Contains(l.Rel, "nofollow") {
 				continue
 			}
 

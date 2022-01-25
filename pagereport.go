@@ -288,7 +288,7 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 }
 
 func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
-	u, err := url.Parse(s)
+	u, err := url.Parse(strings.TrimSpace(s))
 	if err != nil {
 		return &url.URL{}, err
 	}

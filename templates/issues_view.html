@@ -93,6 +93,12 @@
 	<p><b>👷 Take action:</b> Add an H1 heading title to this pages to help your users and search engines figure out what this pages are about.</p>
 {{ end }}
 
+{{ if eq .Eid "ERROR_NO_LANG" }}
+	<h2>Pages with no language attribute</h2>
+	<p>The language attribute lets search engines know what page to show to the users depending on their language.</p>
+	<p><b>👷 Take action:</b> Add the language attribute so your users see your pages in their language.</p>
+{{ end }}
+
 {{ $cid := .Cid }}
 {{ if .PageReports }}
 	<ul class="url-list">

@@ -1095,6 +1095,37 @@ func FindImagesWithNoAlt(cid int) []PageReport {
 	return pr
 }
 
+func FindPageReportsWithNoLangAttr(cid int) []PageReport {
+	pr := []PageReport{}
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title,
+			pagereports.description
+		FROM pagereports
+		WHERE (pagereports.lang = "" OR pagereports.lang = null) and media_type = "text/html" AND pagereports.crawl_id = ?`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return pr
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title, &p.Description)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pr = append(pr, p)
+	}
+
+	return pr
+}
+
 func CountByStatusCode(cid int) map[int]int {
 	m := make(map[int]int)
 	query := `

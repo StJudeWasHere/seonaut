@@ -299,6 +299,14 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 		return &url.URL{}, errors.New("Protocol not supported")
 	}
 
+	if u.Path == "" {
+		u.Path = "/"
+	}
+
+	if u.Scheme != "" {
+		return u, nil
+	}
+
 	if u.Scheme == "" {
 		u.Scheme = p.parsedURL.Scheme
 	}

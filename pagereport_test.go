@@ -108,8 +108,8 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Description != Test Page Description")
 	}
 
-	if len(pageReport.Links) != 4 {
-		t.Error("len(Links) != 4")
+	if len(pageReport.Links) != 5 {
+		t.Error("len(Links) != 5")
 	}
 
 	if len(pageReport.Links) > 0 {
@@ -130,6 +130,10 @@ func TestPageReportHTML(t *testing.T) {
 		}
 		if pageReport.Links[3].Text != "" {
 			t.Error("pageReport.Links[3].Text != \"\"")
+		}
+
+		if pageReport.Links[4].URL != "https://example.com/" {
+			t.Error("pageReport.Links[4].URL != \"https://example.com/\"")
 		}
 	}
 

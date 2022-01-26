@@ -116,6 +116,10 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 		return http.ErrUseLastResponse
 	})
 
+	if u.Path == "" {
+		u.Path = "/"
+	}
+
 	q.AddURL(u.String())
 
 	q.Run(co)

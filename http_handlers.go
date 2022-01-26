@@ -28,8 +28,13 @@ type ProjectView struct {
 }
 
 type IssuesGroupView struct {
-	IssuesGroups map[string]IssueGroup
-	Cid          int
+	IssuesGroups    map[string]IssueGroup
+	Cid             int
+	Project         Project
+	TotalCount      int
+	MediaCount      map[string]int
+	StatusCodeCount map[int]int
+	TotalIssues     int
 }
 
 type IssuesView struct {
@@ -47,10 +52,11 @@ type ResourcesView struct {
 }
 
 type Crawl struct {
-	Id    int
-	URL   string
-	Start time.Time
-	End   sql.NullTime
+	Id        int
+	ProjectId int
+	URL       string
+	Start     time.Time
+	End       sql.NullTime
 }
 
 type Project struct {
@@ -166,8 +172,22 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 	}
 
 	issueGroups := findIssues(cid)
+	crawl := findCrawlById(cid)
+	project, err := findProjectById(crawl.ProjectId, uid)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
 
-	renderTemplate(w, "issues", IssuesGroupView{IssuesGroups: issueGroups, Cid: cid})
+	renderTemplate(w, "issues", IssuesGroupView{
+		IssuesGroups:    issueGroups,
+		Cid:             cid,
+		Project:         project,
+		TotalCount:      CountCrawled(cid),
+		MediaCount:      CountByMediaType(cid),
+		StatusCodeCount: CountByStatusCode(cid),
+		TotalIssues:     countIssuesByCrawl(cid),
+	})
 }
 
 func serveIssuesView(w http.ResponseWriter, r *http.Request) {

@@ -1,7 +1,11 @@
 {{ template "head" . }}
 
-<h1 class="title">ISSUES VIEW<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a></h1>
+<h1 class="title">ISSUES VIEW</h1>
+<div class="action">
+	<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a>
+</div>
 
+<div class="content">
 {{ if eq .Eid "ERROR_50x" }}
 	<h2>Pages are throwing errors</h2>
 	<p>This pages are not loading properly and are throwing errors scaring your users and annoying search engines.</p>
@@ -124,5 +128,5 @@
 {{ else }}
 	<p><b>Everything is ok</b></p>
 {{ end }}
-
+</div>
 {{ template "footer" . }}

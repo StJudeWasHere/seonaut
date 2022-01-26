@@ -1331,6 +1331,19 @@ func findProjectsByUser(uid int) []Project {
 	return projects
 }
 
+func findCrawlById(cid int) Crawl {
+	row := db.QueryRow("SELECT id, project_id, start, end FROM crawls WHERE id = ?", cid)
+
+	c := Crawl{}
+	err := row.Scan(&c.Id, &c.ProjectId, &c.Start, &c.End)
+	if err != nil {
+		log.Println(err)
+		return c
+	}
+
+	return c
+}
+
 func findProjectById(id int, uid int) (Project, error) {
 	row := db.QueryRow("SELECT id, url, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
 

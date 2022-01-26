@@ -12,6 +12,10 @@ const (
 )
 
 func main() {
+
+	fileServer := http.FileServer(http.Dir("./static"))
+	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
+
 	http.HandleFunc("/", requireAuth(serveHome))
 	http.HandleFunc("/new-project", requireAuth(serveProjectAdd))
 	http.HandleFunc("/crawl", requireAuth(serveCrawl))

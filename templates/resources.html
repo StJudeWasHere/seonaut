@@ -1,6 +1,11 @@
 {{ template "head" . }}
 
-<h1 class="title">Resources<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a></h1>
+<h1 class="title">Resources</h1>
+<div class="action">
+	<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a>
+</div>
+
+<div class="content">
 {{ $cid := .Cid }}
 <h2>Issues:</h2>
 <p>This are the issues found in this page:</p>
@@ -123,5 +128,6 @@
 	{{ end }}
 
 {{ template "pagereport" .PageReport }}
+</div>
 
 {{ template "footer" . }}

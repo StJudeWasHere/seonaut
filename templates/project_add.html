@@ -1,15 +1,16 @@
 {{ template "head" . }}
 
-<h1 class="title">Add Project<a href="/">&larr; Back</a></h1>
+<h1 class="title">Add Project</h1>
+<div class="action">
+	<a href="/">&larr; Back</a>
+</div>
 
-{{ if eq .URL "" }}
+<div class="content">
 	<form method="POST">
 		<label for="url">URL:</label>
 		<input type="text" name="url">
 		<input type="submit" value="Add">
 	</form>
-{{ else }}
-	Project added: {{ .URL }}
-{{ end }}
+</div>
 
 {{ template "footer" . }}

@@ -29,8 +29,8 @@ type ProjectView struct {
 
 type IssuesGroupView struct {
 	IssuesGroups    map[string]IssueGroup
-	Cid             int
 	Project         Project
+	Crawl           Crawl
 	TotalCount      int
 	MediaCount      map[string]int
 	StatusCodeCount map[int]int
@@ -116,9 +116,11 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		uid := session.Values["uid"].(int)
 
 		saveProject(url, uid)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
-	renderTemplate(w, "project_add", struct{ URL string }{URL: url})
+	renderTemplate(w, "project_add", struct{}{})
 }
 
 func serveCrawl(w http.ResponseWriter, r *http.Request) {
@@ -181,7 +183,7 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	renderTemplate(w, "issues", IssuesGroupView{
 		IssuesGroups:    issueGroups,
-		Cid:             cid,
+		Crawl:           crawl,
 		Project:         project,
 		TotalCount:      CountCrawled(cid),
 		MediaCount:      CountByMediaType(cid),

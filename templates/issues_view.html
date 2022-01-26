@@ -1,119 +1,31 @@
 {{ template "head" . }}
 
-<h1 class="title">ISSUES VIEW</h1>
+<h1 class="title">
+{{ if eq .Eid "ERROR_50x" }}Pages are throwing errors{{ end }}
+{{ if eq .Eid "ERROR_40x" }}Pages are missing{{ end }}
+{{ if eq .Eid "ERROR_30x" }}Pages are redirecting somere else{{ end }}
+{{ if eq .Eid "ERROR_DUPLICATED_TITLE" }}This pages have duplicate title tags{{ end }}
+{{ if eq .Eid "ERROR_LONG_TITLE" }}This pages have long titles{{ end }}
+{{ if eq .Eid "ERROR_SHORT_TITLE" }}Page titles are too short{{ end }}
+{{ if eq .Eid "ERROR_EMPTY_TITLE" }}Pages with empty or missing title{{ end }}
+{{ if eq .Eid "ERROR_EMPTY_DESCRIPTION" }}Pages with empty or missing description{{ end }}
+{{ if eq .Eid "ERROR_SHORT_DESCRIPTION" }}Pages with short description{{ end }}
+{{ if eq .Eid "ERROR_LONG_DESCRIPTION" }}Pages with long description{{ end }}
+{{ if eq .Eid "ERROR_DUPLICATED_DESCRIPTION" }}Pages with duplicate description tags{{ end }}
+{{ if eq .Eid "ERROR_LITTLE_CONTENT" }}Pages with little content{{ end }}
+{{ if eq .Eid "ERROR_IMAGES_NO_ALT" }}Pages containing images with no alt attribute{{ end }}
+{{ if eq .Eid "ERROR_REDIRECT_CHAIN" }}Pages redirecting to pages redirecting to pages{{ end }}
+{{ if eq .Eid "ERROR_NO_H1" }}Pages with no H1 heading title{{ end }}
+{{ if eq .Eid "ERROR_NO_LANG" }}Pages with no language attribute{{ end }}
+{{ if eq .Eid "ERROR_HTTP_LINKS" }}Links from pages using HTTPS to pages using HTTP{{ end }}
+{{ if eq .Eid "ERROR_HTTP_LINKS" }}Pages containing images with no alt attribute{{ end }}
+</h1>
 <div class="action">
 	<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a>
 </div>
 
+
 <div class="content">
-{{ if eq .Eid "ERROR_50x" }}
-	<h2>Pages are throwing errors</h2>
-	<p>This pages are not loading properly and are throwing errors scaring your users and annoying search engines.</p>
-	<p><b>👷 Take action:</b> Fix the pages so they load properly or remove the links to this pages.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_40x" }}
-	<h2>Pages are missing</h2>
-	<p>This pages are missing and your both your users and search engines are getting lost.</p>
-	<p><b>👷 Take action:</b> Remove links to this pages.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_30x" }}
-	<h2>Pages are redirecting somere else</h2>
-	<p>This pages are causing redirects, sending users and search engines to a different page.</p>
-	<p><b>👷 Take action:</b> Remove links to this pages and replace them for links to pages that do not cause redirects.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_DUPLICATED_TITLE" }}
-	<h2>This pages have duplicate title tags</h2>
-	<p>The title tag is considered one of the most important elements for on-page SEO.<p>
-	<p>If multiple pages have the same title, they will compete for a given search query confusing search engines.</p>
-	<p><b>👷 Take action:</b> Change the title so each page has a unique name.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_LONG_TITLE" }}
-	<h2>This pages have long titles</h2>
-	<p>Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.</p>
-	<p><b>👷 Take action:</b> Change the page titles so they have a shorter lenght, the recomended size is between 45 and 60 characters.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_SHORT_TITLE" }}
-	<h2>Page titles are too short</h2>
-	<p>This pages have titles that are too short. Search engines will be happier if you provide longer titles.</p>
-	<p><b>👷 Take action:</b> Change the page titles so they have provide more value to search engines, the recomended size is between 45 and 60 characters.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_EMPTY_TITLE" }}
-	<h2>Pages with empty or missing title</h2>
-	<p>The page title is one of the most important elements for search engines.</p>
-	<p><b>👷 Take action:</b> Add title to this pages and make search engines happy.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_EMPTY_DESCRIPTION" }}
-	<h2>Pages with empty or missing description</h2>
-	<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
-	<p><b>👷 Take action:</b> Add unique descriptions to your pages to get more accurate information in the search results.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_SHORT_DESCRIPTION" }}
-	<h2>Pages with short description</h2>
-	<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
-	<p><b>👷 Take action:</b> Add longer descriptions to your pages to get more accurate information in the search results, the recomendation is to keep it under 160 characters.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_LONG_DESCRIPTION" }}
-	<h2>Pages with long description</h2>
-	<p>Description tags are not a ranking factor for search engines, but having good quality descriptions will get more accurate information in the search results. Long descriptions will often get truncated, making them not so sexy for users.</p>
-	<p><b>👷 Take action:</b> Add longer descriptions to your pages to get more accurate information in the search results, the recomendation is to keep it under 160 characters.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_DUPLICATED_DESCRIPTION" }}
-	<h2>Pages with duplicate description tags</h2>
-	<p>It is recomended to have unique descriptions for each page</p>
-	<p><b>👷 Take action:</b> Change the page descriptions so every page has a unique one.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_LITTLE_CONTENT" }}
-	<h2>Pages with little content</h2>
-	<p>Pages with little content are not really useful for users or search engines, consider adding more content to your pages.</p>
-	<p><b>👷 Take action:</b> Let's write more content for this pages!</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_IMAGES_NO_ALT" }}
-	<h2>Pages containing images with no alt attribute</h2>
-	<p>The image alt attribute improves your site's accessibility, it also helps search engines understand better your images.</p>
-	<p><b>👷 Take action:</b> Add the alt attribute to your images and make the internet a better place.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_REDIRECT_CHAIN" }}
-	<h2>Pages redirecting to pages redirecting to pages</h2>
-	<p>The pages are sending the users and search engines to a different page that is also sending them to a different page. Look, this is so confusing.</p>
-	<p><b>👷 Take action:</b> Remove the links causing the redirections or link directly to the final page.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_NO_H1" }}
-	<h2>Pages with no H1 heading title</h2>
-	<p>The H1 tag describes the main topic of the page, without it both your users and search engine will find it harder to figure what the page is talking about.</p>
-	<p><b>👷 Take action:</b> Add an H1 heading title to this pages to help your users and search engines figure out what this pages are about.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_NO_LANG" }}
-	<h2>Pages with no language attribute</h2>
-	<p>The language attribute is particularly usefull for screen readers, and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.</p>
-	<p><b>👷 Take action:</b> Add the language attribute so your users see your pages in their language.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_HTTP_LINKS" }}
-	<h2>Links from pages using HTTPS to pages using HTTP</h2>
-	<p>Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.</p>
-	<p><b>👷 Take action:</b> Change the links so they use HTTPS.</p>
-{{ end }}
-
-{{ if eq .Eid "ERROR_HTTP_LINKS" }}
-	<h2>Pages containing images with no alt attribute</h2>
-{{ end }}
-
-
 {{ $cid := .Cid }}
 {{ $eid := .Eid }}
 {{ if .PageReports }}
@@ -122,7 +34,7 @@
 		<li>
 			<div>
 				{{ if .Title }}<b><a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .Title }}</a></b><br />{{ end }}
-				<a class="url" href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .URL }}</a><br>
+				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .URL }}</a><br>
 				{{ if .Description }}<div class="description">{{ .Description }}</div>{{ end }}
 			<div>
 		</li>

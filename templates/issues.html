@@ -8,7 +8,7 @@
 <div class="content">
 
 
-
+	<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
 	<div class="flex-container">
 		<div class="col">
 			<h2>Crawled by media type: </h2>
@@ -20,7 +20,7 @@
 		</div>
 	</div>
 
-	{{ $cid := .Cid }}
+	{{ $cid := .Crawl.Id }}
 	{{/* Status code issues */}}
 
 	{{ with (index .IssuesGroups "ERROR_50x") }}

@@ -214,6 +214,17 @@
 		</div>
 		{{ end }}
 	{{ end}}
+	
+	{{ with (index .IssuesGroups "ERROR_HREFLANG_RETURN") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing hreflangs without its corresponding return link</a>
+			</h2>
+			<p>When referencing a page with hreflang, that page must reference back with a hreflang tag too.</p>
+		</div>
+		{{ end }}
+	{{ end}}
 </div>
 
 {{ template "footer" . }}

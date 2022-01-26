@@ -126,11 +126,11 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Hreflangs) > 0 {
-		sqlString := "INSERT INTO hreflangs (pagereport_id, url, lang) values "
+		sqlString := "INSERT INTO hreflangs (pagereport_id, crawl_id, from_url, from_lang, to_url, to_lang) values "
 		v := []interface{}{}
 		for _, h := range r.Hreflangs {
-			sqlString += "(?, ?, ?),"
-			v = append(v, lid, h.URL, h.Lang)
+			sqlString += "(?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, r.URL, r.Lang, h.URL, h.Lang)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ := db.Prepare(sqlString)
@@ -274,14 +274,14 @@ func FindPageReportById(rid int) PageReport {
 		p.ExternalLinks = append(p.ExternalLinks, l)
 	}
 
-	hrows, err := db.Query("SELECT url, lang FROM hreflangs WHERE pagereport_id = ?", rid)
+	hrows, err := db.Query("SELECT to_url, to_lang FROM hreflangs WHERE pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for hrows.Next() {
 		h := Hreflang{}
-		err = hrows.Scan(&h.URL, h.Lang)
+		err = hrows.Scan(&h.URL, &h.Lang)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -1196,7 +1196,39 @@ func FindPageReportsWithHTTPLinks(cid int) []PageReport {
 	}
 
 	return pr
+}
 
+func FindMissingHrelangReturnLinks(cid int) []PageReport {
+	pr := []PageReport{}
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.URL,
+			pagereports.Title
+		FROM hreflangs
+		LEFT JOIN pagereports ON hreflangs.pagereport_id = pagereports.id
+		LEFT JOIN hreflangs b ON hreflangs.from_url = b.to_url
+		WHERE b.id IS NULL AND pagereports.crawl_id = ?
+		GROUP BY pagereports.id`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return pr
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pr = append(pr, p)
+	}
+
+	return pr
 }
 
 func FindInLinks(s string, cid int) []PageReport {
@@ -1416,7 +1448,7 @@ func countIssuesByCrawl(cid int) int {
 
 func findErrorTypesByPage(pid, cid int) []string {
 	var et []string
-	query := `SELECT error_type FROM issues WHERE pagereport_id = ? and crawl_id = ?`
+	query := `SELECT error_type FROM issues WHERE pagereport_id = ? and crawl_id = ? GROUP BY error_type`
 	rows, err := db.Query(query, pid, cid)
 	if err != nil {
 		log.Println(err)

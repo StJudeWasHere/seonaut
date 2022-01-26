@@ -18,6 +18,7 @@ const (
 	ErrorNoH1                  = "ERROR_NO_H1"
 	ErrorNoLang                = "ERROR_NO_LANG"
 	ErrorHTTPLinks             = "ERROR_HTTP_LINKS"
+	ErrorHreflangsReturnLink   = "ERROR_HREFLANG_RETURN"
 )
 
 type Issue struct {
@@ -59,6 +60,7 @@ func NewReportManager() *ReportManager {
 	r.addReporter(FindPageReportsWithoutH1, ErrorNoH1)
 	r.addReporter(FindPageReportsWithNoLangAttr, ErrorNoLang)
 	r.addReporter(FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
+	r.addReporter(FindMissingHrelangReturnLinks, ErrorHreflangsReturnLink)
 
 	return &r
 }

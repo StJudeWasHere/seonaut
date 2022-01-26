@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-24 10:27:40 +0000
+# Generation Time: 2022-01-26 16:39:59 +0000
 # ************************************************************
 
 
@@ -45,8 +45,11 @@ DROP TABLE IF EXISTS `hreflangs`;
 CREATE TABLE `hreflangs` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
-  `url` varchar(2000) NOT NULL DEFAULT '',
-  `lang` varchar(10) DEFAULT NULL,
+  `crawl_id` int(11) DEFAULT NULL,
+  `from_url` varchar(2000) DEFAULT NULL,
+  `from_lang` varchar(10) DEFAULT NULL,
+  `to_url` varchar(2000) NOT NULL DEFAULT '',
+  `to_lang` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -95,9 +98,10 @@ CREATE TABLE `links` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
   `url` varchar(2000) NOT NULL DEFAULT '',
+  `scheme` varchar(5) NOT NULL,
+  `external` tinyint(1) NOT NULL,
   `rel` varchar(100) DEFAULT NULL,
   `text` varchar(1000) DEFAULT NULL,
-  `external` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -112,6 +116,7 @@ CREATE TABLE `pagereports` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `crawl_id` int(11) unsigned NOT NULL,
   `url` varchar(2000) NOT NULL DEFAULT '',
+  `scheme` varchar(5) DEFAULT NULL,
   `redirect_url` varchar(2000) DEFAULT NULL,
   `refresh` varchar(2000) DEFAULT NULL,
   `status_code` int(11) NOT NULL,

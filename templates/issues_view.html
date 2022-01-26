@@ -109,6 +109,9 @@
 	<p><b>👷 Take action:</b> Change the links so they use HTTPS.</p>
 {{ end }}
 
+{{ if eq .Eid "ERROR_HTTP_LINKS" }}
+	<h2>Pages containing images with no alt attribute</h2>
+{{ end }}
 
 
 {{ $cid := .Cid }}

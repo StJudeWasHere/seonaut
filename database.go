@@ -1561,6 +1561,20 @@ func findUserByEmail(email string) *User {
 	return &u
 }
 
+func findUserById(id int) *User {
+	u := User{}
+	query := `SELECT id, email, password FROM users WHERE id = ?`
+
+	row := db.QueryRow(query, id)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	if err != nil {
+		log.Println(err)
+		return &u
+	}
+
+	return &u
+}
+
 func findCrawlUserId(cid int) (*User, error) {
 	u := User{}
 	query := `

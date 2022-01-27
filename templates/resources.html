@@ -1,5 +1,6 @@
 {{ template "head" . }}
 
+{{ with .Data }}
 <h1 class="title">Resources</h1>
 <div class="action">
 	<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a>
@@ -129,5 +130,5 @@
 
 {{ template "pagereport" .PageReport }}
 </div>
-
+{{ end }}
 {{ template "footer" . }}

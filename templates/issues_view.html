@@ -1,5 +1,6 @@
 {{ template "head" . }}
 
+{{ with .Data }}
 <h1 class="title">
 {{ if eq .Eid "ERROR_50x" }}Pages are throwing errors{{ end }}
 {{ if eq .Eid "ERROR_40x" }}Pages are missing{{ end }}
@@ -44,4 +45,6 @@
 	<p><b>Everything is ok</b></p>
 {{ end }}
 </div>
+
+{{ end }}
 {{ template "footer" . }}

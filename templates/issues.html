@@ -1,5 +1,6 @@
 {{ template "head" . }}
 
+{{ with .Data }}
 <h1 class="title">{{ .Project.URL }}</h1>
 <div class="action">
 	<a href="/">&larr; Back</a>
@@ -226,5 +227,6 @@
 		{{ end }}
 	{{ end}}
 </div>
+{{ end}}
 
 {{ template "footer" . }}

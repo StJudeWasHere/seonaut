@@ -99,11 +99,21 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 		views = append(views, pv)
 	}
 
-	renderTemplate(w, "home", views)
+	u := findUserById(uid)
+	v := &PageView{
+		Data:      views,
+		User:      *u,
+		PageTitle: "PROJECTS_VIEW",
+	}
+
+	renderTemplate(w, "home", v)
 }
 
 func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 	var url string
+
+	session, _ := cookie.Get(r, "SESSION_ID")
+	uid := session.Values["uid"].(int)
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
@@ -112,15 +122,18 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		}
 		url = r.FormValue("url")
 
-		session, _ := cookie.Get(r, "SESSION_ID")
-		uid := session.Values["uid"].(int)
-
 		saveProject(url, uid)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	renderTemplate(w, "project_add", struct{}{})
+	u := findUserById(uid)
+	v := &PageView{
+		User:      *u,
+		PageTitle: "ADD_PROJECT",
+	}
+
+	renderTemplate(w, "project_add", v)
 }
 
 func serveCrawl(w http.ResponseWriter, r *http.Request) {
@@ -181,7 +194,7 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	renderTemplate(w, "issues", IssuesGroupView{
+	ig := IssuesGroupView{
 		IssuesGroups:    issueGroups,
 		Crawl:           crawl,
 		Project:         project,
@@ -189,7 +202,15 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 		MediaCount:      CountByMediaType(cid),
 		StatusCodeCount: CountByStatusCode(cid),
 		TotalIssues:     countIssuesByCrawl(cid),
-	})
+	}
+
+	v := &PageView{
+		Data:      ig,
+		User:      *u,
+		PageTitle: "ISSUES_VIEW",
+	}
+
+	renderTemplate(w, "issues", v)
 }
 
 func serveIssuesView(w http.ResponseWriter, r *http.Request) {
@@ -219,7 +240,13 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		PageReports: issues,
 	}
 
-	renderTemplate(w, "issues_view", view)
+	v := &PageView{
+		Data:      view,
+		User:      *u,
+		PageTitle: "ISSUES_DETAIL",
+	}
+
+	renderTemplate(w, "issues_view", v)
 }
 
 func serveResourcesView(w http.ResponseWriter, r *http.Request) {
@@ -254,12 +281,20 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	errorTypes := findErrorTypesByPage(rid, cid)
 	inLinks := FindInLinks(pageReport.URL, cid)
 
-	renderTemplate(w, "resources", ResourcesView{
+	rv := ResourcesView{
 		PageReport: pageReport,
 		Cid:        cid, Eid: eid,
 		ErrorTypes: errorTypes,
 		InLinks:    inLinks,
-	})
+	}
+
+	v := &PageView{
+		Data:      rv,
+		User:      *u,
+		PageTitle: "RESOURCES_VIEW",
+	}
+
+	renderTemplate(w, "resources", v)
 }
 
 func serveSignup(w http.ResponseWriter, r *http.Request) {
@@ -288,7 +323,11 @@ func serveSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderTemplate(w, "signup", struct{}{})
+	v := &PageView{
+		PageTitle: "SIGNUP_VIEW",
+	}
+
+	renderTemplate(w, "signup", v)
 }
 
 func serveSignin(w http.ResponseWriter, r *http.Request) {
@@ -324,7 +363,11 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderTemplate(w, "signin", struct{}{})
+	v := &PageView{
+		PageTitle: "SIGNIN_VIEW",
+	}
+
+	renderTemplate(w, "signin", v)
 }
 
 func serveSignout(w http.ResponseWriter, r *http.Request) {

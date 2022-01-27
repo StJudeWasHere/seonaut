@@ -6,7 +6,13 @@ import (
 	"net/http"
 )
 
-func renderTemplate(w http.ResponseWriter, t string, d interface{}) {
+type PageView struct {
+	PageTitle string
+	User      User
+	Data      interface{}
+}
+
+func renderTemplate(w http.ResponseWriter, t string, v *PageView) {
 	var templates = template.Must(
 		template.ParseFiles(
 			"templates/footer.html",
@@ -22,7 +28,7 @@ func renderTemplate(w http.ResponseWriter, t string, d interface{}) {
 			"templates/signup.html",
 		))
 
-	err := templates.ExecuteTemplate(w, t+".html", d)
+	err := templates.ExecuteTemplate(w, t+".html", v)
 	if err != nil {
 		log.Println(err)
 	}

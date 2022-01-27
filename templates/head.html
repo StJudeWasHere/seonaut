@@ -1,7 +1,35 @@
 {{ define "head" }}
 <html>
 <head>
-	<title>Reports</title>
+	<title>
+		{{ if eq .PageTitle "PROJECTS_VIEW"}}
+			Projects
+		{{ end }}
+
+		{{ if eq .PageTitle "ADD_PROJECT"}}
+			Add project
+		{{ end }}
+
+		{{ if eq .PageTitle "ISSUES_VIEW"}}
+			Project Issues
+		{{ end }}
+
+		{{ if eq .PageTitle "ISSUES_DETAIL"}}
+			Issues Detail
+		{{ end }}
+
+		{{ if eq .PageTitle "RESOURCES_VIEW"}}
+			Page Resources
+		{{ end }}
+
+		{{ if eq .PageTitle "SIGNUP_VIEW"}}
+			Sign Up
+		{{ end }}
+
+		{{ if eq .PageTitle "SIGNIN_VIEW"}}
+			Sign In
+		{{ end }}
+	</title>
 	<style>
 		@font-face {
 		  font-family: 'Fira Code';
@@ -66,6 +94,9 @@
 		small {
 			font-weight: 300;
 			font-size: .8rem;
+		}
+		form {
+			margin-bottom: 3rem;
 		}
 		h2 {
 			margin-bottom: .5rem;
@@ -178,6 +209,9 @@
 </head>
 <body>
 	<div id="header">
-		<span class="logo"><a href="/">SEO</a></span> <span class="logout"><a href="/signout">Logout</a></span>
+		<span class="logo"><a href="/">SEO</a></span>
+		{{ if .User.Id }}
+			<span class="logout"><a href="/signout">Logout</a></span>
+		{{ end }}
 	</div>
 {{ end }}

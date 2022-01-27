@@ -6,7 +6,7 @@
 	{{ if .Links }}
 		<ul class="url-list">
 			{{ range .Links }}
-			<li class="url">{{ .URL }}</li>
+			<li class="url">{{ if .Text }}<b>{{ .Text }} -</b> {{ end }}{{ .URL }}</li>
 			{{ end }}
 		</ul>
 	{{ else }}
@@ -21,7 +21,7 @@
 	{{ if .ExternalLinks }}
 		<ul class="url-list">
 			{{ range .ExternalLinks }}
-			<li class="url">{{ .URL }}</li>
+			<li class="url">{{ if .Text }}<b>{{ .Text }} -</b> {{ end }}{{ .URL }}</li>
 			{{ end }}
 		</ul>
 	{{ else }}

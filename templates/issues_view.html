@@ -35,7 +35,7 @@
 		<li>
 			<div>
 				{{ if .Title }}{{ .Title }}<br />{{ end }}
-				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .URL }}</a>
+				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
 			<div>
 		</li>
 	{{ end }}

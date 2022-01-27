@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-26 16:39:59 +0000
+# Generation Time: 2022-01-27 09:15:40 +0000
 # ************************************************************
 
 
@@ -97,12 +97,16 @@ DROP TABLE IF EXISTS `links`;
 CREATE TABLE `links` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
+  `crawl_id` int(11) DEFAULT NULL,
   `url` varchar(2000) NOT NULL DEFAULT '',
   `scheme` varchar(5) NOT NULL,
   `external` tinyint(1) NOT NULL,
   `rel` varchar(100) DEFAULT NULL,
   `text` varchar(1000) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `url_hash` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `links_external` (`pagereport_id`),
+  KEY `links_hash` (`url_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -131,8 +135,10 @@ CREATE TABLE `pagereports` (
   `h2` varchar(1000) DEFAULT NULL,
   `words` int(11) DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
+  `url_hash` varchar(500) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `pagereport_crawl` (`crawl_id`),
+  KEY `pagereport_hash` (`url_hash`),
   CONSTRAINT `pagereport_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -164,7 +170,8 @@ CREATE TABLE `scripts` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
   `url` varchar(2000) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `scripts_pagereport` (`pagereport_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -178,7 +185,8 @@ CREATE TABLE `styles` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
   `url` varchar(2000) NOT NULL DEFAULT '',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `styles_pagereport` (`pagereport_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

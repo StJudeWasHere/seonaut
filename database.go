@@ -23,10 +23,12 @@ func init() {
 }
 
 func savePageReport(r *PageReport, cid int64) {
+	urlHash := hash(r.URL)
 	query := `
 		INSERT INTO pagereports (
 			crawl_id,
 			url,
+			url_hash,
 			scheme,
 			redirect_url,
 			refresh,
@@ -43,7 +45,7 @@ func savePageReport(r *PageReport, cid int64) {
 			words,
 			size
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -55,6 +57,7 @@ func savePageReport(r *PageReport, cid int64) {
 	res, err := stmt.Exec(
 		cid,
 		r.URL,
+		urlHash,
 		r.parsedURL.Scheme,
 		r.RedirectURL,
 		r.Refresh,
@@ -84,11 +87,12 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Links) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, url, scheme, rel, text, external) values "
+		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, text, external, url_hash) values "
 		v := []interface{}{}
 		for _, l := range r.Links {
-			sqlString += "(?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External)
+			hash := hash(l.URL)
+			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External, hash)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := db.Prepare(sqlString)
@@ -1048,7 +1052,7 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 			HAVING c > 1
 		) d 
 		ON d.description = y.description
-		WHERE media_type = "text/html" AND length(y.description) > 0 AND crawl_id = ?`
+		WHERE y.media_type = "text/html" AND length(y.description) > 0 AND y.crawl_id = ?`
 
 	rows, err := db.Query(query, cid, cid)
 	if err != nil {
@@ -1174,7 +1178,7 @@ func FindPageReportsWithHTTPLinks(cid int) []PageReport {
 			pagereports.title
 		FROM pagereports
 		LEFT JOIN links ON links.pagereport_id = pagereports.id
-		WHERE pagereports.scheme = "https" AND links.scheme = "http" AND crawl_id = ? AND links.external = false
+		WHERE pagereports.scheme = "https" AND links.scheme = "http" AND pagereports.crawl_id = ? AND links.external = false
 		GROUP BY links.pagereport_id
 		HAVING count(links.pagereport_id) > 1`
 
@@ -1232,6 +1236,7 @@ func FindMissingHrelangReturnLinks(cid int) []PageReport {
 }
 
 func FindInLinks(s string, cid int) []PageReport {
+	hash := hash(s)
 	pr := []PageReport{}
 	query := `
 		SELECT 
@@ -1240,10 +1245,10 @@ func FindInLinks(s string, cid int) []PageReport {
 			pagereports.Title
 		FROM links
 		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
-		WHERE links.url = ? AND pagereports.url != ? AND pagereports.crawl_id = ?
+		WHERE links.url_hash = ? AND pagereports.url_hash != ? AND pagereports.crawl_id = ?
 		GROUP BY pagereports.id`
 
-	rows, err := db.Query(query, s, s, cid)
+	rows, err := db.Query(query, hash, hash, cid)
 	if err != nil {
 		log.Println(err)
 		return pr

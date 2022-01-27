@@ -91,7 +91,7 @@
 		label {
 			display: block;
 		}
-		small {
+		small, .url {
 			font-weight: 300;
 			font-size: .8rem;
 		}
@@ -152,13 +152,18 @@
 			list-style: none;
 			margin: 0;
 			padding: 0;
+			max-width: 80ch;
 		}
 		.url-list li {
 			padding: 1rem 0;
 		}
+		.url-list li.url {
+			padding: 0;
+		}
 		.url-list a {
 			color: black;
 			text-decoration: none;
+			font-weight: 300;
 		}
 		.url-list .description {
 			font-size: .8rem;
@@ -185,6 +190,15 @@
 			color: black;
 
 		}
+		.link-out {
+			border-bottom: none;;
+		}
+		.pagereport-title {
+			margin-bottom: 3rem;
+		}
+		.pagereport-errors {
+			margin-bottom: 3rem;
+		}
 		.issues {
 			margin-bottom: 3rem;
 			font-weight: 300;
@@ -197,13 +211,30 @@
 			border: 1px dotted black;
 			background-color: rgb(252,252,252);
 		}
+		.flex {
+			display: flex;
+			flex-direction: row;
+			margin-bottom: 3rem;
+		}
 		.col {
 			padding: 1.5rem 3rem;
 			width: 50%;
 		}
+		.page-details {
+			font-size: .8rem;
+			font-weight: 600;
+			max-width: 80ch;
+		}
 		.col li {
 			font-weight: 300;
 			font-size: .9rem;
+		}
+		.report-block {
+			margin-bottom: 9rem;
+			font-weight: 300;
+			border-top: 1px dotted black;
+			padding-top: 1.5rem;
+			max-width: 80ch;
 		}
 	</style>
 </head>

@@ -1,134 +1,168 @@
 {{ template "head" . }}
 
 {{ with .Data }}
-<h1 class="title">Resources</h1>
+<h1 class="title">Page Report</h1>
 <div class="action">
 	<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a>
 </div>
 
 <div class="content">
-{{ $cid := .Cid }}
-<h2>Issues:</h2>
-<p>This are the issues found in this page:</p>
-<ul>
-{{ range .ErrorTypes }}
-	{{ if eq . "ERROR_30x" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">Redirected page</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_40x" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">Page not found</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_50x" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">Error loading page</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_DUPLICATED_TITLE" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Duplicated title</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Duplicated description</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_EMPTY_TITLE" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">Empty or missing title</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_SHORT_TITLE" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Short title</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_LONG_TITLE" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Long title</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Empty or missing description</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Short description</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_LONG_DESCRIPTION" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Long description</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_LITTLE_CONTENT" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Page with little content</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_IMAGES_NO_ALT" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Contains images with no alt attribute</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_REDIRECT_CHAIN" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">Redirect chain</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_NO_H1" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Page doesn't have any H1 heading</a></li>
-	{{ end }}
-	{{ if eq . "ERROR_HREFLANG_RETURN" }}
-		<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
-	{{ end }}
-{{ end }}
-</ul>
-
-	<h2>Page details</h2>
-
-	{{ with .PageReport }}
-	<b>URL:</b> {{ .URL }} (<a href="{{ .URL }}" target="_blank">visit</a>)<br>
-	<b>Status code:</b> {{ .StatusCode }}<br>
 	
-	{{ if .Title }}
-		<b>Title:</b> {{ .Title }}<br>
-	{{ end }}
+	<a name="menu"></a>
+	<h2 class="pagereport-title">
+		{{ .PageReport.URL }} <a href="{{ .PageReport.URL }}" target="_blank" class="link-out">↗</a>
+	</h2>
 
-	{{ if .Description }}
-		<b>Description:</b> {{ .Description }}<br>
-	{{ end }}
+	<div class="flex" style="max-width: 80ch;">
+		<div class="col" style="padding:0rem">
+			Jump to:
+			<ul>
+				<li><a href="#details">Page details</a></li>
+				<li><a href="#inlinks">Internal urls linking to this page</a></li>
+				<li><a href="#internal">This page's internal links</a></li>
+				<li><a href="#external">This page's external links</a></li>
+				<li><a href="#images">Images in this page</a></li>
+				<li><a href="#hreflang">Hreflang links in this page</a></li>
+				<li><a href="#scripts">Scripts used by this page</a></li>
+				<li><a href="styles">Styles used on this page</a></li>
+			</ul>
+		</div>
 
-	{{ if .Robots }}
-		<b>Robots:</b> {{ .Robots }}<br>
-	{{ end }}
-
-	{{ if .RedirectURL }}
-		<b>Redirect URL:</b> {{ .RedirectURL }}<br>
-	{{ end }}
-
-	{{ if .Refresh }}
-		<b>Refresh:</b> {{ .Refresh }}<br>
-	{{ end }}
-
-	<b>Content Type:</b> {{ .ContentType }}<br>
+		<div class="col" style="padding:0rem">
+			{{ $cid := .Cid }}
+			<p>This page has:</p>
+			<ul class="pagereport-errors">
+				{{ range .ErrorTypes }}
+				{{ if eq . "ERROR_30x" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">redirected page</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_40x" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">page not found</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_50x" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">rrror loading page</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_DUPLICATED_TITLE" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">duplicated title</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">duplicated description</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_EMPTY_TITLE" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">empty or missing title</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_SHORT_TITLE" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">short title</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_LONG_TITLE" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">long title</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">empty or missing description</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">short description</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_LONG_DESCRIPTION" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">long description</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_LITTLE_CONTENT" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">page with little content</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_IMAGES_NO_ALT" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">images with no alt attribute</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_REDIRECT_CHAIN" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">a redirect chain</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_NO_H1" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">missing H1 heading</a></li>
+				{{ end }}
+				{{ if eq . "ERROR_HREFLANG_RETURN" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
+				{{ end }}
+				{{ end }}
+			</ul>
+		</div>
+	</div>
 	
-	{{ if .Lang }}
-		<b>Lang:</b> {{ .Lang }}<br>
-	{{ end }}
+	<a name="details"></a>
+	<div class="report-block">
+		<h2>Page details</h2>
+		<div class="page-details">
+		{{ with .PageReport }}
+		<div>Status Code: <small>{{ .StatusCode }}</small><br></div>
+		<div>Content Type: <small>{{ .ContentType }}</small><br></div>
 
-	{{ if .Canonical }}
-		<b>Canonical:</b> {{ .Canonical }}<br>
-	{{ end }}
 
-	{{ if .H1 }}
-		<b>H1:</b> {{ .H1 }}<br>
-	{{ end }}
+		{{ if .Words }}
+			<div>Words: <small>{{ .Words }}</small><br></div>
+		{{ end }}
 
-	{{ if .H2 }}
-		<b>H2:</b> {{ .H2 }}<br>
-	{{ end }}
+		{{ if .Size }}
+			<div>Size: <small>{{ .SizeInKB }}KB</small><br></div>
+		{{ end }}
 
-	{{ if .Words }}
-		<b>Words:</b> {{ .Words }}<br>
-	{{ end }}
+		{{ if .Title }}
+			<div>Title: <small>{{ .Title }}</small><br></div>
+		{{ end }}
 
-	{{ if .Size }}
-		<b>Size:</b> {{ .SizeInKB }}KB<br>
-	{{ end }}
-	{{ end }}
+		{{ if .Description }}
+			<div>Description: <small>{{ .Description }}</small><br></div>
+		{{ end }}
 
+		{{ if .Robots }}
+			<div>Robots: <small>{{ .Robots }}</small><br></div>
+		{{ end }}
+
+		{{ if .RedirectURL }}
+			<div>Redirect URL: <small>{{ .RedirectURL }}</small><br></div>
+		{{ end }}
+
+		{{ if .Refresh }}
+			<div>Refresh: <small>{{ .Refresh }}</small><br></div>
+		{{ end }}
+
+		{{ if .Lang }}
+			<div>Lang: <small>{{ .Lang }}</small><br></div>
+		{{ end }}
+
+		{{ if .Canonical }}
+			<div>Canonical: <small>{{ .Canonical }}</small><br></div>
+		{{ end }}
+
+		{{ if .H1 }}
+			<div>H1: <small>{{ .H1 }}</small><br></div>
+		{{ end }}
+
+		{{ if .H2 }}
+			<div>H2: <small>{{ .H2 }}</small><br></div>
+		{{ end }}
+
+		{{ end }}
+	</div>
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
+
+	<a name="inlinks"></a>
+	<div class="report-block">
 	{{ if .InLinks }}
-		<h2>Incoming Links:</h2>
+		<h2>Incoming Links</h2>
 		<ul class="url-list">
 			{{ range .InLinks }}
 			<li>
-				{{ if .Title }}<b>{{ .Title }}</b><br/>{{ end }}
+				{{ if .Title }}{{ .Title }}<br/>{{ end }}
 				<span class="url">{{ .URL }}</span>
 			</li>
 			{{ end }}
 		</ul>
+	{{ else }}
+		<small>There are no links to this page.</small>
 	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
 
-{{ template "pagereport" .PageReport }}
+	{{ template "pagereport" .PageReport }}
 </div>
 {{ end }}
 {{ template "footer" . }}

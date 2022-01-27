@@ -34,9 +34,8 @@
 	{{ range .PageReports }}
 		<li>
 			<div>
-				{{ if .Title }}<b><a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .Title }}</a></b><br />{{ end }}
-				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .URL }}</a><br>
-				{{ if .Description }}<div class="description">{{ .Description }}</div>{{ end }}
+				{{ if .Title }}{{ .Title }}<br />{{ end }}
+				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .URL }}</a>
 			<div>
 		</li>
 	{{ end }}

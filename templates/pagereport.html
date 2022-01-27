@@ -1,58 +1,94 @@
 {{ define "pagereport" }}
+
+	<a name="internal"></a>
+	<div class="report-block">
+		<h2>Internal Links</h2>
 	{{ if .Links }}
-		<h2>Internal Links:</h2>
 		<ul class="url-list">
 			{{ range .Links }}
 			<li class="url">{{ .URL }}</li>
 			{{ end }}
 		</ul>
+	{{ else }}
+		<small>There are no internal links in this page.</small>
 	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
 
-	{{ if .ExternalLinks }}
+	<a name="external"></a>
+	<div class="report-block">
 		<h2>External Links:</h2>
+	{{ if .ExternalLinks }}
 		<ul class="url-list">
 			{{ range .ExternalLinks }}
 			<li class="url">{{ .URL }}</li>
 			{{ end }}
 		</ul>
+	{{ else }}
+		<small>There are no external links in this page.</small>
 	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
 
-	<h2>Resources</h2>
-
+	<a name="images"></a>
+	<div class="report-block">
+		<h2>Images</h2>
 	{{ if .Images }}
-		<p><b>Images:</b></p>
 		<ul class="url-list">
 			{{ range .Images }}
-			<li>
-				{{ if .Alt}}<b>{{ .Alt }}</b><br>{{ end }} <span class="url">{{ .URL }}</span></li>
+			<li class="url">
+				{{ if .Alt}}<b>{{ .Alt }} -</b>{{ end }} <span class="url">{{ .URL }}</span></li>
 			{{ end }}
 		</ul>
+	{{ else }}
+		<small>There are no images in this page.</small>
 	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
 
+	<a name="hreflang"></a>
+	<div class="report-block">
+		<h2>Hreflang</h2>
 	{{ if .Hreflangs }}
-		<p><b>Hreflang:</b></p>
 		<ul class="url-list">
 			{{ range .Hreflangs }}
 			<li>{{ if .Lang }}<b>{{ .Lang }}<b><br/>{{ end }} <span class="url">{{ .URL }}</span></li>
 			{{ end }}
 		</ul>
+	{{ else }}
+		<small>There are no hreflang links in this page.</small>
 	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
 
+	<a name="scripts"></a>
+	<div class="report-block">
+		<h2>Scripts</h2>
 	{{ if .Scripts }}
-		<p><b>Scripts:</b></p>
 		<ul class="url-list">
 			{{ range .Scripts }}
 			<li class="url">{{ . }}</li>
 			{{ end }}
 		</ul>
+	{{ else }}
+		<small>There are no scripts in this page.</small>
 	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
 
+	<a name="scripts"></a>
+	<div class="report-block">
+		<h2>Styles</h2>
 	{{ if .Styles }}
-		<p><b>Styles:</b></p>
 		<ul class="url-list">
 			{{ range .Styles }}
 			<li class="url">{{ . }}</li>
 			{{ end }}
 		</ul>
+	{{ else }}
+		<small>There are no styles in this page.</small>
 	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
+
 {{ end }}

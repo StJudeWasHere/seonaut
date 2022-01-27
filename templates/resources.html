@@ -30,53 +30,54 @@
 
 		<div class="col">
 			{{ $cid := .Cid }}
+			{{ $eid := .Eid }}
 			<p>This page has:</p>
 			<ul class="pagereport-errors">
 				{{ range .ErrorTypes }}
 				{{ if eq . "ERROR_30x" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">redirected page</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">Redirected page</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_40x" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">page not found</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">Page not found</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_50x" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">rrror loading page</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">Error loading page</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_DUPLICATED_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">duplicated title</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Duplicated title</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">duplicated description</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Duplicated description</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_EMPTY_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">empty or missing title</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">Empty or missing title</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_SHORT_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">short title</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Short title</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_LONG_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">long title</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Long title</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">empty or missing description</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Empty or missing description</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">short description</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Short description</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_LONG_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">long description</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Long description</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_LITTLE_CONTENT" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">page with little content</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Page with little content</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_IMAGES_NO_ALT" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">images with no alt attribute</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Images with no alt attribute</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_REDIRECT_CHAIN" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">a redirect chain</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">A redirect chain</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_NO_H1" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">missing H1 heading</a></li>
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Missing H1 heading</a></li>
 				{{ end }}
 				{{ if eq . "ERROR_HREFLANG_RETURN" }}
 				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
@@ -152,7 +153,7 @@
 			{{ range .InLinks }}
 			<li>
 				{{ if .Title }}{{ .Title }}<br/>{{ end }}
-				<span class="url">{{ .URL }}</span>
+				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
 			</li>
 			{{ end }}
 		</ul>

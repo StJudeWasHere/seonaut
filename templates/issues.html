@@ -10,11 +10,11 @@
 	<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
 	<div class="flex-container">
 		<div class="col">
-			<h2>Crawled by media type: </h2>
+			<h2>Media Type:</h2>
 			{{ template "list" .MediaCount }}
 		</div>
 		<div class="col">
-			<h2>Crawled by status code: </h2>
+			<h2>Status Code:</h2>
 			{{ template "list" .StatusCodeCount }}
 		</div>
 	</div>
@@ -119,7 +119,7 @@
 			<h2>
 				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with duplicate description tags</a>
 			</h2>
-			<p>It is recomended to have unique descriptions for each page</p>
+			<p>It is recomended to have unique descriptions for each page so search engines can understand better your page.</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -176,7 +176,7 @@
 			<h2>
 				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no language attribute</a>
 			</h2>
-			<p>The language attribute is particularly usefull for screen readers, and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.</p>
+			<p>The language attribute is particularly usefull for screen readers and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.</p>
 		</div>
 		{{ end }}
 	{{ end }}

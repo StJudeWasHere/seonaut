@@ -33,20 +33,18 @@
 	<style>
 		@font-face {
 		  font-family: 'Fira Code';
-		  src: url('/resources/FiraCode-Regular.woff2') format('woff2'),
-		    url("/resources/FiraCode-Regular.woff") format("woff");
-		  font-weight: 400;
-		  font-style: normal;
-		}
-		
-		@font-face {
-		  font-family: 'Fira Code';
 		  src: url('/resources/FiraCode-Light.woff2') format('woff2'),
 		    url("/resources/FiraCode-Light.woff") format("woff");
 		  font-weight: 300;
 		  font-style: normal;
 		}
-		
+		@font-face {
+		  font-family: 'Fira Code';
+		  src: url('/resources/FiraCode-Regular.woff2') format('woff2'),
+		    url("/resources/FiraCode-Regular.woff") format("woff");
+		  font-weight: 400;
+		  font-style: normal;
+		}
 		@font-face {
 		  font-family: 'Fira Code';
 		  src: url('/resources/FiraCode-SemiBold.woff2') format('woff2'),
@@ -54,22 +52,29 @@
 		  font-weight: 600;
 		  font-style: normal;
 		}
-		
+
+		:root {
+			--main-bg-color: rgb(248, 248, 248);
+			--light-bg-color: rgb(252,252,252);
+			--primary-color: black;
+			--secondary-color: white;
+			--content-max-width: 80ch;
+		}
 
 		body {
 			font-family:'Fira Code', monospace, monospace;
 			line-height: 1.6rem;
 			font-size: 1rem;
 			padding: 3rem 2rem;
-			background-color: rgb(248, 248, 248);
+			background-color: var(--main-bg-color);
 		}
 		ul {
-			margin-top: 0;
+			margin: 0;
 		}
 		a {
-			color: black;
+			color: var(--primary-color);
 			text-decoration: none;
-			border-bottom: 1px dotted black;
+			border-bottom: 1px dotted var(--primary-color);
 		}
 		.action a {
 			font-weight: 300;
@@ -77,15 +82,15 @@
 		}
 		input {
 			font-size: inherit;
-			border: 1px solid black;
+			border: 1px solid var(--primary-color);
 			padding: .5rem;
 			display: block;
 			margin-bottom: 1rem;
 			width: 20rem;
-			background-color: rgb(252,252,252);
+			background-color: var(--light-bg-color);
 		}
 		input[type="submit"] {
-			background-color: rgb(252,252,252);
+			background-color: var(--light-bg-color);
 			width: auto;
 		}
 		label {
@@ -118,22 +123,14 @@
 			padding: 0;
 
 		}
-		.title a {
-			color: black;
-			font-weight: normal;
-			font-size: 1rem;
-			text-decoration: none;
-			float: right;
-			margin-left: 1rem;
-		}
 		.logo a {
-			color: white;
+			color: var(--secondary-color);
 			font-weight: bold;
 			text-decoration: none;
 			font-size: 1rem;
 			font-weight: 600;
 			line-height: 2rem;
-			background-color: black;
+			background-color: var(--primary-color);
 			padding: .5rem 6rem .5rem .5rem;
 			margin: 0;
 		}
@@ -152,7 +149,7 @@
 			list-style: none;
 			margin: 0;
 			padding: 0;
-			max-width: 80ch;
+			max-width: var(--content-max-width);
 		}
 		.url-list li {
 			padding: 1rem 0;
@@ -161,7 +158,7 @@
 			padding: 0;
 		}
 		.url-list a {
-			color: black;
+			color: var(--primary-color);
 			text-decoration: none;
 			font-weight: 300;
 		}
@@ -187,11 +184,10 @@
 			font-weight: 400;
 		}
 		.project-title a {
-			color: black;
-
+			color: var(--primary-color);
 		}
 		.link-out {
-			border-bottom: none;;
+			border-bottom: none;
 		}
 		.pagereport-title {
 			margin-bottom: 3rem;
@@ -202,19 +198,19 @@
 		.issues {
 			margin-bottom: 3rem;
 			font-weight: 300;
-			max-width: 80ch;
+			max-width: var(--content-max-width);
 		}
 		.flex-container {
 			display: flex;
 			flex-direction: row;
 			margin-bottom: 3rem;
-			max-width: 80ch;
+			max-width: var(--content-max-width);
 		}
 		.flex {
 			display: flex;
 			flex-direction: row;
 			margin-bottom: 3rem;
-			max-width: 80ch;
+			max-width: var(--content-max-width);
 		}
 		.col {
 			padding: 1.5rem 3rem;
@@ -232,9 +228,9 @@
 		.report-block {
 			margin-bottom: 9rem;
 			font-weight: 300;
-			border-top: 1px dotted black;
+			border-top: 1px dotted var(--primary-color);
 			padding-top: 1.5rem;
-			max-width: 80ch;
+			max-width: var(--content-max-width);
 		}
 	</style>
 </head>

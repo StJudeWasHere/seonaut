@@ -1,14 +1,13 @@
 {{ template "head" . }}
 
 {{ with .Data }}
+<a name="menu"></a>
 <h1 class="title">Page Report</h1>
 <div class="action">
 	<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a>
 </div>
 
 <div class="content">
-	
-	<a name="menu"></a>
 	<h2 class="pagereport-title">
 		{{ .PageReport.URL }} <a href="{{ .PageReport.URL }}" target="_blank" class="link-out">↗</a>
 	</h2>

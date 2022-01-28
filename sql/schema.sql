@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-28 16:15:38 +0000
+# Generation Time: 2022-01-28 20:20:33 +0000
 # ************************************************************
 
 
@@ -46,11 +46,16 @@ CREATE TABLE `hreflangs` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
   `crawl_id` int(11) DEFAULT NULL,
-  `from_url` varchar(2000) DEFAULT NULL,
   `from_lang` varchar(10) DEFAULT NULL,
   `to_url` varchar(2000) NOT NULL DEFAULT '',
   `to_lang` varchar(10) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `from_hash` varchar(256) DEFAULT NULL,
+  `to_hash` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `hreflangs_from_hash` (`from_hash`),
+  KEY `hreflangs_to_hash` (`to_hash`),
+  KEY `hreflangs_pagereport` (`pagereport_id`),
+  KEY `hreflangs_crawl` (`crawl_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

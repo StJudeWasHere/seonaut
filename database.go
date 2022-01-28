@@ -435,11 +435,11 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Hreflangs) > 0 {
-		sqlString := "INSERT INTO hreflangs (pagereport_id, crawl_id, from_url, from_lang, to_url, to_lang) values "
+		sqlString := "INSERT INTO hreflangs (pagereport_id, crawl_id, from_lang, to_url, to_lang, from_hash, to_hash) values "
 		v := []interface{}{}
 		for _, h := range r.Hreflangs {
-			sqlString += "(?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, r.URL, r.Lang, h.URL, h.Lang)
+			sqlString += "(?, ?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, hash(r.URL), hash(h.URL))
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ := db.Prepare(sqlString)
@@ -891,7 +891,7 @@ func FindMissingHrelangReturnLinks(cid int) []PageReport {
 			pagereports.Title
 		FROM hreflangs
 		LEFT JOIN pagereports ON hreflangs.pagereport_id = pagereports.id
-		LEFT JOIN hreflangs b ON hreflangs.from_url = b.to_url
+		LEFT JOIN hreflangs b ON hreflangs.from_hash = b.to_hash
 		WHERE b.id IS NULL AND pagereports.crawl_id = ?
 		GROUP BY pagereports.id`
 

@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-27 09:15:40 +0000
+# Generation Time: 2022-01-28 16:15:38 +0000
 # ************************************************************
 
 
@@ -135,10 +135,12 @@ CREATE TABLE `pagereports` (
   `h2` varchar(1000) DEFAULT NULL,
   `words` int(11) DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
-  `url_hash` varchar(500) DEFAULT NULL,
+  `url_hash` varchar(256) DEFAULT NULL,
+  `redirect_hash` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `pagereport_crawl` (`crawl_id`),
   KEY `pagereport_hash` (`url_hash`),
+  KEY `redirect_hash` (`redirect_hash`),
   CONSTRAINT `pagereport_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

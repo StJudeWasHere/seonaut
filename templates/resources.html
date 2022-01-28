@@ -18,6 +18,7 @@
 			<ul>
 				<li><a href="#details">Page details</a></li>
 				<li><a href="#inlinks">Internal urls linking to this page</a></li>
+				<li><a href="#redirects">Redirecting to this page</a></li>
 				<li><a href="#internal">This page's internal links</a></li>
 				<li><a href="#external">This page's external links</a></li>
 				<li><a href="#images">Images in this page</a></li>
@@ -160,6 +161,24 @@
 		</ul>
 	{{ else }}
 		<small>There are no links to this page.</small>
+	{{ end }}
+		<div class="action"><a href="#menu">top</a></div>
+	</div>
+
+	<a name="redirects"></a>
+	<div class="report-block">
+		<h2>Redirecting to this page</h2>
+	{{ if .Redirects }}
+		<ul class="url-list">
+			{{ range .Redirects }}
+			<li>
+				{{ if .Title }}{{ .Title }}<br/>{{ end }}
+				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+			</li>
+			{{ end }}
+		</ul>
+	{{ else }}
+		<small>There are no redirects to this page.</small>
 	{{ end }}
 		<div class="action"><a href="#menu">top</a></div>
 	</div>

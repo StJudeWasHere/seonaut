@@ -322,6 +322,11 @@ func findErrorTypesByPage(pid, cid int) []string {
 
 func savePageReport(r *PageReport, cid int64) {
 	urlHash := hash(r.URL)
+	var redirectHash string
+	if r.RedirectURL != "" {
+		redirectHash = hash(r.RedirectURL)
+	}
+
 	query := `
 		INSERT INTO pagereports (
 			crawl_id,
@@ -329,6 +334,7 @@ func savePageReport(r *PageReport, cid int64) {
 			url_hash,
 			scheme,
 			redirect_url,
+			redirect_hash,
 			refresh,
 			status_code,
 			content_type,
@@ -343,7 +349,7 @@ func savePageReport(r *PageReport, cid int64) {
 			words,
 			size
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
@@ -358,6 +364,7 @@ func savePageReport(r *PageReport, cid int64) {
 		urlHash,
 		r.parsedURL.Scheme,
 		r.RedirectURL,
+		redirectHash,
 		r.Refresh,
 		r.StatusCode,
 		r.ContentType,
@@ -641,6 +648,19 @@ func FindPageReportById(rid int) PageReport {
 	}
 
 	return p
+}
+
+func FindPageReportsRedirectingToURL(u string, cid int) []PageReport {
+	uh := hash(u)
+	query := `
+		SELECT
+			id,
+			url,
+			title
+		FROM pagereports
+		WHERE redirect_hash = ? AND crawl_id = ?`
+
+	return pageReportsQuery(query, uh, cid)
 }
 
 func FindPageReportsWithEmptyTitle(cid int) []PageReport {

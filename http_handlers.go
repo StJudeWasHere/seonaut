@@ -49,6 +49,7 @@ type ResourcesView struct {
 	Eid        string
 	ErrorTypes []string
 	InLinks    []PageReport
+	Redirects  []PageReport
 }
 
 type Crawl struct {
@@ -280,12 +281,14 @@ func serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	pageReport := FindPageReportById(rid)
 	errorTypes := findErrorTypesByPage(rid, cid)
 	inLinks := FindInLinks(pageReport.URL, cid)
+	redirects := FindPageReportsRedirectingToURL(pageReport.URL, cid)
 
 	rv := ResourcesView{
 		PageReport: pageReport,
 		Cid:        cid, Eid: eid,
 		ErrorTypes: errorTypes,
 		InLinks:    inLinks,
+		Redirects:  redirects,
 	}
 
 	v := &PageView{

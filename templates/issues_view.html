@@ -20,11 +20,11 @@
 {{ if eq .Eid "ERROR_NO_LANG" }}Pages with no language attribute{{ end }}
 {{ if eq .Eid "ERROR_HTTP_LINKS" }}Links from pages using HTTPS to pages using HTTP{{ end }}
 {{ if eq .Eid "ERROR_HTTP_LINKS" }}Pages containing images with no alt attribute{{ end }}
+{{ if eq .Eid "ERROR_HREFLANG_RETURN" }}Pages with hreflangs without its corresponding return link{{ end }}
 </h1>
 <div class="action">
 	<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a>
 </div>
-
 
 <div class="content">
 {{ $cid := .Cid }}

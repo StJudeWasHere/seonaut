@@ -198,8 +198,13 @@ func (pageReport *PageReport) parse() {
 	hreflang := htmlquery.Find(doc, "//link[@rel=\"alternate\"]")
 	for _, n := range hreflang {
 		if htmlquery.ExistsAttr(n, "hreflang") {
+			l, err := pageReport.absoluteURL(htmlquery.SelectAttr(n, "href"))
+			if err != nil {
+				continue
+			}
+
 			h := Hreflang{
-				URL:  htmlquery.SelectAttr(n, "href"),
+				URL:  l.String(),
 				Lang: htmlquery.SelectAttr(n, "hreflang"),
 			}
 			pageReport.Hreflangs = append(pageReport.Hreflangs, h)

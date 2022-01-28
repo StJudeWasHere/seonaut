@@ -281,8 +281,8 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	l := Link{
 		URL:       u.String(),
 		parsedUrl: u,
-		Rel:       htmlquery.SelectAttr(n, "rel"),
-		Text:      htmlquery.InnerText(n),
+		Rel:       strings.TrimSpace(htmlquery.SelectAttr(n, "rel")),
+		Text:      strings.TrimSpace(htmlquery.InnerText(n)),
 		External:  u.Host != p.parsedURL.Host,
 	}
 

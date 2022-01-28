@@ -31,7 +31,8 @@
 		<div class="col">
 			{{ $cid := .Cid }}
 			{{ $eid := .Eid }}
-			<p>This page has:</p>
+			{{ if .ErrorTypes }}
+			This page has:
 			<ul class="pagereport-errors">
 				{{ range .ErrorTypes }}
 				{{ if eq . "ERROR_30x" }}
@@ -81,6 +82,7 @@
 				{{ end }}
 				{{ if eq . "ERROR_HREFLANG_RETURN" }}
 				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
+				{{ end }}
 				{{ end }}
 				{{ end }}
 			</ul>

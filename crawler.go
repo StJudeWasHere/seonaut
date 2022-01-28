@@ -15,6 +15,7 @@ const (
 	userAgent       = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15"
 	consumerThreads = 2
 	storageMaxSize  = 10000
+	MaxPageReports  = 10000
 )
 
 type Crawler struct{}
@@ -55,9 +56,17 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 		&queue.InMemoryQueueStorage{MaxSize: storageMaxSize},
 	)
 
+	var responseCounter int
+
 	handleResponse := func(r *colly.Response) {
+		if responseCounter >= MaxPageReports {
+			return
+		}
+
 		pageReport := NewPageReport(r.Request.URL, r.StatusCode, r.Headers, r.Body)
 		pr <- *pageReport
+
+		responseCounter++
 
 		for _, l := range pageReport.Links {
 			if strings.Contains(l.Rel, "nofollow") {

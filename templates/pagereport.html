@@ -6,13 +6,16 @@
 	{{ if .Links }}
 		<ul class="url-list">
 			{{ range .Links }}
-			<li class="url">{{ if .Text }}<b>{{ .Text }} -</b> {{ end }}{{ .URL }}</li>
+			<li>
+				{{ if .Text }}{{ .Text }}<br/>{{ end }}
+				<span class="url">{{ .URL }}</span>
+			</li>
 			{{ end }}
 		</ul>
 	{{ else }}
 		<small>There are no internal links in this page.</small>
 	{{ end }}
-		<div class="action"><a href="#menu">top</a></div>
+		<div class="action"><a href="#menu">↑ top</a></div>
 	</div>
 
 	<a name="external"></a>
@@ -21,13 +24,16 @@
 	{{ if .ExternalLinks }}
 		<ul class="url-list">
 			{{ range .ExternalLinks }}
-			<li class="url">{{ if .Text }}<b>{{ .Text }} -</b> {{ end }}{{ .URL }}</li>
+			<li>
+				{{ if .Text }}{{ .Text }} <br> {{ end }}
+				<span class="url">{{ .URL }}</span>
+			</li>
 			{{ end }}
 		</ul>
 	{{ else }}
 		<small>There are no external links in this page.</small>
 	{{ end }}
-		<div class="action"><a href="#menu">top</a></div>
+		<div class="action"><a href="#menu">↑ top</a></div>
 	</div>
 
 	<a name="images"></a>
@@ -36,14 +42,16 @@
 	{{ if .Images }}
 		<ul class="url-list">
 			{{ range .Images }}
-			<li class="url">
-				{{ if .Alt}}<b>{{ .Alt }} -</b>{{ end }} <span class="url">{{ .URL }}</span></li>
+			<li>
+				{{ if .Alt}}{{ .Alt }} <br>{{ end }}
+				<span class="url">{{ .URL }}</span>
+			</li>
 			{{ end }}
 		</ul>
 	{{ else }}
 		<small>There are no images in this page.</small>
 	{{ end }}
-		<div class="action"><a href="#menu">top</a></div>
+		<div class="action"><a href="#menu">↑ top</a></div>
 	</div>
 
 	<a name="hreflang"></a>
@@ -52,13 +60,16 @@
 	{{ if .Hreflangs }}
 		<ul class="url-list">
 			{{ range .Hreflangs }}
-			<li>{{ if .Lang }}<b>{{ .Lang }}<b><br/>{{ end }} <span class="url">{{ .URL }}</span></li>
+			<li>
+				{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
+				<span class="url">{{ .URL }}</span>
+			</li>
 			{{ end }}
 		</ul>
 	{{ else }}
 		<small>There are no hreflang links in this page.</small>
 	{{ end }}
-		<div class="action"><a href="#menu">top</a></div>
+		<div class="action"><a href="#menu">↑ top</a></div>
 	</div>
 
 	<a name="scripts"></a>
@@ -73,7 +84,7 @@
 	{{ else }}
 		<small>There are no scripts in this page.</small>
 	{{ end }}
-		<div class="action"><a href="#menu">top</a></div>
+		<div class="action"><a href="#menu">↑ top</a></div>
 	</div>
 
 	<a name="scripts"></a>
@@ -88,7 +99,7 @@
 	{{ else }}
 		<small>There are no styles in this page.</small>
 	{{ end }}
-		<div class="action"><a href="#menu">top</a></div>
+		<div class="action"><a href="#menu">↑ top</a></div>
 	</div>
 
 {{ end }}

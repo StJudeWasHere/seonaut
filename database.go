@@ -22,6 +22,304 @@ func init() {
 	}
 }
 
+func CountCrawled(cid int) int {
+	row := db.QueryRow("SELECT count(*) FROM pagereports WHERE crawl_id = ?", cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Println(err)
+	}
+
+	return c
+}
+
+func CountByMediaType(cid int) map[string]int {
+	m := make(map[string]int)
+
+	rows, err := db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
+	if err != nil {
+		log.Println(err)
+		return m
+	}
+
+	for rows.Next() {
+		var i string
+		var v int
+		err := rows.Scan(&i, &v)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		m[i] = v
+	}
+	return m
+}
+
+func userSignup(user, password string) {
+	query := `INSERT INTO users (email, password) VALUES (?, ?)`
+	stmt, _ := db.Prepare(query)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(user, password)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func findUserByEmail(email string) *User {
+	u := User{}
+	query := `SELECT id, email, password FROM users WHERE email = ?`
+
+	row := db.QueryRow(query, email)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	if err != nil {
+		log.Println(err)
+		return &u
+	}
+
+	return &u
+}
+
+func findUserById(id int) *User {
+	u := User{}
+	query := `SELECT id, email, password FROM users WHERE id = ?`
+
+	row := db.QueryRow(query, id)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	if err != nil {
+		log.Println(err)
+		return &u
+	}
+
+	return &u
+}
+
+func findCrawlUserId(cid int) (*User, error) {
+	u := User{}
+	query := `
+		SELECT 
+			users.id,
+			users.email,
+			users.password
+		FROM crawls
+		LEFT JOIN projects ON projects.id = crawls.project_id
+		LEFT JOIN users ON projects.user_id = users.id
+		WHERE crawls.id = ?`
+
+	row := db.QueryRow(query, cid)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	if err != nil {
+		log.Println(err)
+		return &u, err
+	}
+
+	return &u, nil
+}
+
+func CountByStatusCode(cid int) map[int]int {
+	m := make(map[int]int)
+	query := `
+		SELECT
+			status_code,
+			count(*)
+		FROM pagereports
+		WHERE crawl_id = ?
+		GROUP BY status_code`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return m
+	}
+
+	for rows.Next() {
+		var i int
+		var v int
+		err := rows.Scan(&i, &v)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		m[i] = v
+	}
+	return m
+}
+
+func saveCrawl(p Project) int64 {
+	stmt, _ := db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
+	defer stmt.Close()
+	res, err := stmt.Exec(p.Id)
+
+	if err != nil {
+		log.Printf("Error in SaveCrawl\nProject: %+v\nError: %+v\n", p, err)
+		return 0
+	}
+
+	cid, err := res.LastInsertId()
+	if err != nil {
+		log.Println(err)
+		return 0
+	}
+
+	return cid
+}
+
+func saveEndCrawl(cid int64, t time.Time) {
+	stmt, _ := db.Prepare("UPDATE crawls SET end = ? WHERE id = ?")
+	defer stmt.Close()
+	_, err := stmt.Exec(t, cid)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func getLastCrawl(p *Project) Crawl {
+	row := db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY start DESC LIMIT 1", p.Id)
+
+	crawl := Crawl{}
+	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)
+	if err != nil {
+		log.Println(err)
+	}
+
+	return crawl
+}
+
+func saveProject(s string, uid int) {
+	stmt, _ := db.Prepare("INSERT INTO projects (url, user_id) VALUES (?, ?)")
+	defer stmt.Close()
+	_, err := stmt.Exec(s, uid)
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func findProjectsByUser(uid int) []Project {
+	var projects []Project
+	rows, err := db.Query("SELECT id, url, created FROM projects WHERE user_id = ?", uid)
+	if err != nil {
+		log.Println(err)
+		return projects
+	}
+
+	for rows.Next() {
+		p := Project{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Created)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		projects = append(projects, p)
+	}
+
+	return projects
+}
+
+func findCrawlById(cid int) Crawl {
+	row := db.QueryRow("SELECT id, project_id, start, end FROM crawls WHERE id = ?", cid)
+
+	c := Crawl{}
+	err := row.Scan(&c.Id, &c.ProjectId, &c.Start, &c.End)
+	if err != nil {
+		log.Println(err)
+		return c
+	}
+
+	return c
+}
+
+func findProjectById(id int, uid int) (Project, error) {
+	row := db.QueryRow("SELECT id, url, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
+
+	p := Project{}
+	err := row.Scan(&p.Id, &p.URL, &p.Created)
+	if err != nil {
+		log.Println(err)
+		return p, err
+	}
+
+	return p, nil
+}
+
+func saveIssues(issues []Issue, cid int) {
+	query := `
+		INSERT INTO issues (pagereport_id, crawl_id, error_type)
+		VALUES (?, ?, ?)`
+
+	stmt, _ := db.Prepare(query)
+	defer stmt.Close()
+
+	for _, i := range issues {
+		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType)
+		if err != nil {
+			log.Println(err)
+			log.Printf("saveIssues -> ID: %d ERROR: %s CRAWL: %d\n", i.PageReportId, i.ErrorType, cid)
+			continue
+		}
+	}
+}
+
+func findIssues(cid int) map[string]IssueGroup {
+	issues := map[string]IssueGroup{}
+	query := `
+		SELECT
+			error_type,
+			count(*)
+		FROM issues
+		WHERE crawl_id = ? GROUP BY error_type`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return issues
+	}
+
+	for rows.Next() {
+		ig := IssueGroup{}
+		err := rows.Scan(&ig.ErrorType, &ig.Count)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		issues[ig.ErrorType] = ig
+	}
+
+	return issues
+}
+
+func countIssuesByCrawl(cid int) int {
+	var c int
+	row := db.QueryRow("SELECT count(*) FROM issues WHERE crawl_id = ?", cid)
+	if err := row.Scan(&c); err != nil {
+		log.Println(err)
+	}
+
+	return c
+}
+
+func findErrorTypesByPage(pid, cid int) []string {
+	var et []string
+	query := `SELECT error_type FROM issues WHERE pagereport_id = ? and crawl_id = ? GROUP BY error_type`
+	rows, err := db.Query(query, pid, cid)
+	if err != nil {
+		log.Println(err)
+		return et
+	}
+
+	for rows.Next() {
+		var s string
+		err := rows.Scan(&s)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		et = append(et, s)
+	}
+
+	return et
+}
+
 func savePageReport(r *PageReport, cid int64) {
 	urlHash := hash(r.URL)
 	query := `
@@ -524,38 +822,6 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 	return pageReportsQuery(query, cid, cid)
 }
 
-func CountCrawled(cid int) int {
-	row := db.QueryRow("SELECT count(*) FROM pagereports WHERE crawl_id = ?", cid)
-	var c int
-	if err := row.Scan(&c); err != nil {
-		log.Println(err)
-	}
-
-	return c
-}
-
-func CountByMediaType(cid int) map[string]int {
-	m := make(map[string]int)
-
-	rows, err := db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
-	if err != nil {
-		log.Println(err)
-		return m
-	}
-
-	for rows.Next() {
-		var i string
-		var v int
-		err := rows.Scan(&i, &v)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		m[i] = v
-	}
-	return m
-}
-
 func FindImagesWithNoAlt(cid int) []PageReport {
 	query := `
 		SELECT
@@ -627,211 +893,6 @@ func FindInLinks(s string, cid int) []PageReport {
 	return pageReportsQuery(query, hash, hash, cid)
 }
 
-func CountByStatusCode(cid int) map[int]int {
-	m := make(map[int]int)
-	query := `
-		SELECT
-			status_code,
-			count(*)
-		FROM pagereports
-		WHERE crawl_id = ?
-		GROUP BY status_code`
-
-	rows, err := db.Query(query, cid)
-	if err != nil {
-		log.Println(err)
-		return m
-	}
-
-	for rows.Next() {
-		var i int
-		var v int
-		err := rows.Scan(&i, &v)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		m[i] = v
-	}
-	return m
-}
-
-func saveCrawl(p Project) int64 {
-	stmt, _ := db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
-	defer stmt.Close()
-	res, err := stmt.Exec(p.Id)
-
-	if err != nil {
-		log.Printf("Error in SaveCrawl\nProject: %+v\nError: %+v\n", p, err)
-		return 0
-	}
-
-	cid, err := res.LastInsertId()
-	if err != nil {
-		log.Println(err)
-		return 0
-	}
-
-	return cid
-}
-
-func saveEndCrawl(cid int64, t time.Time) {
-	stmt, _ := db.Prepare("UPDATE crawls SET end = ? WHERE id = ?")
-	defer stmt.Close()
-	_, err := stmt.Exec(t, cid)
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func getLastCrawl(p *Project) Crawl {
-	row := db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY start DESC LIMIT 1", p.Id)
-
-	crawl := Crawl{}
-	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)
-	if err != nil {
-		log.Println(err)
-	}
-
-	return crawl
-}
-
-func saveProject(s string, uid int) {
-	stmt, _ := db.Prepare("INSERT INTO projects (url, user_id) VALUES (?, ?)")
-	defer stmt.Close()
-	_, err := stmt.Exec(s, uid)
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func findProjectsByUser(uid int) []Project {
-	var projects []Project
-	rows, err := db.Query("SELECT id, url, created FROM projects WHERE user_id = ?", uid)
-	if err != nil {
-		log.Println(err)
-		return projects
-	}
-
-	for rows.Next() {
-		p := Project{}
-		err := rows.Scan(&p.Id, &p.URL, &p.Created)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		projects = append(projects, p)
-	}
-
-	return projects
-}
-
-func findCrawlById(cid int) Crawl {
-	row := db.QueryRow("SELECT id, project_id, start, end FROM crawls WHERE id = ?", cid)
-
-	c := Crawl{}
-	err := row.Scan(&c.Id, &c.ProjectId, &c.Start, &c.End)
-	if err != nil {
-		log.Println(err)
-		return c
-	}
-
-	return c
-}
-
-func findProjectById(id int, uid int) (Project, error) {
-	row := db.QueryRow("SELECT id, url, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
-
-	p := Project{}
-	err := row.Scan(&p.Id, &p.URL, &p.Created)
-	if err != nil {
-		log.Println(err)
-		return p, err
-	}
-
-	return p, nil
-}
-
-func saveIssues(issues []Issue, cid int) {
-	query := `
-		INSERT INTO issues (pagereport_id, crawl_id, error_type)
-		VALUES (?, ?, ?)`
-
-	stmt, _ := db.Prepare(query)
-	defer stmt.Close()
-
-	for _, i := range issues {
-		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType)
-		if err != nil {
-			log.Println(err)
-			log.Printf("saveIssues -> ID: %d ERROR: %s CRAWL: %d\n", i.PageReportId, i.ErrorType, cid)
-			continue
-		}
-	}
-}
-
-func findIssues(cid int) map[string]IssueGroup {
-	issues := map[string]IssueGroup{}
-	query := `
-		SELECT
-			error_type,
-			count(*)
-		FROM issues
-		WHERE crawl_id = ? GROUP BY error_type`
-
-	rows, err := db.Query(query, cid)
-	if err != nil {
-		log.Println(err)
-		return issues
-	}
-
-	for rows.Next() {
-		ig := IssueGroup{}
-		err := rows.Scan(&ig.ErrorType, &ig.Count)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		issues[ig.ErrorType] = ig
-	}
-
-	return issues
-}
-
-func countIssuesByCrawl(cid int) int {
-	var c int
-	row := db.QueryRow("SELECT count(*) FROM issues WHERE crawl_id = ?", cid)
-	if err := row.Scan(&c); err != nil {
-		log.Println(err)
-	}
-
-	return c
-}
-
-func findErrorTypesByPage(pid, cid int) []string {
-	var et []string
-	query := `SELECT error_type FROM issues WHERE pagereport_id = ? and crawl_id = ? GROUP BY error_type`
-	rows, err := db.Query(query, pid, cid)
-	if err != nil {
-		log.Println(err)
-		return et
-	}
-
-	for rows.Next() {
-		var s string
-		err := rows.Scan(&s)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		et = append(et, s)
-	}
-
-	return et
-}
-
 func findPageReportIssues(cid int, errorType string) []PageReport {
 	query := `
 		SELECT
@@ -859,67 +920,6 @@ func findRedirectChains(cid int) []PageReport {
 		WHERE a.redirect_url != "" AND b.redirect_url  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
 
 	return pageReportsQuery(query, cid, cid)
-}
-
-func userSignup(user, password string) {
-	query := `INSERT INTO users (email, password) VALUES (?, ?)`
-	stmt, _ := db.Prepare(query)
-	defer stmt.Close()
-
-	_, err := stmt.Exec(user, password)
-	if err != nil {
-		log.Println(err)
-	}
-}
-
-func findUserByEmail(email string) *User {
-	u := User{}
-	query := `SELECT id, email, password FROM users WHERE email = ?`
-
-	row := db.QueryRow(query, email)
-	err := row.Scan(&u.Id, &u.Email, &u.Password)
-	if err != nil {
-		log.Println(err)
-		return &u
-	}
-
-	return &u
-}
-
-func findUserById(id int) *User {
-	u := User{}
-	query := `SELECT id, email, password FROM users WHERE id = ?`
-
-	row := db.QueryRow(query, id)
-	err := row.Scan(&u.Id, &u.Email, &u.Password)
-	if err != nil {
-		log.Println(err)
-		return &u
-	}
-
-	return &u
-}
-
-func findCrawlUserId(cid int) (*User, error) {
-	u := User{}
-	query := `
-		SELECT 
-			users.id,
-			users.email,
-			users.password
-		FROM crawls
-		LEFT JOIN projects ON projects.id = crawls.project_id
-		LEFT JOIN users ON projects.user_id = users.id
-		WHERE crawls.id = ?`
-
-	row := db.QueryRow(query, cid)
-	err := row.Scan(&u.Id, &u.Email, &u.Password)
-	if err != nil {
-		log.Println(err)
-		return &u, err
-	}
-
-	return &u, nil
 }
 
 func pageReportsQuery(query string, args ...interface{}) []PageReport {

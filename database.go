@@ -886,14 +886,13 @@ func FindPageReportsWithHTTPLinks(cid int) []PageReport {
 func FindMissingHrelangReturnLinks(cid int) []PageReport {
 	query := `
 		SELECT
-			pagereports.id,
+			distinct pagereports.id,
 			pagereports.URL,
 			pagereports.Title
 		FROM hreflangs
+		LEFT JOIN hreflangs b ON hreflangs.crawl_id = b.crawl_id and hreflangs.from_hash = b.to_hash
 		LEFT JOIN pagereports ON hreflangs.pagereport_id = pagereports.id
-		LEFT JOIN hreflangs b ON hreflangs.from_hash = b.to_hash
-		WHERE b.id IS NULL AND pagereports.crawl_id = ?
-		GROUP BY pagereports.id`
+		WHERE  hreflangs.crawl_id = ? AND b.id IS NULL`
 
 	return pageReportsQuery(query, cid)
 }
@@ -936,8 +935,8 @@ func findRedirectChains(cid int) []PageReport {
 			a.url,
 			a.title
 		FROM pagereports AS a
-		LEFT JOIN pagereports AS b ON a.redirect_url = b.url
-		WHERE a.redirect_url != "" AND b.redirect_url  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
+		LEFT JOIN pagereports AS b ON a.redirect_hash = b.url_hash
+		WHERE a.redirect_hash != "" AND b.redirect_hash  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
 
 	return pageReportsQuery(query, cid, cid)
 }

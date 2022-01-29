@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-28 20:20:33 +0000
+# Generation Time: 2022-01-29 10:54:52 +0000
 # ************************************************************
 
 
@@ -47,7 +47,7 @@ CREATE TABLE `hreflangs` (
   `pagereport_id` int(11) NOT NULL,
   `crawl_id` int(11) DEFAULT NULL,
   `from_lang` varchar(10) DEFAULT NULL,
-  `to_url` varchar(2000) NOT NULL DEFAULT '',
+  `to_url` varchar(2048) NOT NULL DEFAULT '',
   `to_lang` varchar(10) DEFAULT NULL,
   `from_hash` varchar(256) DEFAULT NULL,
   `to_hash` varchar(256) DEFAULT NULL,
@@ -55,7 +55,8 @@ CREATE TABLE `hreflangs` (
   KEY `hreflangs_from_hash` (`from_hash`),
   KEY `hreflangs_to_hash` (`to_hash`),
   KEY `hreflangs_pagereport` (`pagereport_id`),
-  KEY `hreflangs_crawl` (`crawl_id`)
+  KEY `hreflangs_crawl` (`crawl_id`),
+  KEY `hreflangs_crawl_from_to` (`crawl_id`,`from_hash`,`to_hash`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -68,9 +69,10 @@ DROP TABLE IF EXISTS `images`;
 CREATE TABLE `images` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
-  `url` varchar(2000) NOT NULL DEFAULT '',
+  `url` varchar(2048) NOT NULL DEFAULT '',
   `alt` varchar(1000) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `images_pagereport` (`pagereport_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -103,7 +105,7 @@ CREATE TABLE `links` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
   `crawl_id` int(11) DEFAULT NULL,
-  `url` varchar(2000) NOT NULL DEFAULT '',
+  `url` varchar(2048) NOT NULL DEFAULT '',
   `scheme` varchar(5) NOT NULL,
   `external` tinyint(1) NOT NULL,
   `rel` varchar(100) DEFAULT NULL,
@@ -124,10 +126,10 @@ DROP TABLE IF EXISTS `pagereports`;
 CREATE TABLE `pagereports` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `crawl_id` int(11) unsigned NOT NULL,
-  `url` varchar(2000) NOT NULL DEFAULT '',
+  `url` varchar(2048) NOT NULL DEFAULT '',
   `scheme` varchar(5) DEFAULT NULL,
-  `redirect_url` varchar(2000) DEFAULT NULL,
-  `refresh` varchar(2000) DEFAULT NULL,
+  `redirect_url` varchar(2048) DEFAULT NULL,
+  `refresh` varchar(2048) DEFAULT NULL,
   `status_code` int(11) NOT NULL,
   `content_type` varchar(100) DEFAULT NULL,
   `media_type` varchar(100) DEFAULT NULL,
@@ -135,7 +137,7 @@ CREATE TABLE `pagereports` (
   `title` varchar(2000) DEFAULT NULL,
   `description` varchar(2000) DEFAULT NULL,
   `robots` varchar(100) DEFAULT NULL,
-  `canonical` varchar(2000) DEFAULT NULL,
+  `canonical` varchar(2048) DEFAULT NULL,
   `h1` varchar(1000) DEFAULT NULL,
   `h2` varchar(1000) DEFAULT NULL,
   `words` int(11) DEFAULT NULL,
@@ -176,7 +178,7 @@ DROP TABLE IF EXISTS `scripts`;
 CREATE TABLE `scripts` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
-  `url` varchar(2000) NOT NULL DEFAULT '',
+  `url` varchar(2048) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `scripts_pagereport` (`pagereport_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -191,7 +193,7 @@ DROP TABLE IF EXISTS `styles`;
 CREATE TABLE `styles` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int(11) NOT NULL,
-  `url` varchar(2000) NOT NULL DEFAULT '',
+  `url` varchar(2048) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `styles_pagereport` (`pagereport_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

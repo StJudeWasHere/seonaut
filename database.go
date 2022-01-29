@@ -414,11 +414,11 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.ExternalLinks) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, url,scheme,  rel, text, external) values "
+		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url,scheme,  rel, text, external) values "
 		v := []interface{}{}
 		for _, l := range r.ExternalLinks {
-			sqlString += "(?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External)
+			sqlString += "(?, ?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := db.Prepare(sqlString)

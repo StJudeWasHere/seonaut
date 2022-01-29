@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-29 11:37:52 +0000
+# Generation Time: 2022-01-29 11:52:00 +0000
 # ************************************************************
 
 
@@ -187,7 +187,7 @@ CREATE TABLE `scripts` (
   `url` varchar(2048) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `scripts_pagereport` (`pagereport_id`),
-  CONSTRAINT `scripts_pagereport` FOREIGN KEY (`id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
+  CONSTRAINT `scripts_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -203,7 +203,7 @@ CREATE TABLE `styles` (
   `url` varchar(2048) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `styles_pagereport` (`pagereport_id`),
-  CONSTRAINT `styles_pagereport` FOREIGN KEY (`id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
+  CONSTRAINT `styles_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

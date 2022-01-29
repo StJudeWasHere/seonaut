@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-29 10:54:52 +0000
+# Generation Time: 2022-01-29 11:37:52 +0000
 # ************************************************************
 
 
@@ -44,19 +44,21 @@ DROP TABLE IF EXISTS `hreflangs`;
 
 CREATE TABLE `hreflangs` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `pagereport_id` int(11) NOT NULL,
-  `crawl_id` int(11) DEFAULT NULL,
+  `pagereport_id` int(11) unsigned NOT NULL,
+  `crawl_id` int(11) unsigned NOT NULL,
   `from_lang` varchar(10) DEFAULT NULL,
   `to_url` varchar(2048) NOT NULL DEFAULT '',
   `to_lang` varchar(10) DEFAULT NULL,
-  `from_hash` varchar(256) DEFAULT NULL,
-  `to_hash` varchar(256) DEFAULT NULL,
+  `from_hash` varchar(256) NOT NULL DEFAULT '',
+  `to_hash` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `hreflangs_from_hash` (`from_hash`),
   KEY `hreflangs_to_hash` (`to_hash`),
   KEY `hreflangs_pagereport` (`pagereport_id`),
   KEY `hreflangs_crawl` (`crawl_id`),
-  KEY `hreflangs_crawl_from_to` (`crawl_id`,`from_hash`,`to_hash`)
+  KEY `hreflangs_crawl_from_to` (`crawl_id`,`from_hash`,`to_hash`),
+  CONSTRAINT `hreflangs_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `hreflangs_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -68,11 +70,12 @@ DROP TABLE IF EXISTS `images`;
 
 CREATE TABLE `images` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `pagereport_id` int(11) NOT NULL,
+  `pagereport_id` int(11) unsigned NOT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
-  `alt` varchar(1000) DEFAULT NULL,
+  `alt` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `images_pagereport` (`pagereport_id`)
+  KEY `images_pagereport` (`pagereport_id`),
+  CONSTRAINT `images_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -103,17 +106,20 @@ DROP TABLE IF EXISTS `links`;
 
 CREATE TABLE `links` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `pagereport_id` int(11) NOT NULL,
-  `crawl_id` int(11) DEFAULT NULL,
+  `pagereport_id` int(11) unsigned NOT NULL,
+  `crawl_id` int(11) unsigned NOT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
   `scheme` varchar(5) NOT NULL,
   `external` tinyint(1) NOT NULL,
   `rel` varchar(100) DEFAULT NULL,
-  `text` varchar(1000) DEFAULT NULL,
-  `url_hash` varchar(256) DEFAULT NULL,
+  `text` varchar(1024) DEFAULT NULL,
+  `url_hash` varchar(256) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
   KEY `links_external` (`pagereport_id`),
-  KEY `links_hash` (`url_hash`)
+  KEY `links_hash` (`url_hash`),
+  KEY `links_crawl` (`crawl_id`),
+  CONSTRAINT `links_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `links_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -134,15 +140,15 @@ CREATE TABLE `pagereports` (
   `content_type` varchar(100) DEFAULT NULL,
   `media_type` varchar(100) DEFAULT NULL,
   `lang` varchar(10) DEFAULT NULL,
-  `title` varchar(2000) DEFAULT NULL,
-  `description` varchar(2000) DEFAULT NULL,
+  `title` varchar(2048) DEFAULT NULL,
+  `description` varchar(2048) DEFAULT NULL,
   `robots` varchar(100) DEFAULT NULL,
   `canonical` varchar(2048) DEFAULT NULL,
-  `h1` varchar(1000) DEFAULT NULL,
-  `h2` varchar(1000) DEFAULT NULL,
+  `h1` varchar(1024) DEFAULT NULL,
+  `h2` varchar(1024) DEFAULT NULL,
   `words` int(11) DEFAULT NULL,
   `size` int(11) DEFAULT NULL,
-  `url_hash` varchar(256) DEFAULT NULL,
+  `url_hash` varchar(256) NOT NULL DEFAULT '',
   `redirect_hash` varchar(256) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `pagereport_crawl` (`crawl_id`),
@@ -177,10 +183,11 @@ DROP TABLE IF EXISTS `scripts`;
 
 CREATE TABLE `scripts` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `pagereport_id` int(11) NOT NULL,
+  `pagereport_id` int(11) unsigned NOT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  KEY `scripts_pagereport` (`pagereport_id`)
+  KEY `scripts_pagereport` (`pagereport_id`),
+  CONSTRAINT `scripts_pagereport` FOREIGN KEY (`id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
@@ -192,10 +199,11 @@ DROP TABLE IF EXISTS `styles`;
 
 CREATE TABLE `styles` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `pagereport_id` int(11) NOT NULL,
+  `pagereport_id` int(11) unsigned NOT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
   PRIMARY KEY (`id`),
-  KEY `styles_pagereport` (`pagereport_id`)
+  KEY `styles_pagereport` (`pagereport_id`),
+  CONSTRAINT `styles_pagereport` FOREIGN KEY (`id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 

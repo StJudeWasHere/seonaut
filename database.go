@@ -26,7 +26,7 @@ func CountCrawled(cid int) int {
 	row := db.QueryRow("SELECT count(*) FROM pagereports WHERE crawl_id = ?", cid)
 	var c int
 	if err := row.Scan(&c); err != nil {
-		log.Println(err)
+		log.Printf("CountCrawled: %v\n", err)
 	}
 
 	return c
@@ -37,7 +37,7 @@ func CountByMediaType(cid int) map[string]int {
 
 	rows, err := db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
 	if err != nil {
-		log.Println(err)
+		log.Printf("CountByMediaType: %v\n", err)
 		return m
 	}
 
@@ -150,7 +150,7 @@ func saveCrawl(p Project) int64 {
 	res, err := stmt.Exec(p.Id)
 
 	if err != nil {
-		log.Printf("Error in SaveCrawl\nProject: %+v\nError: %+v\n", p, err)
+		log.Printf("SaveCrawl\nProject: %+v\nError: %+v\n", p, err)
 		return 0
 	}
 
@@ -168,7 +168,7 @@ func saveEndCrawl(cid int64, t time.Time) {
 	defer stmt.Close()
 	_, err := stmt.Exec(t, cid)
 	if err != nil {
-		log.Println(err)
+		log.Printf("saveEndCrawl: %v\n", err)
 	}
 }
 
@@ -178,7 +178,7 @@ func getLastCrawl(p *Project) Crawl {
 	crawl := Crawl{}
 	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)
 	if err != nil {
-		log.Println(err)
+		log.Printf("getLastCrawl: %v\n", err)
 	}
 
 	return crawl

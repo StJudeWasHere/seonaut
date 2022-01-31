@@ -27,7 +27,7 @@
 		<div class="issues">
 		<h2><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} throwing 50x type errors</a></h2>
 			<p>
-				{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} not loading properly and are throwing errors scaring your users and annoying search engines.
+				This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't load properly and show an error page instead, scaring your users and annoying search engines.
 			</p>
 		</div>
 		{{ end }}
@@ -50,7 +50,7 @@
 		<h2>
 			<a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</a>
 		</h2>
-		<p>{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} causing redirects, sending users and search engines to a different page.</p>
+		<p>URLs causing redirects are sending users and search engines to a different page, this can waste the search engine's crawl budget and create redirect chains.</p>
 		</div>
 		{{ end }}
 	{{ end }}

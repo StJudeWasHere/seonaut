@@ -19,7 +19,7 @@
 		{{ if .Crawl.End.Valid }}
 			<div>
 				Last crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. Crawl duration was {{ .Crawl.TotalTime }}.<br>
-				{{ .TotalCount }} {{ if eq .TotalCount 1 }}page{{ else }}pages{{end }} crawled.<br>
+				{{ .TotalCount }} {{ if eq .TotalCount 1 }}URL{{ else }}URLs{{end }} crawled.<br>
 			</div>
 			<a href="/crawl?pid={{ .Project.Id }}">crawl now</a>
 		{{ else }}

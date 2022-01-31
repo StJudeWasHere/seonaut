@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
+	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -71,7 +72,7 @@ func NewPageReport(url *url.URL, status int, headers *http.Header, body []byte) 
 
 	mediaType, _, err := mime.ParseMediaType(pageReport.ContentType)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("NewPageReport: %v\n", err)
 	}
 	pageReport.MediaType = mediaType
 
@@ -90,7 +91,7 @@ func NewPageReport(url *url.URL, status int, headers *http.Header, body []byte) 
 func (pageReport *PageReport) parse() {
 	doc, err := htmlquery.Parse(bytes.NewReader(pageReport.Body))
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("parse: %v\n", err)
 		return
 	}
 
@@ -366,7 +367,7 @@ func countWords(n *html.Node) int {
 
 	re, err := regexp.Compile(`[\p{P}\p{S}]+`)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("countWords: %v\n", err)
 	}
 	t := re.ReplaceAllString(buf.String(), " ")
 

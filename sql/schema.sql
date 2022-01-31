@@ -33,7 +33,7 @@ CREATE TABLE `crawls` (
   PRIMARY KEY (`id`),
   KEY `crawl_project` (`project_id`),
   CONSTRAINT `crawl_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -59,7 +59,7 @@ CREATE TABLE `hreflangs` (
   KEY `hreflangs_crawl_from_to` (`crawl_id`,`from_hash`,`to_hash`),
   CONSTRAINT `hreflangs_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
   CONSTRAINT `hreflangs_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -76,7 +76,7 @@ CREATE TABLE `images` (
   PRIMARY KEY (`id`),
   KEY `images_pagereport` (`pagereport_id`),
   CONSTRAINT `images_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -120,7 +120,7 @@ CREATE TABLE `links` (
   KEY `links_crawl` (`crawl_id`),
   CONSTRAINT `links_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
   CONSTRAINT `links_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -155,7 +155,7 @@ CREATE TABLE `pagereports` (
   KEY `pagereport_hash` (`url_hash`),
   KEY `redirect_hash` (`redirect_hash`),
   CONSTRAINT `pagereport_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -188,7 +188,7 @@ CREATE TABLE `scripts` (
   PRIMARY KEY (`id`),
   KEY `scripts_pagereport` (`pagereport_id`),
   CONSTRAINT `scripts_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 
@@ -204,7 +204,7 @@ CREATE TABLE `styles` (
   PRIMARY KEY (`id`),
   KEY `styles_pagereport` (`pagereport_id`),
   CONSTRAINT `styles_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
 

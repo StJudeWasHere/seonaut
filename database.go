@@ -905,10 +905,10 @@ func FindInLinks(s string, cid int) []PageReport {
 			pagereports.Title
 		FROM links
 		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
-		WHERE links.url_hash = ? AND pagereports.url_hash != ? AND pagereports.crawl_id = ?
+		WHERE links.url_hash = ? AND pagereports.crawl_id = ?
 		GROUP BY pagereports.id`
 
-	return pageReportsQuery(query, hash, hash, cid)
+	return pageReportsQuery(query, hash, cid)
 }
 
 func findPageReportIssues(cid int, errorType string) []PageReport {

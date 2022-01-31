@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"log"
 	"mime"
 	"net/http"
 	"net/url"
@@ -220,7 +219,6 @@ func (pageReport *PageReport) parse() {
 		s := htmlquery.SelectAttr(n, "src")
 		url, err := pageReport.absoluteURL(s)
 		if err != nil {
-			log.Printf("%s: %v\n", s, err)
 			continue
 		}
 
@@ -241,7 +239,6 @@ func (pageReport *PageReport) parse() {
 		s := htmlquery.SelectAttr(n, "src")
 		url, err := pageReport.absoluteURL(s)
 		if err != nil {
-			log.Printf("%s: %v\n", s, err)
 			continue
 		}
 
@@ -258,7 +255,6 @@ func (pageReport *PageReport) parse() {
 
 		url, err := pageReport.absoluteURL(s)
 		if err != nil {
-			log.Printf("%s: %v\n", s, err)
 			continue
 		}
 
@@ -279,7 +275,6 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 
 	u, err := p.absoluteURL(href)
 	if err != nil {
-		log.Printf("%s: %v\n", href, err)
 		return Link{}, err
 	}
 
@@ -304,11 +299,10 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 		return &url.URL{}, errors.New("Protocol not supported")
 	}
 
-	if u.Path == "" {
-		u.Path = "/"
-	}
-
 	if u.Scheme != "" {
+		if u.Path == "" {
+			u.Path = "/"
+		}
 		return u, nil
 	}
 
@@ -320,12 +314,22 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 		u.Host = p.parsedURL.Host
 	}
 
-	if !strings.HasPrefix(u.Path, "/") {
+	u.Fragment = ""
+
+	if u.Path != "" && !strings.HasPrefix(u.Path, "/") {
 		basePath := p.parsedURL.Path
 		if !strings.HasSuffix(basePath, "/") {
 			basePath = basePath + "/"
 		}
 		u.Path = basePath + u.Path
+	}
+
+	if u.Path == "" {
+		basePath := p.parsedURL.Path
+		if basePath == "" {
+			basePath = "/"
+		}
+		u.Path = basePath
 	}
 
 	return u, nil

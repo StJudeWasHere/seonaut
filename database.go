@@ -757,14 +757,16 @@ func FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 		INNER JOIN (
 			SELECT
 				title,
+				lang,
 				count(*) AS c
 			FROM pagereports
-			WHERE crawl_id = ? AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)
-			GROUP BY title
+			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)
+			GROUP BY title, lang
 			HAVING c > 1
 		) d 
 		ON d.title = y.title
-		WHERE media_type = "text/html" AND length(y.title) > 0 AND crawl_id = ?`
+		WHERE media_type = "text/html" AND length(y.title) > 0 AND crawl_id = ?
+		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)`
 
 	return pageReportsQuery(query, cid, cid)
 }
@@ -829,14 +831,16 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 		INNER JOIN (
 			SELECT
 				description,
+				lang,
 				count(*) AS c
 			FROM pagereports
-			WHERE crawl_id = ? AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)
-			GROUP BY description
+			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)
+			GROUP BY description, lang
 			HAVING c > 1
 		) d 
 		ON d.description = y.description
-		WHERE y.media_type = "text/html" AND length(y.description) > 0 AND y.crawl_id = ?`
+		WHERE y.media_type = "text/html" AND length(y.description) > 0 AND y.crawl_id = ?
+		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url`
 
 	return pageReportsQuery(query, cid, cid)
 }

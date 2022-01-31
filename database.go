@@ -61,7 +61,7 @@ func userSignup(user, password string) {
 
 	_, err := stmt.Exec(user, password)
 	if err != nil {
-		log.Println(err)
+		log.Printf("userSignup: %v\n", err)
 	}
 }
 
@@ -150,7 +150,7 @@ func saveCrawl(p Project) int64 {
 	res, err := stmt.Exec(p.Id)
 
 	if err != nil {
-		log.Printf("SaveCrawl\nProject: %+v\nError: %+v\n", p, err)
+		log.Printf("saveCrawl\nProject: %+v\nError: %+v\n", p, err)
 		return 0
 	}
 
@@ -189,7 +189,7 @@ func saveProject(s string, uid int) {
 	defer stmt.Close()
 	_, err := stmt.Exec(s, uid)
 	if err != nil {
-		log.Println(err)
+		log.Printf("saveProject: %v\n", err)
 	}
 }
 
@@ -252,8 +252,7 @@ func saveIssues(issues []Issue, cid int) {
 	for _, i := range issues {
 		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType)
 		if err != nil {
-			log.Println(err)
-			log.Printf("saveIssues -> ID: %d ERROR: %s CRAWL: %d\n", i.PageReportId, i.ErrorType, cid)
+			log.Printf("saveIssues -> ID: %d ERROR: %s CRAWL: %d %v\n", i.PageReportId, i.ErrorType, cid, err)
 			continue
 		}
 	}
@@ -353,7 +352,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 	stmt, err := db.Prepare(query)
 	if err != nil {
-		log.Println(err)
+		log.Printf("saveReport: %v\n", err)
 		return
 	}
 	defer stmt.Close()
@@ -402,7 +401,7 @@ func savePageReport(r *PageReport, cid int64) {
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := db.Prepare(sqlString)
 		if err != nil {
-			log.Println(err)
+			log.Printf("saveReport links: %v\n", err)
 			return
 		}
 		defer stmt.Close()
@@ -447,7 +446,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			log.Printf("Error in SavePageReport\nCID: %v\n Hreflangs: %+v\nError: %+v\n", cid, v, err)
+			log.Printf("savePageReport\nCID: %v\n Hreflangs: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 
@@ -464,7 +463,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			log.Printf("Error in SavePageReport\nCID: %v\n Images: %+v\nError: %+v\n", cid, v, err)
+			log.Printf("savePageReport\nCID: %v\n Images: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 
@@ -481,7 +480,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			log.Printf("Error in SavePageReport\nCID: %v\n Scripts: %+v\nError: %+v\n", cid, v, err)
+			log.Printf("savePageReport\nCID: %v\n Scripts: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 
@@ -500,7 +499,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		_, err := stmt.Exec(v...)
 		if err != nil {
-			log.Printf("Error in SavePageReport\nCID: %v\n Styles: %+v\nError: %+v\n", cid, v, err)
+			log.Printf("savePageReport\nCID: %v\n Styles: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
 }

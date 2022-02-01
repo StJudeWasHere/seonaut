@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log"
 	"time"
 
@@ -10,9 +11,18 @@ import (
 
 var db *sql.DB
 
-func init() {
+func initDatabase(config *Config) {
 	var err error
-	db, err = sql.Open("mysql", "root:root@tcp(0.0.0.0:6306)/seo?parseTime=true")
+	var dbString string = fmt.Sprintf(
+		"%s:%s@tcp(%s:%d)/%s?parseTime=true",
+		config.DbUser,
+		config.DbPass,
+		config.DbServer,
+		config.DbPort,
+		config.DbName,
+	)
+
+	db, err = sql.Open("mysql", dbString)
 	if err != nil {
 		panic(err)
 	}

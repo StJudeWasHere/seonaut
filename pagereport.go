@@ -188,7 +188,10 @@ func (pageReport *PageReport) parse() {
 	// ---
 	canonical := htmlquery.Find(doc, "//link[@rel=\"canonical\"]/@href")
 	if len(canonical) == 1 {
-		pageReport.Canonical = htmlquery.SelectAttr(canonical[0], "href")
+		cu, err := pageReport.absoluteURL(htmlquery.SelectAttr(canonical[0], "href"))
+		if err == nil {
+			pageReport.Canonical = cu.String()
+		}
 	}
 
 	// ---

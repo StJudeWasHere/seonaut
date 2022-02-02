@@ -157,8 +157,8 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Robots != noindex, nofollow")
 	}
 
-	if pageReport.Canonical != "http://example.com/canonical/" {
-		t.Error("Canonical != http://example.com/canonical/")
+	if pageReport.Canonical != "https://example.com/canonical/" {
+		t.Error("Canonical != https://example.com/canonical/")
 	}
 
 	if pageReport.H1 != "H1 Title" {

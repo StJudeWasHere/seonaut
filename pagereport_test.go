@@ -67,8 +67,8 @@ func TestNewRedirectPageReport(t *testing.T) {
 
 	pageReport := NewPageReport(u, statusCode, &headers, body)
 
-	if string(pageReport.RedirectURL) != redirectURL {
-		t.Error("NewPageReport RedirectURL != redirectURL")
+	if pageReport.RedirectURL != redirectURL {
+		t.Errorf("NewPageReport RedirectURL != %s", pageReport.RedirectURL)
 	}
 
 	if pageReport.StatusCode != statusCode {
@@ -145,8 +145,8 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("len(pageReport.ExternalLinks) != 1")
 	}
 
-	if pageReport.Refresh != "0;URL='https://example.com/'" {
-		t.Error("Refresh != 0;URL='https://example.com/'")
+	if pageReport.Refresh != "0;URL='/'" {
+		t.Errorf("Refresh != \"0;URL='%s'\"", pageReport.Refresh)
 	}
 
 	if pageReport.RedirectURL != "https://example.com/" {

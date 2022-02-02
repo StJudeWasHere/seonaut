@@ -77,7 +77,10 @@ func NewPageReport(url *url.URL, status int, headers *http.Header, body []byte) 
 	pageReport.MediaType = mediaType
 
 	if pageReport.StatusCode >= http.StatusMultipleChoices && pageReport.StatusCode < http.StatusBadRequest {
-		pageReport.RedirectURL = headers.Get("Location")
+		l, err := pageReport.absoluteURL(headers.Get("Location"))
+		if err == nil {
+			pageReport.RedirectURL = l.String()
+		}
 		return &pageReport
 	}
 
@@ -133,7 +136,10 @@ func (pageReport *PageReport) parse() {
 		pageReport.Refresh = htmlquery.SelectAttr(refresh[0], "content")
 		u := strings.Split(pageReport.Refresh, ";")
 		if len(u) > 1 && strings.ToLower(u[1][:4]) == "url=" {
-			pageReport.RedirectURL = strings.ReplaceAll(u[1][4:], "'", "")
+			l, err := pageReport.absoluteURL(strings.ReplaceAll(u[1][4:], "'", ""))
+			if err == nil {
+				pageReport.RedirectURL = l.String()
+			}
 		}
 	}
 

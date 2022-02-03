@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	userAgent       = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15"
 	consumerThreads = 2
 	storageMaxSize  = 10000
 	MaxPageReports  = 10000
@@ -38,7 +37,6 @@ func startCrawler(p Project) int {
 
 	for r := range pageReport {
 		crawled++
-		// handlePageReport(r)
 		savePageReport(&r, cid)
 	}
 
@@ -103,7 +101,7 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 
 	co := colly.NewCollector(
 		colly.AllowedDomains(u.Host),
-		colly.UserAgent(userAgent),
+		colly.UserAgent(config.CrawlerAgent),
 		func(c *colly.Collector) {
 			c.IgnoreRobotsTxt = false
 		},

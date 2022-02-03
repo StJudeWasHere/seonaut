@@ -10,13 +10,14 @@ import (
 )
 
 type Config struct {
-	Server     string
-	ServerPort int
-	DbServer   string
-	DbPort     int
-	DbUser     string
-	DbPass     string
-	DbName     string
+	Server       string
+	ServerPort   int
+	DbServer     string
+	DbPort       int
+	DbUser       string
+	DbPass       string
+	DbName       string
+	CrawlerAgent string
 }
 
 var config Config
@@ -37,6 +38,7 @@ func init() {
 	config.DbUser = viper.GetString("Database.user")
 	config.DbPass = viper.GetString("Database.password")
 	config.DbName = viper.GetString("Database.database")
+	config.CrawlerAgent = viper.GetString("Crawler.agent")
 
 	initDatabase(&config)
 }

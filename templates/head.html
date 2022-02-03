@@ -33,6 +33,64 @@
 		 - Lenkrr
 	</title>
 	<style>
+
+		.chart-list {
+			list-style: none;
+			margin-top: 1.5rem;
+		}
+		.chart-list li {
+			padding-left: .5rem;
+			line-height: 1rem;
+			font-size: 1rem;
+			font-weight: 300;
+			margin-bottom: .5rem;
+			border-left: 1rem solid transparent;
+		}
+		.chart-list li:nth-child(1) {
+			border-left: 1rem solid #C8AECC;
+		}
+		.chart-list li:nth-child(2) {
+			border-left: 1rem solid #EE9FAF;
+		}
+		.chart-list li:nth-child(3) {
+			border-left: 1rem solid #D983AD;
+		}
+		.chart-list li:nth-child(4) {
+			border-left: 1rem solid #524766;
+		}
+		
+		.status-list li:nth-child(1) {
+			border-left: 1rem solid #638179;
+		}
+		.status-list li:nth-child(2) {
+			border-left: 1rem solid #B1AC75;
+		}
+		.status-list li:nth-child(3) {
+			border-left: 1rem solid #EBDAA1;
+		}
+		.status-list li:nth-child(4) {
+			border-left: 1rem solid #DF7A62;
+		}
+
+		.chart {
+			margin-top: 1rem;
+			border-radius: 50%;
+			width: 10rem;
+			height: 10rem;
+			position: relative;
+		}
+
+		.chart:after {
+			position: absolute;
+			background-color:  rgb(248, 248, 248);
+			top: 3rem;
+			bottom: 3rem;
+			left: 3rem;
+			right: 3rem;
+			content: " ";
+			border-radius: 50%;
+		}
+
 		@font-face {
 		  font-family: 'Fira Code';
 		  src: url('/resources/FiraCode-Light.woff2') format('woff2'),
@@ -67,8 +125,9 @@
 			font-family:'Fira Code', monospace, monospace;
 			line-height: 1.6rem;
 			font-size: 1rem;
-			padding: 3rem 2rem;
+			padding: 3rem 0;
 			background-color: var(--main-bg-color);
+			margin:0;
 		}
 		ul {
 			margin: 0;
@@ -77,6 +136,9 @@
 			color: var(--primary-color);
 			text-decoration: none;
 			border-bottom: 1px dotted var(--primary-color);
+		}
+		.action {
+			margin-bottom: 3rem;
 		}
 		.action a {
 			font-weight: 300;
@@ -149,7 +211,7 @@
 			
 		}
 		.content {
-			margin-top: 3rem;
+			padding: 0 3rem;
 		}
 		.title {
 			font-size: 1.6rem;
@@ -239,8 +301,7 @@
 		.flex-container {
 			display: flex;
 			flex-direction: row;
-			margin-bottom: 3rem;
-			max-width: var(--content-max-width);
+			align-items: center;
 		}
 		.flex {
 			display: flex;
@@ -252,6 +313,15 @@
 			padding: 1.5rem 3rem;
 			width: 50%;
 			padding:0rem
+		}
+		.col h2 {
+			width: 10rem;
+			display: inline-block;
+			text-align: center;
+			
+		}
+		.col-s {
+			width: 11rem;
 		}
 		.page-details {
 			font-size: .8rem;
@@ -270,7 +340,7 @@
 	</style>
 </head>
 <body>
-	<div id="header">
+	<div id="header" class="content">
 		<span class="logo"><a href="/">lenkrr</a></span>
 		{{ if .User.Id }}
 			<span class="logout"><a href="/signout">Logout</a></span>

@@ -1,7 +1,7 @@
 {{ define "list" }}
 <ul>
-	{{ range $k, $v := . }}
-	<li>{{ if $k }}{{ $k }}{{ else }}Unknown{{ end }}: {{ $v }}</li>
+	{{ range . }}
+	<li>{{ if .Key }}{{ .Key }}{{ else }}Unknown{{ end }}: {{ .Value }}</li>
 	{{ end }}
 </ul>
 {{ end }}

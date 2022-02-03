@@ -1,8 +1,7 @@
 {{ template "head" . }}
 
-<h1 class="title">Sign In</h1>
-
 <div class="content">
+	<h1 class="title">Sign In</h1>
 	<form method="POST">
 		<label for="email">Email:</label>
 		<input type="email" name="email" autofocus>
@@ -10,9 +9,10 @@
 		<input type="password" name="password">
 		<input type="submit" value="Sign In">
 	</form>
+
+	<p>
+		<a href="/signup">Sign up</a> if you don't have an account yet.
+	</p>
 </div>
 
-<p>
-	<a href="/signup">Sign up</a> if you don't have an account yet.
-</p>
 {{ template "footer" . }}

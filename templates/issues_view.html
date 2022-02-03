@@ -1,6 +1,7 @@
 {{ template "head" . }}
 
 {{ with .Data }}
+<div class="content">
 <h1 class="title">
 {{ if eq .Eid "ERROR_50x" }}Pages are throwing errors{{ end }}
 {{ if eq .Eid "ERROR_40x" }}Pages are missing{{ end }}
@@ -24,6 +25,7 @@
 </h1>
 <div class="action">
 	<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a>
+</div>
 </div>
 
 <div class="content">

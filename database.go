@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"sort"
 	"time"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -42,8 +43,8 @@ func CountCrawled(cid int) int {
 	return c
 }
 
-func CountByMediaType(cid int) map[string]int {
-	m := make(map[string]int)
+func CountByMediaType(cid int) CountList {
+	m := CountList{}
 
 	rows, err := db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
 	if err != nil {
@@ -52,15 +53,50 @@ func CountByMediaType(cid int) map[string]int {
 	}
 
 	for rows.Next() {
-		var i string
-		var v int
-		err := rows.Scan(&i, &v)
+		c := CountItem{}
+
+		err := rows.Scan(&c.Key, &c.Value)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
-		m[i] = v
+		m = append(m, c)
 	}
+
+	sort.Sort(sort.Reverse(m))
+
+	return m
+}
+
+func CountByStatusCode(cid int) CountList {
+	m := CountList{}
+	query := `
+		SELECT
+			status_code,
+			count(*)
+		FROM pagereports
+		WHERE crawl_id = ?
+		GROUP BY status_code`
+
+	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return m
+	}
+
+	for rows.Next() {
+		c := CountItem{}
+
+		err := rows.Scan(&c.Key, &c.Value)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		m = append(m, c)
+	}
+
+	sort.Sort(sort.Reverse(m))
+
 	return m
 }
 
@@ -123,35 +159,6 @@ func findCrawlUserId(cid int) (*User, error) {
 	}
 
 	return &u, nil
-}
-
-func CountByStatusCode(cid int) map[int]int {
-	m := make(map[int]int)
-	query := `
-		SELECT
-			status_code,
-			count(*)
-		FROM pagereports
-		WHERE crawl_id = ?
-		GROUP BY status_code`
-
-	rows, err := db.Query(query, cid)
-	if err != nil {
-		log.Println(err)
-		return m
-	}
-
-	for rows.Next() {
-		var i int
-		var v int
-		err := rows.Scan(&i, &v)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		m[i] = v
-	}
-	return m
 }
 
 func saveCrawl(p Project) int64 {

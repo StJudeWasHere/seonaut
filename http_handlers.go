@@ -32,9 +32,11 @@ type IssuesGroupView struct {
 	Project         Project
 	Crawl           Crawl
 	TotalCount      int
-	MediaCount      map[string]int
-	StatusCodeCount map[int]int
+	MediaCount      CountList
+	StatusCodeCount CountList
 	TotalIssues     int
+	MediaChart      Chart
+	StatusChart     Chart
 }
 
 type IssuesView struct {
@@ -91,12 +93,12 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	for _, p := range projects {
 		c := getLastCrawl(&p)
 		pv := ProjectView{
-			Project:         p,
-			Crawl:           c,
-			TotalCount:      CountCrawled(c.Id),
-			MediaCount:      CountByMediaType(c.Id),
-			StatusCodeCount: CountByStatusCode(c.Id),
-			TotalIssues:     countIssuesByCrawl(c.Id),
+			Project:    p,
+			Crawl:      c,
+			TotalCount: CountCrawled(c.Id),
+			//			MediaCount:      CountByMediaType(c.Id),
+			//			StatusCodeCount: CountByStatusCode(c.Id),
+			TotalIssues: countIssuesByCrawl(c.Id),
 		}
 		views = append(views, pv)
 	}
@@ -199,13 +201,20 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
+	mediaCount := CountByMediaType(cid)
+	mediaChart := NewChart(mediaCount)
+	statusCount := CountByStatusCode(cid)
+	statusChart := NewChart(statusCount)
+
 	ig := IssuesGroupView{
 		IssuesGroups:    issueGroups,
 		Crawl:           crawl,
 		Project:         project,
 		TotalCount:      CountCrawled(cid),
-		MediaCount:      CountByMediaType(cid),
-		StatusCodeCount: CountByStatusCode(cid),
+		MediaCount:      mediaCount,
+		MediaChart:      mediaChart,
+		StatusChart:     statusChart,
+		StatusCodeCount: statusCount,
 		TotalIssues:     countIssuesByCrawl(cid),
 	}
 

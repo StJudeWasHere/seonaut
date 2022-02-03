@@ -1,24 +1,69 @@
 {{ template "head" . }}
 
 {{ with .Data }}
+<div class="content">
 <h1 class="title">{{ .Project.URL }}</h1>
 <div class="action">
 	<a href="/">&larr; Back</a>
 </div>
+</div>
 
-<div class="content">
-	<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
-	<div class="flex-container">
-		<div class="col">
-			<h2>Media Type:</h2>
-			{{ template "list" .MediaCount }}
-		</div>
-		<div class="col">
-			<h2>Status Code:</h2>
-			{{ template "list" .StatusCodeCount }}
+
+<div style="background-color:white; padding:1rem 0 6rem 0;margin:3rem 0">
+	<div class="content">
+	<small style="margin-bottom:3rem;display:block">Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
+		<div class="flex-container">
+			<div class="col">
+
+				<h2>Media Type</h2>
+				<div class="flex-container">
+				<div class="col-s">
+					<div class="chart"
+					style="background: conic-gradient({{ .MediaChart.GetChart "#C8AECC" "#EE9FAF" "#D983AD" "#524766" }});">
+					</div>
+				</div>
+				<div>
+					<ul class="chart-list">
+						{{ range .MediaChart }}
+							<li><b>{{ .Value }}</b> {{ .Key }}</li>
+							{{ if .Data }}
+								{{ range .Data}}
+									<li><b>{{ .Value }}</b> {{ .Key }}</li>
+								{{ end }}
+							{{ end }}
+						{{ end }}
+					</ul>
+				</div>
+				</div>
+			</div>
+
+			<div class="col">
+				<h2>Status Code</h2>
+				<div class="flex-container">
+				<div class="col-s">
+					<div class="chart"
+					style="background: conic-gradient({{ .StatusChart.GetChart "#638179" "#B1AC75" "#EBDAA1" "#DF7A62" }});">
+					</div>
+				</div>
+				<div>
+					<ul class="chart-list status-list">
+						{{ range .StatusChart }}
+							<li><b>{{ .Value }}</b> URLs with status {{ .Key }}</li>
+							{{ if .Data }}
+								{{ range .Data}}
+									<li><b>{{ .Value }}</b> URLs with status {{ .Key }}</li>
+								{{ end }}
+							{{ end }}
+						{{ end }}
+					</ul>
+				</div>
+				</div>
+			</div>
 		</div>
 	</div>
+</div>
 
+<div class="content">
 	{{ $cid := .Crawl.Id }}
 	{{/* Status code issues */}}
 

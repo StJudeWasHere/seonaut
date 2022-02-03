@@ -44,6 +44,8 @@ func init() {
 func main() {
 	fileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
+	http.Handle("/robots.txt", fileServer)
+	http.Handle("/favicon.ico", fileServer)
 
 	http.HandleFunc("/", requireAuth(serveHome))
 	http.HandleFunc("/new-project", requireAuth(serveProjectAdd))

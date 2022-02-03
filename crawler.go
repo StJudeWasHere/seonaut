@@ -33,7 +33,7 @@ func startCrawler(p Project) int {
 
 	cid := saveCrawl(p)
 
-	go c.Crawl(u, pageReport)
+	go c.Crawl(u, p.IgnoreRobotsTxt, pageReport)
 
 	for r := range pageReport {
 		crawled++
@@ -46,7 +46,7 @@ func startCrawler(p Project) int {
 	return int(cid)
 }
 
-func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
+func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt bool, pr chan<- PageReport) {
 	defer close(pr)
 
 	q, _ := queue.New(
@@ -103,7 +103,7 @@ func (c *Crawler) Crawl(u *url.URL, pr chan<- PageReport) {
 		colly.AllowedDomains(u.Host),
 		colly.UserAgent(config.CrawlerAgent),
 		func(c *colly.Collector) {
-			c.IgnoreRobotsTxt = false
+			c.IgnoreRobotsTxt = ignoreRobotsTxt
 		},
 	)
 

@@ -1,22 +1,22 @@
 # ************************************************************
-# Sequel Pro SQL dump
-# Version 4541
+# Sequel Ace SQL dump
+# Version 20025
 #
-# http://www.sequelpro.com/
-# https://github.com/sequelpro/sequelpro
+# https://sequel-ace.com/
+# https://github.com/Sequel-Ace/Sequel-Ace
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-01-29 11:52:00 +0000
+# Generation Time: 2022-02-03 10:29:41 +0000
 # ************************************************************
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8 */;
+SET NAMES utf8mb4;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
-/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40101 SET @OLD_SQL_MODE='NO_AUTO_VALUE_ON_ZERO', SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 
@@ -169,6 +169,7 @@ CREATE TABLE `projects` (
   `user_id` int(11) unsigned DEFAULT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ignore_robotstxt` tinyint(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE

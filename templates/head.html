@@ -95,7 +95,40 @@
 			background-color: var(--light-bg-color);
 			cursor: pointer;
 			width: auto;
+			margin-left: 0;
 		}
+
+
+		label.checkbox {
+			display: inline-block;
+			margin-left: 1rem;
+		}
+		input[type="checkbox"] {
+			-webkit-appearance: none;
+			background-color: var(--light-bg-color);
+			border: 1px solid var(--primary-color);
+			padding: .5rem;
+			width: 1rem;
+			height: 1rem;
+			display: inline-block;
+			position: relative;
+			vertical-align: middle;
+			margin: 0;
+		}
+
+		input[type="checkbox"]:checked {
+			color: var(--primary-color);
+		}
+		input[type="checkbox"]:checked:after {
+			content: '\2714';
+			position: absolute;
+			top: -2px;
+			left: 3px;
+			color: var(--primary-color);
+		}
+
+
+
 		label {
 			display: block;
 		}

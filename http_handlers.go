@@ -61,9 +61,10 @@ type Crawl struct {
 }
 
 type Project struct {
-	Id      int
-	URL     string
-	Created time.Time
+	Id              int
+	URL             string
+	IgnoreRobotsTxt bool
+	Created         time.Time
 }
 
 var cookie *sessions.CookieStore
@@ -122,8 +123,11 @@ func serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 		}
 		url = r.FormValue("url")
-
-		saveProject(url, uid)
+		ignoreRobotsTxt, err := strconv.ParseBool(r.FormValue("ignore_robotstxt"))
+		if err != nil {
+			ignoreRobotsTxt = false
+		}
+		saveProject(url, ignoreRobotsTxt, uid)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

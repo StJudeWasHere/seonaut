@@ -20,7 +20,6 @@ func renderTemplate(w http.ResponseWriter, t string, v *PageView) {
 			"templates/home.html",
 			"templates/issues_view.html",
 			"templates/issues.html",
-			"templates/list.html",
 			"templates/pagereport.html",
 			"templates/project_add.html",
 			"templates/resources.html",

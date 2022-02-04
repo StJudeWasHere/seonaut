@@ -1,7 +1,0 @@
-{{ define "list" }}
-<ul>
-	{{ range . }}
-	<li>{{ if .Key }}{{ .Key }}{{ else }}Unknown{{ end }}: {{ .Value }}</li>
-	{{ end }}
-</ul>
-{{ end }}

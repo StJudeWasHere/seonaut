@@ -2,8 +2,7 @@
 
 {{ with .Data }}
 <div class="content">
-
-<div class="action">
+	<div class="action">
 	<a href="/">Projects</a> /
 	<a href="/issues?cid={{ .Cid }}">{{ .Project.Host }}</a> /
 	<span class="title">
@@ -26,10 +25,12 @@
 		{{ if eq .Eid "ERROR_HTTP_LINKS" }}HTTPS to HTTP{{ end }}
 		{{ if eq .Eid "ERROR_HREFLANG_RETURN" }}Missing hreflang{{ end }}
 	</span>
-</div>
+	</div>
 </div>
 
+
 <div class="content">
+
 {{ $cid := .Cid }}
 {{ $eid := .Eid }}
 {{ if .PageReports }}

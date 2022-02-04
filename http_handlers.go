@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -65,6 +66,7 @@ type Crawl struct {
 type Project struct {
 	Id              int
 	URL             string
+	Host            string
 	IgnoreRobotsTxt bool
 	Created         time.Time
 }
@@ -205,6 +207,14 @@ func serveIssues(w http.ResponseWriter, r *http.Request) {
 	mediaChart := NewChart(mediaCount)
 	statusCount := CountByStatusCode(cid)
 	statusChart := NewChart(statusCount)
+
+	parsedURL, err := url.Parse(project.URL)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	project.Host = parsedURL.Host
 
 	ig := IssuesGroupView{
 		IssuesGroups:    issueGroups,

@@ -32,13 +32,11 @@
 
 		 - Lenkrr
 	</title>
-		<link rel="stylesheet" href="/resources/style.css">
+	<link rel="stylesheet" href="/resources/style.css">
 </head>
 <body>
-	<div id="header" class="content">
+	<div id="header">
 		<span class="logo"><a href="/">lenkrr</a></span>
-		{{ if .User.Id }}
-			<span class="logout"><a href="/signout">Logout</a></span>
-		{{ end }}
+		{{ if .User.Id }}<span class="logout"><a href="/signout">Logout</a></span>{{ end }}
 	</div>
 {{ end }}

@@ -2,14 +2,13 @@
 
 {{ with .Data }}
 <div class="content">
-<h1 class="title">{{ .Project.URL }}</h1>
+<h1 class="title">{{ .Project.Host }}</h1>
 <div class="action">
 	<a href="/">&larr; Back</a>
 </div>
 </div>
 
-
-<div style="background-color:white; padding:1rem 0 6rem 0;margin:3rem 0">
+<div style="background-color:white; padding:1rem 0 6rem 0;margin: 0 0 4rem 0">
 	<div class="content">
 	<small style="margin-bottom:3rem;display:block">Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
 		<div class="flex-container">
@@ -208,7 +207,7 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} links from HTTPS to HTTP</a>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP</a>
 			</h2>
 			<p>Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.</p>
 		</div>

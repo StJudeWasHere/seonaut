@@ -102,7 +102,7 @@ a {
 	border-bottom: 1px dotted var(--primary-color);
 }
 .action {
-	margin-bottom: 3rem;
+	margin-bottom: 4rem;
 }
 .action a {
 	font-weight: 300;
@@ -168,7 +168,6 @@ h2 {
 }
 #header {
 	margin: 0 0 5rem 0;
-	
 }
 .content {
 	padding: 0 3rem;
@@ -179,18 +178,23 @@ h2 {
 	font-weight: normal;
 	margin: 0 0 .2rem 0;
 	padding: 0;
-
 }
-.logo a {
-	color: var(--secondary-color);
-	font-weight: bold;
-	text-decoration: none;
+.logo {
+	top: 2rem;
+	left: 0;
+	padding-left: 3rem;
 	font-size: 1rem;
 	font-weight: 600;
 	line-height: 2rem;
+	padding: .5rem 6rem .5rem 3rem;
 	background-color: var(--primary-color);
-	padding: .5rem 6rem .5rem .5rem;
-	margin: 0;
+}
+.logo a {
+	color: var(--secondary-color);
+	text-decoration: none;
+	font-size: 1rem;
+	font-weight: 600;
+	background-color: var(--primary-color);
 }
 .logo a:hover {
 	text-decoration: none;
@@ -198,6 +202,7 @@ h2 {
 .logout {
 	float: right;
 	font-weight: 300;
+	padding-right: 3rem;
 }
 .logout a {
 	font-decoration: none;
@@ -254,7 +259,7 @@ h2 {
 	margin-bottom: 3rem;
 }
 .issues {
-	margin-bottom: 3rem;
+	margin-bottom: 4rem;
 	font-weight: 300;
 	max-width: var(--content-max-width);
 }

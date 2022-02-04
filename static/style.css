@@ -300,3 +300,7 @@ h2 {
 	padding-top: 1.5rem;
 	max-width: var(--content-max-width);
 }
+a.button {
+	border: 1px solid var(--primary-color);
+	padding: .5rem 1rem;
+}

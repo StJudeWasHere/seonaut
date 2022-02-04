@@ -59,6 +59,8 @@ func main() {
 	http.HandleFunc("/signin", serveSignin)
 	http.HandleFunc("/signout", requireAuth(serveSignout))
 
+	http.HandleFunc("/download", serveDownloadAll)
+
 	fmt.Printf("Starting server at %s on port %d...\n", config.Server, config.ServerPort)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.Server, config.ServerPort), nil)
 	if err != nil {

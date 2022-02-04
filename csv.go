@@ -3,19 +3,15 @@ package main
 import (
 	"encoding/csv"
 	"fmt"
-	"os"
+	"io"
+
 	"strconv"
 	"unicode/utf8"
 )
 
 var writer *csv.Writer
 
-func initHandler() {
-	f, e := os.Create("./seo.csv")
-	if e != nil {
-		fmt.Println(e)
-	}
-
+func initCSV(f io.Writer) {
 	writer = csv.NewWriter(f)
 
 	writer.Write([]string{
@@ -34,23 +30,10 @@ func initHandler() {
 		"Header 2",
 		"Size",
 		"Nº of words",
-		"Internal links",
-		"External links",
 	})
 }
 
-func handlePageReport(r PageReport) {
-	internal := make(map[string]bool)
-	external := make(map[string]bool)
-
-	for _, l := range r.Links {
-		if l.External {
-			external[l.URL] = true
-		} else {
-			internal[l.URL] = true
-		}
-	}
-
+func writeCSVPageReport(r PageReport) {
 	writer.Write([]string{
 		fmt.Sprintf("%d", r.StatusCode),
 		r.URL,
@@ -65,10 +48,8 @@ func handlePageReport(r PageReport) {
 		r.Robots,
 		r.H1,
 		r.H2,
-		fmt.Sprintf("%.1f KB", byteToKByte(len(r.Body))),
+		fmt.Sprintf("%.1f KB", byteToKByte(r.Size)),
 		strconv.Itoa(r.Words),
-		strconv.Itoa(len(internal)),
-		strconv.Itoa(len(external)),
 	})
 
 	writer.Flush()

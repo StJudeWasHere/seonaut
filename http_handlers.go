@@ -413,6 +413,47 @@ func serveSignin(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "signin", v)
 }
 
+func serveDownloadAll(w http.ResponseWriter, r *http.Request) {
+	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	session, _ := cookie.Get(r, "SESSION_ID")
+	uid := session.Values["uid"].(int)
+	u, err := findCrawlUserId(cid)
+	if err != nil || u.Id != uid {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	crawl := findCrawlById(cid)
+
+	project, err := findProjectById(crawl.ProjectId, uid)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	parsedURL, err := url.Parse(project.URL)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", parsedURL.Host))
+
+	initCSV(w)
+	pageReports := FindAllPageReportsByCrawlId(cid)
+	for _, p := range pageReports {
+		writeCSVPageReport(p)
+	}
+}
+
 func serveSignout(w http.ResponseWriter, r *http.Request) {
 	session, _ := cookie.Get(r, "SESSION_ID")
 	session.Values["authenticated"] = false

@@ -2,29 +2,30 @@
 
 {{ with .Data }}
 <div class="content">
-<h1 class="title">
-{{ if eq .Eid "ERROR_50x" }}Pages are throwing errors{{ end }}
-{{ if eq .Eid "ERROR_40x" }}Pages are missing{{ end }}
-{{ if eq .Eid "ERROR_30x" }}Pages are redirecting somere else{{ end }}
-{{ if eq .Eid "ERROR_DUPLICATED_TITLE" }}This pages have duplicate title tags{{ end }}
-{{ if eq .Eid "ERROR_LONG_TITLE" }}This pages have long titles{{ end }}
-{{ if eq .Eid "ERROR_SHORT_TITLE" }}Page titles are too short{{ end }}
-{{ if eq .Eid "ERROR_EMPTY_TITLE" }}Pages with empty or missing title{{ end }}
-{{ if eq .Eid "ERROR_EMPTY_DESCRIPTION" }}Pages with empty or missing description{{ end }}
-{{ if eq .Eid "ERROR_SHORT_DESCRIPTION" }}Pages with short description{{ end }}
-{{ if eq .Eid "ERROR_LONG_DESCRIPTION" }}Pages with long description{{ end }}
-{{ if eq .Eid "ERROR_DUPLICATED_DESCRIPTION" }}Pages with duplicate description tags{{ end }}
-{{ if eq .Eid "ERROR_LITTLE_CONTENT" }}Pages with little content{{ end }}
-{{ if eq .Eid "ERROR_IMAGES_NO_ALT" }}Pages containing images with no alt attribute{{ end }}
-{{ if eq .Eid "ERROR_REDIRECT_CHAIN" }}Pages redirecting to pages redirecting to pages{{ end }}
-{{ if eq .Eid "ERROR_NO_H1" }}Pages with no H1 heading title{{ end }}
-{{ if eq .Eid "ERROR_NO_LANG" }}Pages with no language attribute{{ end }}
-{{ if eq .Eid "ERROR_HTTP_LINKS" }}Links from pages using HTTPS to pages using HTTP{{ end }}
-{{ if eq .Eid "ERROR_HTTP_LINKS" }}Pages containing images with no alt attribute{{ end }}
-{{ if eq .Eid "ERROR_HREFLANG_RETURN" }}Pages with hreflangs without its corresponding return link{{ end }}
-</h1>
+
 <div class="action">
-	<a href="/issues?cid={{ .Cid }}">&larr; Back to issues</a>
+	<a href="/">Projects</a> /
+	<a href="/issues?cid={{ .Cid }}">{{ .Project.Host }}</a> /
+	<span class="title">
+		{{ if eq .Eid "ERROR_50x" }}Status 50x{{ end }}
+		{{ if eq .Eid "ERROR_40x" }}Status 40x{{ end }}
+		{{ if eq .Eid "ERROR_30x" }}Status 30x{{ end }}
+		{{ if eq .Eid "ERROR_DUPLICATED_TITLE" }}Duplicate Title{{ end }}
+		{{ if eq .Eid "ERROR_LONG_TITLE" }}Long title{{ end }}
+		{{ if eq .Eid "ERROR_SHORT_TITLE" }}Short title{{ end }}
+		{{ if eq .Eid "ERROR_EMPTY_TITLE" }}Missing title{{ end }}
+		{{ if eq .Eid "ERROR_EMPTY_DESCRIPTION" }}Missing description{{ end }}
+		{{ if eq .Eid "ERROR_SHORT_DESCRIPTION" }}Short description{{ end }}
+		{{ if eq .Eid "ERROR_LONG_DESCRIPTION" }}Long description{{ end }}
+		{{ if eq .Eid "ERROR_DUPLICATED_DESCRIPTION" }}Duplicate description{{ end }}
+		{{ if eq .Eid "ERROR_LITTLE_CONTENT" }}Little content{{ end }}
+		{{ if eq .Eid "ERROR_IMAGES_NO_ALT" }}No alt attribute{{ end }}
+		{{ if eq .Eid "ERROR_REDIRECT_CHAIN" }}Redirect chain{{ end }}
+		{{ if eq .Eid "ERROR_NO_H1" }}Missing H1{{ end }}
+		{{ if eq .Eid "ERROR_NO_LANG" }}Missing language attribute{{ end }}
+		{{ if eq .Eid "ERROR_HTTP_LINKS" }}HTTPS to HTTP{{ end }}
+		{{ if eq .Eid "ERROR_HREFLANG_RETURN" }}Missing hreflang{{ end }}
+	</span>
 </div>
 </div>
 

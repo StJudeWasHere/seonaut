@@ -44,6 +44,7 @@ type IssuesView struct {
 	PageReports []PageReport
 	Cid         int
 	Eid         string
+	Project     Project
 }
 
 type ResourcesView struct {
@@ -256,12 +257,28 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	crawl := findCrawlById(cid)
+	project, err := findProjectById(crawl.ProjectId, uid)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	parsedURL, err := url.Parse(project.URL)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	project.Host = parsedURL.Host
+
 	issues := findPageReportIssues(cid, eid)
 
 	view := IssuesView{
 		Cid:         cid,
 		Eid:         eid,
 		PageReports: issues,
+		Project:     project,
 	}
 
 	v := &PageView{

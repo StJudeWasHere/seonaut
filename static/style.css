@@ -102,11 +102,12 @@ a {
 	border-bottom: 1px dotted var(--primary-color);
 }
 .action {
-	margin-bottom: 4rem;
+	margin-bottom: 5rem;
+	line-height: 1.4rem;
+	font-size: 1.4rem;
 }
 .action a {
 	font-weight: 300;
-	font-size: .9rem;
 }
 input {
 	font-size: inherit;
@@ -173,11 +174,7 @@ h2 {
 	padding: 0 3rem;
 }
 .title {
-	font-size: 1.6rem;
-	line-height: 1.6rem;
-	font-weight: normal;
-	margin: 0 0 .2rem 0;
-	padding: 0;
+	font-weight: 600;
 }
 .logo {
 	top: 2rem;

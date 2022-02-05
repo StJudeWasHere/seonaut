@@ -20,12 +20,10 @@ type User struct {
 }
 
 type ProjectView struct {
-	Project         Project
-	Crawl           Crawl
-	TotalCount      int
-	MediaCount      map[string]int
-	StatusCodeCount map[int]int
-	TotalIssues     int
+	Project     Project
+	Crawl       Crawl
+	TotalCount  int
+	TotalIssues int
 }
 
 type IssuesGroupView struct {
@@ -96,11 +94,9 @@ func serveHome(w http.ResponseWriter, r *http.Request) {
 	for _, p := range projects {
 		c := getLastCrawl(&p)
 		pv := ProjectView{
-			Project:    p,
-			Crawl:      c,
-			TotalCount: CountCrawled(c.Id),
-			//			MediaCount:      CountByMediaType(c.Id),
-			//			StatusCodeCount: CountByStatusCode(c.Id),
+			Project:     p,
+			Crawl:       c,
+			TotalCount:  CountCrawled(c.Id),
 			TotalIssues: countIssuesByCrawl(c.Id),
 		}
 		views = append(views, pv)

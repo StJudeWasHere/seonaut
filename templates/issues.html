@@ -24,11 +24,6 @@
 					<ul class="chart-list">
 						{{ range .MediaChart }}
 							<li><b>{{ .Value }}</b> {{ .Key }}</li>
-							{{ if .Data }}
-								{{ range .Data}}
-									<li><b>{{ .Value }}</b> {{ .Key }}</li>
-								{{ end }}
-							{{ end }}
 						{{ end }}
 					</ul>
 				</div>
@@ -46,12 +41,14 @@
 				<div>
 					<ul class="chart-list status-list">
 						{{ range .StatusChart }}
-							<li><b>{{ .Value }}</b> URLs with status {{ .Key }}</li>
-							{{ if .Data }}
-								{{ range .Data}}
-									<li><b>{{ .Value }}</b> URLs with status {{ .Key }}</li>
+							<li>
+								<b>{{ .Value }}</b>
+								{{ if eq .Key "Other" }}
+									Other status codes
+								{{ else }}
+									URLs with status {{ .Key }}
 								{{ end }}
-							{{ end }}
+							</li>
 						{{ end }}
 					</ul>
 				</div>

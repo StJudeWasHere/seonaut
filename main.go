@@ -54,12 +54,11 @@ func main() {
 	http.HandleFunc("/crawl", requireAuth(serveCrawl))
 	http.HandleFunc("/issues", requireAuth(serveIssues))
 	http.HandleFunc("/issues/view", requireAuth(serveIssuesView))
+	http.HandleFunc("/download", requireAuth(serveDownloadAll))
 	http.HandleFunc("/resources", requireAuth(serveResourcesView))
 	http.HandleFunc("/signup", serveSignup)
 	http.HandleFunc("/signin", serveSignin)
 	http.HandleFunc("/signout", requireAuth(serveSignout))
-
-	http.HandleFunc("/download", requireAuth(serveDownloadAll))
 
 	fmt.Printf("Starting server at %s on port %d...\n", config.Server, config.ServerPort)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", config.Server, config.ServerPort), nil)

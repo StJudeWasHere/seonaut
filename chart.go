@@ -1,12 +1,17 @@
 package main
 
-import "strconv"
+import (
+	"strconv"
+)
+
+const (
+	chartLimit = 4
+)
 
 type ChartItem struct {
 	Key     string
 	Value   int
 	Percent int
-	Data    CountList
 }
 
 type Chart []ChartItem
@@ -14,15 +19,9 @@ type Chart []ChartItem
 func NewChart(c CountList) Chart {
 	chart := Chart{}
 	total := 0
-	var ce CountList
 
 	for _, i := range c {
 		total = total + i.Value
-	}
-
-	if len(c) > 4 {
-		ce = c[4:]
-		c = c[:4]
 	}
 
 	for _, i := range c {
@@ -34,7 +33,15 @@ func NewChart(c CountList) Chart {
 		chart = append(chart, ci)
 	}
 
-	chart[len(chart)-1].Data = ce
+	if len(chart) > chartLimit {
+		chart[chartLimit-1].Key = "Other"
+		for _, v := range chart[chartLimit:] {
+			chart[chartLimit-1].Value += v.Value
+			chart[chartLimit-1].Percent += v.Percent
+		}
+
+		chart = chart[:chartLimit]
+	}
 
 	return chart
 }

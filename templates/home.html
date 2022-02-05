@@ -1,37 +1,39 @@
 {{ template "head" . }}
 
 <div class="content">
-<h1 class="title">Projects</h1>
-<div class="action">
-	<a href="/new-project" style="font-size: 1rem">+ Add Project</a>
-</div>
+	<h1 class="title">Projects</h1>
+	<div class="action">
+		<a href="/new-project" style="font-size: 1rem">+ Add Project</a>
+	</div>
 </div>
 
 <div class="content">
 {{ range .Data }}
-<div class="project">
-	<h2 class="project-title">
-		{{ if gt .TotalIssues 0 }}
-			<a href="/issues?cid={{ .Crawl.Id }}">{{ .Project.URL }}</a>
+	<div class="project">
+		<h2 class="project-title">
+			{{ if gt .TotalIssues 0 }}
+				<a href="/issues?cid={{ .Crawl.Id }}">{{ .Project.URL }}</a>
+			{{ else }}
+				{{ .Project.URL }}
+			{{ end }}
+		</h2>
+
+		{{ if .Crawl.Id }}
+			{{ if .Crawl.End.Valid }}
+				<div>
+					Last crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. Crawl duration was {{ .Crawl.TotalTime }}.<br>
+					{{ .TotalCount }} {{ if eq .TotalCount 1 }}URL{{ else }}URLs{{end }} crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}.<br>
+				</div>
+				<a href="/crawl?pid={{ .Project.Id }}">crawl now</a>
+			{{ else }}
+				<p>Now crawling...</p>
+			{{ end }}
 		{{ else }}
-			{{ .Project.URL }}
+			<div>This project has not been crawled yet.</div>
+			<a href="/crawl?pid={{ .Project.Id }}">crawl Now</a>
 		{{ end }}
-	</h2>
-	{{ if .Crawl.Id }}
-		{{ if .Crawl.End.Valid }}
-			<div>
-				Last crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. Crawl duration was {{ .Crawl.TotalTime }}.<br>
-				{{ .TotalCount }} {{ if eq .TotalCount 1 }}URL{{ else }}URLs{{end }} crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}.<br>
-			</div>
-			<a href="/crawl?pid={{ .Project.Id }}">crawl now</a>
-		{{ else }}
-		<p>Now crawling...</p>
-		{{ end }}
-	{{ else }}
-		<div>This project has not been crawled yet.</div>
-		<a href="/crawl?pid={{ .Project.Id }}">crawl Now</a>
-	{{ end }}
-</div>
+	</div>
 {{ end }}
 </div>
+
 {{ template "footer" . }}

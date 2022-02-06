@@ -970,7 +970,8 @@ func FindMissingHrelangReturnLinks(cid int) []PageReport {
 		LEFT JOIN hreflangs b ON hreflangs.crawl_id = b.crawl_id and hreflangs.from_hash = b.to_hash
 		LEFT JOIN pagereports ON hreflangs.pagereport_id = pagereports.id
 		WHERE  hreflangs.crawl_id = ? AND hreflangs.to_lang != "x-default"
-		AND pagereports.status_code < 300 AND b.id IS NULL`
+		AND pagereports.status_code < 300 AND b.id IS NULL
+		AND (pagereports.canonical = "" OR pagereports.canonical = pagereports.URL)`
 
 	return pageReportsQuery(query, cid)
 }

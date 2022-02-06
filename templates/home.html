@@ -12,7 +12,7 @@
 	<div class="project">
 		<h2 class="project-title">
 			{{ if gt .TotalIssues 0 }}
-				<a href="/issues?cid={{ .Crawl.Id }}">{{ .Project.URL }}</a>
+				{{ .Project.URL }}
 			{{ else }}
 				{{ .Project.URL }}
 			{{ end }}
@@ -26,6 +26,7 @@
 				</div>
 				<p>
 					<a class="button"  href="/crawl?pid={{ .Project.Id }}">crawl now</a>
+					<a class="button"  href="/issues?cid={{ .Crawl.Id }}">view report</a>
 				</p>
 			{{ else }}
 				<p>Now crawling...</p>

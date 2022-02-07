@@ -154,7 +154,7 @@
 	{{ with (index .IssuesGroups "ERROR_LONG_TITLE") }}
 		{{ if ne .Count 0 }}
 			<div class="issues">
-				<h2>{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} long titles</h2>
+				<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long title</h2>
 				<p>Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.</p>
 				<p>
 					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LONG_TITLE">download URLs</a>

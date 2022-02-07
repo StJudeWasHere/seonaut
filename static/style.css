@@ -216,7 +216,8 @@ h2 {
 	padding: 1.5rem 2rem;
 }
 .url-list li.url {
-	padding: 0;
+	padding: 0.5rem 1rem;
+	word-wrap: break-word;
 }
 .url-list a {
 	color: var(--primary-color);

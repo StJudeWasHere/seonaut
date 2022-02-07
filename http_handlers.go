@@ -441,10 +441,21 @@ func serveDownloadAll(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", parsedURL.Host))
+	var pageReports []PageReport
+
+	eid := r.URL.Query()["eid"]
+	fileName := parsedURL.Host
+
+	if len(eid) > 0 && eid[0] != "" {
+		fileName = fileName + "-" + eid[0]
+		pageReports = FindAllPageReportsByCrawlIdAndErrorType(cid, eid[0])
+	} else {
+		pageReports = FindAllPageReportsByCrawlId(cid)
+	}
+
+	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
 	initCSV(w)
-	pageReports := FindAllPageReportsByCrawlId(cid)
 	for _, p := range pageReports {
 		writeCSVPageReport(p)
 	}

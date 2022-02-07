@@ -520,6 +520,7 @@ func savePageReport(r *PageReport, cid int64) {
 		}
 	}
 }
+
 func FindAllPageReportsByCrawlId(cid int) []PageReport {
 	var pageReports []PageReport
 	query := `
@@ -544,6 +545,65 @@ func FindAllPageReportsByCrawlId(cid int) []PageReport {
 		WHERE crawl_id = ?`
 
 	rows, err := db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		p := PageReport{}
+		err := rows.Scan(&p.Id,
+			&p.URL,
+			&p.RedirectURL,
+			&p.Refresh,
+			&p.StatusCode,
+			&p.ContentType,
+			&p.MediaType,
+			&p.Lang,
+			&p.Title,
+			&p.Description,
+			&p.Robots,
+			&p.Canonical,
+			&p.H1,
+			&p.H2,
+			&p.Words,
+			&p.Size,
+		)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
+func FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []PageReport {
+	var pageReports []PageReport
+	query := `
+		SELECT
+			id,
+			url,
+			redirect_url,
+			refresh,
+			status_code,
+			content_type,
+			media_type,
+			lang,
+			title,
+			description,
+			robots,
+			canonical,
+			h1,
+			h2,
+			words,
+			size
+		FROM pagereports
+		WHERE crawl_id = ?
+		AND id in (SELECT pagereport_id FROM issues WHERE error_type = ? AND crawl_id = ?)`
+
+	rows, err := db.Query(query, cid, et, cid)
 	if err != nil {
 		log.Println(err)
 	}

@@ -67,9 +67,12 @@
 	{{ with (index .IssuesGroups "ERROR_50x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-		<h2><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} throwing 50x type errors</a></h2>
+		<h2>{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} throwing 50x type errors</h2>
 			<p>
 				This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't load properly and show an error page instead, scaring your users and annoying search engines.
+			</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">view URLs</a>
 			</p>
 		</div>
 		{{ end }}
@@ -79,9 +82,12 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 		<h2>
-			<a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} missing</a>
+			{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} missing
 			</h2>
 		<p>This pages are missing and your both your users and search engines are getting lost.</p>
+		<p>
+			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">view URLs</a>
+		</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -89,10 +95,11 @@
 	{{ with (index .IssuesGroups "ERROR_30x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-		<h2>
-			<a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</a>
-		</h2>
+		<h2>{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</h2>
 		<p>URLs causing redirects are sending users and search engines to a different page, this can waste the search engine's crawl budget and create redirect chains.</p>
+		<p>
+			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">view URLs</a>
+		</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -100,8 +107,11 @@
 	{{ with (index .IssuesGroups "ERROR_REDIRECT_CHAIN") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} are part of a redirect chain</a></h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} are part of a redirect chain</h2>
 			<p>Redirect chains are pages that redirect to other pages that also redirect somewhere else, creating a chain of redirects.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -112,10 +122,13 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} duplicate title tags</a>
+				{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} duplicate title tags
 			</h2>
 			<p>The title tag is considered one of the most important elements for on-page SEO.<br>
 			If multiple pages have the same title, they will compete for a given search query confusing search engines.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -123,10 +136,11 @@
 	{{ with (index .IssuesGroups "ERROR_EMMPTY_TITLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with empty or missing title</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with empty or missing title</h2>
 			<p>The page title is one of the most important elements for search engines.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -134,10 +148,11 @@
 	{{ with (index .IssuesGroups "ERROR_LONG_TITLE") }}
 		{{ if ne .Count 0 }}
 			<div class="issues">
-				<h2>
-					<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} long titles</a>
-				</h2>
+				<h2>{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} long titles</h2>
 				<p>Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.</p>
+				<p>
+					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">view URLs</a>
+				</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -145,10 +160,11 @@
 	{{ with (index .IssuesGroups "ERROR_SHORT_TITLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} short title</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} short title</h2>
 			<p>This pages have titles that are too short. Search engines will be happier if you provide longer titles.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -158,10 +174,11 @@
 	{{ with (index .IssuesGroups "ERROR_DUPLICATED_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with duplicate description tags</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with duplicate description tags</h2>
 			<p>It is recomended to have unique descriptions for each page so search engines can understand better your page.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -169,10 +186,11 @@
 	{{ with (index .IssuesGroups "ERROR_LONG_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long description</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long description</h2>
 			<p>Description tags are not a ranking factor for search engines, but having good quality descriptions will get more accurate information in the search results. Long descriptions will often get truncated, making them not so sexy for users.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -180,10 +198,11 @@
 	{{ with (index .IssuesGroups "ERROR_SHORT_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 			<div class="issues">
-				<h2>
-					<a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with short description</a>
-				</h2>
+				<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with short description</h2>
 				<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
+				<p>
+					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">view URLs</a>
+				</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -191,10 +210,11 @@
 	{{ with (index .IssuesGroups "ERROR_EMPTY_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with empty or missing description</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with empty or missing description</h2>
 			<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -204,10 +224,11 @@
 	{{ with (index .IssuesGroups "ERROR_HTTP_LINKS" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP</h2>
 			<p>Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -215,10 +236,11 @@
 	{{ with (index .IssuesGroups "ERROR_NO_LANG" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no language attribute</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no language attribute</h2>
 			<p>The language attribute is particularly usefull for screen readers and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -226,10 +248,11 @@
 	{{ with (index .IssuesGroups "ERROR_NO_H1" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no H1 heading title</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no H1 heading title</h2>
 			<p>The H1 tag describes the main topic of the page, without it both your users and search engine will find it harder to figure what the page is talking about.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -237,10 +260,11 @@
 	{{ with (index .IssuesGroups "ERROR_LITTLE_CONTENT") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with little content</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with little content</h2>
 			<p>Pages with little content are not really useful for users or search engines, consider adding more content to your pages.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -248,10 +272,11 @@
 	{{ with (index .IssuesGroups "ERROR_IMAGES_NO_ALT") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
 			<p>The image alt attribute improves your site's accessibility, it also helps search engines understand better your images.</p>
+			<p>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -259,10 +284,11 @@
 	{{ with (index .IssuesGroups "ERROR_HREFLANG_RETURN") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2>
-				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing hreflangs without its corresponding return link</a>
-			</h2>
+			<h2>{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing hreflangs without its corresponding return link</h2>
 			<p>When referencing a page with hreflang, that page must reference back with a hreflang tag too.</p>
+			<p>
+				<a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">view URLs</a>
+			</p>
 		</div>
 		{{ end }}
 	{{ end}}

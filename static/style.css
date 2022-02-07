@@ -308,3 +308,17 @@ a.button:hover {
 	background-color: white;
 	border: 1px solid var(--primary-color);
 }
+
+.pagination {
+	margin: 3rem 0;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+
+.pagination .prev, .next {
+	width: 50%;
+}
+.next {
+	text-align: right;
+}

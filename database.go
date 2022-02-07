@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"math"
 	"sort"
 	"time"
 
@@ -11,6 +12,10 @@ import (
 )
 
 var db *sql.DB
+
+const (
+	paginationMax = 25
+)
 
 func initDatabase(config *Config) {
 	var err error
@@ -1051,7 +1056,25 @@ func FindInLinks(s string, cid int) []PageReport {
 	return pageReportsQuery(query, hash, cid)
 }
 
-func findPageReportIssues(cid int, errorType string) []PageReport {
+func getNumberOfPagesForIssues(cid int, errorType string) int {
+	query := `
+		SELECT count(*)
+		FROM issues
+		WHERE error_type = ? and crawl_id  = ?`
+
+	row := db.QueryRow(query, errorType, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("CountCrawled: %v\n", err)
+	}
+	var f float64 = float64(c) / float64(paginationMax)
+	return int(math.Ceil(f))
+}
+
+func findPageReportIssues(cid, p int, errorType string) []PageReport {
+	max := paginationMax
+	offset := max * p
+
 	query := `
 		SELECT
 			id,
@@ -1062,9 +1085,9 @@ func findPageReportIssues(cid int, errorType string) []PageReport {
 			SELECT pagereport_id
 			FROM issues
 			WHERE error_type = ? and crawl_id  = ?
-		)`
+		) LIMIT ?, ?`
 
-	return pageReportsQuery(query, errorType, cid)
+	return pageReportsQuery(query, errorType, cid, offset, max)
 }
 
 func findRedirectChains(cid int) []PageReport {

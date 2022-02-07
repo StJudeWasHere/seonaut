@@ -33,6 +33,11 @@
 
 {{ $cid := .Cid }}
 {{ $eid := .Eid }}
+{{ $cp := .CurrentPage }}
+{{ $pp := .PreviousPage }}
+{{ $np := .NextPage }}
+
+
 {{ if .PageReports }}
 	<ul class="url-list">
 	{{ range .PageReports }}
@@ -44,6 +49,17 @@
 		</li>
 	{{ end }}
 	</ul>
+	<div class="pagination">
+		<div class="prev">
+		{{ if $pp }}
+			<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $pp }}">← previous page</a>
+		{{ end }}
+		</div>
+		<div class="next">
+		{{ if $np }}
+			<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $np }}">next page →</a>
+		{{ end }}
+		</div>
 {{ else }}
 	<p><b>Everything is ok</b></p>
 {{ end }}

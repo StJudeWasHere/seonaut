@@ -39,10 +39,14 @@ type IssuesGroupView struct {
 }
 
 type IssuesView struct {
-	PageReports []PageReport
-	Cid         int
-	Eid         string
-	Project     Project
+	PageReports  []PageReport
+	Cid          int
+	Eid          string
+	Project      Project
+	CurrentPage  int
+	NextPage     int
+	PreviousPage int
+	TotalPages   int
 }
 
 type ResourcesView struct {
@@ -244,6 +248,35 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	totalPages := getNumberOfPagesForIssues(cid, eid)
+
+	p := r.URL.Query()["p"]
+	page := 1
+	if len(p) > 0 {
+		page, err = strconv.Atoi(r.URL.Query()["p"][0])
+		if err != nil {
+			log.Println(err)
+			page = 1
+		}
+
+		if page < 1 || page > totalPages {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+
+			return
+		}
+	}
+
+	nextPage := 0
+	previousPage := 0
+
+	if page < totalPages {
+		nextPage = page + 1
+	}
+
+	if page > 1 {
+		previousPage = page - 1
+	}
+
 	session, _ := cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 	u, err := findCrawlUserId(cid)
@@ -268,13 +301,17 @@ func serveIssuesView(w http.ResponseWriter, r *http.Request) {
 
 	project.Host = parsedURL.Host
 
-	issues := findPageReportIssues(cid, eid)
+	issues := findPageReportIssues(cid, page-1, eid)
 
 	view := IssuesView{
-		Cid:         cid,
-		Eid:         eid,
-		PageReports: issues,
-		Project:     project,
+		Cid:          cid,
+		Eid:          eid,
+		PageReports:  issues,
+		Project:      project,
+		CurrentPage:  page,
+		NextPage:     nextPage,
+		PreviousPage: previousPage,
+		TotalPages:   totalPages,
 	}
 
 	v := &PageView{

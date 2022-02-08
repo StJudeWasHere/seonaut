@@ -1,0 +1,13 @@
+[server]
+host = "example.com"
+port = 9000
+
+[database]
+server = "dbexample.com"
+port = 3306
+user = "root"
+password = "root"
+database = "test"
+
+[crawler]
+agent = "testing"

@@ -120,18 +120,23 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, pr chan<- PageR
 	)
 
 	co.OnRequest(func(r *colly.Request) {
-		// fmt.Printf("Visiting %s\n", r.URL.String())
+		fmt.Printf("Visiting %s\n", r.URL.String())
 	})
 
 	co.OnResponse(handleResponse)
 
 	co.OnError(func(r *colly.Response, err error) {
+		fmt.Println(err)
 		if r.StatusCode > 0 && r.Headers != nil {
 			handleResponse(r)
 		}
 	})
 
 	co.SetRedirectHandler(func(r *http.Request, via []*http.Request) error {
+		if r.URL.Path == "/robots.txt" {
+			return nil
+		}
+
 		return http.ErrUseLastResponse
 	})
 
@@ -146,7 +151,7 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, pr chan<- PageR
 	if useJS == true {
 		us = RendertronURL + us
 	}
-
+	fmt.Println(us)
 	q.AddURL(us)
 
 	q.Run(co)

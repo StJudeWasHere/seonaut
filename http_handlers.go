@@ -71,6 +71,7 @@ type Project struct {
 	URL             string
 	Host            string
 	IgnoreRobotsTxt bool
+	UseJS           bool
 	Created         time.Time
 }
 

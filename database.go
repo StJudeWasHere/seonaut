@@ -217,7 +217,7 @@ func saveProject(s string, ignoreRobotsTxt bool, uid int) {
 
 func findProjectsByUser(uid int) []Project {
 	var projects []Project
-	rows, err := db.Query("SELECT id, url, ignore_robotstxt, created FROM projects WHERE user_id = ?", uid)
+	rows, err := db.Query("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE user_id = ?", uid)
 	if err != nil {
 		log.Println(err)
 		return projects
@@ -225,7 +225,7 @@ func findProjectsByUser(uid int) []Project {
 
 	for rows.Next() {
 		p := Project{}
-		err := rows.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.Created)
+		err := rows.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.UseJS, &p.Created)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -251,10 +251,10 @@ func findCrawlById(cid int) Crawl {
 }
 
 func findProjectById(id int, uid int) (Project, error) {
-	row := db.QueryRow("SELECT id, url, ignore_robotstxt, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
+	row := db.QueryRow("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
 
 	p := Project{}
-	err := row.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.Created)
+	err := row.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.UseJS, &p.Created)
 	if err != nil {
 		log.Println(err)
 		return p, err

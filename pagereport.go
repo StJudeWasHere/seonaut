@@ -60,10 +60,10 @@ type Image struct {
 	Alt string
 }
 
-func NewPageReport(url *url.URL, status int, headers *http.Header, body []byte) *PageReport {
+func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *PageReport {
 	pageReport := PageReport{
-		URL:         url.String(),
-		parsedURL:   url,
+		URL:         u.String(),
+		parsedURL:   u,
 		StatusCode:  status,
 		ContentType: headers.Get("Content-Type"),
 		Body:        body,

@@ -15,6 +15,7 @@ const (
 	consumerThreads = 2
 	storageMaxSize  = 10000
 	MaxPageReports  = 10000
+	RendertronURL   = "http://127.0.0.1:3000/render/"
 )
 
 type Crawler struct{}
@@ -33,7 +34,7 @@ func startCrawler(p Project) int {
 
 	cid := saveCrawl(p)
 
-	go c.Crawl(u, p.IgnoreRobotsTxt, pageReport)
+	go c.Crawl(u, p.IgnoreRobotsTxt, p.UseJS, pageReport)
 
 	for r := range pageReport {
 		crawled++
@@ -46,7 +47,7 @@ func startCrawler(p Project) int {
 	return int(cid)
 }
 
-func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt bool, pr chan<- PageReport) {
+func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, pr chan<- PageReport) {
 	defer close(pr)
 
 	q, _ := queue.New(
@@ -61,7 +62,13 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt bool, pr chan<- PageReport) 
 			return
 		}
 
-		pageReport := NewPageReport(r.Request.URL, r.StatusCode, r.Headers, r.Body)
+		us := r.Request.URL.String()
+		url := r.Request.URL
+		if useJS == true {
+			us = us[len(RendertronURL):]
+			url, _ = url.Parse(us)
+		}
+		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 		pr <- *pageReport
 
 		responseCounter++
@@ -71,7 +78,12 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt bool, pr chan<- PageReport) 
 				continue
 			}
 
-			q.AddURL(r.Request.AbsoluteURL(l.URL))
+			lurl := r.Request.AbsoluteURL(l.URL)
+			if useJS == true {
+				lurl = RendertronURL + lurl
+			}
+
+			q.AddURL(lurl)
 		}
 
 		if pageReport.RedirectURL != "" {
@@ -100,7 +112,7 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt bool, pr chan<- PageReport) 
 	}
 
 	co := colly.NewCollector(
-		colly.AllowedDomains(u.Host),
+		colly.AllowedDomains(u.Host, "127.0.0.1"),
 		colly.UserAgent(config.CrawlerAgent),
 		func(c *colly.Collector) {
 			c.IgnoreRobotsTxt = ignoreRobotsTxt
@@ -123,11 +135,19 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt bool, pr chan<- PageReport) 
 		return http.ErrUseLastResponse
 	})
 
+	n, _ := time.ParseDuration("3m")
+	co.SetRequestTimeout(n)
+
 	if u.Path == "" {
 		u.Path = "/"
 	}
 
-	q.AddURL(u.String())
+	us := u.String()
+	if useJS == true {
+		us = RendertronURL + us
+	}
+
+	q.AddURL(us)
 
 	q.Run(co)
 }

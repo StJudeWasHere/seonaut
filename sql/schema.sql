@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-02-03 10:29:41 +0000
+# Generation Time: 2022-02-08 10:14:19 +0000
 # ************************************************************
 
 
@@ -169,7 +169,8 @@ CREATE TABLE `projects` (
   `user_id` int(11) unsigned DEFAULT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `ignore_robotstxt` tinyint(11) NOT NULL DEFAULT '0',
+  `ignore_robotstxt` tinyint(4) NOT NULL DEFAULT '0',
+  `use_javascript` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   CONSTRAINT `projects_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE

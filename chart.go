@@ -55,5 +55,9 @@ func (c Chart) GetChart(c1, c2, c3, c4 string) string {
 		last = last + v.Percent
 	}
 
-	return s[0 : len(s)-1]
+	if len(s) > 0 {
+		return s[0 : len(s)-1]
+	}
+
+	return s
 }

@@ -159,6 +159,9 @@ small, .url {
 	font-weight: 300;
 	font-size: .8rem;
 }
+.url {
+	word-wrap: break-word;
+}
 form {
 	margin-bottom: 3rem;
 }

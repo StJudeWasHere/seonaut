@@ -26,11 +26,6 @@ type Issue struct {
 	ErrorType    string
 }
 
-type IssueGroup struct {
-	ErrorType string
-	Count     int
-}
-
 type IssueCallback struct {
 	Callback  func(int) []PageReport
 	ErrorType string

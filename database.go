@@ -17,6 +17,11 @@ const (
 	paginationMax = 25
 )
 
+type IssueGroup struct {
+	ErrorType string
+	Count     int
+}
+
 func initDatabase(config *Config) {
 	var err error
 	var dbString string = fmt.Sprintf(
@@ -899,7 +904,8 @@ func FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 				lang,
 				count(*) AS c
 			FROM pagereports
-			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)
+			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200
+			AND status_code < 300 AND (canonical = "" OR canonical = url)
 			GROUP BY title, lang
 			HAVING c > 1
 		) d 
@@ -973,7 +979,8 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 				lang,
 				count(*) AS c
 			FROM pagereports
-			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)
+			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200
+			AND status_code < 300 AND (canonical = "" OR canonical = url)
 			GROUP BY description, lang
 			HAVING c > 1
 		) d 
@@ -1005,7 +1012,8 @@ func FindPageReportsWithNoLangAttr(cid int) []PageReport {
 			pagereports.url,
 			pagereports.title
 		FROM pagereports
-		WHERE (pagereports.lang = "" OR pagereports.lang = null) and media_type = "text/html" AND pagereports.crawl_id = ?`
+		WHERE (pagereports.lang = "" OR pagereports.lang = null) and media_type = "text/html"
+		AND pagereports.crawl_id = ?`
 
 	return pageReportsQuery(query, cid)
 }
@@ -1018,7 +1026,8 @@ func FindPageReportsWithHTTPLinks(cid int) []PageReport {
 			pagereports.title
 		FROM pagereports
 		LEFT JOIN links ON links.pagereport_id = pagereports.id
-		WHERE pagereports.scheme = "https" AND links.scheme = "http" AND pagereports.crawl_id = ? AND links.external = false
+		WHERE pagereports.scheme = "https" AND links.scheme = "http"
+		AND pagereports.crawl_id = ? AND links.external = false
 		GROUP BY links.pagereport_id
 		HAVING count(links.pagereport_id) > 1`
 
@@ -1051,7 +1060,8 @@ func FindInLinks(s string, cid int) []PageReport {
 		FROM links
 		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
 		WHERE links.url_hash = ? AND pagereports.crawl_id = ?
-		GROUP BY pagereports.id`
+		GROUP BY pagereports.id
+		LIMIT 25`
 
 	return pageReportsQuery(query, hash, cid)
 }

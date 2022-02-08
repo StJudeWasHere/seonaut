@@ -140,9 +140,6 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, pr chan<- PageR
 		return http.ErrUseLastResponse
 	})
 
-	n, _ := time.ParseDuration("3m")
-	co.SetRequestTimeout(n)
-
 	if u.Path == "" {
 		u.Path = "/"
 	}
@@ -150,8 +147,10 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, pr chan<- PageR
 	us := u.String()
 	if useJS == true {
 		us = RendertronURL + us
+		n, _ := time.ParseDuration("30s")
+		co.SetRequestTimeout(n)
 	}
-	fmt.Println(us)
+
 	q.AddURL(us)
 
 	q.Run(co)

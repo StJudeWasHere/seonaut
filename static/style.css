@@ -345,3 +345,10 @@ span.alert {
 .notice svg {
 	fill: #249D93;
 }
+
+@media print
+{
+	* {-webkit-print-color-adjust:exact;}
+	body, .chart:after {background-color: white;}
+	.button {display: none;}
+}

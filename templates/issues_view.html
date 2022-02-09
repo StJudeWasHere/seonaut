@@ -28,16 +28,11 @@
 	</div>
 </div>
 
-
 <div class="content">
-
 {{ $cid := .Cid }}
 {{ $eid := .Eid }}
-{{ $cp := .CurrentPage }}
 {{ $pp := .PreviousPage }}
 {{ $np := .NextPage }}
-
-
 {{ if .PageReports }}
 	<ul class="url-list">
 	{{ range .PageReports }}

@@ -169,6 +169,7 @@ h2 {
 	margin-bottom: .5rem;
 	font-size: 1.2rem;
 	font-weight: normal;
+	line-height: 1.2rem;
 }
 #header {
 	margin: 0 0 5rem 0;
@@ -325,4 +326,22 @@ a.button:hover {
 }
 .next {
 	text-align: right;
+}
+
+.issues svg {
+	vertical-align: baseline;
+	transform: translateY(2px);
+}
+span.alert {
+	color: #E17E56;
+	font-weight: 300;
+}
+.critical svg {
+	fill: #E17E56;
+}
+.alert svg {
+	fill: #FAB120;
+}
+.notice svg {
+	fill: #249D93;
 }

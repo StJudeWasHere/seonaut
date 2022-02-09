@@ -60,32 +60,16 @@ func (ds *datastore) CountCrawled(cid int) int {
 }
 
 func (ds *datastore) CountByMediaType(cid int) CountList {
-	m := CountList{}
+	query := `
+		SELECT media_type, count(*)
+		FROM pagereports
+		WHERE crawl_id = ?
+		GROUP BY media_type`
 
-	rows, err := ds.db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
-	if err != nil {
-		log.Printf("CountByMediaType: %v\n", err)
-		return m
-	}
-
-	for rows.Next() {
-		c := CountItem{}
-
-		err := rows.Scan(&c.Key, &c.Value)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		m = append(m, c)
-	}
-
-	sort.Sort(sort.Reverse(m))
-
-	return m
+	return ds.countListQuery(query, cid)
 }
 
 func (ds *datastore) CountByStatusCode(cid int) CountList {
-	m := CountList{}
 	query := `
 		SELECT
 			status_code,
@@ -94,6 +78,11 @@ func (ds *datastore) CountByStatusCode(cid int) CountList {
 		WHERE crawl_id = ?
 		GROUP BY status_code`
 
+	return ds.countListQuery(query, cid)
+}
+
+func (ds *datastore) countListQuery(query string, cid int) CountList {
+	m := CountList{}
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
 		log.Println(err)
@@ -102,7 +91,6 @@ func (ds *datastore) CountByStatusCode(cid int) CountList {
 
 	for rows.Next() {
 		c := CountItem{}
-
 		err := rows.Scan(&c.Key, &c.Value)
 		if err != nil {
 			log.Println(err)
@@ -228,7 +216,12 @@ func (ds *datastore) saveProject(s string, ignoreRobotsTxt bool, uid int) {
 
 func (ds *datastore) findProjectsByUser(uid int) []Project {
 	var projects []Project
-	rows, err := ds.db.Query("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE user_id = ?", uid)
+	query := `
+		SELECT id, url, ignore_robotstxt, use_javascript, created
+		FROM projects
+		WHERE user_id = ?`
+
+	rows, err := ds.db.Query(query, uid)
 	if err != nil {
 		log.Println(err)
 		return projects
@@ -262,7 +255,12 @@ func (ds *datastore) findCrawlById(cid int) Crawl {
 }
 
 func (ds *datastore) findProjectById(id int, uid int) (Project, error) {
-	row := ds.db.QueryRow("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
+	query := `
+		SELECT id, url, ignore_robotstxt, use_javascript, created
+		FROM projects
+		WHERE id = ? AND user_id = ?`
+
+	row := ds.db.QueryRow(query, id, uid)
 
 	p := Project{}
 	err := row.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.UseJS, &p.Created)

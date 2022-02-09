@@ -5,11 +5,14 @@ import (
 	"log"
 
 	"net/http"
+
+	"github.com/gorilla/sessions"
 )
 
 type App struct {
 	config    *Config
 	datastore *datastore
+	cookie    *sessions.CookieStore
 }
 
 func NewApp(configPath string) *App {
@@ -32,6 +35,8 @@ func NewApp(configPath string) *App {
 	if err != nil {
 		log.Fatalf("Error creating new datastore: %v\n", err)
 	}
+
+	app.cookie = sessions.NewCookieStore([]byte("SESSION_ID"))
 
 	return &app
 }

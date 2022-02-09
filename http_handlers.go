@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -75,12 +74,6 @@ type Project struct {
 	Created         time.Time
 }
 
-var cookie *sessions.CookieStore
-
-func init() {
-	cookie = sessions.NewCookieStore([]byte("SESSION_ID"))
-}
-
 func (c Crawl) TotalTime() time.Duration {
 	if c.End.Valid {
 		return c.End.Time.Sub(c.Start)
@@ -90,7 +83,7 @@ func (c Crawl) TotalTime() time.Duration {
 }
 
 func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 
 	var views []ProjectView
@@ -120,7 +113,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 	var url string
 
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 
 	if r.Method == http.MethodPost {
@@ -156,7 +149,7 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 
 	p, err := app.datastore.findProjectById(pid, uid)
@@ -211,7 +204,7 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
 	if err != nil || u.Id != uid {
@@ -301,7 +294,7 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		previousPage = page - 1
 	}
 
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
 	if err != nil || u.Id != uid {
@@ -366,7 +359,7 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 
 	eid := r.URL.Query()["eid"][0]
 
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
 	if err != nil || u.Id != uid {
@@ -454,7 +447,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		session, _ := cookie.Get(r, "SESSION_ID")
+		session, _ := app.cookie.Get(r, "SESSION_ID")
 		session.Values["authenticated"] = true
 		session.Values["uid"] = u.Id
 		session.Save(r, w)
@@ -479,7 +472,7 @@ func (app *App) serveDownloadAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
 	if err != nil || u.Id != uid {
@@ -523,7 +516,7 @@ func (app *App) serveDownloadAll(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {
-	session, _ := cookie.Get(r, "SESSION_ID")
+	session, _ := app.cookie.Get(r, "SESSION_ID")
 	session.Values["authenticated"] = false
 	session.Values["uid"] = nil
 	session.Save(r, w)
@@ -533,7 +526,7 @@ func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {
 
 func (app *App) requireAuth(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, _ := cookie.Get(r, "SESSION_ID")
+		session, _ := app.cookie.Get(r, "SESSION_ID")
 		var authenticated interface{} = session.Values["authenticated"]
 		if authenticated != nil {
 			isAuthenticated := session.Values["authenticated"].(bool)

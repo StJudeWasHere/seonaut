@@ -1,20 +1,26 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"math"
 	"sort"
 	"time"
 
+	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
-var db *sql.DB
+type datastore struct {
+	db *sql.DB
+}
 
 const (
-	paginationMax = 25
+	paginationMax        = 25
+	maxOpenConns         = 25
+	maxIddleConns        = 25
+	connMaxLifeInMinutes = 5
 )
 
 type IssueGroup struct {
@@ -22,29 +28,29 @@ type IssueGroup struct {
 	Count     int
 }
 
-func initDatabase(config *Config) {
-	var err error
-	var dbString string = fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s?parseTime=true",
-		config.DbUser,
-		config.DbPass,
-		config.DbServer,
-		config.DbPort,
-		config.DbName,
-	)
+func NewDataStore(dbuser, dbpass, dbserver string, dbport int, dbname string) (*datastore, error) {
+	db, err := sql.Open("mysql", fmt.Sprintf(
+		"%s:%s@tcp(%s:%d)/%s?parseTime=true", dbuser, dbpass, dbserver, dbport, dbname,
+	))
 
-	db, err = sql.Open("mysql", dbString)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
+
+	db.SetMaxOpenConns(maxOpenConns)
+	db.SetMaxIdleConns(maxIddleConns)
+	db.SetConnMaxLifetime(connMaxLifeInMinutes * time.Minute)
 
 	if err := db.Ping(); err != nil {
 		log.Printf("Unable to reach database: %v\n", err)
+		return nil, err
 	}
+
+	return &datastore{db: db}, nil
 }
 
-func CountCrawled(cid int) int {
-	row := db.QueryRow("SELECT count(*) FROM pagereports WHERE crawl_id = ?", cid)
+func (ds *datastore) CountCrawled(cid int) int {
+	row := ds.db.QueryRow("SELECT count(*) FROM pagereports WHERE crawl_id = ?", cid)
 	var c int
 	if err := row.Scan(&c); err != nil {
 		log.Printf("CountCrawled: %v\n", err)
@@ -53,10 +59,10 @@ func CountCrawled(cid int) int {
 	return c
 }
 
-func CountByMediaType(cid int) CountList {
+func (ds *datastore) CountByMediaType(cid int) CountList {
 	m := CountList{}
 
-	rows, err := db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
+	rows, err := ds.db.Query("SELECT media_type, count(*) FROM pagereports WHERE crawl_id = ? GROUP BY media_type", cid)
 	if err != nil {
 		log.Printf("CountByMediaType: %v\n", err)
 		return m
@@ -78,7 +84,7 @@ func CountByMediaType(cid int) CountList {
 	return m
 }
 
-func CountByStatusCode(cid int) CountList {
+func (ds *datastore) CountByStatusCode(cid int) CountList {
 	m := CountList{}
 	query := `
 		SELECT
@@ -88,7 +94,7 @@ func CountByStatusCode(cid int) CountList {
 		WHERE crawl_id = ?
 		GROUP BY status_code`
 
-	rows, err := db.Query(query, cid)
+	rows, err := ds.db.Query(query, cid)
 	if err != nil {
 		log.Println(err)
 		return m
@@ -110,9 +116,9 @@ func CountByStatusCode(cid int) CountList {
 	return m
 }
 
-func userSignup(user, password string) {
+func (ds *datastore) userSignup(user, password string) {
 	query := `INSERT INTO users (email, password) VALUES (?, ?)`
-	stmt, _ := db.Prepare(query)
+	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
 
 	_, err := stmt.Exec(user, password)
@@ -121,11 +127,11 @@ func userSignup(user, password string) {
 	}
 }
 
-func findUserByEmail(email string) *User {
+func (ds *datastore) findUserByEmail(email string) *User {
 	u := User{}
 	query := `SELECT id, email, password FROM users WHERE email = ?`
 
-	row := db.QueryRow(query, email)
+	row := ds.db.QueryRow(query, email)
 	err := row.Scan(&u.Id, &u.Email, &u.Password)
 	if err != nil {
 		log.Println(err)
@@ -135,11 +141,11 @@ func findUserByEmail(email string) *User {
 	return &u
 }
 
-func findUserById(id int) *User {
+func (ds *datastore) findUserById(id int) *User {
 	u := User{}
 	query := `SELECT id, email, password FROM users WHERE id = ?`
 
-	row := db.QueryRow(query, id)
+	row := ds.db.QueryRow(query, id)
 	err := row.Scan(&u.Id, &u.Email, &u.Password)
 	if err != nil {
 		log.Println(err)
@@ -149,7 +155,7 @@ func findUserById(id int) *User {
 	return &u
 }
 
-func findCrawlUserId(cid int) (*User, error) {
+func (ds *datastore) findCrawlUserId(cid int) (*User, error) {
 	u := User{}
 	query := `
 		SELECT 
@@ -161,7 +167,7 @@ func findCrawlUserId(cid int) (*User, error) {
 		LEFT JOIN users ON projects.user_id = users.id
 		WHERE crawls.id = ?`
 
-	row := db.QueryRow(query, cid)
+	row := ds.db.QueryRow(query, cid)
 	err := row.Scan(&u.Id, &u.Email, &u.Password)
 	if err != nil {
 		log.Println(err)
@@ -171,8 +177,8 @@ func findCrawlUserId(cid int) (*User, error) {
 	return &u, nil
 }
 
-func saveCrawl(p Project) int64 {
-	stmt, _ := db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
+func (ds *datastore) saveCrawl(p Project) int64 {
+	stmt, _ := ds.db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
 	defer stmt.Close()
 	res, err := stmt.Exec(p.Id)
 
@@ -190,8 +196,8 @@ func saveCrawl(p Project) int64 {
 	return cid
 }
 
-func saveEndCrawl(cid int64, t time.Time) {
-	stmt, _ := db.Prepare("UPDATE crawls SET end = ? WHERE id = ?")
+func (ds *datastore) saveEndCrawl(cid int64, t time.Time) {
+	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ? WHERE id = ?")
 	defer stmt.Close()
 	_, err := stmt.Exec(t, cid)
 	if err != nil {
@@ -199,8 +205,8 @@ func saveEndCrawl(cid int64, t time.Time) {
 	}
 }
 
-func getLastCrawl(p *Project) Crawl {
-	row := db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY start DESC LIMIT 1", p.Id)
+func (ds *datastore) getLastCrawl(p *Project) Crawl {
+	row := ds.db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY start DESC LIMIT 1", p.Id)
 
 	crawl := Crawl{}
 	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)
@@ -211,8 +217,8 @@ func getLastCrawl(p *Project) Crawl {
 	return crawl
 }
 
-func saveProject(s string, ignoreRobotsTxt bool, uid int) {
-	stmt, _ := db.Prepare("INSERT INTO projects (url, ignore_robotstxt, user_id) VALUES (?, ?, ?)")
+func (ds *datastore) saveProject(s string, ignoreRobotsTxt bool, uid int) {
+	stmt, _ := ds.db.Prepare("INSERT INTO projects (url, ignore_robotstxt, user_id) VALUES (?, ?, ?)")
 	defer stmt.Close()
 	_, err := stmt.Exec(s, ignoreRobotsTxt, uid)
 	if err != nil {
@@ -220,9 +226,9 @@ func saveProject(s string, ignoreRobotsTxt bool, uid int) {
 	}
 }
 
-func findProjectsByUser(uid int) []Project {
+func (ds *datastore) findProjectsByUser(uid int) []Project {
 	var projects []Project
-	rows, err := db.Query("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE user_id = ?", uid)
+	rows, err := ds.db.Query("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE user_id = ?", uid)
 	if err != nil {
 		log.Println(err)
 		return projects
@@ -242,8 +248,8 @@ func findProjectsByUser(uid int) []Project {
 	return projects
 }
 
-func findCrawlById(cid int) Crawl {
-	row := db.QueryRow("SELECT id, project_id, start, end FROM crawls WHERE id = ?", cid)
+func (ds *datastore) findCrawlById(cid int) Crawl {
+	row := ds.db.QueryRow("SELECT id, project_id, start, end FROM crawls WHERE id = ?", cid)
 
 	c := Crawl{}
 	err := row.Scan(&c.Id, &c.ProjectId, &c.Start, &c.End)
@@ -255,8 +261,8 @@ func findCrawlById(cid int) Crawl {
 	return c
 }
 
-func findProjectById(id int, uid int) (Project, error) {
-	row := db.QueryRow("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
+func (ds *datastore) findProjectById(id int, uid int) (Project, error) {
+	row := ds.db.QueryRow("SELECT id, url, ignore_robotstxt, use_javascript, created FROM projects WHERE id = ? AND user_id = ?", id, uid)
 
 	p := Project{}
 	err := row.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.UseJS, &p.Created)
@@ -268,12 +274,12 @@ func findProjectById(id int, uid int) (Project, error) {
 	return p, nil
 }
 
-func saveIssues(issues []Issue, cid int) {
+func (ds *datastore) saveIssues(issues []Issue, cid int) {
 	query := `
 		INSERT INTO issues (pagereport_id, crawl_id, error_type)
 		VALUES (?, ?, ?)`
 
-	stmt, _ := db.Prepare(query)
+	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
 
 	for _, i := range issues {
@@ -285,7 +291,7 @@ func saveIssues(issues []Issue, cid int) {
 	}
 }
 
-func findIssues(cid int) map[string]IssueGroup {
+func (ds *datastore) findIssues(cid int) map[string]IssueGroup {
 	issues := map[string]IssueGroup{}
 	query := `
 		SELECT
@@ -294,7 +300,7 @@ func findIssues(cid int) map[string]IssueGroup {
 		FROM issues
 		WHERE crawl_id = ? GROUP BY error_type`
 
-	rows, err := db.Query(query, cid)
+	rows, err := ds.db.Query(query, cid)
 	if err != nil {
 		log.Println(err)
 		return issues
@@ -314,9 +320,9 @@ func findIssues(cid int) map[string]IssueGroup {
 	return issues
 }
 
-func countIssuesByCrawl(cid int) int {
+func (ds *datastore) countIssuesByCrawl(cid int) int {
 	var c int
-	row := db.QueryRow("SELECT count(*) FROM issues WHERE crawl_id = ?", cid)
+	row := ds.db.QueryRow("SELECT count(*) FROM issues WHERE crawl_id = ?", cid)
 	if err := row.Scan(&c); err != nil {
 		log.Println(err)
 	}
@@ -324,10 +330,10 @@ func countIssuesByCrawl(cid int) int {
 	return c
 }
 
-func findErrorTypesByPage(pid, cid int) []string {
+func (ds *datastore) findErrorTypesByPage(pid, cid int) []string {
 	var et []string
 	query := `SELECT error_type FROM issues WHERE pagereport_id = ? and crawl_id = ? GROUP BY error_type`
-	rows, err := db.Query(query, pid, cid)
+	rows, err := ds.db.Query(query, pid, cid)
 	if err != nil {
 		log.Println(err)
 		return et
@@ -346,7 +352,7 @@ func findErrorTypesByPage(pid, cid int) []string {
 	return et
 }
 
-func savePageReport(r *PageReport, cid int64) {
+func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	urlHash := hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
@@ -377,7 +383,7 @@ func savePageReport(r *PageReport, cid int64) {
 		)
 		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	stmt, err := db.Prepare(query)
+	stmt, err := ds.db.Prepare(query)
 	if err != nil {
 		log.Printf("saveReport: %v\n", err)
 		return
@@ -426,7 +432,7 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External, hash)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, err := db.Prepare(sqlString)
+		stmt, err := ds.db.Prepare(sqlString)
 		if err != nil {
 			log.Printf("saveReport links: %v\n", err)
 			return
@@ -447,7 +453,7 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, err := db.Prepare(sqlString)
+		stmt, err := ds.db.Prepare(sqlString)
 		if err != nil {
 			log.Println(err)
 			return
@@ -468,7 +474,7 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, hash(r.URL), hash(h.URL))
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ := db.Prepare(sqlString)
+		stmt, _ := ds.db.Prepare(sqlString)
 		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
@@ -485,7 +491,7 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, i.URL, i.Alt)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = db.Prepare(sqlString)
+		stmt, _ = ds.db.Prepare(sqlString)
 		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
@@ -502,7 +508,7 @@ func savePageReport(r *PageReport, cid int64) {
 			v = append(v, lid, s)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ := db.Prepare(sqlString)
+		stmt, _ := ds.db.Prepare(sqlString)
 		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
@@ -521,7 +527,7 @@ func savePageReport(r *PageReport, cid int64) {
 
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ := db.Prepare(sqlString)
+		stmt, _ := ds.db.Prepare(sqlString)
 		defer stmt.Close()
 
 		_, err := stmt.Exec(v...)
@@ -531,7 +537,7 @@ func savePageReport(r *PageReport, cid int64) {
 	}
 }
 
-func FindAllPageReportsByCrawlId(cid int) []PageReport {
+func (ds *datastore) FindAllPageReportsByCrawlId(cid int) []PageReport {
 	var pageReports []PageReport
 	query := `
 		SELECT
@@ -554,7 +560,7 @@ func FindAllPageReportsByCrawlId(cid int) []PageReport {
 		FROM pagereports
 		WHERE crawl_id = ?`
 
-	rows, err := db.Query(query, cid)
+	rows, err := ds.db.Query(query, cid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -589,7 +595,7 @@ func FindAllPageReportsByCrawlId(cid int) []PageReport {
 	return pageReports
 }
 
-func FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []PageReport {
+func (ds *datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []PageReport {
 	var pageReports []PageReport
 	query := `
 		SELECT
@@ -613,7 +619,7 @@ func FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []PageReport {
 		WHERE crawl_id = ?
 		AND id in (SELECT pagereport_id FROM issues WHERE error_type = ? AND crawl_id = ?)`
 
-	rows, err := db.Query(query, cid, et, cid)
+	rows, err := ds.db.Query(query, cid, et, cid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -648,7 +654,7 @@ func FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []PageReport {
 	return pageReports
 }
 
-func FindPageReportById(rid int) PageReport {
+func (ds *datastore) FindPageReportById(rid int) PageReport {
 	query := `
 		SELECT
 			id,
@@ -670,7 +676,7 @@ func FindPageReportById(rid int) PageReport {
 		FROM pagereports
 		WHERE id = ?`
 
-	row := db.QueryRow(query, rid)
+	row := ds.db.QueryRow(query, rid)
 
 	p := PageReport{}
 	err := row.Scan(&p.Id,
@@ -694,7 +700,7 @@ func FindPageReportById(rid int) PageReport {
 		log.Println(err)
 	}
 
-	lrows, err := db.Query("SELECT url, rel, text, external FROM links WHERE external = false AND pagereport_id = ?", rid)
+	lrows, err := ds.db.Query("SELECT url, rel, text, external FROM links WHERE external = false AND pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -710,7 +716,7 @@ func FindPageReportById(rid int) PageReport {
 		p.Links = append(p.Links, l)
 	}
 
-	lrows, err = db.Query("SELECT url, rel, text, external FROM links WHERE external = true AND pagereport_id = ?", rid)
+	lrows, err = ds.db.Query("SELECT url, rel, text, external FROM links WHERE external = true AND pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -726,7 +732,7 @@ func FindPageReportById(rid int) PageReport {
 		p.ExternalLinks = append(p.ExternalLinks, l)
 	}
 
-	hrows, err := db.Query("SELECT to_url, to_lang FROM hreflangs WHERE pagereport_id = ?", rid)
+	hrows, err := ds.db.Query("SELECT to_url, to_lang FROM hreflangs WHERE pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -742,7 +748,7 @@ func FindPageReportById(rid int) PageReport {
 		p.Hreflangs = append(p.Hreflangs, h)
 	}
 
-	irows, err := db.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", rid)
+	irows, err := ds.db.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -758,7 +764,7 @@ func FindPageReportById(rid int) PageReport {
 		p.Images = append(p.Images, i)
 	}
 
-	scrows, err := db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", rid)
+	scrows, err := ds.db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -774,7 +780,7 @@ func FindPageReportById(rid int) PageReport {
 		p.Scripts = append(p.Scripts, url)
 	}
 
-	strows, err := db.Query("SELECT url FROM styles WHERE pagereport_id = ?", rid)
+	strows, err := ds.db.Query("SELECT url FROM styles WHERE pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -793,7 +799,7 @@ func FindPageReportById(rid int) PageReport {
 	return p
 }
 
-func FindPageReportsRedirectingToURL(u string, cid int) []PageReport {
+func (ds *datastore) FindPageReportsRedirectingToURL(u string, cid int) []PageReport {
 	uh := hash(u)
 	query := `
 		SELECT
@@ -803,10 +809,10 @@ func FindPageReportsRedirectingToURL(u string, cid int) []PageReport {
 		FROM pagereports
 		WHERE redirect_hash = ? AND crawl_id = ?`
 
-	return pageReportsQuery(query, uh, cid)
+	return ds.pageReportsQuery(query, uh, cid)
 }
 
-func FindPageReportsWithEmptyTitle(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithEmptyTitle(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -816,10 +822,10 @@ func FindPageReportsWithEmptyTitle(cid int) []PageReport {
 		WHERE (title = "" OR title IS NULL) AND media_type = "text/html"
 		AND status_code >=200 AND status_code < 300 AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func Find40xPageReports(cid int) []PageReport {
+func (ds *datastore) Find40xPageReports(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -828,10 +834,10 @@ func Find40xPageReports(cid int) []PageReport {
 		FROM pagereports
 		WHERE status_code >= 400 AND status_code < 500 AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func Find30xPageReports(cid int) []PageReport {
+func (ds *datastore) Find30xPageReports(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -840,10 +846,10 @@ func Find30xPageReports(cid int) []PageReport {
 		FROM pagereports
 		WHERE status_code >= 300 AND status_code < 400 AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func Find50xPageReports(cid int) []PageReport {
+func (ds *datastore) Find50xPageReports(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -852,10 +858,10 @@ func Find50xPageReports(cid int) []PageReport {
 		FROM pagereports
 		WHERE status_code >= 500 AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithLittleContent(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithLittleContent(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -864,10 +870,10 @@ func FindPageReportsWithLittleContent(cid int) []PageReport {
 		FROM pagereports
 		WHERE words < 200 AND status_code >= 200 AND status_code < 300 AND media_type = "text/html" AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithShortTitle(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithShortTitle(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -876,10 +882,10 @@ func FindPageReportsWithShortTitle(cid int) []PageReport {
 		FROM pagereports
 		WHERE length(title) > 0 AND length(title) < 20 AND media_type = "text/html" AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithLongTitle(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithLongTitle(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -888,10 +894,10 @@ func FindPageReportsWithLongTitle(cid int) []PageReport {
 		FROM pagereports
 		WHERE length(title) > 60 AND media_type = "text/html" AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -913,10 +919,10 @@ func FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 		WHERE media_type = "text/html" AND length(y.title) > 0 AND crawl_id = ?
 		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)`
 
-	return pageReportsQuery(query, cid, cid)
+	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func FindPageReportsWithoutH1(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithoutH1(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -926,10 +932,10 @@ func FindPageReportsWithoutH1(cid int) []PageReport {
 		WHERE (h1 = "" OR h1 IS NULL) AND media_type = "text/html"
 		AND status_code >= 200 AND status_code < 300 AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithEmptyDescription(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithEmptyDescription(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -939,10 +945,10 @@ func FindPageReportsWithEmptyDescription(cid int) []PageReport {
 		WHERE (description = "" OR description IS NULL) AND media_type = "text/html"
 		AND status_code >= 200 AND status_code < 300 AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithShortDescription(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithShortDescription(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -951,10 +957,10 @@ func FindPageReportsWithShortDescription(cid int) []PageReport {
 		FROM pagereports
 		WHERE length(description) > 0 AND length(description) < 80 AND media_type = "text/html" AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithLongDescription(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithLongDescription(cid int) []PageReport {
 	query := `
 		SELECT
 			id,
@@ -963,10 +969,10 @@ func FindPageReportsWithLongDescription(cid int) []PageReport {
 		FROM pagereports
 		WHERE length(description) > 160 AND media_type = "text/html" AND crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -988,10 +994,10 @@ func FindPageReportsWithDuplicatedDescription(cid int) []PageReport {
 		WHERE y.media_type = "text/html" AND length(y.description) > 0 AND y.crawl_id = ?
 		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url`
 
-	return pageReportsQuery(query, cid, cid)
+	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func FindImagesWithNoAlt(cid int) []PageReport {
+func (ds *datastore) FindImagesWithNoAlt(cid int) []PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -1002,10 +1008,10 @@ func FindImagesWithNoAlt(cid int) []PageReport {
 		WHERE images.alt = "" AND pagereports.crawl_id = ?
 		GROUP BY pagereports.id`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithNoLangAttr(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithNoLangAttr(cid int) []PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -1015,10 +1021,10 @@ func FindPageReportsWithNoLangAttr(cid int) []PageReport {
 		WHERE (pagereports.lang = "" OR pagereports.lang = null) and media_type = "text/html"
 		AND pagereports.crawl_id = ?`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindPageReportsWithHTTPLinks(cid int) []PageReport {
+func (ds *datastore) FindPageReportsWithHTTPLinks(cid int) []PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -1031,10 +1037,10 @@ func FindPageReportsWithHTTPLinks(cid int) []PageReport {
 		GROUP BY links.pagereport_id
 		HAVING count(links.pagereport_id) > 1`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindMissingHrelangReturnLinks(cid int) []PageReport {
+func (ds *datastore) FindMissingHrelangReturnLinks(cid int) []PageReport {
 	query := `
 		SELECT
 			distinct pagereports.id,
@@ -1047,10 +1053,10 @@ func FindMissingHrelangReturnLinks(cid int) []PageReport {
 		AND pagereports.status_code < 300 AND b.id IS NULL
 		AND (pagereports.canonical = "" OR pagereports.canonical = pagereports.URL)`
 
-	return pageReportsQuery(query, cid)
+	return ds.pageReportsQuery(query, cid)
 }
 
-func FindInLinks(s string, cid int) []PageReport {
+func (ds *datastore) FindInLinks(s string, cid int) []PageReport {
 	hash := hash(s)
 	query := `
 		SELECT 
@@ -1063,16 +1069,16 @@ func FindInLinks(s string, cid int) []PageReport {
 		GROUP BY pagereports.id
 		LIMIT 25`
 
-	return pageReportsQuery(query, hash, cid)
+	return ds.pageReportsQuery(query, hash, cid)
 }
 
-func getNumberOfPagesForIssues(cid int, errorType string) int {
+func (ds *datastore) getNumberOfPagesForIssues(cid int, errorType string) int {
 	query := `
 		SELECT count(*)
 		FROM issues
 		WHERE error_type = ? and crawl_id  = ?`
 
-	row := db.QueryRow(query, errorType, cid)
+	row := ds.db.QueryRow(query, errorType, cid)
 	var c int
 	if err := row.Scan(&c); err != nil {
 		log.Printf("CountCrawled: %v\n", err)
@@ -1081,7 +1087,7 @@ func getNumberOfPagesForIssues(cid int, errorType string) int {
 	return int(math.Ceil(f))
 }
 
-func findPageReportIssues(cid, p int, errorType string) []PageReport {
+func (ds *datastore) findPageReportIssues(cid, p int, errorType string) []PageReport {
 	max := paginationMax
 	offset := max * p
 
@@ -1097,10 +1103,10 @@ func findPageReportIssues(cid, p int, errorType string) []PageReport {
 			WHERE error_type = ? and crawl_id  = ?
 		) LIMIT ?, ?`
 
-	return pageReportsQuery(query, errorType, cid, offset, max)
+	return ds.pageReportsQuery(query, errorType, cid, offset, max)
 }
 
-func findRedirectChains(cid int) []PageReport {
+func (ds *datastore) findRedirectChains(cid int) []PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -1110,12 +1116,12 @@ func findRedirectChains(cid int) []PageReport {
 		LEFT JOIN pagereports AS b ON a.redirect_hash = b.url_hash
 		WHERE a.redirect_hash != "" AND b.redirect_hash  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
 
-	return pageReportsQuery(query, cid, cid)
+	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func pageReportsQuery(query string, args ...interface{}) []PageReport {
+func (ds *datastore) pageReportsQuery(query string, args ...interface{}) []PageReport {
 	var pageReports []PageReport
-	rows, err := db.Query(query, args...)
+	rows, err := ds.db.Query(query, args...)
 	if err != nil {
 		log.Println(err)
 	}

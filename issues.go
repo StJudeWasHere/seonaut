@@ -35,36 +35,11 @@ type ReportManager struct {
 	callbacks []IssueCallback
 }
 
-func NewReportManager() *ReportManager {
-	r := ReportManager{}
-
-	r.addReporter(Find30xPageReports, Error30x)
-	r.addReporter(Find40xPageReports, Error40x)
-	r.addReporter(Find50xPageReports, Error50x)
-	r.addReporter(FindPageReportsWithDuplicatedTitle, ErrorDuplicatedTitle)
-	r.addReporter(FindPageReportsWithDuplicatedTitle, ErrorDuplicatedDescription)
-	r.addReporter(FindPageReportsWithEmptyTitle, ErrorEmptyTitle)
-	r.addReporter(FindPageReportsWithShortTitle, ErrorShortTitle)
-	r.addReporter(FindPageReportsWithLongTitle, ErrorLongTitle)
-	r.addReporter(FindPageReportsWithEmptyDescription, ErrorEmptyDescription)
-	r.addReporter(FindPageReportsWithShortDescription, ErrorShortDescription)
-	r.addReporter(FindPageReportsWithLongDescription, ErrorLongDescription)
-	r.addReporter(FindPageReportsWithLittleContent, ErrorLittleContent)
-	r.addReporter(FindImagesWithNoAlt, ErrorImagesWithNoAlt)
-	r.addReporter(findRedirectChains, ErrorRedirectChain)
-	r.addReporter(FindPageReportsWithoutH1, ErrorNoH1)
-	r.addReporter(FindPageReportsWithNoLangAttr, ErrorNoLang)
-	r.addReporter(FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
-	r.addReporter(FindMissingHrelangReturnLinks, ErrorHreflangsReturnLink)
-
-	return &r
-}
-
 func (r *ReportManager) addReporter(c func(int) []PageReport, t string) {
 	r.callbacks = append(r.callbacks, IssueCallback{Callback: c, ErrorType: t})
 }
 
-func (r *ReportManager) createIssues(cid int) {
+func (r *ReportManager) createIssues(cid int) []Issue {
 	var issues []Issue
 
 	for _, c := range r.callbacks {
@@ -78,5 +53,5 @@ func (r *ReportManager) createIssues(cid int) {
 		}
 	}
 
-	saveIssues(issues, cid)
+	return issues
 }

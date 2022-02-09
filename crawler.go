@@ -20,7 +20,7 @@ const (
 
 type Crawler struct{}
 
-func startCrawler(p Project) int {
+func startCrawler(p Project, agent string, datastore *datastore) int {
 	var crawled int
 
 	pageReport := make(chan PageReport)
@@ -32,22 +32,22 @@ func startCrawler(p Project) int {
 		return 0
 	}
 
-	cid := saveCrawl(p)
+	cid := datastore.saveCrawl(p)
 
-	go c.Crawl(u, p.IgnoreRobotsTxt, p.UseJS, pageReport)
+	go c.Crawl(u, p.IgnoreRobotsTxt, p.UseJS, agent, pageReport)
 
 	for r := range pageReport {
 		crawled++
-		savePageReport(&r, cid)
+		datastore.savePageReport(&r, cid)
 	}
 
-	saveEndCrawl(cid, time.Now())
+	datastore.saveEndCrawl(cid, time.Now())
 	fmt.Printf("%d pages crawled.\n", crawled)
 
 	return int(cid)
 }
 
-func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, pr chan<- PageReport) {
+func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, pr chan<- PageReport) {
 	defer close(pr)
 
 	q, _ := queue.New(
@@ -113,14 +113,14 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, pr chan<- PageR
 
 	co := colly.NewCollector(
 		colly.AllowedDomains(u.Host, "127.0.0.1"),
-		colly.UserAgent(config.CrawlerAgent),
+		colly.UserAgent(agent),
 		func(c *colly.Collector) {
 			c.IgnoreRobotsTxt = ignoreRobotsTxt
 		},
 	)
 
 	co.OnRequest(func(r *colly.Request) {
-		fmt.Printf("Visiting %s\n", r.URL.String())
+		// fmt.Printf("Visiting %s\n", r.URL.String())
 	})
 
 	co.OnResponse(handleResponse)

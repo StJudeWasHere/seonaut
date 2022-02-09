@@ -1,18 +1,10 @@
 package main
 
-import (
-	"log"
+const (
+	configPath = "."
 )
 
-var config *Config
-
 func main() {
-	var err error
-	config, err = loadConfig(".")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	initDatabase(config)
-	initServer()
+	app := NewApp(configPath)
+	app.Run()
 }

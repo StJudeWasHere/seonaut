@@ -111,8 +111,18 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, p
 		}
 	}
 
+	var nonWWWHost string
+	var WWWHost string
+	if strings.HasPrefix(u.Host, "www.") {
+		WWWHost = u.Host
+		nonWWWHost = u.Host[4:]
+	} else {
+		WWWHost = "www." + u.Host
+		nonWWWHost = u.Host
+	}
+
 	co := colly.NewCollector(
-		colly.AllowedDomains(u.Host, "127.0.0.1"),
+		colly.AllowedDomains(WWWHost, nonWWWHost, "127.0.0.1"),
 		colly.UserAgent(agent),
 		func(c *colly.Collector) {
 			c.IgnoreRobotsTxt = ignoreRobotsTxt
@@ -126,15 +136,16 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, p
 	co.OnResponse(handleResponse)
 
 	co.OnError(func(r *colly.Response, err error) {
-		fmt.Println(err)
 		if r.StatusCode > 0 && r.Headers != nil {
 			handleResponse(r)
 		}
 	})
 
 	co.SetRedirectHandler(func(r *http.Request, via []*http.Request) error {
-		if r.URL.Path == "/robots.txt" {
-			return nil
+		for _, v := range via {
+			if v.URL.Path == "/robots.txt" {
+				return nil
+			}
 		}
 
 		return http.ErrUseLastResponse

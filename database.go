@@ -193,11 +193,31 @@ func (ds *datastore) saveEndCrawl(cid int64, t time.Time) {
 	}
 }
 
+func (ds *datastore) savePagesAndIssues(cid int, totalURLs, totalIssues int) {
+	stmt, _ := ds.db.Prepare("UPDATE crawls SET total_urls = ?, total_issues = ? WHERE id = ?")
+	defer stmt.Close()
+	_, err := stmt.Exec(totalURLs, totalIssues, cid)
+	if err != nil {
+		log.Printf("saveEndCrawl: %v\n", err)
+	}
+}
+
 func (ds *datastore) getLastCrawl(p *Project) Crawl {
-	row := ds.db.QueryRow("SELECT id, start, end FROM crawls WHERE project_id = ? ORDER BY start DESC LIMIT 1", p.Id)
+	query := `
+		SELECT
+			id,
+			start,
+			end,
+			total_urls,
+			total_issues
+		FROM crawls
+		WHERE project_id = ?
+		ORDER BY start DESC LIMIT 1`
+
+	row := ds.db.QueryRow(query, p.Id)
 
 	crawl := Crawl{}
-	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End)
+	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End, &crawl.TotalURLs, &crawl.TotalIssues)
 	if err != nil {
 		log.Printf("getLastCrawl: %v\n", err)
 	}

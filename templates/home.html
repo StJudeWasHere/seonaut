@@ -10,19 +10,14 @@
 <div class="content">
 {{ range .Data }}
 	<div class="project">
-		<h2 class="project-title">
-			{{ if gt .TotalIssues 0 }}
-				{{ .Project.URL }}
-			{{ else }}
-				{{ .Project.URL }}
-			{{ end }}
-		</h2>
-
+		<h2 class="project-title">{{ .Project.URL }}</h2>
 		{{ if .Crawl.Id }}
 			{{ if .Crawl.End.Valid }}
 				<div>
 					Last crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. Crawl duration was {{ .Crawl.TotalTime }}.<br>
-					{{ .TotalCount }} {{ if eq .TotalCount 1 }}URL{{ else }}URLs{{end }} crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}.<br>
+						{{ .Crawl.TotalURLs }}
+						{{ if eq .Crawl.TotalURLs 1 }}URL{{ else }}URLs{{end }}
+						crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}.
 				</div>
 				<p>
 					<a class="button"  href="/crawl?pid={{ .Project.Id }}">crawl now</a>

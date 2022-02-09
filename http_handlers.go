@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -19,20 +18,16 @@ type User struct {
 }
 
 type ProjectView struct {
-	Project     Project
-	Crawl       Crawl
-	TotalCount  int
-	TotalIssues int
+	Project Project
+	Crawl   Crawl
 }
 
 type IssuesGroupView struct {
 	IssuesGroups    map[string]IssueGroup
 	Project         Project
 	Crawl           Crawl
-	TotalCount      int
 	MediaCount      CountList
 	StatusCodeCount CountList
-	TotalIssues     int
 	MediaChart      Chart
 	StatusChart     Chart
 }
@@ -76,10 +71,8 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 	for _, p := range projects {
 		c := app.datastore.getLastCrawl(&p)
 		pv := ProjectView{
-			Project:     p,
-			Crawl:       c,
-			TotalCount:  app.datastore.CountCrawled(c.Id),
-			TotalIssues: app.datastore.countIssuesByCrawl(c.Id),
+			Project: p,
+			Crawl:   c,
 		}
 		views = append(views, pv)
 	}
@@ -173,6 +166,11 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 		issues := rm.createIssues(cid)
 		app.datastore.saveIssues(issues, cid)
 
+		totalURLs := app.datastore.CountCrawled(cid)
+		totalIssues := len(issues)
+
+		app.datastore.savePagesAndIssues(cid, totalURLs, totalIssues)
+
 		fmt.Println("Done.")
 	}()
 
@@ -222,12 +220,10 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 		IssuesGroups:    issueGroups,
 		Crawl:           crawl,
 		Project:         project,
-		TotalCount:      app.datastore.CountCrawled(cid),
 		MediaCount:      mediaCount,
 		MediaChart:      mediaChart,
 		StatusChart:     statusChart,
 		StatusCodeCount: statusCount,
-		TotalIssues:     app.datastore.countIssuesByCrawl(cid),
 	}
 
 	v := &PageView{

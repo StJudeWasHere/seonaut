@@ -57,14 +57,6 @@ type ResourcesView struct {
 	Redirects  []PageReport
 }
 
-type Crawl struct {
-	Id        int
-	ProjectId int
-	URL       string
-	Start     time.Time
-	End       sql.NullTime
-}
-
 type Project struct {
 	Id              int
 	URL             string
@@ -72,14 +64,6 @@ type Project struct {
 	IgnoreRobotsTxt bool
 	UseJS           bool
 	Created         time.Time
-}
-
-func (c Crawl) TotalTime() time.Duration {
-	if c.End.Valid {
-		return c.End.Time.Sub(c.Start)
-	}
-
-	return 0
 }
 
 func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {

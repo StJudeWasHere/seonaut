@@ -8,6 +8,7 @@
 			{{ range .Links }}
 			<li>
 				{{ if .Text }}{{ .Text }}<br/>{{ end }}
+				{{ if .NoFollow }}<span class="alert"><small>nofollow</small></span><br>{{ end }}
 				<span class="url">{{ .URL }}</span>
 			</li>
 			{{ end }}
@@ -26,6 +27,7 @@
 			{{ range .ExternalLinks }}
 			<li>
 				{{ if .Text }}{{ .Text }} <br> {{ end }}
+				{{ if .NoFollow }}<span class="alert"><small>nofollow</small></span><br>{{ end }}
 				<span class="url">{{ .URL }}</span>
 			</li>
 			{{ end }}

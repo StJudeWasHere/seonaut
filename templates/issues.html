@@ -360,6 +360,21 @@
 		</div>
 		{{ end }}
 	{{ end}}
+	
+	{{ with (index .IssuesGroups "ERROR_INTERNAL_NOFOLLOW") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="notice">
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23.809 21.646l-6.205-6.205c1.167-1.605 1.857-3.579 1.857-5.711 0-5.365-4.365-9.73-9.731-9.73-5.365 0-9.73 4.365-9.73 9.73 0 5.366 4.365 9.73 9.73 9.73 2.034 0 3.923-.627 5.487-1.698l6.238 6.238 2.354-2.354zm-20.955-11.916c0-3.792 3.085-6.877 6.877-6.877s6.877 3.085 6.877 6.877-3.085 6.877-6.877 6.877c-3.793 0-6.877-3.085-6.877-6.877z"/></svg>
+			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal links using the nofollow attribute</h2>
+			<p>Internal links in general should not use the nofollow attribute unless they link to pages you don't want indexed by search engines. Review the internal links and make sure important pages are linked without the nofollow attribute.</p>
+			<p>
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">download URLs</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">view URLs</a>
+			</p>
+		</div>
+		{{ end }}
+	{{ end}}
 </div>
 {{ end}}
 

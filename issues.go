@@ -20,6 +20,7 @@ const (
 	ErrorHTTPLinks             = "ERROR_HTTP_LINKS"
 	ErrorHreflangsReturnLink   = "ERROR_HREFLANG_RETURN"
 	ErrorTooManyLinks          = "ERROR_TOO_MANY_LINKS"
+	ErrorInternalNoFollow      = "ERROR_INTERNAL_NOFOLLOW"
 )
 
 type Issue struct {

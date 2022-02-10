@@ -163,6 +163,7 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 		rm.addReporter(app.datastore.FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
 		rm.addReporter(app.datastore.FindMissingHrelangReturnLinks, ErrorHreflangsReturnLink)
 		rm.addReporter(app.datastore.tooManyLinks, ErrorTooManyLinks)
+		rm.addReporter(app.datastore.internalNoFollowLinks, ErrorInternalNoFollow)
 
 		issues := rm.createIssues(cid)
 		app.datastore.saveIssues(issues, cid)

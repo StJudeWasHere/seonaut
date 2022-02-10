@@ -724,7 +724,7 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 		log.Println(err)
 	}
 
-	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = false AND pagereport_id = ?", rid)
+	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = false AND pagereport_id = ? limit 25", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -740,7 +740,7 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 		p.Links = append(p.Links, l)
 	}
 
-	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = true AND pagereport_id = ?", rid)
+	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = true AND pagereport_id = ? limit 25", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -1160,6 +1160,19 @@ func (ds *datastore) tooManyLinks(cid int) []PageReport {
 		) AS b ON pagereports.id = b.pagereport_id
 		WHERE pagereports.crawl_id = ? and l > 100
 	`
+
+	return ds.pageReportsQuery(query, cid, cid)
+}
+
+func (ds *datastore) internalNoFollowLinks(cid int) []PageReport {
+	query := `
+		SELECT pagereports.id, pagereports.url, pagereports.title
+		FROM pagereports 
+		INNER JOIN (
+			SELECT pagereport_id FROM links
+			WHERE nofollow = 1 AND external = 0 AND crawl_id = ?
+		) AS b ON b.pagereport_id = pagereports.id
+		WHERE pagereports.crawl_id = ?`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }

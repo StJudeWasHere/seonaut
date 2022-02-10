@@ -275,7 +275,6 @@ h2 {
 	display: flex;
 	flex-direction: row;
 	margin-bottom: 3rem;
-	max-width: var(--content-max-width);
 }
 .col {
 	padding: 1.5rem 3rem;
@@ -303,7 +302,6 @@ h2 {
 	margin-bottom: 9rem;
 	border-top: 1px dotted var(--primary-color);
 	padding-top: 1.5rem;
-	max-width: var(--content-max-width);
 }
 a.button {
 	border: 1px dotted var(--primary-color);

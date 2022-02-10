@@ -15,6 +15,12 @@
 			<input type="checkbox" value="1" name="ignore_robotstxt">
 			<label class="checkbox" for="ignore_robotstxt">Ignore robots.txt</label>
 		</p>
+		{{ if .User.Advanced }}
+		<p>
+			<input type="checkbox" value="1" name="use_javascript">
+			<label class="checkbox" for="use_javascript">Render JavaScript</label>
+		</p>
+		{{ end }}
 		<input type="submit" value="Add">
 	</form>
 </div>

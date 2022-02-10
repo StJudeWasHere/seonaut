@@ -126,7 +126,7 @@ input[type="submit"] {
 }
 label.checkbox {
 	display: inline-block;
-	margin-left: 1rem;
+	margin-left: .5rem;
 }
 input[type="checkbox"] {
 	-webkit-appearance: none;

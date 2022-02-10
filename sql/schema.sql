@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-02-10 08:15:59 +0000
+# Generation Time: 2022-02-10 10:21:45 +0000
 # ************************************************************
 
 
@@ -222,6 +222,7 @@ CREATE TABLE `users` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(256) NOT NULL DEFAULT '',
   `password` varchar(512) NOT NULL DEFAULT '',
+  `advanced` tinyint(4) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

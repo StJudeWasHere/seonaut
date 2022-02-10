@@ -117,10 +117,10 @@ func (ds *datastore) userSignup(user, password string) {
 
 func (ds *datastore) findUserByEmail(email string) *User {
 	u := User{}
-	query := `SELECT id, email, password FROM users WHERE email = ?`
+	query := `SELECT id, email, password, advanced FROM users WHERE email = ?`
 
 	row := ds.db.QueryRow(query, email)
-	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
 	if err != nil {
 		log.Println(err)
 		return &u
@@ -131,10 +131,10 @@ func (ds *datastore) findUserByEmail(email string) *User {
 
 func (ds *datastore) findUserById(id int) *User {
 	u := User{}
-	query := `SELECT id, email, password FROM users WHERE id = ?`
+	query := `SELECT id, email, password, advanced FROM users WHERE id = ?`
 
 	row := ds.db.QueryRow(query, id)
-	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
 	if err != nil {
 		log.Println(err)
 		return &u
@@ -226,10 +226,15 @@ func (ds *datastore) getLastCrawl(p *Project) Crawl {
 	return crawl
 }
 
-func (ds *datastore) saveProject(s string, ignoreRobotsTxt bool, uid int) {
-	stmt, _ := ds.db.Prepare("INSERT INTO projects (url, ignore_robotstxt, user_id) VALUES (?, ?, ?)")
+func (ds *datastore) saveProject(s string, ignoreRobotsTxt, useJavascript bool, uid int) {
+	query := `
+		INSERT INTO projects (url, ignore_robotstxt, use_javascript, user_id)
+		VALUES (?, ?, ?, ?)
+	`
+
+	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
-	_, err := stmt.Exec(s, ignoreRobotsTxt, uid)
+	_, err := stmt.Exec(s, ignoreRobotsTxt, useJavascript, uid)
 	if err != nil {
 		log.Printf("saveProject: %v\n", err)
 	}

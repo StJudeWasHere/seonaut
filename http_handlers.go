@@ -15,6 +15,7 @@ type User struct {
 	Id       int
 	Email    string
 	Password string
+	Advanced bool
 }
 
 type ProjectView struct {
@@ -96,7 +97,17 @@ func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Reque
 		if err != nil {
 			ignoreRobotsTxt = false
 		}
-		app.datastore.saveProject(url, ignoreRobotsTxt, user.Id)
+
+		useJavascript, err := strconv.ParseBool(r.FormValue("use_javascript"))
+		if err != nil {
+			useJavascript = false
+		}
+
+		if user.Advanced == false {
+			useJavascript = false
+		}
+
+		app.datastore.saveProject(url, ignoreRobotsTxt, useJavascript, user.Id)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

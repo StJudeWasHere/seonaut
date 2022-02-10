@@ -58,6 +58,8 @@ func (app *App) Run() {
 	http.HandleFunc("/signin", app.serveSignin)
 	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
 
+	http.HandleFunc("/sitemap", app.requireAuth(app.serveSitemap))
+
 	fmt.Printf("Starting server at %s on port %d...\n", app.config.Server, app.config.ServerPort)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.Server, app.config.ServerPort), nil)
 	if err != nil {

@@ -1177,6 +1177,15 @@ func (ds *datastore) internalNoFollowLinks(cid int) []PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
+func (ds *datastore) findAllPageReports(cid int) []PageReport {
+	query := `
+		SELECT pagereports.id, pagereports.url, pagereports.title
+		FROM pagereports
+		WHERE media_type = "text/html" AND pagereports.crawl_id = ?`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
 func (ds *datastore) pageReportsQuery(query string, args ...interface{}) []PageReport {
 	var pageReports []PageReport
 	rows, err := ds.db.Query(query, args...)

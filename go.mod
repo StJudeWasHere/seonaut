@@ -22,6 +22,7 @@ require (
 	github.com/soheilhy/cmux v0.1.4 // indirect
 	github.com/spf13/viper v1.10.1 // indirect
 	github.com/tmc/grpc-websocket-proxy v0.0.0-20190109142713-0ad062ec5ee5 // indirect
+	github.com/turk/go-sitemap v0.0.0-20210912154218-82ad01095e30 // indirect
 	github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2 // indirect
 	github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77 // indirect
 	go.etcd.io/bbolt v1.3.2 // indirect

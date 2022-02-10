@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/turk/go-sitemap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -486,6 +487,33 @@ func (app *App) serveDownloadAll(user *User, w http.ResponseWriter, r *http.Requ
 	for _, p := range pageReports {
 		writeCSVPageReport(p)
 	}
+}
+
+func (app *App) serveSitemap(user *User, w http.ResponseWriter, r *http.Request) {
+	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	u, err := app.datastore.findCrawlUserId(cid)
+	if err != nil || u.Id != user.Id {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	w.Header().Add("Content-Disposition", fmt.Sprint("attachment; filename=\"sitemap.xml\""))
+
+	s := sitemap.NewSitemap(w, true)
+	p := app.datastore.findAllPageReports(cid)
+	for _, v := range p {
+		s.Add(v.URL, "")
+	}
+
+	s.Write()
 }
 
 func (app *App) serveSignout(user *User, w http.ResponseWriter, r *http.Request) {

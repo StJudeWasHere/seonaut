@@ -59,7 +59,10 @@
 </div>
 
 <div class="content">
-	<p style="margin-bottom: 3rem"><a class="button" href="/download?cid={{ .Crawl.Id }}">Download all crawled URLs</a></p>
+	<p style="margin-bottom: 3rem">
+		<a class="button" href="/download?cid={{ .Crawl.Id }}">Download all crawled URLs</a>
+		<a class="button" href="/sitemap?cid={{ .Crawl.Id }}">Generate sitemap.xml</a>
+	</p>
 
 	{{ $cid := .Crawl.Id }}
 	{{/* Status code issues */}}

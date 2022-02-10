@@ -61,12 +61,9 @@ type Project struct {
 	Created         time.Time
 }
 
-func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	uid := session.Values["uid"].(int)
-
+func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 	var views []ProjectView
-	projects := app.datastore.findProjectsByUser(uid)
+	projects := app.datastore.findProjectsByUser(user.Id)
 
 	for _, p := range projects {
 		c := app.datastore.getLastCrawl(&p)
@@ -77,21 +74,17 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 		views = append(views, pv)
 	}
 
-	u := app.datastore.findUserById(uid)
 	v := &PageView{
 		Data:      views,
-		User:      *u,
+		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
 	}
 
 	renderTemplate(w, "home", v)
 }
 
-func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
+func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Request) {
 	var url string
-
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	uid := session.Values["uid"].(int)
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
@@ -103,21 +96,20 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			ignoreRobotsTxt = false
 		}
-		app.datastore.saveProject(url, ignoreRobotsTxt, uid)
+		app.datastore.saveProject(url, ignoreRobotsTxt, user.Id)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	u := app.datastore.findUserById(uid)
 	v := &PageView{
-		User:      *u,
+		User:      *user,
 		PageTitle: "ADD_PROJECT",
 	}
 
 	renderTemplate(w, "project_add", v)
 }
 
-func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
+func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query()["pid"][0])
 	if err != nil {
 		log.Println(err)
@@ -126,10 +118,7 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	uid := session.Values["uid"].(int)
-
-	p, err := app.datastore.findProjectById(pid, uid)
+	p, err := app.datastore.findProjectById(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -176,7 +165,7 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
+func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		log.Println(err)
@@ -185,10 +174,8 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != uid {
+	if err != nil || u.Id != user.Id {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -196,7 +183,7 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	issueGroups := app.datastore.findIssues(cid)
 	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.datastore.findProjectById(crawl.ProjectId, uid)
+	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -227,14 +214,14 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	v := &PageView{
 		Data:      ig,
-		User:      *u,
+		User:      *user,
 		PageTitle: "ISSUES_VIEW",
 	}
 
 	renderTemplate(w, "issues", v)
 }
 
-func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
+func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Request) {
 	eid := r.URL.Query()["eid"][0]
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
@@ -273,17 +260,15 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		previousPage = page - 1
 	}
 
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != uid {
+	if err != nil || u.Id != user.Id {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
 
 	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.datastore.findProjectById(crawl.ProjectId, uid)
+	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -312,14 +297,14 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 
 	v := &PageView{
 		Data:      view,
-		User:      *u,
+		User:      *user,
 		PageTitle: "ISSUES_DETAIL",
 	}
 
 	renderTemplate(w, "issues_view", v)
 }
 
-func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
+func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Request) {
 	rid, err := strconv.Atoi(r.URL.Query()["rid"][0])
 	if err != nil {
 		log.Println(err)
@@ -338,10 +323,8 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 
 	eid := r.URL.Query()["eid"][0]
 
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != uid {
+	if err != nil || u.Id != user.Id {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -362,7 +345,7 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 
 	v := &PageView{
 		Data:      rv,
-		User:      *u,
+		User:      *user,
 		PageTitle: "RESOURCES_VIEW",
 	}
 
@@ -442,7 +425,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "signin", v)
 }
 
-func (app *App) serveDownloadAll(w http.ResponseWriter, r *http.Request) {
+func (app *App) serveDownloadAll(user *User, w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		log.Println(err)
@@ -451,10 +434,8 @@ func (app *App) serveDownloadAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	uid := session.Values["uid"].(int)
 	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != uid {
+	if err != nil || u.Id != user.Id {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -462,7 +443,7 @@ func (app *App) serveDownloadAll(w http.ResponseWriter, r *http.Request) {
 
 	crawl := app.datastore.findCrawlById(cid)
 
-	project, err := app.datastore.findProjectById(crawl.ProjectId, uid)
+	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -494,7 +475,7 @@ func (app *App) serveDownloadAll(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {
+func (app *App) serveSignout(user *User, w http.ResponseWriter, r *http.Request) {
 	session, _ := app.cookie.Get(r, "SESSION_ID")
 	session.Values["authenticated"] = false
 	session.Values["uid"] = nil
@@ -503,14 +484,17 @@ func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *App) requireAuth(f http.HandlerFunc) http.HandlerFunc {
+func (app *App) requireAuth(f func(user *User, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, _ := app.cookie.Get(r, "SESSION_ID")
 		var authenticated interface{} = session.Values["authenticated"]
 		if authenticated != nil {
 			isAuthenticated := session.Values["authenticated"].(bool)
 			if isAuthenticated {
-				f(w, r)
+				session, _ := app.cookie.Get(r, "SESSION_ID")
+				uid := session.Values["uid"].(int)
+				user := app.datastore.findUserById(uid)
+				f(user, w, r)
 
 				return
 			}

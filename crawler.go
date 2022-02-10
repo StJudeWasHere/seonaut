@@ -21,7 +21,7 @@ const (
 type Crawler struct{}
 
 func startCrawler(p Project, agent string, datastore *datastore) int {
-	var crawled int
+	var totalURLs int
 
 	pageReport := make(chan PageReport)
 	c := &Crawler{}
@@ -37,12 +37,12 @@ func startCrawler(p Project, agent string, datastore *datastore) int {
 	go c.Crawl(u, p.IgnoreRobotsTxt, p.UseJS, agent, pageReport)
 
 	for r := range pageReport {
-		crawled++
+		totalURLs++
 		datastore.savePageReport(&r, cid)
 	}
 
-	datastore.saveEndCrawl(cid, time.Now())
-	fmt.Printf("%d pages crawled.\n", crawled)
+	datastore.saveEndCrawl(cid, time.Now(), totalURLs)
+	fmt.Printf("%d pages crawled.\n", totalURLs)
 
 	return int(cid)
 }

@@ -166,10 +166,9 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 		issues := rm.createIssues(cid)
 		app.datastore.saveIssues(issues, cid)
 
-		totalURLs := app.datastore.CountCrawled(cid)
 		totalIssues := len(issues)
 
-		app.datastore.savePagesAndIssues(cid, totalURLs, totalIssues)
+		app.datastore.saveEndIssues(cid, time.Now(), totalIssues)
 
 		fmt.Println("Done.")
 	}()

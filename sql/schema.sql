@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 5.7.37)
 # Database: seo
-# Generation Time: 2022-02-09 19:30:00 +0000
+# Generation Time: 2022-02-10 08:15:59 +0000
 # ************************************************************
 
 
@@ -32,6 +32,7 @@ CREATE TABLE `crawls` (
   `end` timestamp NULL DEFAULT NULL,
   `total_urls` int(11) NOT NULL DEFAULT '0',
   `total_issues` int(11) NOT NULL DEFAULT '0',
+  `issues_end` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `crawl_project` (`project_id`),
   CONSTRAINT `crawl_project` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`) ON DELETE CASCADE

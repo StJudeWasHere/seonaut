@@ -13,6 +13,7 @@ type Crawl struct {
 	End         sql.NullTime
 	TotalIssues int
 	TotalURLs   int
+	IssuesEnd   sql.NullTime
 }
 
 func (c Crawl) TotalTime() time.Duration {

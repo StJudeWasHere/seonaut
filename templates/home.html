@@ -12,7 +12,7 @@
 	<div class="project">
 		<h2 class="project-title">{{ .Project.URL }}</h2>
 		{{ if .Crawl.Id }}
-			{{ if .Crawl.End.Valid }}
+			{{ if .Crawl.IssuesEnd.Valid }}
 				<div>
 					Last crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. Crawl duration was {{ .Crawl.TotalTime }}.<br>
 						{{ .Crawl.TotalURLs }}

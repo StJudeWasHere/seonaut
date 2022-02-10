@@ -14,11 +14,13 @@
 		<p>
 			<input type="checkbox" value="1" name="ignore_robotstxt">
 			<label class="checkbox" for="ignore_robotstxt">Ignore robots.txt</label>
+			<br><small>If checked the crawler will bypass any restriction you have set in your robots file. </small>
 		</p>
 		{{ if .User.Advanced }}
 		<p>
 			<input type="checkbox" value="1" name="use_javascript">
 			<label class="checkbox" for="use_javascript">Render JavaScript</label>
+			<br><small>The crawler will execute JavaScript in your website before extracting any details.</small>
 		</p>
 		{{ end }}
 		<input type="submit" value="Add">

@@ -85,6 +85,9 @@
 				{{ if eq . "ERROR_HREFLANG_RETURN" }}
 				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
 				{{ end }}
+				{{ if eq . "ERROR_TOO_MANY_LINKS" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">Page has too many links</a></li>
+				{{ end }}
 				{{ end }}
 				{{ end }}
 			</ul>

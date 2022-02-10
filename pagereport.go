@@ -48,6 +48,7 @@ type Link struct {
 	Rel       string
 	Text      string
 	External  bool
+	NoFollow  bool
 }
 
 type Hreflang struct {
@@ -282,18 +283,20 @@ func (pageReport *PageReport) parse() {
 
 func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	href := htmlquery.SelectAttr(n, "href")
-
 	u, err := p.absoluteURL(href)
 	if err != nil {
 		return Link{}, err
 	}
 
+	rel := strings.TrimSpace(htmlquery.SelectAttr(n, "rel"))
+
 	l := Link{
 		URL:       u.String(),
 		parsedUrl: u,
-		Rel:       strings.TrimSpace(htmlquery.SelectAttr(n, "rel")),
+		Rel:       rel,
 		Text:      strings.TrimSpace(htmlquery.InnerText(n)),
 		External:  u.Host != p.parsedURL.Host,
+		NoFollow:  strings.Contains(rel, "nofollow"),
 	}
 
 	return l, nil

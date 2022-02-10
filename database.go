@@ -448,12 +448,12 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Links) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, text, external, url_hash) values "
+		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, external, url_hash) values "
 		v := []interface{}{}
 		for _, l := range r.Links {
 			hash := hash(l.URL)
-			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External, hash)
+			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.NoFollow, l.Text, l.External, hash)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
@@ -470,11 +470,11 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.ExternalLinks) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url,scheme,  rel, text, external) values "
+		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url,scheme, rel, nofollow, text, external) values "
 		v := []interface{}{}
 		for _, l := range r.ExternalLinks {
-			sqlString += "(?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.Text, l.External)
+			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.NoFollow, l.Text, l.External)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
@@ -724,14 +724,14 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 		log.Println(err)
 	}
 
-	lrows, err := ds.db.Query("SELECT url, rel, text, external FROM links WHERE external = false AND pagereport_id = ?", rid)
+	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = false AND pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for lrows.Next() {
 		l := Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.Text, &l.External)
+		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.External)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -740,14 +740,14 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 		p.Links = append(p.Links, l)
 	}
 
-	lrows, err = ds.db.Query("SELECT url, rel, text, external FROM links WHERE external = true AND pagereport_id = ?", rid)
+	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = true AND pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for lrows.Next() {
 		l := Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.Text, &l.External)
+		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.External)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -1139,6 +1139,27 @@ func (ds *datastore) findRedirectChains(cid int) []PageReport {
 		FROM pagereports AS a
 		LEFT JOIN pagereports AS b ON a.redirect_hash = b.url_hash
 		WHERE a.redirect_hash != "" AND b.redirect_hash  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
+
+	return ds.pageReportsQuery(query, cid, cid)
+}
+
+func (ds *datastore) tooManyLinks(cid int) []PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		INNER JOIN (
+			SELECT
+				pagereport_id,
+				count(distinct url_hash) as l
+				FROM links
+				WHERE crawl_id = ?
+				GROUP BY pagereport_id
+		) AS b ON pagereports.id = b.pagereport_id
+		WHERE pagereports.crawl_id = ? and l > 100
+	`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }

@@ -74,7 +74,7 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, p
 		responseCounter++
 
 		for _, l := range pageReport.Links {
-			if strings.Contains(l.Rel, "nofollow") {
+			if l.NoFollow {
 				continue
 			}
 

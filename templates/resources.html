@@ -91,6 +91,9 @@
 				{{ if eq . "ERROR_INTERNAL_NOFOLLOW" }}
 				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">Internal links with nofollow attribute</a></li>
 				{{ end }}
+				{{ if eq . "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }}
+				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">External follow links</a></li>
+				{{ end }}
 				{{ end }}
 				{{ end }}
 			</ul>

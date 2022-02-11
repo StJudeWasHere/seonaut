@@ -448,12 +448,12 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Links) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, external, url_hash) values "
+		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, url_hash) values "
 		v := []interface{}{}
 		for _, l := range r.Links {
 			hash := hash(l.URL)
-			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.NoFollow, l.Text, l.External, hash)
+			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.NoFollow, l.Text, hash)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
@@ -470,11 +470,11 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.ExternalLinks) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url,scheme, rel, nofollow, text, external) values "
+		sqlString := "INSERT INTO external_links (pagereport_id, crawl_id, url, rel, nofollow, text) values "
 		v := []interface{}{}
 		for _, l := range r.ExternalLinks {
-			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.parsedUrl.Scheme, l.Rel, l.NoFollow, l.Text, l.External)
+			sqlString += "(?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, l.URL, l.Rel, l.NoFollow, l.Text)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
@@ -724,14 +724,14 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 		log.Println(err)
 	}
 
-	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = false AND pagereport_id = ? limit 25", rid)
+	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text FROM links WHERE pagereport_id = ? limit 25", rid)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for lrows.Next() {
 		l := Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.External)
+		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -740,14 +740,14 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 		p.Links = append(p.Links, l)
 	}
 
-	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text, external FROM links WHERE external = true AND pagereport_id = ? limit 25", rid)
+	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text FROM external_links WHERE pagereport_id = ? limit 25", rid)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for lrows.Next() {
 		l := Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.External)
+		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -1057,7 +1057,7 @@ func (ds *datastore) FindPageReportsWithHTTPLinks(cid int) []PageReport {
 		FROM pagereports
 		LEFT JOIN links ON links.pagereport_id = pagereports.id
 		WHERE pagereports.scheme = "https" AND links.scheme = "http"
-		AND pagereports.crawl_id = ? AND links.external = false
+		AND pagereports.crawl_id = ?
 		GROUP BY links.pagereport_id
 		HAVING count(links.pagereport_id) > 1`
 
@@ -1170,7 +1170,7 @@ func (ds *datastore) internalNoFollowLinks(cid int) []PageReport {
 		FROM pagereports 
 		INNER JOIN (
 			SELECT pagereport_id FROM links
-			WHERE nofollow = 1 AND external = 0 AND crawl_id = ?
+			WHERE nofollow = 1 AND crawl_id = ?
 		) AS b ON b.pagereport_id = pagereports.id
 		WHERE pagereports.crawl_id = ?`
 
@@ -1182,6 +1182,20 @@ func (ds *datastore) findAllPageReports(cid int) []PageReport {
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports
 		WHERE media_type = "text/html" AND pagereports.crawl_id = ?`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
+func (ds *datastore) findExternalLinkWitoutNoFollow(cid int) []PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		INNER JOIN external_links ON pagereports.id = external_links.pagereport_id
+		WHERE external_links.nofollow = 0 AND pagereports.crawl_id = ?
+		GROUP BY pagereports.id`
 
 	return ds.pageReportsQuery(query, cid)
 }

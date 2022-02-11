@@ -1,3 +1,10 @@
+.beta {
+	background-color: #FDE467;
+	padding: .5rem 0;
+	font-size: .8rem;
+	margin-bottom: 1.5rem;
+	line-height: .8rem;
+}
 @font-face {
   font-family: 'Fira Code';
   src: url('/resources/FiraCode-Light.woff2') format('woff2'),
@@ -89,7 +96,7 @@ body {
 	font-family:'Fira Code', monospace, monospace;
 	line-height: 1.6rem;
 	font-size: 1rem;
-	padding: 3rem 0;
+	padding: 0 0 3rem 0;
 	background-color: var(--main-bg-color);
 	margin:0;
 }

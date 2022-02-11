@@ -32,9 +32,18 @@
 
 		- Lenkrr
 	</title>
-	<link rel="stylesheet" href="/resources/style.css?v=0.1">
+	<link rel="stylesheet" href="/resources/style.css?v=0.2">
 </head>
 <body>
+	{{ if .User.Id }}
+	<div class="beta">
+		<div class="content">
+		<p>Lenkrr is in closed <b>BETA</b> version. Reach me out via email <a href="mailto:hello@ivanribas.com">hello@ivanribas.com</a> or twitter <a href="https://twitter.com/StJudeWasHere" target="_blank">@StJudeWasHere</a> if you want to invite someone.<p>
+		<p>This project is under active development. Check out the <a href="https://lenkrr.com/changelog.txt" target="_blank">changelog.txt</a> to see all the updates. </p>
+	</div>
+	</div>
+	{{ end }}
+
 	<div id="header">
 		<span class="logo"><a href="/">lenkrr</a></span>
 		{{ if .User.Id }}<span class="logout"><a href="/signout">Logout</a></span>{{ end }}

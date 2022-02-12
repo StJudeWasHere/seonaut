@@ -24,7 +24,6 @@
 				<li><a href="#internal">Internal links</a></li>
 				<li><a href="#external">External links</a></li>
 				<li><a href="#images">Images in this page</a></li>
-				<li><a href="#hreflang">Hreflang links in this page</a></li>
 				<li><a href="#scripts">Scripts used by this page</a></li>
 				<li><a href="#styles">Styles used on this page</a></li>
 			</ul>
@@ -154,8 +153,30 @@
 		{{ end }}
 
 		{{ end }}
+		
+		<div>Total images: <small>{{ .TotalImages }}</small></div>
+		<div>Total scripts: <small>{{ .TotalScripts }}</small></div>
+		<div>Total stylesheets: <small>{{ .TotalStyles }}</small></div>
+
+		<div>
+			Hreflang:
+			{{ if .PageReport.Hreflangs }}
+				<ul class="url-list">
+					{{ range .PageReport.Hreflangs }}
+					<li>
+						{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
+						<span class="url">{{ .URL }}</span>
+					</li>
+					{{ end }}
+				</ul>
+			{{ else }}
+				<small>There are no hreflang links in this page.</small>
+			{{ end }}
+		</div>
+
 	</div>
-		<div><a href="#menu">↑ top</a></div>
+		
+	<div><a href="#menu">↑ top</a></div>
 	</div>
 
 	<a name="inlinks"></a>

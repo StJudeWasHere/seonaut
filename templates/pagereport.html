@@ -56,24 +56,6 @@
 		<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	<a name="hreflang"></a>
-	<div class="report-block">
-		<h2>Hreflang</h2>
-	{{ if .Hreflangs }}
-		<ul class="url-list">
-			{{ range .Hreflangs }}
-			<li>
-				{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
-				<span class="url">{{ .URL }}</span>
-			</li>
-			{{ end }}
-		</ul>
-	{{ else }}
-		<small>There are no hreflang links in this page.</small>
-	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
-	</div>
-
 	<a name="scripts"></a>
 	<div class="report-block">
 		<h2>Scripts</h2>

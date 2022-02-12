@@ -46,12 +46,15 @@ type IssuesView struct {
 }
 
 type ResourcesView struct {
-	PageReport PageReport
-	Cid        int
-	Eid        string
-	ErrorTypes []string
-	InLinks    []PageReport
-	Redirects  []PageReport
+	PageReport   PageReport
+	Cid          int
+	Eid          string
+	ErrorTypes   []string
+	InLinks      []PageReport
+	Redirects    []PageReport
+	TotalImages  int
+	TotalScripts int
+	TotalStyles  int
 }
 
 type Project struct {
@@ -353,9 +356,12 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 	rv := ResourcesView{
 		PageReport: pageReport,
 		Cid:        cid, Eid: eid,
-		ErrorTypes: errorTypes,
-		InLinks:    inLinks,
-		Redirects:  redirects,
+		ErrorTypes:   errorTypes,
+		InLinks:      inLinks,
+		Redirects:    redirects,
+		TotalImages:  len(pageReport.Images),
+		TotalScripts: len(pageReport.Scripts),
+		TotalStyles:  len(pageReport.Styles),
 	}
 
 	v := &PageView{

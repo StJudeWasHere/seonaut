@@ -5,9 +5,9 @@
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
-# Host: 0.0.0.0 (MySQL 5.7.37)
+# Host: 0.0.0.0 (MySQL 8.0.28)
 # Database: seo
-# Generation Time: 2022-02-11 09:08:45 +0000
+# Generation Time: 2022-02-12 11:32:18 +0000
 # ************************************************************
 
 

@@ -223,8 +223,15 @@ h2 {
 }
 .url-list li {
 	background-color: white;
-	margin-bottom: .5rem;
-	padding: 1.5rem 2rem;
+	margin-bottom: 0rem;
+	padding: 1rem 1rem;
+	border-top: 1px solid #f0f0f0; ;
+	border-left: 1px solid #f0f0f0; ;
+	box-shadow: 5px 5px #f0f0f0;
+	border-radius: 5px;
+}
+.url-list li:nth-child(even) {
+	background-color: #fdf8e6;
 }
 .url-list li.url {
 	padding: 0.5rem 1rem;
@@ -244,7 +251,58 @@ h2 {
 	padding: 0;
 	margin-bottom: 3rem;
 	font-weight: 300;
+	background-color: white;
+	box-shadow: 5px 5px #f0f0f0;
+	border-top: 1px solid #f0f0f0;
+	border-left: 1px solid #f0f0f0;
+	border-radius: 5px;
+	box-sizing: border-box;
+	padding: 3rem;
 }
+
+.project-buttons {
+	margin-top: 3rem;
+}
+.issues-buttons {
+	margin-top: 0;
+}
+.issues-buttons .button, .project-buttons .button {
+	background-color: #79C691;
+	color: white;
+	border: 0;
+	box-shadow: 5px 5px transparent;
+	border-radius: 5px;
+}
+
+.issues-buttons .button {
+	background-color: white;
+	color: #222;
+	border: 1px dotted #222;
+}
+.issues-buttons .button:hover, .project-buttons .button:hover {
+	background-color: #79C691;
+	color: white;
+	border: 0;
+		box-shadow: 5px 5px #f0f0f0;
+}
+
+.issues-buttons .button:hover {
+	background-color: white;
+	color: #222;
+	border: 1px solid #222;
+}
+.col {
+		box-sizing: border-box;
+}
+.col:nth-child(odd) {
+	padding-right: 1.5rem;
+}
+
+.col:nth-child(even) {
+	padding-left: 1.5rem;
+
+}
+
 .project p {
 	margin-bottom: 0;
 }
@@ -269,9 +327,15 @@ h2 {
 	margin-bottom: 3rem;
 }
 .issues {
-	margin-bottom: 5rem;
+	margin-bottom: 3rem;
 	font-weight: 300;
-	max-width: var(--content-max-width);
+	background-color: white;
+	border-radius: 5px;
+	box-shadow: 5px 5px #f0f0f0;
+	box-sizing: border-box;
+}
+.issue-description {
+	padding: 0 2.5rem .5rem 2.5rem;
 }
 .flex-container {
 	display: flex;
@@ -337,6 +401,29 @@ a.button:hover {
 	vertical-align: baseline;
 	transform: translateY(2px);
 }
+
+.issues h2 {
+	border-top-left-radius: 5px;
+	border-top-right-radius: 5px;
+	padding: .5rem 0 .5rem .5rem;
+	line-height: 1.6rem;
+}
+
+.issues h2.error {
+	background-color: #fecdc7;
+	border-left: 2rem solid #FD7B6A;
+}
+
+.issues h2.alert {
+	background-color: #faf1ca;
+	border-left: 2rem solid #F7E497;
+}
+
+.issues h2.notice {
+	background-color: #d3ebf1;
+	border-left: 2rem solid #2C7D91;
+}
+
 span.alert {
 	color: #E17E56;
 	font-weight: 300;

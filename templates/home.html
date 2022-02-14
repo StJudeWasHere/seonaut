@@ -10,20 +10,23 @@
 </div>
 
 <div class="content">
+	<div style="display:flex; flex-wrap: wrap">
 {{ range .Data.Projects }}
+<div class="col">
 	<div class="project">
 		<h2 class="project-title">{{ .Project.URL }}</h2>
 		{{ if .Crawl.Id }}
 			{{ if .Crawl.IssuesEnd.Valid }}
 				<div>
-					Last crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. Crawl duration was {{ .Crawl.TotalTime }}.<br>
+					Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. <br>
+					Crawl duration was {{ .Crawl.TotalTime }}.<br>
 						{{ .Crawl.TotalURLs }}
 						{{ if eq .Crawl.TotalURLs 1 }}URL{{ else }}URLs{{end }}
-						crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}.
+						crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}. <a href="/crawl?pid={{ .Project.Id }}">Crawl now</a>.
 				</div>
-				<p>
-					<a class="button"  href="/crawl?pid={{ .Project.Id }}">crawl now</a>
-					<a class="button"  href="/issues?cid={{ .Crawl.Id }}">view report</a>
+				<p class="project-buttons">
+					
+					<a class="button" href="/issues?cid={{ .Crawl.Id }}">View Report →</a>
 				</p>
 			{{ else }}
 				<p>Now crawling...</p>
@@ -33,7 +36,9 @@
 			<p><a class="button" href="/crawl?pid={{ .Project.Id }}">crawl Now</a></p>
 		{{ end }}
 	</div>
+</div>
 {{ end }}
+	</div>
 </div>
 
 {{ template "footer" . }}

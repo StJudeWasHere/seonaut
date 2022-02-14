@@ -5,11 +5,19 @@
 	<div class="action">
 		<a href="/">Projects</a> / <span class="title">{{ .Project.Host }}</span>
 	</div>
+	
+	<div class="project-buttons" style="margin-bottom: 3rem">
+		<a class="button" href="/download?cid={{ .Crawl.Id }}">Download all crawled URLs ↓</a>
+		<a class="button" href="/sitemap?cid={{ .Crawl.Id }}">Download sitemap.xml ↓</a>
+	</div>
 </div>
+
+
 
 <div style="background-color:white; padding:1rem 0 6rem 0;margin: 0 0 4rem 0">
 	<div class="content">
-	<small style="margin-bottom:3rem;display:block">Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
+	<small style="display:block;margin-top: 1rem;margin-bottom:3rem;">Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
+	
 		<div class="flex-container">
 			<div class="col">
 
@@ -58,11 +66,8 @@
 	</div>
 </div>
 
+
 <div class="content">
-	<p style="margin-bottom: 3rem">
-		<a class="button" href="/download?cid={{ .Crawl.Id }}">Download all crawled URLs</a>
-		<a class="button" href="/sitemap?cid={{ .Crawl.Id }}">Generate sitemap.xml</a>
-	</p>
 
 	{{ $cid := .Crawl.Id }}
 	{{/* Status code issues */}}
@@ -71,16 +76,17 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 		<h2 class="critical">
-			<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.625 0c.61 7.189-5.625 9.664-5.625 15.996 0 4.301 3.069 7.972 9 8.004 5.931.032 9-4.414 9-8.956 0-4.141-2.062-8.046-5.952-10.474.924 2.607-.306 4.988-1.501 5.808.07-3.337-1.125-8.289-4.922-10.378zm4.711 13c3.755 3.989 1.449 9-1.567 9-1.835 0-2.779-1.265-2.769-2.577.019-2.433 2.737-2.435 4.336-6.423z"/></svg>
 			{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} throwing 50x type errors
 		</h2>
+		<div class="issue-description">
 			<p>
 				This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't load properly and show an error page instead, scaring your users and annoying search engines.
 			</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_50x">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_50x">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -89,44 +95,45 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 		<h2 class="critical">
-			<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.625 0c.61 7.189-5.625 9.664-5.625 15.996 0 4.301 3.069 7.972 9 8.004 5.931.032 9-4.414 9-8.956 0-4.141-2.062-8.046-5.952-10.474.924 2.607-.306 4.988-1.501 5.808.07-3.337-1.125-8.289-4.922-10.378zm4.711 13c3.755 3.989 1.449 9-1.567 9-1.835 0-2.779-1.265-2.769-2.577.019-2.433 2.737-2.435 4.336-6.423z"/></svg>
 			{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} missing
-			</h2>
+		</h2>
+		<div class="issue-description">
 		<p>This pages are missing and your both your users and search engines are getting lost.</p>
-		<p>
-			<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_40x">download URLs</a>
-			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">view URLs</a>
+		<p class="issues-buttons">
+			<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_40x">Download URLs ↓</a>
+			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">View URLs →</a>
 		</p>
 		</div>
+	</div>
 		{{ end }}
 	{{ end }}
 
 	{{ with (index .IssuesGroups "ERROR_30x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-		<h2 class="critical">
-			<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.625 0c.61 7.189-5.625 9.664-5.625 15.996 0 4.301 3.069 7.972 9 8.004 5.931.032 9-4.414 9-8.956 0-4.141-2.062-8.046-5.952-10.474.924 2.607-.306 4.988-1.501 5.808.07-3.337-1.125-8.289-4.922-10.378zm4.711 13c3.755 3.989 1.449 9-1.567 9-1.835 0-2.779-1.265-2.769-2.577.019-2.433 2.737-2.435 4.336-6.423z"/></svg>
-		{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</h2>
+		<h2 class="critical">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</h2>
+		<div class="issue-description">
 		<p>URLs causing redirects are sending users and search engines to a different page, this can waste the search engine's crawl budget and create redirect chains.</p>
-		<p>
-			<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_30x">download URLs</a>
-			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">view URLs</a>
+		<p class="issues-buttons">
+			<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_30x">Download URLs ↓</a>
+			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">View URLs →</a>
 		</p>
 		</div>
+	</div>
 		{{ end }}
 	{{ end }}
 
 	{{ with (index .IssuesGroups "ERROR_REDIRECT_CHAIN") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="critical">
-				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.625 0c.61 7.189-5.625 9.664-5.625 15.996 0 4.301 3.069 7.972 9 8.004 5.931.032 9-4.414 9-8.956 0-4.141-2.062-8.046-5.952-10.474.924 2.607-.306 4.988-1.501 5.808.07-3.337-1.125-8.289-4.922-10.378zm4.711 13c3.755 3.989 1.449 9-1.567 9-1.835 0-2.779-1.265-2.769-2.577.019-2.433 2.737-2.435 4.336-6.423z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} are part of a redirect chain</h2>
+			<h2 class="critical">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} are part of a redirect chain</h2>
+			<div class="issue-description">
 			<p>Redirect chains are pages that redirect to other pages that also redirect somewhere else, creating a chain of redirects.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -137,31 +144,32 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
 				{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} duplicate title tags
 			</h2>
+			<div class="issue-description">
 			<p>The title tag is considered one of the most important elements for on-page SEO.<br>
 			If multiple pages have the same title, they will compete for a given search query confusing search engines.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_EMMPTY_TITLE") }}
+	{{ with (index .IssuesGroups "ERROR_EMPTY_TITLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with empty or missing title</h2>
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with empty or missing title</h2>
+			<div class="issue-description">
 			<p>The page title is one of the most important elements for search engines.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMMPTY_TITLE">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">View URLs →</a>
 			</p>
 		</div>
+	</div>
 		{{ end }}
 	{{ end}}
 
@@ -169,13 +177,14 @@
 		{{ if ne .Count 0 }}
 			<div class="issues">
 				<h2 class="alert">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
 				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long title</h2>
+				<div class="issue-description">
 				<p>Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.</p>
-				<p>
-					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LONG_TITLE">download URLs</a>
-					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">view URLs</a>
+				<p class="issues-buttons">
+					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Download URLs ↓</a>
+					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">View URLs →</a>
 				</p>
+			</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -183,14 +192,14 @@
 	{{ with (index .IssuesGroups "ERROR_SHORT_TITLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} short title</h2>
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} short title</h2>
+			<div class="issue-description">
 			<p>This pages have titles that are too short. Search engines will be happier if you provide longer titles.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -200,14 +209,14 @@
 	{{ with (index .IssuesGroups "ERROR_DUPLICATED_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with duplicate description tags</h2>
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with duplicate description tags</h2>
+			<div class="issue-description">
 			<p>It is recomended to have unique descriptions for each page so search engines can understand better your page.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">view URLs</a>
+				<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -215,14 +224,14 @@
 	{{ with (index .IssuesGroups "ERROR_LONG_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long description</h2>
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long description</h2>
+			<div class="issue-description">
 			<p>Description tags are not a ranking factor for search engines, but having good quality descriptions will get more accurate information in the search results. Long descriptions will often get truncated, making them not so sexy for users.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -230,14 +239,14 @@
 	{{ with (index .IssuesGroups "ERROR_SHORT_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 			<div class="issues">
-				<h2 class="alert">
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with short description</h2>
+				<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with short description</h2>
+				<div class="issue-description">
 				<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
-				<p>
-					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">download URLs</a>
-					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">view URLs</a>
+				<p class="issues-buttons">
+					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Download URLs ↓</a>
+					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">View URLs →</a>
 				</p>
+			</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -245,14 +254,14 @@
 	{{ with (index .IssuesGroups "ERROR_EMPTY_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with empty or missing description</h2>
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with empty or missing description</h2>
+			<div class="issue-description">
 			<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -262,14 +271,14 @@
 	{{ with (index .IssuesGroups "ERROR_HTTP_LINKS" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP</h2>
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP</h2>
+			<div class="issue-description">
 			<p>Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -277,14 +286,14 @@
 	{{ with (index .IssuesGroups "ERROR_NO_H1" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no H1 heading title</h2>
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no H1 heading title</h2>
+			<div class="issue-description">
 			<p>The H1 tag describes the main topic of the page, without it both your users and search engine will find it harder to figure what the page is talking about.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NO_H1">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">view URLs</a>
+				<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NO_H1">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -293,13 +302,14 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 1l-12 22h24l-12-22zm-1 8h2v7h-2v-7zm1 11.25c-.69 0-1.25-.56-1.25-1.25s.56-1.25 1.25-1.25 1.25.56 1.25 1.25-.56 1.25-1.25 1.25z"/></svg>
 			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing hreflangs without its corresponding return link</h2>
+			<div class="issue-description">
 			<p>When referencing a page with hreflang, that page must reference back with a hreflang tag too.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">view URLs</a>
+				<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -308,13 +318,14 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="notice">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23.809 21.646l-6.205-6.205c1.167-1.605 1.857-3.579 1.857-5.711 0-5.365-4.365-9.73-9.731-9.73-5.365 0-9.73 4.365-9.73 9.73 0 5.366 4.365 9.73 9.73 9.73 2.034 0 3.923-.627 5.487-1.698l6.238 6.238 2.354-2.354zm-20.955-11.916c0-3.792 3.085-6.877 6.877-6.877s6.877 3.085 6.877 6.877-3.085 6.877-6.877 6.877c-3.793 0-6.877-3.085-6.877-6.877z"/></svg>
 				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no language attribute</h2>
+				<div class="issue-description">
 			<p>The language attribute is particularly usefull for screen readers and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NO_LANG">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">view URLs</a>
+				<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NO_LANG">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -322,14 +333,14 @@
 	{{ with (index .IssuesGroups "ERROR_LITTLE_CONTENT") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="notice">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23.809 21.646l-6.205-6.205c1.167-1.605 1.857-3.579 1.857-5.711 0-5.365-4.365-9.73-9.731-9.73-5.365 0-9.73 4.365-9.73 9.73 0 5.366 4.365 9.73 9.73 9.73 2.034 0 3.923-.627 5.487-1.698l6.238 6.238 2.354-2.354zm-20.955-11.916c0-3.792 3.085-6.877 6.877-6.877s6.877 3.085 6.877 6.877-3.085 6.877-6.877 6.877c-3.793 0-6.877-3.085-6.877-6.877z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with little content</h2>
+			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with little content</h2>
+			<div class="issue-description">
 			<p>Pages with little content are not really useful for users or search engines, consider adding more content to your pages.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -337,14 +348,14 @@
 	{{ with (index .IssuesGroups "ERROR_IMAGES_NO_ALT") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="notice">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23.809 21.646l-6.205-6.205c1.167-1.605 1.857-3.579 1.857-5.711 0-5.365-4.365-9.73-9.731-9.73-5.365 0-9.73 4.365-9.73 9.73 0 5.366 4.365 9.73 9.73 9.73 2.034 0 3.923-.627 5.487-1.698l6.238 6.238 2.354-2.354zm-20.955-11.916c0-3.792 3.085-6.877 6.877-6.877s6.877 3.085 6.877 6.877-3.085 6.877-6.877 6.877c-3.793 0-6.877-3.085-6.877-6.877z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
+			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
+			<div class="issue-description">
 			<p>The image alt attribute improves your site's accessibility, it also helps search engines understand better your images.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -352,14 +363,14 @@
 	{{ with (index .IssuesGroups "ERROR_TOO_MANY_LINKS") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="notice">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23.809 21.646l-6.205-6.205c1.167-1.605 1.857-3.579 1.857-5.711 0-5.365-4.365-9.73-9.731-9.73-5.365 0-9.73 4.365-9.73 9.73 0 5.366 4.365 9.73 9.73 9.73 2.034 0 3.923-.627 5.487-1.698l6.238 6.238 2.354-2.354zm-20.955-11.916c0-3.792 3.085-6.877 6.877-6.877s6.877 3.085 6.877 6.877-3.085 6.877-6.877 6.877c-3.793 0-6.877-3.085-6.877-6.877z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with too many links</h2>
+			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with too many links</h2>
+			<div class="issue-description">
 			<p>The SEO link juice is divided between all the links in the page, the more links in a page the less amount of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the nofollow attribute.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -367,14 +378,14 @@
 	{{ with (index .IssuesGroups "ERROR_INTERNAL_NOFOLLOW") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="notice">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23.809 21.646l-6.205-6.205c1.167-1.605 1.857-3.579 1.857-5.711 0-5.365-4.365-9.73-9.731-9.73-5.365 0-9.73 4.365-9.73 9.73 0 5.366 4.365 9.73 9.73 9.73 2.034 0 3.923-.627 5.487-1.698l6.238 6.238 2.354-2.354zm-20.955-11.916c0-3.792 3.085-6.877 6.877-6.877s6.877 3.085 6.877 6.877-3.085 6.877-6.877 6.877c-3.793 0-6.877-3.085-6.877-6.877z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal links using the nofollow attribute</h2>
+			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal links using the nofollow attribute</h2>
+			<div class="issue-description">
 			<p>Internal links in general should not use the nofollow attribute unless they link to pages you don't want indexed by search engines. Review the internal links and make sure important pages are linked without the nofollow attribute.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">View URLs →</a>
 			</p>
+		</div>
 		</div>
 		{{ end }}
 	{{ end}}
@@ -382,15 +393,15 @@
 	{{ with (index .IssuesGroups "ERROR_EXTERNAL_WITHOUT_NOFOLLOW") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="notice">
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M23.809 21.646l-6.205-6.205c1.167-1.605 1.857-3.579 1.857-5.711 0-5.365-4.365-9.73-9.731-9.73-5.365 0-9.73 4.365-9.73 9.73 0 5.366 4.365 9.73 9.73 9.73 2.034 0 3.923-.627 5.487-1.698l6.238 6.238 2.354-2.354zm-20.955-11.916c0-3.792 3.085-6.877 6.877-6.877s6.877 3.085 6.877 6.877-3.085 6.877-6.877 6.877c-3.793 0-6.877-3.085-6.877-6.877z"/></svg>
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with external follow links</h2>
+			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with external follow links</h2>
+			<div class="issue-description">
 			<p>Follow links will pass SEO authority to external sites. You may want to keep an eye on it to avoid link spam in comments and user generated content.</p>
-			<p>
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">download URLs</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">view URLs</a>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">View URLs →</a>
 			</p>
 		</div>
+	</div>
 		{{ end }}
 	{{ end}}
 

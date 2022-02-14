@@ -12,19 +12,30 @@ import (
 )
 
 const (
-	consumerThreads = 2
-	storageMaxSize  = 10000
-	MaxPageReports  = 10000
-	RendertronURL   = "http://127.0.0.1:3000/render/"
+	consumerThreads        = 2
+	storageMaxSize         = 10000
+	MaxPageReports         = 500
+	AdvancedMaxPageReports = 5000
+	RendertronURL          = "http://127.0.0.1:3000/render/"
 )
 
-type Crawler struct{}
+type Crawler struct {
+	URL             *url.URL
+	MaxPageReports  int
+	UseJS           bool
+	IgnoreRobotsTxt bool
+	UserAgent       string
+}
 
-func startCrawler(p Project, agent string, datastore *datastore) int {
+func startCrawler(p Project, agent string, advanced bool, datastore *datastore) int {
 	var totalURLs int
+	var max int
 
-	pageReport := make(chan PageReport)
-	c := &Crawler{}
+	if advanced {
+		max = AdvancedMaxPageReports
+	} else {
+		max = MaxPageReports
+	}
 
 	u, err := url.Parse(p.URL)
 	if err != nil {
@@ -32,9 +43,18 @@ func startCrawler(p Project, agent string, datastore *datastore) int {
 		return 0
 	}
 
+	c := &Crawler{
+		URL:             u,
+		MaxPageReports:  max,
+		UseJS:           p.UseJS,
+		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
+		UserAgent:       agent,
+	}
+
 	cid := datastore.saveCrawl(p)
 
-	go c.Crawl(u, p.IgnoreRobotsTxt, p.UseJS, agent, pageReport)
+	pageReport := make(chan PageReport)
+	go c.Crawl(pageReport)
 
 	for r := range pageReport {
 		totalURLs++
@@ -47,7 +67,7 @@ func startCrawler(p Project, agent string, datastore *datastore) int {
 	return int(cid)
 }
 
-func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, pr chan<- PageReport) {
+func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
 
 	q, _ := queue.New(
@@ -58,13 +78,13 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, p
 	var responseCounter int
 
 	handleResponse := func(r *colly.Response) {
-		if responseCounter >= MaxPageReports {
+		if responseCounter >= c.MaxPageReports {
 			return
 		}
 
 		us := r.Request.URL.String()
 		url := r.Request.URL
-		if useJS == true {
+		if c.UseJS == true {
 			us = us[len(RendertronURL):]
 			url, _ = url.Parse(us)
 		}
@@ -79,7 +99,7 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, p
 			}
 
 			lurl := r.Request.AbsoluteURL(l.URL)
-			if useJS == true {
+			if c.UseJS == true {
 				lurl = RendertronURL + lurl
 			}
 
@@ -113,19 +133,19 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, p
 
 	var nonWWWHost string
 	var WWWHost string
-	if strings.HasPrefix(u.Host, "www.") {
-		WWWHost = u.Host
-		nonWWWHost = u.Host[4:]
+	if strings.HasPrefix(c.URL.Host, "www.") {
+		WWWHost = c.URL.Host
+		nonWWWHost = c.URL.Host[4:]
 	} else {
-		WWWHost = "www." + u.Host
-		nonWWWHost = u.Host
+		WWWHost = "www." + c.URL.Host
+		nonWWWHost = c.URL.Host
 	}
 
 	co := colly.NewCollector(
 		colly.AllowedDomains(WWWHost, nonWWWHost, "127.0.0.1"),
-		colly.UserAgent(agent),
-		func(c *colly.Collector) {
-			c.IgnoreRobotsTxt = ignoreRobotsTxt
+		colly.UserAgent(c.UserAgent),
+		func(co *colly.Collector) {
+			co.IgnoreRobotsTxt = c.IgnoreRobotsTxt
 		},
 	)
 
@@ -151,12 +171,12 @@ func (c *Crawler) Crawl(u *url.URL, ignoreRobotsTxt, useJS bool, agent string, p
 		return http.ErrUseLastResponse
 	})
 
-	if u.Path == "" {
-		u.Path = "/"
+	if c.URL.Path == "" {
+		c.URL.Path = "/"
 	}
 
-	us := u.String()
-	if useJS == true {
+	us := c.URL.String()
+	if c.UseJS == true {
 		us = RendertronURL + us
 		n, _ := time.ParseDuration("30s")
 		co.SetRequestTimeout(n)

@@ -3,12 +3,14 @@
 <div class="content">
 	<h1 class="title">Projects</h1>
 	<div class="action">
-		<a href="/new-project" style="font-size: 1rem">+ Add Project</a>
+		{{ if lt (len .Data.Projects) .Data.MaxProjects }}
+			<a href="/new-project" style="font-size: 1rem">+ Add Project</a>
+		{{ end }}
 	</div>
 </div>
 
 <div class="content">
-{{ range .Data }}
+{{ range .Data.Projects }}
 	<div class="project">
 		<h2 class="project-title">{{ .Project.URL }}</h2>
 		{{ if .Crawl.Id }}

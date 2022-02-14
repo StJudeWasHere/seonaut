@@ -12,6 +12,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const (
+	MaxProjects = 3
+)
+
 type User struct {
 	Id       int
 	Email    string
@@ -80,7 +84,10 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := &PageView{
-		Data:      views,
+		Data: struct {
+			Projects    []ProjectView
+			MaxProjects int
+		}{Projects: views, MaxProjects: MaxProjects},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
 	}
@@ -90,6 +97,12 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 
 func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Request) {
 	var url string
+
+	projects := app.datastore.findProjectsByUser(user.Id)
+	if len(projects) >= MaxProjects {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
@@ -142,7 +155,7 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Crawling %s...\n", p.URL)
 	go func() {
 		start := time.Now()
-		cid := startCrawler(p, app.config.CrawlerAgent, app.datastore)
+		cid := startCrawler(p, app.config.CrawlerAgent, user.Advanced, app.datastore)
 		fmt.Println(time.Since(start))
 		fmt.Printf("Creating issues for crawl id %d.\n", cid)
 

@@ -1177,11 +1177,12 @@ func (ds *datastore) internalNoFollowLinks(cid int) []PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) findAllPageReports(cid int) []PageReport {
+func (ds *datastore) findSitemapPageReports(cid int) []PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports
-		WHERE media_type = "text/html" AND pagereports.crawl_id = ?`
+		WHERE media_type = "text/html" AND status_code >= 200 AND status_code < 300
+		AND (canonical IS NULL OR canonical = "" OR canonical = url) AND pagereports.crawl_id = ?`
 
 	return ds.pageReportsQuery(query, cid)
 }

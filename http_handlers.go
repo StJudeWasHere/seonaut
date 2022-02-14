@@ -528,7 +528,7 @@ func (app *App) serveSitemap(user *User, w http.ResponseWriter, r *http.Request)
 	w.Header().Add("Content-Disposition", fmt.Sprint("attachment; filename=\"sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
-	p := app.datastore.findAllPageReports(cid)
+	p := app.datastore.findSitemapPageReports(cid)
 	for _, v := range p {
 		s.Add(v.URL, "")
 	}

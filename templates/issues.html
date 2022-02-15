@@ -76,7 +76,7 @@
 	{{ with (index .IssuesGroups "ERROR_50x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-		<h2 class="critical">
+		<h2 class="error">
 			{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} throwing 50x type errors
 		</h2>
 		<div class="issue-description">
@@ -95,7 +95,7 @@
 	{{ with (index .IssuesGroups "ERROR_40x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-		<h2 class="critical">
+		<h2 class="error">
 			{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} missing
 		</h2>
 		<div class="issue-description">
@@ -112,7 +112,7 @@
 	{{ with (index .IssuesGroups "ERROR_30x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-		<h2 class="critical">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</h2>
+		<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</h2>
 		<div class="issue-description">
 		<p>URLs causing redirects are sending users and search engines to a different page, this can waste the search engine's crawl budget and create redirect chains.</p>
 		<p class="issues-buttons">
@@ -127,7 +127,7 @@
 	{{ with (index .IssuesGroups "ERROR_REDIRECT_CHAIN") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="critical">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} are part of a redirect chain</h2>
+			<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} are part of a redirect chain</h2>
 			<div class="issue-description">
 			<p>Redirect chains are pages that redirect to other pages that also redirect somewhere else, creating a chain of redirects.</p>
 			<p class="issues-buttons">

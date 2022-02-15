@@ -431,15 +431,6 @@ span.alert {
 	color: #E17E56;
 	font-weight: 300;
 }
-.critical svg {
-	fill: #E17E56;
-}
-.alert svg {
-	fill: #FAB120;
-}
-.notice svg {
-	fill: #249D93;
-}
 
 @media print
 {

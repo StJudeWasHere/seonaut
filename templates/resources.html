@@ -137,7 +137,7 @@
 			{{ $cid := .Cid }}
 			{{ $eid := .Eid }}
 			{{ if .ErrorTypes }}
-			<b>Issues in this page:</b>
+			<b>Issues in this URL:</b>
 			<ul class="pagereport-errors">
 				{{ range .ErrorTypes }}
 				{{ if eq . "ERROR_30x" }}

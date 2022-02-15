@@ -1,12 +1,36 @@
 {{ template "head" . }}
 
 {{ with .Data }}
-<div class="content">
 <a name="menu"></a>
-<h1 class="title">URL Report</h1>
-<div style="margin-bottom:3rem">
-	<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">&larr; Back</a>
-</div>
+<div class="content">
+	<div class="action">
+		<a href="/">Projects</a> /
+		<a href="/issues?cid={{ .Cid }}">{{ .Project.Host }}</a> /
+		<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">
+			{{ if eq .Eid "ERROR_50x" }}Status 50x{{ end }}
+			{{ if eq .Eid "ERROR_40x" }}Status 40x{{ end }}
+			{{ if eq .Eid "ERROR_30x" }}Status 30x{{ end }}
+			{{ if eq .Eid "ERROR_DUPLICATED_TITLE" }}Duplicate Title{{ end }}
+			{{ if eq .Eid "ERROR_LONG_TITLE" }}Long title{{ end }}
+			{{ if eq .Eid "ERROR_SHORT_TITLE" }}Short title{{ end }}
+			{{ if eq .Eid "ERROR_EMPTY_TITLE" }}Missing title{{ end }}
+			{{ if eq .Eid "ERROR_EMPTY_DESCRIPTION" }}Missing description{{ end }}
+			{{ if eq .Eid "ERROR_SHORT_DESCRIPTION" }}Short description{{ end }}
+			{{ if eq .Eid "ERROR_LONG_DESCRIPTION" }}Long description{{ end }}
+			{{ if eq .Eid "ERROR_DUPLICATED_DESCRIPTION" }}Duplicate description{{ end }}
+			{{ if eq .Eid "ERROR_LITTLE_CONTENT" }}Little content{{ end }}
+			{{ if eq .Eid "ERROR_IMAGES_NO_ALT" }}No alt attribute{{ end }}
+			{{ if eq .Eid "ERROR_REDIRECT_CHAIN" }}Redirect chain{{ end }}
+			{{ if eq .Eid "ERROR_NO_H1" }}Missing H1{{ end }}
+			{{ if eq .Eid "ERROR_NO_LANG" }}Missing language attribute{{ end }}
+			{{ if eq .Eid "ERROR_HTTP_LINKS" }}HTTPS to HTTP{{ end }}
+			{{ if eq .Eid "ERROR_HREFLANG_RETURN" }}Missing hreflang{{ end }}
+			{{ if eq .Eid "ERROR_TOO_MANY_LINKS" }}Too Many Links{{ end }}
+			{{ if eq .Eid "ERROR_INTERNAL_NOFOLLOW" }}Internal nofollow links{{ end }}
+			{{ if eq .Eid "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }} External follow links{{ end }}
+		</a> /
+		<span class="title">URL Explorer</span>
+	</div>
 </div>
 
 <div class="content">

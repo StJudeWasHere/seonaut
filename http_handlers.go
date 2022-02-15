@@ -59,6 +59,7 @@ type ResourcesView struct {
 	TotalImages  int
 	TotalScripts int
 	TotalStyles  int
+	Project      Project
 }
 
 type Project struct {
@@ -361,6 +362,21 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	crawl := app.datastore.findCrawlById(cid)
+	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	parsedURL, err := url.Parse(project.URL)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	project.Host = parsedURL.Host
+
 	pageReport := app.datastore.FindPageReportById(rid)
 	errorTypes := app.datastore.findErrorTypesByPage(rid, cid)
 	inLinks := app.datastore.FindInLinks(pageReport.URL, cid)
@@ -368,6 +384,7 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 
 	rv := ResourcesView{
 		PageReport: pageReport,
+		Project:    project,
 		Cid:        cid, Eid: eid,
 		ErrorTypes:   errorTypes,
 		InLinks:      inLinks,

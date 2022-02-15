@@ -231,7 +231,7 @@ h2 {
 	border-radius: 5px;
 }
 .url-list li:nth-child(even) {
-	background-color: #fdf8e6;
+	background-color: #f7fbfc;
 }
 .url-list li.url {
 	padding: 0.5rem 1rem;

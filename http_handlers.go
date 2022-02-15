@@ -416,6 +416,18 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 }
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
+	var invite bool
+
+	// bATjGfQsRBeknDqD
+	inviteQ := r.URL.Query()["invite"]
+	if len(inviteQ) == 0 {
+		invite = false
+	} else {
+		if inviteQ[0] == "bATjGfQsRBeknDqD" {
+			invite = true
+		}
+	}
+
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
@@ -443,6 +455,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 
 	v := &PageView{
 		PageTitle: "SIGNUP_VIEW",
+		Data:      struct{ Invite bool }{Invite: invite},
 	}
 
 	renderTemplate(w, "signup", v)

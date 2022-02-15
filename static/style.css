@@ -377,9 +377,6 @@ h2 {
 	font-weight: 300;
 	font-size: .9rem;
 }
-.report-block {
-	margin-bottom: 9rem;
-}
 a.button {
 	border: 1px dotted var(--primary-color);
 	padding: .5rem 1rem;
@@ -471,4 +468,10 @@ span.alert {
 .button.active:hover {
 	background-color: black;
 	color: white;
+}
+
+.footer {
+	margin-top: 6rem;
+	padding: 0 3rem;
+	color: #999;
 }

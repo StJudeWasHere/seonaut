@@ -50,16 +50,14 @@ type IssuesView struct {
 }
 
 type ResourcesView struct {
-	PageReport   PageReport
-	Cid          int
-	Eid          string
-	ErrorTypes   []string
-	InLinks      []PageReport
-	Redirects    []PageReport
-	TotalImages  int
-	TotalScripts int
-	TotalStyles  int
-	Project      Project
+	PageReport PageReport
+	Cid        int
+	Eid        string
+	ErrorTypes []string
+	InLinks    []PageReport
+	Redirects  []PageReport
+	Project    Project
+	Tab        string
 }
 
 type Project struct {
@@ -353,6 +351,14 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 		return
 	}
 
+	tabs := r.URL.Query()["t"]
+	var tab string
+	if len(tabs) == 0 {
+		tab = "details"
+	} else {
+		tab = tabs[0]
+	}
+
 	eid := r.URL.Query()["eid"][0]
 
 	u, err := app.datastore.findCrawlUserId(cid)
@@ -379,19 +385,25 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 
 	pageReport := app.datastore.FindPageReportById(rid)
 	errorTypes := app.datastore.findErrorTypesByPage(rid, cid)
-	inLinks := app.datastore.FindInLinks(pageReport.URL, cid)
-	redirects := app.datastore.FindPageReportsRedirectingToURL(pageReport.URL, cid)
+
+	var inLinks []PageReport
+	if tab == "inlinks" {
+		inLinks = app.datastore.FindInLinks(pageReport.URL, cid)
+	}
+
+	var redirects []PageReport
+	if tab == "redirections" {
+		redirects = app.datastore.FindPageReportsRedirectingToURL(pageReport.URL, cid)
+	}
 
 	rv := ResourcesView{
 		PageReport: pageReport,
 		Project:    project,
 		Cid:        cid, Eid: eid,
-		ErrorTypes:   errorTypes,
-		InLinks:      inLinks,
-		Redirects:    redirects,
-		TotalImages:  len(pageReport.Images),
-		TotalScripts: len(pageReport.Scripts),
-		TotalStyles:  len(pageReport.Styles),
+		ErrorTypes: errorTypes,
+		InLinks:    inLinks,
+		Redirects:  redirects,
+		Tab:        tab,
 	}
 
 	v := &PageView{

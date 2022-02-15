@@ -35,6 +35,15 @@
 	--content-max-width: 80ch;
 }
 
+.chart-container {
+	background-color: white; padding: 3rem 1.5rem; border-radius: 5px;
+	box-shadow: 5px 5px #f0f0f0;
+	border-top: 1px solid #f0f0f0;
+	border-left: 1px solid #f0f0f0;
+}
+.chart-container h2 {
+	margin:0;
+}
 .chart-list {
 	list-style: none;
 	margin-top: 1.5rem;
@@ -266,7 +275,7 @@ h2 {
 .issues-buttons {
 	margin-top: 0;
 }
-.issues-buttons .button, .project-buttons .button {
+.issues-buttons .button, .project-buttons .button, .button {
 	background-color: #79C691;
 	color: white;
 	border: 0;
@@ -274,19 +283,19 @@ h2 {
 	border-radius: 5px;
 }
 
-.issues-buttons .button {
+.issues-buttons .button, .button {
 	background-color: white;
 	color: #222;
 	border: 1px dotted #222;
 }
-.issues-buttons .button:hover, .project-buttons .button:hover {
+.issues-buttons .button:hover, .project-buttons .button:hover, .button:hover {
 	background-color: #79C691;
 	color: white;
 	border: 0;
 		box-shadow: 5px 5px #f0f0f0;
 }
 
-.issues-buttons .button:hover {
+.issues-buttons .button:hover, .button:hover {
 	background-color: white;
 	color: #222;
 	border: 1px solid #222;
@@ -324,7 +333,7 @@ h2 {
 	margin-bottom: 3rem;
 }
 .pagereport-errors {
-	margin-bottom: 3rem;
+	margin-bottom: 0;
 }
 .issues {
 	margin-bottom: 3rem;
@@ -362,8 +371,7 @@ h2 {
 	width: 11rem;
 }
 .page-details {
-	font-size: .8rem;
-	font-weight: 600;
+	font-weight: 300;
 }
 .col li {
 	font-weight: 300;
@@ -371,8 +379,6 @@ h2 {
 }
 .report-block {
 	margin-bottom: 9rem;
-	border-top: 1px dotted var(--primary-color);
-	padding-top: 1.5rem;
 }
 a.button {
 	border: 1px dotted var(--primary-color);
@@ -443,4 +449,26 @@ span.alert {
 	* {-webkit-print-color-adjust:exact;}
 	body, .chart:after {background-color: white;}
 	.button {display: none;}
+}
+
+.tabs {
+	margin-bottom: 0;
+}
+.tabs ul {
+	padding:0;
+}
+.tabs ul li {
+	display: inline-block;
+	list-style-type: none;
+	padding: 0;
+}
+
+.button.active {
+	background-color: black;
+	color: white;
+}
+
+.button.active:hover {
+	background-color: black;
+	color: white;
 }

@@ -1,11 +1,9 @@
 {{ define "pagereport" }}
 
-	<a name="internal"></a>
-	<div class="report-block">
-		<h2>Internal Links</h2>
-	{{ if .Links }}
+	<div class="report-block" {{ if ne .Tab "internal" }} style="display: none" {{end }}>
+	{{ if .PageReport.Links }}
 		<ul class="url-list">
-			{{ range .Links }}
+			{{ range .PageReport.Links }}
 			<li>
 				{{ if .Text }}{{ .Text }}<br/>{{ end }}
 				{{ if .NoFollow }}<span class="alert"><small>nofollow</small></span><br>{{ end }}
@@ -16,15 +14,12 @@
 	{{ else }}
 		<small>There are no internal links in this page.</small>
 	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	<a name="external"></a>
-	<div class="report-block">
-		<h2>External Links:</h2>
-	{{ if .ExternalLinks }}
+	<div class="report-block" {{ if ne .Tab "external" }} style="display:none"{{ end }}>
+	{{ if .PageReport.ExternalLinks }}
 		<ul class="url-list">
-			{{ range .ExternalLinks }}
+			{{ range .PageReport.ExternalLinks }}
 			<li>
 				{{ if .Text }}{{ .Text }} <br> {{ end }}
 				{{ if .NoFollow }}<span class="alert"><small>nofollow</small></span><br>{{ end }}
@@ -35,15 +30,12 @@
 	{{ else }}
 		<small>There are no external links in this page.</small>
 	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	<a name="images"></a>
-	<div class="report-block">
-		<h2>Images</h2>
-	{{ if .Images }}
+	<div class="report-block" {{ if ne .Tab "images" }} style="display:none"{{ end }}>
+	{{ if .PageReport.Images }}
 		<ul class="url-list">
-			{{ range .Images }}
+			{{ range .PageReport.Images }}
 			<li>
 				{{ if .Alt}}{{ .Alt }}{{ else }}<span class="alert">Missing or empty alt attribute</span>{{ end }}<br>
 				<span class="url">{{ .URL }}</span>
@@ -53,37 +45,30 @@
 	{{ else }}
 		<small>There are no images in this page.</small>
 	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	<a name="scripts"></a>
-	<div class="report-block">
-		<h2>Scripts</h2>
-	{{ if .Scripts }}
+	<div class="report-block" {{ if ne .Tab "scripts" }}style="display:none"{{ end }}>
+	{{ if .PageReport.Scripts }}
 		<ul class="url-list">
-			{{ range .Scripts }}
+			{{ range .PageReport.Scripts }}
 			<li class="url">{{ . }}</li>
 			{{ end }}
 		</ul>
 	{{ else }}
 		<small>There are no scripts in this page.</small>
 	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	<a name="styles"></a>
-	<div class="report-block">
-		<h2>Styles</h2>
-	{{ if .Styles }}
+	<div class="report-block" {{ if ne .Tab "styles" }} style="display:none"{{ end }}>
+	{{ if .PageReport.Styles }}
 		<ul class="url-list">
-			{{ range .Styles }}
+			{{ range .PageReport.Styles }}
 			<li class="url">{{ . }}</li>
 			{{ end }}
 		</ul>
 	{{ else }}
 		<small>There are no styles in this page.</small>
 	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
 	</div>
 
 {{ end }}

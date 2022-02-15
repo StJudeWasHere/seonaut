@@ -34,30 +34,110 @@
 </div>
 
 <div class="content">
-	<h2 class="pagereport-title">
+	<div style="border-radius: 5px; box-shadow: 5px 5px #f0f0f0; border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
+	<h2 class="pagereport-title" style="font-weight: 600;padding: 1.5rem 3rem;margin: 0;background-color: #d3ebf1; border-top-left-radius: 5px; border-top-right-radius: 5px;">
 		{{ .PageReport.URL }} <a href="{{ .PageReport.URL }}" target="_blank" class="link-out">↗</a>
 	</h2>
 
-	<div class="flex">
-		<div class="col">
-			Jump to:
+
+		<div class="tabs" style="background-color: white; padding: 1.5rem 3rem;border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
 			<ul>
-				<li><a href="#details">Page details</a></li>
-				<li><a href="#inlinks">Internal urls linking to this page</a></li>
-				<li><a href="#redirects">Redirecting to this page</a></li>
-				<li><a href="#internal">Internal links</a></li>
-				<li><a href="#external">External links</a></li>
-				<li><a href="#images">Images in this page</a></li>
-				<li><a href="#scripts">Scripts used by this page</a></li>
-				<li><a href="#styles">Styles used on this page</a></li>
+				<li><a class="button{{ if eq .Tab "details" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=details">Details</a></li>
+
+				<li><a class="button{{ if eq .Tab "inlinks" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=inlinks">Inlinks</a></li>
+
+				<li><a class="button {{ if eq .Tab "internal" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=internal">Internal links</a></li>
+
+				<li><a class="button {{ if eq .Tab "external"}} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=external">External links</a></li>
+
+				<li><a class="button {{ if eq .Tab "redirections" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=redirections">Redirections</a></li>
+
+				<li><a class="button {{ if eq .Tab "images" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=images">Images</a></li>
+
+				<li><a class="button {{ if eq .Tab "scripts" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=scripts">Scripts</a></li>
+
+				<li><a class="button{{ if eq .Tab "styles" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=styles">Styles</a></li>
 			</ul>
 		</div>
+	</div>
+	
+	<div class="report-block" {{ if ne .Tab "details" }}style="display: none"{{ end }}>
+		<div class="page-details">
+		{{ with .PageReport }}
+		<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
+		<div><b>Status Code:</b> <small>{{ .StatusCode }}</small><br></div>
+		<div><b>Content Type:</b> <small>{{ .ContentType }}</small><br></div>
+		{{ if .Size }}
+			<div><b>Size:</b> <small>{{ .SizeInKB }}KB</small><br></div>
+		{{ end }}
 
-		<div class="col">
+		{{ if .Robots }}
+			<div><b>Robots:</b> <small>{{ .Robots }}</small><br></div>
+		{{ end }}
+
+		{{ if .RedirectURL }}
+			<div><b>Redirect URL:</b> <small>{{ .RedirectURL }}</small><br></div>
+		{{ end }}
+
+		{{ if .Refresh }}
+			<div><b>Refresh:</b> <small>{{ .Refresh }}</small><br></div>
+		{{ end }}
+
+		{{ if .Canonical }}
+			<div><b>Canonical:</b> <small>{{ .Canonical }}</small><br></div>
+		{{ end }}
+
+		<div>
+			<b>Hreflang:</b>
+			{{ if .Hreflangs }}
+				<ul class="url-list">
+					{{ range .PageReport.Hreflangs }}
+					<li>
+						{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
+						<span class="url">{{ .URL }}</span>
+					</li>
+					{{ end }}
+				</ul>
+			{{ else }}
+				<small>There are no hreflang links in this page.</small>
+			{{ end }}
+		</div>
+	</div>
+
+	<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
+		{{ if .Lang }}
+			<div><b>Language:</b> <small>{{ .Lang }}</small><br></div>
+		{{ end }}
+
+		{{ if .Title }}
+			<div><b>Title:</b> <small>{{ .Title }}</small><br></div>
+		{{ end }}
+
+		{{ if .Description }}
+			<div><b>Description:</b> <small>{{ .Description }}</small><br></div>
+		{{ end }}
+
+		{{ if .H1 }}
+			<div><b>H1:</b> <small>{{ .H1 }}</small><br></div>
+		{{ end }}
+
+		{{ if .H2 }}
+			<div><b>H2:</b> <small>{{ .H2 }}</small><br></div>
+		{{ end }}
+
+		{{ if .Words }}
+			<div><b>Words:</b> <small>{{ .Words }}</small><br></div>
+		{{ end }}
+
+		</div>
+		{{ end }}
+		
+
+<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0; font-weight: 300">
 			{{ $cid := .Cid }}
 			{{ $eid := .Eid }}
 			{{ if .ErrorTypes }}
-			This page has:
+			<b>Issues in this page:</b>
 			<ul class="pagereport-errors">
 				{{ range .ErrorTypes }}
 				{{ if eq . "ERROR_30x" }}
@@ -122,90 +202,9 @@
 			</ul>
 		</div>
 	</div>
-	
-	<a name="details"></a>
-	<div class="report-block">
-		<h2>Page details</h2>
-		<div class="page-details">
-		{{ with .PageReport }}
-		<div>Status Code: <small>{{ .StatusCode }}</small><br></div>
-		<div>Content Type: <small>{{ .ContentType }}</small><br></div>
-
-
-		{{ if .Words }}
-			<div>Words: <small>{{ .Words }}</small><br></div>
-		{{ end }}
-
-		{{ if .Size }}
-			<div>Size: <small>{{ .SizeInKB }}KB</small><br></div>
-		{{ end }}
-
-		{{ if .Title }}
-			<div>Title: <small>{{ .Title }}</small><br></div>
-		{{ end }}
-
-		{{ if .Description }}
-			<div>Description: <small>{{ .Description }}</small><br></div>
-		{{ end }}
-
-		{{ if .Robots }}
-			<div>Robots: <small>{{ .Robots }}</small><br></div>
-		{{ end }}
-
-		{{ if .RedirectURL }}
-			<div>Redirect URL: <small>{{ .RedirectURL }}</small><br></div>
-		{{ end }}
-
-		{{ if .Refresh }}
-			<div>Refresh: <small>{{ .Refresh }}</small><br></div>
-		{{ end }}
-
-		{{ if .Lang }}
-			<div>Language: <small>{{ .Lang }}</small><br></div>
-		{{ end }}
-
-		{{ if .Canonical }}
-			<div>Canonical: <small>{{ .Canonical }}</small><br></div>
-		{{ end }}
-
-		{{ if .H1 }}
-			<div>H1: <small>{{ .H1 }}</small><br></div>
-		{{ end }}
-
-		{{ if .H2 }}
-			<div>H2: <small>{{ .H2 }}</small><br></div>
-		{{ end }}
-
-		{{ end }}
-		
-		<div>Total images: <small>{{ .TotalImages }}</small></div>
-		<div>Total scripts: <small>{{ .TotalScripts }}</small></div>
-		<div>Total stylesheets: <small>{{ .TotalStyles }}</small></div>
-
-		<div>
-			Hreflang:
-			{{ if .PageReport.Hreflangs }}
-				<ul class="url-list">
-					{{ range .PageReport.Hreflangs }}
-					<li>
-						{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
-						<span class="url">{{ .URL }}</span>
-					</li>
-					{{ end }}
-				</ul>
-			{{ else }}
-				<small>There are no hreflang links in this page.</small>
-			{{ end }}
-		</div>
-
-	</div>
-		
-	<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	<a name="inlinks"></a>
-	<div class="report-block">
-		<h2>Incoming Links</h2>
+	<div class="report-block" {{ if ne .Tab "inlinks" }}style="display: none"{{ end }}>
 	{{ if .InLinks }}
 		<ul class="url-list">
 			{{ range .InLinks }}
@@ -218,12 +217,9 @@
 	{{ else }}
 		<small>There are no links to this page.</small>
 	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	<a name="redirects"></a>
-	<div class="report-block">
-		<h2>Redirecting to this page</h2>
+	<div class="report-block" {{ if ne .Tab "redirections" }}style="display:none"{{ end }}>
 	{{ if .Redirects }}
 		<ul class="url-list">
 			{{ range .Redirects }}
@@ -236,10 +232,9 @@
 	{{ else }}
 		<small>There are no redirects to this page.</small>
 	{{ end }}
-		<div><a href="#menu">↑ top</a></div>
 	</div>
 
-	{{ template "pagereport" .PageReport }}
+	{{ template "pagereport" . }}
 </div>
 {{ end }}
 {{ template "footer" . }}

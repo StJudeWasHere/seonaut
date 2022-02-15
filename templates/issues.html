@@ -5,8 +5,9 @@
 	<div class="action">
 		<a href="/">Projects</a> / <span class="title">{{ .Project.Host }}</span>
 	</div>
-	
-	<div class="project-buttons" style="margin-bottom: 3rem">
+	<small style="display:block;margin-bottom:0rem;">Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
+
+	<div class="project-buttons" style="margin-bottom: 3rem; margin-top: .5rem">
 		<a class="button" href="/download?cid={{ .Crawl.Id }}">Download all crawled URLs ↓</a>
 		<a class="button" href="/sitemap?cid={{ .Crawl.Id }}">Download sitemap.xml ↓</a>
 	</div>
@@ -14,16 +15,16 @@
 
 
 
-<div style="background-color:white; padding:1rem 0 6rem 0;margin: 0 0 4rem 0">
+<div style=" padding: 0 0 1.5rem 0;margin: 0 0 1.5rem 0">
 	<div class="content">
-	<small style="display:block;margin-top: 1rem;margin-bottom:3rem;">Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
 	
 		<div class="flex-container">
 			<div class="col">
 
-				<h2>Media Type</h2>
-				<div class="flex-container">
+
+				<div class="flex-container chart-container">
 				<div class="col-s">
+				<h2>Media Type</h2>
 					<div class="chart"
 					style="background: conic-gradient({{ .MediaChart.GetChart "#C8AECC" "#EE9FAF" "#D983AD" "#524766" }});">
 					</div>
@@ -39,9 +40,9 @@
 			</div>
 
 			<div class="col">
-				<h2>Status Code</h2>
-				<div class="flex-container">
+				<div class="flex-container chart-container">
 				<div class="col-s">
+					<h2>Status Code</h2>
 					<div class="chart"
 					style="background: conic-gradient({{ .StatusChart.GetChart "#638179" "#B1AC75" "#EBDAA1" "#DF7A62" }});">
 					</div>

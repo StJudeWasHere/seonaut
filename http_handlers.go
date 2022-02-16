@@ -534,7 +534,7 @@ func (app *App) serveDownloadAll(user *User, w http.ResponseWriter, r *http.Requ
 	var pageReports []PageReport
 
 	eid := r.URL.Query()["eid"]
-	fileName := parsedURL.Host
+	fileName := parsedURL.Host + " crawl " + time.Now().Format("2-15-2006")
 
 	if len(eid) > 0 && eid[0] != "" {
 		fileName = fileName + "-" + eid[0]

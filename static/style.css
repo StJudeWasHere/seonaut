@@ -428,8 +428,12 @@ a.button:hover {
 }
 
 span.alert {
-	color: #E17E56;
+	background-color: #E17E56;
+	color: white;
+	padding: .2rem .5rem;
+	border-radius: 5px;
 	font-weight: 300;
+	font-size: .8rem;
 }
 
 @media print

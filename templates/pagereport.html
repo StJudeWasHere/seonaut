@@ -6,13 +6,13 @@
 			{{ range .PageReport.Links }}
 			<li>
 				{{ if .Text }}{{ .Text }}<br/>{{ end }}
-				{{ if .NoFollow }}<span class="alert"><small>nofollow</small></span><br>{{ end }}
 				<span class="url">{{ .URL }}</span>
+				{{ if .NoFollow }}<br><span class="alert"><small>nofollow</small></span>{{ end }}
 			</li>
 			{{ end }}
 		</ul>
 	{{ else }}
-		<small>There are no internal links in this page.</small>
+		<p style="text-align:center"><small>There are no internal links in this page.</small></p>
 	{{ end }}
 	</div>
 
@@ -22,13 +22,13 @@
 			{{ range .PageReport.ExternalLinks }}
 			<li>
 				{{ if .Text }}{{ .Text }} <br> {{ end }}
-				{{ if .NoFollow }}<span class="alert"><small>nofollow</small></span><br>{{ end }}
 				<span class="url">{{ .URL }}</span>
+				{{ if .NoFollow }}<br><span class="alert"><small>nofollow</small></span>{{ end }}
 			</li>
 			{{ end }}
 		</ul>
 	{{ else }}
-		<small>There are no external links in this page.</small>
+		<p style="text-align:center"><small>There are no external links in this page.</small></p>
 	{{ end }}
 	</div>
 
@@ -37,13 +37,14 @@
 		<ul class="url-list">
 			{{ range .PageReport.Images }}
 			<li>
-				{{ if .Alt}}{{ .Alt }}{{ else }}<span class="alert">Missing or empty alt attribute</span>{{ end }}<br>
+				{{ if .Alt}}{{ .Alt }}<br>{{ end }}
 				<span class="url">{{ .URL }}</span>
+				{{ if not .Alt}}<br><span class="alert">Missing or empty alt attribute</span>{{ end }}
 			</li>
 			{{ end }}
 		</ul>
 	{{ else }}
-		<small>There are no images in this page.</small>
+		<p style="text-align:center"><small>There are no images in this page.</small></p>
 	{{ end }}
 	</div>
 
@@ -55,7 +56,7 @@
 			{{ end }}
 		</ul>
 	{{ else }}
-		<small>There are no scripts in this page.</small>
+		<p style="text-align:center"><small>There are no scripts in this page.</small></p>
 	{{ end }}
 	</div>
 
@@ -67,7 +68,7 @@
 			{{ end }}
 		</ul>
 	{{ else }}
-		<small>There are no styles in this page.</small>
+		<p style="text-align:center"><small>There are no styles in this page.</small></p>
 	{{ end }}
 	</div>
 

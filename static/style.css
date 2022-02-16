@@ -20,6 +20,13 @@
   font-style: normal;
 }
 
+@font-face {
+	font-family: 'Raleway';
+	font-style: bold;
+	font-weight: 600;
+	src: url('/resources/raleway-extrabold.woff') format('woff');
+}
+
 :root {
 	--main-bg-color: rgb(248, 248, 248);
 	--light-bg-color: rgb(252,252,252);
@@ -35,6 +42,7 @@ html, body {
 	min-height: 100%;
 }
 body {
+	font-display: fallback;
 	font-family: var(--main-fontfamily);
 	line-height: 1.6rem;
 	font-size: 1rem;
@@ -139,14 +147,15 @@ h2 {
 .content { padding: 0 3rem; }
 
 .logo {
-	top: 2rem;
-	left: 0;
-	padding-left: 3rem;
+	background-color: var(--primary-color);
+	font-family: "Raleway", Helvetica, Arial, sans-serif;
 	font-size: 1rem;
 	font-weight: 600;
+	letter-spacing: .1rem;
 	line-height: 2rem;
-	padding: .5rem 6rem .5rem 3rem;
-	background-color: var(--primary-color);
+	margin: 0;
+	padding: .5rem 6rem .5rem .5rem;
+	text-decoration: none;
 }
 .logo a {
 	color: var(--secondary-color);
@@ -165,8 +174,8 @@ h2 {
 
 .logout {
 	float: right;
+	line-height: 2rem;
 	font-weight: 300;
-	padding-right: 3rem;
 }
 .logout a {
 	font-decoration: none;

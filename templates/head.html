@@ -36,7 +36,9 @@
 </head>
 <body>
 	<div id="header">
-		<span class="logo"><a href="/">lenkrr</a></span>
-		{{ if .User.Id }}<span class="logout"><a href="/signout">Logout</a></span>{{ end }}
+		<div class="content">
+			<span class="logo"><a href="/">Lenkrr</a></span>
+			{{ if .User.Id }}<span class="logout"><a href="/signout">Logout</a></span>{{ end }}
+		</div>
 	</div>
 {{ end }}

@@ -1100,8 +1100,7 @@ func (ds *datastore) getNumberOfPagesForIssues(cid int, errorType string) int {
 	query := `
 		SELECT count(*)
 		FROM issues
-		WHERE error_type = ? and crawl_id  = ?
-		GROUP BY pagereport_id`
+		WHERE error_type = ? and crawl_id  = ?`
 
 	row := ds.db.QueryRow(query, errorType, cid)
 	var c int

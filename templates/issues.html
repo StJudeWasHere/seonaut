@@ -5,71 +5,18 @@
 	<div class="action">
 		<a href="/">Projects</a> / <span class="title">{{ .Project.Host }}</span>
 	</div>
-	<small style="display:block;margin-bottom:0rem;">Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
-
-	<div class="project-buttons" style="margin-bottom: 3rem; margin-top: .5rem">
+	<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
+	<div class="project-buttons action-buttons">
 		<a class="button" href="/download?cid={{ .Crawl.Id }}">Download all crawled URLs ↓</a>
 		<a class="button" href="/sitemap?cid={{ .Crawl.Id }}">Download sitemap.xml ↓</a>
 	</div>
 </div>
 
-
-
-<div style=" padding: 0 0 1.5rem 0;margin: 0 0 1.5rem 0">
-	<div class="content">
-	
-		<div class="flex-container">
-			<div class="col">
-
-
-				<div class="flex-container chart-container">
-				<div class="col-s">
-				<h2>Media Type</h2>
-					<div class="chart"
-					style="background: conic-gradient({{ .MediaChart.GetChart "#C8AECC" "#EE9FAF" "#D983AD" "#524766" }});">
-					</div>
-				</div>
-				<div>
-					<ul class="chart-list">
-						{{ range .MediaChart }}
-							<li><b>{{ .Value }}</b> {{ .Key }}</li>
-						{{ end }}
-					</ul>
-				</div>
-				</div>
-			</div>
-
-			<div class="col">
-				<div class="flex-container chart-container">
-				<div class="col-s">
-					<h2>Status Code</h2>
-					<div class="chart"
-					style="background: conic-gradient({{ .StatusChart.GetChart "#638179" "#B1AC75" "#EBDAA1" "#DF7A62" }});">
-					</div>
-				</div>
-				<div>
-					<ul class="chart-list status-list">
-						{{ range .StatusChart }}
-							<li>
-								<b>{{ .Value }}</b>
-								{{ if eq .Key "Other" }}
-									Other status codes
-								{{ else }}
-									URLs with status {{ .Key }}
-								{{ end }}
-							</li>
-						{{ end }}
-					</ul>
-				</div>
-				</div>
-			</div>
-		</div>
-	</div>
+<div class="chart-block">
+	{{ template "charts" .}}
 </div>
 
-
 <div class="content">
-
 	{{ $cid := .Crawl.Id }}
 	{{/* Status code issues */}}
 
@@ -81,7 +28,8 @@
 		</h2>
 		<div class="issue-description">
 			<p>
-				This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't load properly and show an error page instead, scaring your users and annoying search engines.
+				This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't
+				load properly and show an error page instead, scaring your users and annoying search engines.
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_50x">Download URLs ↓</a>
@@ -112,9 +60,12 @@
 	{{ with (index .IssuesGroups "ERROR_30x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-		<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirecting somewhere else</h2>
+		<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{end }} redirectingsomewhere else</h2>
 		<div class="issue-description">
-		<p>URLs causing redirects are sending users and search engines to a different page, this can waste the search engine's crawl budget and create redirect chains.</p>
+		<p>
+			URLs causing redirects are sending users and search engines to a different page, this can waste the search
+			engine's crawl budget and create redirect chains.
+		</p>
 		<p class="issues-buttons">
 			<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_30x">Download URLs ↓</a>
 			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">View URLs →</a>
@@ -129,7 +80,10 @@
 		<div class="issues">
 			<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} are part of a redirect chain</h2>
 			<div class="issue-description">
-			<p>Redirect chains are pages that redirect to other pages that also redirect somewhere else, creating a chain of redirects.</p>
+			<p>
+				Redirect chains are pages that redirect to other pages that also redirect somewhere else, creating a
+				chain of redirects.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">View URLs →</a>
@@ -180,7 +134,10 @@
 				<h2 class="alert">
 				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long title</h2>
 				<div class="issue-description">
-				<p>Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.</p>
+				<p>
+					Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend
+					to get fewer clicks.
+				</p>
 				<p class="issues-buttons">
 					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Download URLs ↓</a>
 					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">View URLs →</a>
@@ -227,7 +184,11 @@
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long description</h2>
 			<div class="issue-description">
-			<p>Description tags are not a ranking factor for search engines, but having good quality descriptions will get more accurate information in the search results. Long descriptions will often get truncated, making them not so sexy for users.</p>
+			<p>
+				Description tags are not a ranking factor for search engines, but having good quality descriptions will
+				get more accurate information in the search results. Long descriptions will often get truncated, making
+				them not so sexy for users.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">View URLs →</a>
@@ -242,7 +203,10 @@
 			<div class="issues">
 				<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with short description</h2>
 				<div class="issue-description">
-				<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
+				<p>
+					Page description is not a ranking factor for search engines, but they often use it to show snippets on
+					search results.
+				</p>
 				<p class="issues-buttons">
 					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Download URLs ↓</a>
 					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">View URLs →</a>
@@ -255,9 +219,14 @@
 	{{ with (index .IssuesGroups "ERROR_EMPTY_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with empty or missing description</h2>
+			<h2 class="alert">
+				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with empty or missing description
+			</h2>
 			<div class="issue-description">
-			<p>Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.</p>
+			<p>
+				Page description is not a ranking factor for search engines, but they often use it to show snippets on
+				search results.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">View URLs →</a>
@@ -272,9 +241,14 @@
 	{{ with (index .IssuesGroups "ERROR_HTTP_LINKS" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP</h2>
+			<h2 class="alert">
+				{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP
+			</h2>
 			<div class="issue-description">
-			<p>Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.</p>
+			<p>
+				Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those
+				without HTTPS, it also makes your users happier.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">View URLs →</a>
@@ -289,8 +263,11 @@
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no H1 heading title</h2>
 			<div class="issue-description">
-			<p>The H1 tag describes the main topic of the page, without it both your users and search engine will find it harder to figure what the page is talking about.</p>
-				<p class="issues-buttons">
+			<p>
+				The H1 tag describes the main topic of the page, without it both your users and search engine will find it
+				harder to figure what the page is talking about.
+			</p>
+			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NO_H1">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">View URLs →</a>
 			</p>
@@ -303,7 +280,9 @@
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing hreflangs without its corresponding return link</h2>
+			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing hreflangs without its corresponding
+			return link
+			</h2>
 			<div class="issue-description">
 			<p>When referencing a page with hreflang, that page must reference back with a hreflang tag too.</p>
 				<p class="issues-buttons">
@@ -321,12 +300,16 @@
 			<h2 class="notice">
 				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no language attribute</h2>
 				<div class="issue-description">
-			<p>The language attribute is particularly usefull for screen readers and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.</p>
+				<p>
+				The language attribute is particularly usefull for screen readers and it's recommended to use it. Some
+				search engines use it to show the appropiate page to the users depending on their language, but it does not
+				affect your search engine ranking.
+				</p>
 				<p class="issues-buttons">
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NO_LANG">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">View URLs →</a>
-			</p>
-		</div>
+					<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NO_LANG">Download URLs ↓</a>
+					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">View URLs →</a>
+				</p>
+			</div>
 		</div>
 		{{ end }}
 	{{ end }}
@@ -336,7 +319,10 @@
 		<div class="issues">
 			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with little content</h2>
 			<div class="issue-description">
-			<p>Pages with little content are not really useful for users or search engines, consider adding more content to your pages.</p>
+			<p>
+				Pages with little content are not really useful for users or search engines, consider adding more content
+				to your pages.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">View URLs →</a>
@@ -351,7 +337,10 @@
 		<div class="issues">
 			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
 			<div class="issue-description">
-			<p>The image alt attribute improves your site's accessibility, it also helps search engines understand better your images.</p>
+			<p>
+				The image alt attribute improves your site's accessibility, it also helps search engines understand better
+				your images.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">View URLs →</a>
@@ -366,7 +355,11 @@
 		<div class="issues">
 			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with too many links</h2>
 			<div class="issue-description">
-			<p>The SEO link juice is divided between all the links in the page, the more links in a page the less amount of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the nofollow attribute.</p>
+			<p>
+				The SEO link juice is divided between all the links in the page, the more links in a page the less amount
+				of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the
+				nofollow attribute.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">View URLs →</a>
@@ -379,9 +372,16 @@
 	{{ with (index .IssuesGroups "ERROR_INTERNAL_NOFOLLOW") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal links using the nofollow attribute</h2>
+			<h2 class="notice">
+				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal links using the nofollow
+				attribute
+			</h2>
 			<div class="issue-description">
-			<p>Internal links in general should not use the nofollow attribute unless they link to pages you don't want indexed by search engines. Review the internal links and make sure important pages are linked without the nofollow attribute.</p>
+			<p>
+				Internal links in general should not use the nofollow attribute unless they link to pages you don't want
+				indexed by search engines. Review the internal links and make sure important pages are linked without the
+				nofollow attribute.
+			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">View URLs →</a>
@@ -396,13 +396,16 @@
 		<div class="issues">
 			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with external follow links</h2>
 			<div class="issue-description">
-			<p>Follow links will pass SEO authority to external sites. You may want to keep an eye on it to avoid link spam in comments and user generated content.</p>
-			<p class="issues-buttons">
+				<p>
+				Follow links will pass SEO authority to external sites. You may want to keep an eye on it to avoid link
+				spam in comments and user generated content.
+				</p>
+				<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">View URLs →</a>
-			</p>
+				</p>
+			</div>
 		</div>
-	</div>
 		{{ end }}
 	{{ end}}
 

@@ -32,39 +32,41 @@
 </div>
 
 <div class="content">
-	<p style="font-weight: 600;padding: 1.5rem 3rem;margin: 0;background-color: #d3ebf1;">
-		URLs
-	</p>
-{{ $cid := .Cid }}
-{{ $eid := .Eid }}
-{{ $pp := .PreviousPage }}
-{{ $np := .NextPage }}
-{{ if .PageReports }}
-	<ul class="url-list">
-	{{ range .PageReports }}
-		<li>
-			<div>
-				{{ if .Title }}{{ .Title }}<br />{{ end }}
-				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
-			<div>
-		</li>
-	{{ end }}
+	<p class="list-header">URLs</p>
+	{{ $cid := .Cid }}
+	{{ $eid := .Eid }}
+	{{ $pp := .PreviousPage }}
+	{{ $np := .NextPage }}
+	{{ $tp := .TotalPages }}
+	{{ if .PageReports }}
+		<ul class="url-list">
+		{{ range .PageReports }}
+			<li>
+				<div>
+					{{ if .Title }}{{ .Title }}<br />{{ end }}
+					<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+				<div>
+			</li>
+		{{ end }}
 	</ul>
-	<div class="pagination">
-		<div class="prev">
-		{{ if $pp }}
-			<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $pp }}">← previous page</a>
+		{{ if gt $tp 1 }}
+			<div class="pagination">
+				<div class="prev">
+				{{ if $pp }}
+					<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $pp }}">← previous page</a>
+				{{ end }}
+				</div>
+				<div class="next">
+				{{ if $np }}
+					<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $np }}">next page →</a>
+				{{ end }}
+				</div>
+			</div>
 		{{ end }}
-		</div>
-		<div class="next">
-		{{ if $np }}
-			<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $np }}">next page →</a>
-		{{ end }}
-		</div>
-{{ else }}
-	<p><b>Everything is ok</b></p>
-{{ end }}
+	{{ else }}
+		<p><b>Everything is ok</b></p>
+	{{ end }}
 </div>
-
 {{ end }}
+
 {{ template "footer" . }}

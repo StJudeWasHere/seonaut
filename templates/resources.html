@@ -34,210 +34,292 @@
 </div>
 
 <div class="content">
-	<div style="border-radius: 5px; box-shadow: 5px 5px #f0f0f0; border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
-	<h2 class="pagereport-title" style="font-weight: 600;padding: 1.5rem 3rem;margin: 0;background-color: #d3ebf1; border-top-left-radius: 5px; border-top-right-radius: 5px;">
+	<div class="box">
+	<h2 class="pagereport-title list-header">
 		{{ .PageReport.URL }} <a href="{{ .PageReport.URL }}" target="_blank" class="link-out">↗</a>
 	</h2>
 
+	<div class="tabs">
+		<ul>
+			<li><a class="button{{ if eq .Tab "details" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=details">Details</a></li>
 
-		<div class="tabs" style="background-color: white; padding: 1.5rem 3rem;border-bottom-left-radius: 5px; border-bottom-right-radius: 5px;">
-			<ul>
-				<li><a class="button{{ if eq .Tab "details" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=details">Details</a></li>
+			<li><a class="button{{ if eq .Tab "inlinks" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=inlinks">Inlinks</a></li>
 
-				<li><a class="button{{ if eq .Tab "inlinks" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=inlinks">Inlinks</a></li>
+			<li><a class="button {{ if eq .Tab "internal" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=internal">Internal links</a></li>
 
-				<li><a class="button {{ if eq .Tab "internal" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=internal">Internal links</a></li>
+			<li><a class="button {{ if eq .Tab "external"}} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=external">External links</a></li>
 
-				<li><a class="button {{ if eq .Tab "external"}} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=external">External links</a></li>
+			<li><a class="button {{ if eq .Tab "redirections" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=redirections">Redirections</a></li>
 
-				<li><a class="button {{ if eq .Tab "redirections" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=redirections">Redirections</a></li>
+			<li><a class="button {{ if eq .Tab "images" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=images">Images</a></li>
 
-				<li><a class="button {{ if eq .Tab "images" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=images">Images</a></li>
+			<li><a class="button {{ if eq .Tab "scripts" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=scripts">Scripts</a></li>
 
-				<li><a class="button {{ if eq .Tab "scripts" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=scripts">Scripts</a></li>
+			<li><a class="button{{ if eq .Tab "styles" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=styles">Styles</a></li>
+		</ul>
+	</div>
+</div>
+	{{ $cid := .Cid }}
+	{{ $eid := .Eid }}
+	
+	{{ if eq .Tab "details" }}
+	<div class="report-block">
+		<div class="page-details">
+			{{ with .PageReport }}
+			<div class="report-box">
+				<div><b>Status Code:</b> <small>{{ .StatusCode }}</small><br></div>
+				<div><b>Content Type:</b> <small>{{ .ContentType }}</small><br></div>
 
-				<li><a class="button{{ if eq .Tab "styles" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=styles">Styles</a></li>
-			</ul>
+				{{ if .Size }}
+					<div><b>Size:</b> <small>{{ .SizeInKB }}KB</small><br></div>
+				{{ end }}
+
+				{{ if .Robots }}
+					<div><b>Robots:</b> <small>{{ .Robots }}</small><br></div>
+				{{ end }}
+
+				{{ if .RedirectURL }}
+					<div><b>Redirect URL:</b> <small>{{ .RedirectURL }}</small><br></div>
+				{{ end }}
+
+				{{ if .Refresh }}
+					<div><b>Refresh:</b> <small>{{ .Refresh }}</small><br></div>
+				{{ end }}
+
+				{{ if .Canonical }}
+					<div><b>Canonical:</b> <small>{{ .Canonical }}</small><br></div>
+				{{ end }}
+
+				{{ if .Lang }}
+					<div><b>Language:</b> <small>{{ .Lang }}</small><br></div>
+				{{ end }}
+
+				{{ if .Hreflangs }}
+					<div>
+						<b>Hreflang:</b>
+							<ul class="url-list">
+							{{ range .Hreflangs }}
+								<li>
+									{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
+									<span class="url">{{ .URL }}</span>
+								</li>
+							{{ end }}
+							</ul>
+						</div>
+				{{ end }}
+			</div>
+
+			{{ if or .Title .Description .H1 .H2 }}
+				<div class="report-box">
+					{{ if .Title }}
+					<div><b>Title:</b> <small>{{ .Title }}</small><br></div>
+					{{ end }}
+
+					{{ if .Description }}
+						<div><b>Description:</b> <small>{{ .Description }}</small><br></div>
+					{{ end }}
+
+					{{ if .H1 }}
+						<div><b>H1:</b> <small>{{ .H1 }}</small><br></div>
+					{{ end }}
+
+					{{ if .H2 }}
+						<div><b>H2:</b> <small>{{ .H2 }}</small><br></div>
+					{{ end }}
+
+					{{ if .Words }}
+						<div><b>Words:</b> <small>{{ .Words }}</small><br></div>
+					{{ end }}
+				{{ end }}
+				</div>
+			{{ end }}
+
+			<div class="report-box">
+				{{ if .ErrorTypes }}
+				<b>Issues in this URL:</b>
+				<ul class="pagereport-errors">
+				{{ range .ErrorTypes }}
+					{{ if eq . "ERROR_30x" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">Redirected page</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_40x" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">Page not found</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_50x" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">Error loading page</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_DUPLICATED_TITLE" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Duplicated title</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Duplicated description</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_EMPTY_TITLE" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">Empty or missing title</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_SHORT_TITLE" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Short title</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_LONG_TITLE" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Long title</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Empty or missing description</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Short description</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_LONG_DESCRIPTION" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Long description</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_LITTLE_CONTENT" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Little content</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_IMAGES_NO_ALT" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Images with no alt attribute</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_REDIRECT_CHAIN" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">A redirect chain</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_NO_H1" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Missing H1 heading</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_HREFLANG_RETURN" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_TOO_MANY_LINKS" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">Page has too many links</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_INTERNAL_NOFOLLOW" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">Internal links with nofollow attribute</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">External follow links</a></li>
+					{{ end }}
+					{{ end }}
+				</ul>
+				{{ end }}
+			</div>
 		</div>
 	</div>
-	
-	<div class="report-block" {{ if ne .Tab "details" }}style="display: none"{{ end }}>
-		<div class="page-details">
-		{{ with .PageReport }}
-		<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
-		<div><b>Status Code:</b> <small>{{ .StatusCode }}</small><br></div>
-		<div><b>Content Type:</b> <small>{{ .ContentType }}</small><br></div>
-		{{ if .Size }}
-			<div><b>Size:</b> <small>{{ .SizeInKB }}KB</small><br></div>
-		{{ end }}
+	{{ end }}
 
-		{{ if .Robots }}
-			<div><b>Robots:</b> <small>{{ .Robots }}</small><br></div>
-		{{ end }}
+	{{ if eq .Tab "inlinks" }}
+		<div class="report-block">
+			{{ if .InLinks }}
+			<ul class="url-list">
+				{{ range .InLinks }}
+					<li>
+						{{ if .Title }}{{ .Title }}<br/>{{ end }}
+						<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+					</li>
+				{{ end }}
+			</ul>
+			{{ else }}
+				<p class="center"><small>There are no links to this page.</small></p>
+			{{ end }}
+		</div>
+	{{ end }}
 
-		{{ if .RedirectURL }}
-			<div><b>Redirect URL:</b> <small>{{ .RedirectURL }}</small><br></div>
-		{{ end }}
-
-		{{ if .Refresh }}
-			<div><b>Refresh:</b> <small>{{ .Refresh }}</small><br></div>
-		{{ end }}
-
-		{{ if .Canonical }}
-			<div><b>Canonical:</b> <small>{{ .Canonical }}</small><br></div>
-		{{ end }}
-
-		{{ if .Lang }}
-			<div><b>Language:</b> <small>{{ .Lang }}</small><br></div>
-		{{ end }}
-
-		{{ if .Hreflangs }}
-			<div>
-				<b>Hreflang:</b>
-					<ul class="url-list">
-					{{ range .Hreflangs }}
+	{{ if eq .Tab "redirections" }}
+		<div class="report-block">
+			{{ if .Redirects }}
+				<ul class="url-list">
+					{{ range .Redirects }}
 						<li>
-							{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
-							<span class="url">{{ .URL }}</span>
+							{{ if .Title }}{{ .Title }}<br/>{{ end }}
+							<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
 						</li>
 					{{ end }}
-					</ul>
-				</div>
-		{{ end }}
-
-	</div>
-
-		{{ if or .Title .Description .H1 .H2 }}
-	<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
-
-
-		{{ if .Title }}
-			<div><b>Title:</b> <small>{{ .Title }}</small><br></div>
-		{{ end }}
-
-		{{ if .Description }}
-			<div><b>Description:</b> <small>{{ .Description }}</small><br></div>
-		{{ end }}
-
-		{{ if .H1 }}
-			<div><b>H1:</b> <small>{{ .H1 }}</small><br></div>
-		{{ end }}
-
-		{{ if .H2 }}
-			<div><b>H2:</b> <small>{{ .H2 }}</small><br></div>
-		{{ end }}
-
-		{{ if .Words }}
-			<div><b>Words:</b> <small>{{ .Words }}</small><br></div>
-		{{ end }}
-
-{{ end }}
+				</ul>
+			{{ else }}
+				<p class="center"><small>There are no redirects to this page.</small></p>
+			{{ end }}
 		</div>
-		{{ end }}
-		
+	{{ end }}
 
-<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0; font-weight: 300">
-			{{ $cid := .Cid }}
-			{{ $eid := .Eid }}
-			{{ if .ErrorTypes }}
-			<b>Issues in this URL:</b>
-			<ul class="pagereport-errors">
-				{{ range .ErrorTypes }}
-				{{ if eq . "ERROR_30x" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">Redirected page</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_40x" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">Page not found</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_50x" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">Error loading page</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_DUPLICATED_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Duplicated title</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Duplicated description</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_EMPTY_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">Empty or missing title</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_SHORT_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Short title</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_LONG_TITLE" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Long title</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Empty or missing description</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Short description</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_LONG_DESCRIPTION" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Long description</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_LITTLE_CONTENT" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Little content</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_IMAGES_NO_ALT" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Images with no alt attribute</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_REDIRECT_CHAIN" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">A redirect chain</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_NO_H1" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Missing H1 heading</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_HREFLANG_RETURN" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_TOO_MANY_LINKS" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">Page has too many links</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_INTERNAL_NOFOLLOW" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">Internal links with nofollow attribute</a></li>
-				{{ end }}
-				{{ if eq . "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }}
-				<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">External follow links</a></li>
-				{{ end }}
-				{{ end }}
+	{{ if eq .Tab "internal" }}
+		<div class="report-block">
+			{{ if .PageReport.Links }}
+				<ul class="url-list">
+					{{ range .PageReport.Links }}
+						<li>
+							{{ if .Text }}{{ .Text }}<br/>{{ end }}
+							<span class="url">{{ .URL }}</span>
+							{{ if .NoFollow }}<br><span class="alert"><small>nofollow</small></span>{{ end }}
+						</li>
+					{{ end }}
+				</ul>
+			{{ else }}
+				<p class="center"><small>There are no internal links in this page.</small></p>
+			{{ end }}
+		</div>
+	{{ end }}
+
+	{{ if eq .Tab "external" }}
+		<div class="report-block">
+			{{ if .PageReport.ExternalLinks }}
+			<ul class="url-list">
+				{{ range .PageReport.ExternalLinks }}
+					<li>
+						{{ if .Text }}{{ .Text }} <br> {{ end }}
+						<span class="url">{{ .URL }}</span>
+						{{ if .NoFollow }}<br><span class="alert"><small>nofollow</small></span>{{ end }}
+					</li>
 				{{ end }}
 			</ul>
+			{{ else }}
+				<p class="center"><small>There are no external links in this page.</small></p>
+			{{ end }}
 		</div>
-	</div>
-	</div>
-
-	<div class="report-block" {{ if ne .Tab "inlinks" }}style="display: none"{{ end }}>
-	{{ if .InLinks }}
-		<ul class="url-list">
-			{{ range .InLinks }}
-			<li>
-				{{ if .Title }}{{ .Title }}<br/>{{ end }}
-				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
-			</li>
-			{{ end }}
-		</ul>
-	{{ else }}
-		<p style="text-align:center"><small>There are no links to this page.</small></p>
 	{{ end }}
-	</div>
 
-	<div class="report-block" {{ if ne .Tab "redirections" }}style="display:none"{{ end }}>
-	{{ if .Redirects }}
-		<ul class="url-list">
-			{{ range .Redirects }}
-			<li>
-				{{ if .Title }}{{ .Title }}<br/>{{ end }}
-				<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
-			</li>
+	{{ if eq .Tab "images" }}
+		<div class="report-block">
+			{{ if .PageReport.Images }}
+			<ul class="url-list">
+				{{ range .PageReport.Images }}
+					<li>
+						{{ if .Alt}}{{ .Alt }}<br>{{ end }}
+						<span class="url">{{ .URL }}</span>
+						{{ if not .Alt}}<br><span class="alert">Missing or empty alt attribute</span>{{ end }}
+					</li>
+				{{ end }}
+			</ul>
+			{{ else }}
+				<p class="center"><small>There are no images in this page.</small></p>
 			{{ end }}
-		</ul>
-	{{ else }}
-		<p style="text-align:center"><small>There are no redirects to this page.</small></p>
+		</div>
 	{{ end }}
-	</div>
 
-	{{ template "pagereport" . }}
+	{{ if eq .Tab "scripts" }}
+		<div class="report-block">
+			{{ if .PageReport.Scripts }}
+			<ul class="url-list">
+				{{ range .PageReport.Scripts }}
+					<li class="url">{{ . }}</li>
+				{{ end }}
+			</ul>
+			{{ else }}
+				<p class="center"><small>There are no scripts in this page.</small></p>
+			{{ end }}
+		</div>
+	{{ end }}
+	
+	{{ if eq .Tab "styles" }}
+		<div class="report-block">
+		{{ if .PageReport.Styles }}
+			<ul class="url-list">
+				{{ range .PageReport.Styles }}
+				<li class="url">{{ . }}</li>
+				{{ end }}
+			</ul>
+		{{ else }}
+			<p class="center"><small>There are no styles in this page.</small></p>
+		{{ end }}
+		</div>
+	{{ end }}
+
 </div>
 {{ end }}
 {{ template "footer" . }}

@@ -87,27 +87,29 @@
 			<div><b>Canonical:</b> <small>{{ .Canonical }}</small><br></div>
 		{{ end }}
 
-		<div>
-			<b>Hreflang:</b>
-			{{ if .Hreflangs }}
-				<ul class="url-list">
-					{{ range .PageReport.Hreflangs }}
-					<li>
-						{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
-						<span class="url">{{ .URL }}</span>
-					</li>
-					{{ end }}
-				</ul>
-			{{ else }}
-				<small>There are no hreflang links in this page.</small>
-			{{ end }}
-		</div>
-	</div>
-
-	<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
 		{{ if .Lang }}
 			<div><b>Language:</b> <small>{{ .Lang }}</small><br></div>
 		{{ end }}
+
+		{{ if .Hreflangs }}
+			<div>
+				<b>Hreflang:</b>
+					<ul class="url-list">
+					{{ range .Hreflangs }}
+						<li>
+							{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
+							<span class="url">{{ .URL }}</span>
+						</li>
+					{{ end }}
+					</ul>
+				</div>
+		{{ end }}
+
+	</div>
+
+		{{ if or .Title .Description .H1 .H2 }}
+	<div style="background-color: white; padding: 1.5rem 3rem; border-radius: 5px;box-shadow: 5px 5px #f0f0f0;border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0;">
+
 
 		{{ if .Title }}
 			<div><b>Title:</b> <small>{{ .Title }}</small><br></div>
@@ -128,7 +130,8 @@
 		{{ if .Words }}
 			<div><b>Words:</b> <small>{{ .Words }}</small><br></div>
 		{{ end }}
-
+</div>
+{{ end }}
 		</div>
 		{{ end }}
 		

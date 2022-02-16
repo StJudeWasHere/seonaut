@@ -1100,7 +1100,8 @@ func (ds *datastore) getNumberOfPagesForIssues(cid int, errorType string) int {
 	query := `
 		SELECT count(*)
 		FROM issues
-		WHERE error_type = ? and crawl_id  = ?`
+		WHERE error_type = ? and crawl_id  = ?
+		GROUP BY pagereport_id`
 
 	row := ds.db.QueryRow(query, errorType, cid)
 	var c int
@@ -1169,7 +1170,7 @@ func (ds *datastore) internalNoFollowLinks(cid int) []PageReport {
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports 
 		INNER JOIN (
-			SELECT pagereport_id FROM links
+			SELECT DISTINCT pagereport_id FROM links
 			WHERE nofollow = 1 AND crawl_id = ?
 		) AS b ON b.pagereport_id = pagereports.id
 		WHERE pagereports.crawl_id = ?`

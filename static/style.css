@@ -122,6 +122,14 @@ h2 {
 	line-height: 1.2rem;
 }
 
+button {
+	cursor: pointer;
+	font-size: inherit;
+	padding: .5rem 1rem;
+}
+/** CLASSES **/
+
+
 .action {
 	margin-bottom: 5rem;
 	line-height: 1.4rem;
@@ -135,9 +143,6 @@ h2 {
 	font-weight: 300;
 	font-size: .8rem;
 }
-
-
-/** CLASSES **/
 
 
 #header {
@@ -180,6 +185,7 @@ h2 {
 .logout a {
 	font-decoration: none;
 	color: black;
+	margin-left: 1rem;
 }
 .url-list {
 	list-style: none;

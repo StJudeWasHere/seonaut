@@ -117,10 +117,10 @@ func (ds *datastore) userSignup(user, password string) {
 
 func (ds *datastore) findUserByEmail(email string) *User {
 	u := User{}
-	query := `SELECT id, email, password, advanced FROM users WHERE email = ?`
+	query := `SELECT id, email, password, advanced, stripe_session_id FROM users WHERE email = ?`
 
 	row := ds.db.QueryRow(query, email)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
+	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced, &u.StripeSessionId)
 	if err != nil {
 		log.Println(err)
 		return &u
@@ -131,16 +131,27 @@ func (ds *datastore) findUserByEmail(email string) *User {
 
 func (ds *datastore) findUserById(id int) *User {
 	u := User{}
-	query := `SELECT id, email, password, advanced FROM users WHERE id = ?`
+	query := `SELECT id, email, password, advanced, stripe_session_id FROM users WHERE id = ?`
 
 	row := ds.db.QueryRow(query, id)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
+	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced, &u.StripeSessionId)
 	if err != nil {
 		log.Println(err)
 		return &u
 	}
 
 	return &u
+}
+
+func (ds *datastore) upgradeUser(id int, stripeSessionId, stripeCustomerId string) {
+	query := `UPDATE users SET advanced = 1, stripe_session_id = ?, stripe_customer_id = ? WHERE id = ?`
+	stmt, _ := ds.db.Prepare(query)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(stripeSessionId, stripeCustomerId, id)
+	if err != nil {
+		log.Printf("userUpgrade: %v\n", err)
+	}
 }
 
 func (ds *datastore) findCrawlUserId(cid int) (*User, error) {

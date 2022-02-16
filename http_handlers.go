@@ -16,13 +16,6 @@ const (
 	MaxProjects = 3
 )
 
-type User struct {
-	Id       int
-	Email    string
-	Password string
-	Advanced bool
-}
-
 type ProjectView struct {
 	Project Project
 	Crawl   Crawl

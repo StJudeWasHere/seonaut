@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
+	"github.com/stripe/stripe-go/v72"
 )
 
 type App struct {
@@ -42,6 +43,14 @@ func NewApp(configPath string) *App {
 }
 
 func (app *App) Run() {
+	stripe.Key = app.config.StripeSecret
+
+	stripe.SetAppInfo(&stripe.AppInfo{
+		Name:    "stripe-samples/checkout-single-subscription",
+		Version: "0.0.1",
+		URL:     "https://github.com/stripe-samples/checkout-single-subscription",
+	})
+
 	fileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
 	http.Handle("/robots.txt", fileServer)
@@ -59,6 +68,16 @@ func (app *App) Run() {
 	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
 
 	http.HandleFunc("/sitemap", app.requireAuth(app.serveSitemap))
+
+	// STRIPE
+	http.HandleFunc("/upgrade", app.requireAuth(app.upgrade))
+	http.HandleFunc("/create-checkout-session", app.requireAuth(app.handleCreateCheckoutSession))
+	http.HandleFunc("/checkout-session", app.requireAuth(app.handleCheckoutSession))
+	http.HandleFunc("/config", app.requireAuth(app.handleConfig))
+	http.HandleFunc("/webhook", app.handleWebhook)
+	http.HandleFunc("/manage", app.requireAuth(app.handleManageAccount))
+	http.HandleFunc("/canceled", app.requireAuth(app.handleCanceled))
+	http.HandleFunc("/customer-portal", app.requireAuth(app.handleCustomerPortal))
 
 	fmt.Printf("Starting server at %s on port %d...\n", app.config.Server, app.config.ServerPort)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.Server, app.config.ServerPort), nil)

@@ -1,13 +1,13 @@
 # ************************************************************
 # Sequel Ace SQL dump
-# Version 20025
+# Version 20029
 #
 # https://sequel-ace.com/
 # https://github.com/Sequel-Ace/Sequel-Ace
 #
 # Host: 0.0.0.0 (MySQL 8.0.28)
 # Database: seo
-# Generation Time: 2022-02-12 11:32:18 +0000
+# Generation Time: 2022-02-17 16:09:07 +0000
 # ************************************************************
 
 
@@ -244,7 +244,9 @@ CREATE TABLE `users` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(256) NOT NULL DEFAULT '',
   `password` varchar(512) NOT NULL DEFAULT '',
-  `advanced` tinyint NOT NULL DEFAULT '0',
+  `stripe_session_id` varchar(256) DEFAULT NULL,
+  `stripe_customer_id` varchar(256) DEFAULT NULL,
+  `period_end` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

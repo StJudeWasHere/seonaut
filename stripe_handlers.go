@@ -53,7 +53,7 @@ func writeJSON(w http.ResponseWriter, v interface{}, err error) {
 
 func (app *App) upgrade(user *User, w http.ResponseWriter, r *http.Request) {
 	if user.Advanced {
-		//	http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	renderTemplate(w, "upgrade", &PageView{PageTitle: "UPGRADE", User: *user})

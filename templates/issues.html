@@ -16,6 +16,23 @@
 	{{ template "charts" .}}
 </div>
 
+<div class="content legend-block">
+<div class="flex">
+	<div class="legend box">
+		<b>{{ .Critical }} Critical {{ if eq .Critical 1 }} error {{ else }} errors{{ end }}</b>
+		<p>Critical errors affecting your ranking. Fix them first.</p>
+	</div>
+	<div class="legend box">
+		<b>{{ .Alert }} {{ if eq .Alert 1 }} Alert {{ else }} Alerts {{ end }}</b>
+		<p>Issues that are holding your site back. Fix them next.</p>
+	</div>
+	<div class="legend box">
+		<b>{{ .Notice }} {{ if eq .Notice 1 }} Warning {{ else }} Warnings {{ end }}</b>
+		<p>Issues you may want to keep an eye on.</p>
+	</div>
+</div>
+</div>
+
 <div class="content">
 	{{ $cid := .Crawl.Id }}
 	{{/* Status code issues */}}

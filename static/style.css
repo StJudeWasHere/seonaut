@@ -316,6 +316,7 @@ button {
 }
 .flex {
 	display: flex;
+	flex-wrap: wrap;
 	flex-direction: row;
 	margin-bottom: 3rem;
 }
@@ -513,6 +514,35 @@ span.alert {
 .status-list li:nth-child(2) {border-left: 1rem solid #B1AC75;}
 .status-list li:nth-child(3) {border-left: 1rem solid #EBDAA1;}
 .status-list li:nth-child(4) {border-left: 1rem solid #DF7A62;}
+
+.legend-block {
+	margin-bottom: 6rem;
+}
+
+.legend p {
+	margin-bottom: 0;
+	font-weight: 300;
+}
+.legend {
+	box-sizing: border-box;
+	width: 30%;
+	background-color: white;
+	padding: 1rem;
+}
+
+.legend:nth-child(1) {
+	border-left: 2rem solid #FD7B6A;
+	margin-right: 5%;
+}
+
+.legend:nth-child(2) {
+		border-left: 2rem solid #F7E497;
+}
+
+.legend:nth-child(3) {
+	margin-left: 5%;
+	border-left: 2rem solid #2C7D91;
+}
 
 /** PRINT **/
 

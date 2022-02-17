@@ -29,6 +29,9 @@ type IssuesGroupView struct {
 	StatusCodeCount CountList
 	MediaChart      Chart
 	StatusChart     Chart
+	Critical        int
+	Alert           int
+	Notice          int
 }
 
 type IssuesView struct {
@@ -225,6 +228,29 @@ func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) 
 
 	project.Host = parsedURL.Host
 
+	ca := []string{"ERROR_50x", "ERROR_40x", "ERROR_30x", "ERROR_REDIRECT_CHAIN"}
+	aa := []string{"ERROR_DUPLICATED_TITLE", "ERROR_EMPTY_TITLE", "ERROR_LONG_TITLE", "ERROR_SHORT_TITLE",
+		"ERROR_DUPLICATED_DESCRIPTION", "ERROR_LONG_DESCRIPTION", "ERROR_SHORT_DESCRIPTION", "ERROR_EMPTY_DESCRIPTION",
+		"ERROR_HTTP_LINKS", "ERROR_NO_H1", "ERROR_HREFLANG_RETURN"}
+	na := []string{"ERROR_NO_LANG", "ERROR_LITTLE_CONTENT", "ERROR_IMAGES_NO_ALT", "ERROR_TOO_MANY_LINKS",
+		"ERROR_INTERNAL_NOFOLLOW", "ERROR_EXTERNAL_WITHOUT_NOFOLLOW"}
+
+	var critical int
+	var alert int
+	var notice int
+
+	for _, v := range ca {
+		critical += issueGroups[v].Count
+	}
+
+	for _, v := range aa {
+		alert += issueGroups[v].Count
+	}
+
+	for _, v := range na {
+		notice += issueGroups[v].Count
+	}
+
 	ig := IssuesGroupView{
 		IssuesGroups:    issueGroups,
 		Crawl:           crawl,
@@ -233,6 +259,9 @@ func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) 
 		MediaChart:      mediaChart,
 		StatusChart:     statusChart,
 		StatusCodeCount: statusCount,
+		Critical:        critical,
+		Alert:           alert,
+		Notice:          notice,
 	}
 
 	v := &PageView{

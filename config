@@ -15,6 +15,6 @@ agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (K
 [stripe]
 key = "pk_test_51Iz2cjJKR656aQz1TzWbwWbDhgvTie7zb4kRPImRLWOX6G0Qs2ycjs0EEpSwFl9Cd28EWsk51VLbfW9wFcZax6e8003KzPJz61"
 secret = "sk_test_51Iz2cjJKR656aQz1S9dxTKMjf9FCJTxbcFhbyKnsyF3mWORZW9xFr6Z1HRT32BdKX1nHiscEp0NQIRgWoavpsTrw0026QEm6EH"
-webhook_secret = ""
+webhook_secret = "whsec_cb1156660869b59942a2e9e584ae47f45431f5310c19e0a115ccbb8e34692429"
 advanced_price_id = "price_1Iz3aiJKR656aQz1rJyTQsUw"
 return_url = "http://localhost:9000"

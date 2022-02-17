@@ -53,7 +53,7 @@ func writeJSON(w http.ResponseWriter, v interface{}, err error) {
 
 func (app *App) upgrade(user *User, w http.ResponseWriter, r *http.Request) {
 	if user.Advanced {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		//	http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	renderTemplate(w, "upgrade", &PageView{PageTitle: "UPGRADE", User: *user})
@@ -80,8 +80,6 @@ func (app *App) handleConfig(user *User, w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	fmt.Println("config")
-
 	writeJSON(w, struct {
 		PublishableKey string `json:"publishableKey"`
 		BasicPrice     string `json:"basicPrice"`
@@ -98,8 +96,6 @@ func (app *App) handleCreateCheckoutSession(user *User, w http.ResponseWriter, r
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
 	}
-
-	fmt.Println("create checkout")
 
 	r.ParseForm()
 	priceId := r.PostFormValue("priceId")
@@ -133,16 +129,14 @@ func (app *App) handleCheckoutSession(user *User, w http.ResponseWriter, r *http
 	}
 
 	sessionID := r.URL.Query().Get("session_id")
-	s, err := session.Get(sessionID, nil)
+	_, err := session.Get(sessionID, nil)
 	if err != nil {
 		log.Printf("CheckoutSession: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	fmt.Println(s.Customer.ID)
-
-	app.datastore.upgradeUser(user.Id, sessionID, s.Customer.ID)
+	app.datastore.userSetStripeSession(user.Id, sessionID)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -153,8 +147,6 @@ func (app *App) handleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println("webhook")
-
 	b, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -162,15 +154,21 @@ func (app *App) handleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := webhook.ConstructEvent(b, r.Header.Get("Stripe-Signature"), app.config.StripeSecret)
+	event, err := webhook.ConstructEvent(b, r.Header.Get("Stripe-Signature"), app.config.StripeWebhookSecret)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Printf("webhook.ConstructEvent: %v", err)
 		return
 	}
 
-	if event.Type != "checkout.session.completed" {
-		return
+	object := event.Data.Object
+
+	if event.Type == "customer.created" {
+		app.datastore.userSetStripeId(fmt.Sprint(object["email"]), fmt.Sprint(object["id"]))
+	}
+
+	if event.Type == "payment_intent.succeeded" {
+		app.datastore.renewSubscription(fmt.Sprint(object["customer"]))
 	}
 }
 
@@ -182,16 +180,12 @@ func (app *App) handleCustomerPortal(user *User, w http.ResponseWriter, r *http.
 	r.ParseForm()
 	sessionID := r.PostFormValue("sessionId")[0:]
 
-	// For demonstration purposes, we're using the Checkout session to retrieve the customer ID.
-	// Typically this is stored alongside the authenticated user in your database.
 	s, err := session.Get(sessionID, nil)
 	if err != nil {
 		writeJSON(w, nil, err)
 		return
 	}
 
-	// The URL to which the user is redirected when they are done managing
-	// billing in the portal.
 	returnURL := app.config.StripeReturnURL
 
 	params := &stripe.BillingPortalSessionParams{

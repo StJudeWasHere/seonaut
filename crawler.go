@@ -76,6 +76,18 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	)
 
 	var responseCounter int
+	cor := colly.NewCollector(
+		colly.UserAgent(c.UserAgent),
+		func(co *colly.Collector) {
+			co.IgnoreRobotsTxt = c.IgnoreRobotsTxt
+		},
+	)
+
+	handleResourceResponse := func(r *colly.Response) {
+		url := r.Request.URL
+		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
+		pr <- *pageReport
+	}
 
 	handleResponse := func(r *colly.Response) {
 		if responseCounter >= c.MaxPageReports {
@@ -118,24 +130,39 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 			q.AddURL(r.Request.AbsoluteURL(pageReport.RedirectURL))
 		}
 
-		for _, l := range pageReport.Scripts {
-			q.AddURL(r.Request.AbsoluteURL(l))
-		}
-
-		for _, l := range pageReport.Styles {
-			q.AddURL(r.Request.AbsoluteURL(l))
-		}
-
-		for _, l := range pageReport.Images {
-			q.AddURL(r.Request.AbsoluteURL(l.URL))
-		}
-
 		for _, l := range pageReport.Hreflangs {
 			q.AddURL(r.Request.AbsoluteURL(l.URL))
 		}
 
 		if pageReport.Canonical != "" {
 			q.AddURL(r.Request.AbsoluteURL(pageReport.Canonical))
+		}
+
+		var resources []string
+
+		for _, l := range pageReport.Scripts {
+			resources = append(resources, r.Request.AbsoluteURL(l))
+		}
+
+		for _, l := range pageReport.Styles {
+			resources = append(resources, r.Request.AbsoluteURL(l))
+		}
+
+		for _, l := range pageReport.Images {
+			resources = append(resources, r.Request.AbsoluteURL(l.URL))
+		}
+
+		if len(resources) > 0 {
+			qr, _ := queue.New(
+				consumerThreads,
+				&queue.InMemoryQueueStorage{MaxSize: storageMaxSize},
+			)
+
+			for _, v := range resources {
+				qr.AddURL(v)
+			}
+
+			qr.Run(cor)
 		}
 	}
 
@@ -157,10 +184,6 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		},
 	)
 
-	co.OnRequest(func(r *colly.Request) {
-		// fmt.Printf("Visiting %s\n", r.URL.String())
-	})
-
 	co.OnResponse(handleResponse)
 
 	co.OnError(func(r *colly.Response, err error) {
@@ -170,6 +193,24 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	})
 
 	co.SetRedirectHandler(func(r *http.Request, via []*http.Request) error {
+		for _, v := range via {
+			if v.URL.Path == "/robots.txt" {
+				return nil
+			}
+		}
+
+		return http.ErrUseLastResponse
+	})
+
+	cor.OnResponse(handleResourceResponse)
+
+	cor.OnError(func(r *colly.Response, err error) {
+		if r.StatusCode > 0 && r.Headers != nil {
+			handleResourceResponse(r)
+		}
+	})
+
+	cor.SetRedirectHandler(func(r *http.Request, via []*http.Request) error {
 		for _, v := range via {
 			if v.URL.Path == "/robots.txt" {
 				return nil
@@ -191,6 +232,5 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	}
 
 	q.AddURL(us)
-
 	q.Run(co)
 }

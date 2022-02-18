@@ -97,10 +97,10 @@
 				{{ if .Hreflangs }}
 					<div>
 						<b>Hreflang:</b>
-							<ul class="url-list">
+							<ul>
 							{{ range .Hreflangs }}
 								<li>
-									{{ if .Lang }}{{ .Lang }} <br/>{{ end }}
+									{{ if .Lang }}{{ .Lang }}:{{ end }}
 									<span class="url">{{ .URL }}</span>
 								</li>
 							{{ end }}
@@ -264,7 +264,7 @@
 					<li>
 						{{ if .Text }}{{ .Text }} <br> {{ end }}
 						<span class="url">{{ .URL }}</span>
-						{{ if .NoFollow }}<br><span class="alert"><small>nofollow</small></span>{{ end }}
+						{{ if not .NoFollow }}<br><span class="alert"><small>follow</small></span>{{ end }}
 					</li>
 				{{ end }}
 			</ul>

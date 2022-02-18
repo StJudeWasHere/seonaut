@@ -604,7 +604,20 @@ func (app *App) serveSitemap(user *User, w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	w.Header().Add("Content-Disposition", fmt.Sprint("attachment; filename=\"sitemap.xml\""))
+	crawl := app.datastore.findCrawlById(cid)
+	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	parsedURL, err := url.Parse(project.URL)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	w.Header().Add("Content-Disposition", fmt.Sprint("attachment; filename=\""+parsedURL.Host+"-sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
 	p := app.datastore.findSitemapPageReports(cid)

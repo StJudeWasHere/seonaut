@@ -13,7 +13,8 @@ import (
 )
 
 const (
-	MaxProjects = 3
+	MaxProjects         = 3
+	AdvancedMaxProjects = 6
 )
 
 type ProjectView struct {
@@ -78,11 +79,18 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 		views = append(views, pv)
 	}
 
+	var max int
+	if user.Advanced {
+		max = AdvancedMaxProjects
+	} else {
+		max = MaxProjects
+	}
+
 	v := &PageView{
 		Data: struct {
 			Projects    []ProjectView
 			MaxProjects int
-		}{Projects: views, MaxProjects: MaxProjects},
+		}{Projects: views, MaxProjects: max},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
 	}
@@ -93,8 +101,15 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Request) {
 	var url string
 
+	var max int
+	if user.Advanced {
+		max = AdvancedMaxProjects
+	} else {
+		max = MaxProjects
+	}
+
 	projects := app.datastore.findProjectsByUser(user.Id)
-	if len(projects) >= MaxProjects {
+	if len(projects) >= max {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

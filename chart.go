@@ -30,6 +30,15 @@ func NewChart(c CountList) Chart {
 			Value:   i.Value,
 			Percent: int(float64(i.Value) / float64(total) * 100),
 		}
+
+		if ci.Percent == 0 {
+			ci.Percent = 1
+		}
+
+		if ci.Percent > 97 {
+			ci.Percent = 97
+		}
+
 		chart = append(chart, ci)
 	}
 

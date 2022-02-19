@@ -617,7 +617,9 @@ func (app *App) serveSitemap(user *User, w http.ResponseWriter, r *http.Request)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	w.Header().Add("Content-Disposition", fmt.Sprint("attachment; filename=\""+parsedURL.Host+"-sitemap.xml\""))
+	w.Header().Add(
+		"Content-Disposition",
+		fmt.Sprint("attachment; filename=\""+parsedURL.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
 	p := app.datastore.findSitemapPageReports(cid)

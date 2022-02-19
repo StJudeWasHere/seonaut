@@ -36,7 +36,7 @@ func NewChart(c CountList) Chart {
 		}
 
 		if ci.Percent > 97 {
-			ci.Percent = 97
+			ci.Percent = 100 - (len(c) - 1)
 		}
 
 		chart = append(chart, ci)

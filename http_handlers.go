@@ -15,6 +15,7 @@ import (
 const (
 	MaxProjects         = 3
 	AdvancedMaxProjects = 6
+	inviteCode          = "bATjGfQsRBeknDqD"
 )
 
 type ProjectView struct {
@@ -455,12 +456,11 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 	var invite bool
 
-	// bATjGfQsRBeknDqD
 	inviteQ := r.URL.Query()["invite"]
 	if len(inviteQ) == 0 {
 		invite = false
 	} else {
-		if inviteQ[0] == "bATjGfQsRBeknDqD" {
+		if inviteQ[0] == inviteCode {
 			invite = true
 		}
 	}
@@ -476,6 +476,19 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 
 		email := r.FormValue("email")
 		password := r.FormValue("password")
+
+		exists := app.datastore.emailExists(email)
+		if exists || password == "" {
+			renderTemplate(w, "signup", &PageView{
+				PageTitle: "SIGNUP_VIEW",
+				Data: struct {
+					Invite, Error bool
+					Email         string
+				}{Invite: invite, Error: true, Email: email},
+			})
+			return
+		}
+
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			log.Println(err)
@@ -490,12 +503,13 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := &PageView{
+	renderTemplate(w, "signup", &PageView{
 		PageTitle: "SIGNUP_VIEW",
-		Data:      struct{ Invite bool }{Invite: invite},
-	}
-
-	renderTemplate(w, "signup", v)
+		Data: struct {
+			Invite, Error bool
+			Email         string
+		}{Invite: invite, Error: false, Email: ""},
+	})
 }
 
 func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {

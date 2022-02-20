@@ -544,6 +544,10 @@ span.alert {
 	border-left: 2rem solid #2C7D91;
 }
 
+p.error {
+	color: #FD7B6A;
+}
+
 /** PRINT **/
 
 @media print

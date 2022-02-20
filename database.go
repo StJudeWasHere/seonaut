@@ -104,6 +104,17 @@ func (ds *datastore) countListQuery(query string, cid int) CountList {
 	return m
 }
 
+func (ds *datastore) emailExists(email string) bool {
+	query := `select exists (select id from users where email = ?)`
+	var exists bool
+	err := ds.db.QueryRow(query, email).Scan(&exists)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("Error checking if email exists '%s' %v", email, err)
+	}
+
+	return exists
+}
+
 func (ds *datastore) userSignup(user, password string) {
 	query := `INSERT INTO users (email, password) VALUES (?, ?)`
 	stmt, _ := ds.db.Prepare(query)

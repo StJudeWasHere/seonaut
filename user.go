@@ -11,7 +11,3 @@ type User struct {
 	Advanced        bool
 	StripeSessionId sql.NullString
 }
-
-func (u User) IsAdvanced() bool {
-	return u.Advanced
-}

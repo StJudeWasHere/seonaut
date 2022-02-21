@@ -10,6 +10,7 @@ type PageView struct {
 	PageTitle string
 	User      User
 	Data      interface{}
+	Refresh   bool
 }
 
 func renderTemplate(w http.ResponseWriter, t string, v *PageView) {

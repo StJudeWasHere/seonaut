@@ -68,6 +68,7 @@ type Project struct {
 }
 
 func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
+	var refresh bool
 	var views []ProjectView
 	projects := app.datastore.findProjectsByUser(user.Id)
 
@@ -78,6 +79,9 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 			Crawl:   c,
 		}
 		views = append(views, pv)
+		if c.IssuesEnd.Valid == false {
+			refresh = true
+		}
 	}
 
 	var max int
@@ -94,6 +98,7 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 		}{Projects: views, MaxProjects: max},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
+		Refresh:   refresh,
 	}
 
 	renderTemplate(w, "home", v)

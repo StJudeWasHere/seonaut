@@ -601,9 +601,9 @@ func (app *App) serveDownloadAll(user *User, w http.ResponseWriter, r *http.Requ
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
-	initCSV(w)
+	cw := newCSVWriter(w)
 	for _, p := range pageReports {
-		writeCSVPageReport(p)
+		cw.write(p)
 	}
 }
 

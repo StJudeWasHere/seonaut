@@ -9,12 +9,15 @@ import (
 	"unicode/utf8"
 )
 
-var writer *csv.Writer
+type CSVWriter struct {
+	writer *csv.Writer
+}
 
-func initCSV(f io.Writer) {
-	writer = csv.NewWriter(f)
+func newCSVWriter(f io.Writer) *CSVWriter {
+	cw := CSVWriter{}
+	cw.writer = csv.NewWriter(f)
 
-	writer.Write([]string{
+	cw.writer.Write([]string{
 		"Status Code",
 		"URL",
 		"Redirect URL",
@@ -31,10 +34,12 @@ func initCSV(f io.Writer) {
 		"Size",
 		"Nº of words",
 	})
+
+	return &cw
 }
 
-func writeCSVPageReport(r PageReport) {
-	writer.Write([]string{
+func (cw *CSVWriter) write(r PageReport) {
+	cw.writer.Write([]string{
 		fmt.Sprintf("%d", r.StatusCode),
 		r.URL,
 		r.RedirectURL,
@@ -52,7 +57,7 @@ func writeCSVPageReport(r PageReport) {
 		strconv.Itoa(r.Words),
 	})
 
-	writer.Flush()
+	cw.writer.Flush()
 }
 
 func byteToKByte(b int) float64 {

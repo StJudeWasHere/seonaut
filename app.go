@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/sessions"
+	"github.com/microcosm-cc/bluemonday"
 	"github.com/stripe/stripe-go/v72"
 )
 
@@ -14,6 +15,7 @@ type App struct {
 	config    *Config
 	datastore *datastore
 	cookie    *sessions.CookieStore
+	sanitizer *bluemonday.Policy
 }
 
 func NewApp(configPath string) *App {
@@ -38,6 +40,7 @@ func NewApp(configPath string) *App {
 	}
 
 	app.cookie = sessions.NewCookieStore([]byte("SESSION_ID"))
+	app.sanitizer = bluemonday.StrictPolicy()
 
 	return &app
 }

@@ -7,10 +7,16 @@ import (
 	"net/http"
 	"net/url"
 	"testing"
+
+	"github.com/microcosm-cc/bluemonday"
 )
 
 const (
 	testURL = "https://example.com/test-page"
+)
+
+var (
+	sanitizer = bluemonday.StrictPolicy()
 )
 
 func TestNewPageReport(t *testing.T) {
@@ -27,7 +33,7 @@ func TestNewPageReport(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport := NewPageReport(u, statusCode, &headers, body)
+	pageReport := NewPageReport(u, statusCode, &headers, body, sanitizer)
 
 	if pageReport.URL != testURL {
 		t.Error("NewPageReport URL != testURL")
@@ -65,7 +71,7 @@ func TestNewRedirectPageReport(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := NewPageReport(u, statusCode, &headers, body)
+	pageReport := NewPageReport(u, statusCode, &headers, body, sanitizer)
 
 	if pageReport.RedirectURL != redirectURL {
 		t.Errorf("NewPageReport RedirectURL != %s", pageReport.RedirectURL)
@@ -94,7 +100,7 @@ func TestPageReportHTML(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport := NewPageReport(u, statusCode, headers, body)
+	pageReport := NewPageReport(u, statusCode, headers, body, sanitizer)
 
 	if pageReport.Lang != "en" {
 		t.Error("Lang != en")

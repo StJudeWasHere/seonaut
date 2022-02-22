@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"github.com/antchfx/htmlquery"
+	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/net/html"
 )
 
@@ -40,6 +41,7 @@ type PageReport struct {
 	Images        []Image
 	Scripts       []string
 	Styles        []string
+	sanitizer     *bluemonday.Policy
 }
 
 type Link struct {
@@ -61,7 +63,7 @@ type Image struct {
 	Alt string
 }
 
-func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *PageReport {
+func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte, sanitizer *bluemonday.Policy) *PageReport {
 	pageReport := PageReport{
 		URL:         u.String(),
 		parsedURL:   u,
@@ -69,6 +71,7 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *P
 		ContentType: headers.Get("Content-Type"),
 		Body:        body,
 		Size:        len(body),
+		sanitizer:   sanitizer,
 	}
 
 	mediaType, _, err := mime.ParseMediaType(pageReport.ContentType)
@@ -177,7 +180,7 @@ func (pageReport *PageReport) parse() {
 	// ---
 	h1 := htmlquery.Find(doc, "//h1")
 	if len(h1) > 0 {
-		pageReport.H1 = strings.TrimSpace(htmlquery.InnerText(h1[0]))
+		pageReport.H1 = strings.TrimSpace(pageReport.sanitizer.Sanitize(htmlquery.InnerText(h1[0])))
 	}
 
 	// ---
@@ -186,7 +189,7 @@ func (pageReport *PageReport) parse() {
 	// ---
 	h2 := htmlquery.Find(doc, "//h2")
 	if len(h2) > 0 {
-		pageReport.H2 = strings.TrimSpace(htmlquery.InnerText(h2[0]))
+		pageReport.H2 = strings.TrimSpace(pageReport.sanitizer.Sanitize(htmlquery.InnerText(h2[0])))
 	}
 
 	// ---
@@ -294,7 +297,7 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 		URL:       u.String(),
 		parsedUrl: u,
 		Rel:       rel,
-		Text:      strings.TrimSpace(htmlquery.InnerText(n)),
+		Text:      p.sanitizer.Sanitize(strings.TrimSpace(htmlquery.InnerText(n))),
 		External:  u.Host != p.parsedURL.Host,
 		NoFollow:  strings.Contains(rel, "nofollow"),
 	}

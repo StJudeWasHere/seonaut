@@ -9,6 +9,7 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"github.com/microcosm-cc/bluemonday"
 )
 
 const (
@@ -25,9 +26,10 @@ type Crawler struct {
 	UseJS           bool
 	IgnoreRobotsTxt bool
 	UserAgent       string
+	sanitizer       *bluemonday.Policy
 }
 
-func startCrawler(p Project, agent string, advanced bool, datastore *datastore) int {
+func startCrawler(p Project, agent string, advanced bool, datastore *datastore, sanitizer *bluemonday.Policy) int {
 	var totalURLs int
 	var max int
 
@@ -49,6 +51,7 @@ func startCrawler(p Project, agent string, advanced bool, datastore *datastore) 
 		UseJS:           p.UseJS,
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
 		UserAgent:       agent,
+		sanitizer:       sanitizer,
 	}
 
 	cid := datastore.saveCrawl(p)
@@ -85,7 +88,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 	handleResourceResponse := func(r *colly.Response) {
 		url := r.Request.URL
-		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
+		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
 		pr <- *pageReport
 	}
 
@@ -100,7 +103,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 			us = us[len(RendertronURL):]
 			url, _ = url.Parse(us)
 		}
-		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
+		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
 
 		if strings.Contains(pageReport.Robots, "noindex") {
 			return

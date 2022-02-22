@@ -171,7 +171,7 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Crawling %s...\n", p.URL)
 	go func() {
 		start := time.Now()
-		cid := startCrawler(p, app.config.CrawlerAgent, user.Advanced, app.datastore)
+		cid := startCrawler(p, app.config.CrawlerAgent, user.Advanced, app.datastore, app.sanitizer)
 		fmt.Println(time.Since(start))
 		fmt.Printf("Creating issues for crawl id %d.\n", cid)
 

@@ -13,9 +13,7 @@ import (
 )
 
 const (
-	MaxProjects         = 3
-	AdvancedMaxProjects = 6
-	inviteCode          = "bATjGfQsRBeknDqD"
+	inviteCode = "bATjGfQsRBeknDqD"
 )
 
 type ProjectView struct {
@@ -79,23 +77,17 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 			Crawl:   c,
 		}
 		views = append(views, pv)
+
 		if c.IssuesEnd.Valid == false {
 			refresh = true
 		}
-	}
-
-	var max int
-	if user.Advanced {
-		max = AdvancedMaxProjects
-	} else {
-		max = MaxProjects
 	}
 
 	v := &PageView{
 		Data: struct {
 			Projects    []ProjectView
 			MaxProjects int
-		}{Projects: views, MaxProjects: max},
+		}{Projects: views, MaxProjects: user.getMaxAllowedProjects()},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
 		Refresh:   refresh,
@@ -105,17 +97,8 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Request) {
-	var url string
-
-	var max int
-	if user.Advanced {
-		max = AdvancedMaxProjects
-	} else {
-		max = MaxProjects
-	}
-
 	projects := app.datastore.findProjectsByUser(user.Id)
-	if len(projects) >= max {
+	if len(projects) >= user.getMaxAllowedProjects() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -123,9 +106,12 @@ func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Reque
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 			log.Println(err)
 		}
-		url = r.FormValue("url")
+
+		url := r.FormValue("url")
+
 		ignoreRobotsTxt, err := strconv.ParseBool(r.FormValue("ignore_robotstxt"))
 		if err != nil {
 			ignoreRobotsTxt = false
@@ -154,7 +140,13 @@ func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Reque
 }
 
 func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
-	pid, err := strconv.Atoi(r.URL.Query()["pid"][0])
+	qpid, ok := r.URL.Query()["pid"]
+	if !ok || len(qpid) < 1 {
+		log.Println("serveCrawl: pid parameter is missing")
+		return
+	}
+
+	pid, err := strconv.Atoi(qpid[0])
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -168,12 +160,14 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Printf("Crawling %s...\n", p.URL)
 	go func() {
+		log.Printf("Crawling %s\n", p.URL)
+
 		start := time.Now()
 		cid := startCrawler(p, app.config.CrawlerAgent, user.Advanced, app.datastore, app.sanitizer)
-		fmt.Println(time.Since(start))
-		fmt.Printf("Creating issues for crawl id %d.\n", cid)
+
+		log.Printf("Done crawling %s in %s\n", p.URL, time.Since(start))
+		log.Printf("Creating issues for %s and crawl id %d\n", p.URL, cid)
 
 		rm := ReportManager{}
 
@@ -206,14 +200,20 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 
 		app.datastore.saveEndIssues(cid, time.Now(), totalIssues)
 
-		fmt.Println("Done.")
+		log.Printf("Done creating issues for %s...\n", p.URL)
 	}()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) {
-	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	qcid, ok := r.URL.Query()["cid"]
+	if !ok || len(qcid) < 1 {
+		log.Println("serveIssues: cid parameter missing")
+		return
+	}
+
+	cid, err := strconv.Atoi(qcid[0])
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -295,8 +295,25 @@ func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) 
 }
 
 func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Request) {
-	eid := r.URL.Query()["eid"][0]
-	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	qeid, ok := r.URL.Query()["eid"]
+	if !ok || len(qeid) < 1 {
+		log.Println("serveIssuesView: eid parameter missing")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	eid := qeid[0]
+
+	qcid, ok := r.URL.Query()["cid"]
+	if !ok || len(qcid) < 1 {
+		log.Println("serveIssuesView: cid parameter missing")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	cid, err := strconv.Atoi(qcid[0])
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -557,7 +574,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 	renderTemplate(w, "signin", v)
 }
 
-func (app *App) serveDownloadAll(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveDownloadCSV(user *User, w http.ResponseWriter, r *http.Request) {
 	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
 	if err != nil {
 		log.Println(err)

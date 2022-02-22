@@ -49,6 +49,7 @@ body {
 	padding: 0 0 3rem 0;
 	background-color: var(--main-bg-color);
 	margin:0;
+	text-rendering: optimizeLegibility;
 }
 
 ul {

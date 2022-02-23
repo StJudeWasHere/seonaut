@@ -55,7 +55,7 @@ func (app *App) Run() {
 	})
 
 	// Static
-	fileServer := http.FileServer(http.Dir("./static"))
+	fileServer := http.FileServer(http.Dir("./web/static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
 	http.Handle("/robots.txt", fileServer)
 	http.Handle("/favicon.ico", fileServer)

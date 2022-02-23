@@ -18,24 +18,24 @@ func TestLoadConfig(t *testing.T) {
 		t.Error("ServerPort != 9000")
 	}
 
-	if config.DbServer != "dbexample.com" {
-		t.Error("DbServer != dbexample.com")
+	if config.DB.Server != "dbexample.com" {
+		t.Error("DB.Server != dbexample.com")
 	}
 
-	if config.DbPort != 3306 {
-		t.Error("DbPort != 3306")
+	if config.DB.Port != 3306 {
+		t.Error("DB.Port != 3306")
 	}
 
-	if config.DbUser != "root" {
-		t.Error("DbUser != root")
+	if config.DB.User != "root" {
+		t.Error("DB.User != root")
 	}
 
-	if config.DbPass != "root" {
-		t.Error("DbPass != root")
+	if config.DB.Pass != "root" {
+		t.Error("DB.Pass != root")
 	}
 
-	if config.DbName != "test" {
-		t.Error("DbName != test")
+	if config.DB.Name != "test" {
+		t.Error("DB.Name != test")
 	}
 
 	if config.CrawlerAgent != "testing" {

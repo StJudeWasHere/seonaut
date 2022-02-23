@@ -27,13 +27,7 @@ func NewApp(configPath string) *App {
 		log.Fatalf("Error loading config: %v\n", err)
 	}
 
-	app.datastore, err = NewDataStore(
-		app.config.DbUser,
-		app.config.DbPass,
-		app.config.DbServer,
-		app.config.DbPort,
-		app.config.DbName,
-	)
+	app.datastore, err = NewDataStore(app.config.DB)
 
 	if err != nil {
 		log.Fatalf("Error creating new datastore: %v\n", err)

@@ -28,9 +28,14 @@ type IssueGroup struct {
 	Count     int
 }
 
-func NewDataStore(dbuser, dbpass, dbserver string, dbport int, dbname string) (*datastore, error) {
+func NewDataStore(config DBConfig) (*datastore, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s?parseTime=true", dbuser, dbpass, dbserver, dbport, dbname,
+		"%s:%s@tcp(%s:%d)/%s?parseTime=true",
+		config.User,
+		config.Pass,
+		config.Server,
+		config.Port,
+		config.Name,
 	))
 
 	if err != nil {

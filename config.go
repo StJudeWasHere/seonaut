@@ -4,15 +4,19 @@ import (
 	"github.com/spf13/viper"
 )
 
+type DBConfig struct {
+	Server string
+	Port   int
+	User   string
+	Pass   string
+	Name   string
+}
+
 type Config struct {
 	Server     string
 	ServerPort int
 
-	DbServer string
-	DbPort   int
-	DbUser   string
-	DbPass   string
-	DbName   string
+	DB DBConfig
 
 	CrawlerAgent string
 
@@ -36,11 +40,11 @@ func loadConfig(path string) (*Config, error) {
 	config.Server = viper.GetString("Server.host")
 	config.ServerPort = viper.GetInt("Server.port")
 
-	config.DbServer = viper.GetString("Database.server")
-	config.DbPort = viper.GetInt("Database.port")
-	config.DbUser = viper.GetString("Database.user")
-	config.DbPass = viper.GetString("Database.password")
-	config.DbName = viper.GetString("Database.database")
+	config.DB.Server = viper.GetString("Database.server")
+	config.DB.Port = viper.GetInt("Database.port")
+	config.DB.User = viper.GetString("Database.user")
+	config.DB.Pass = viper.GetString("Database.password")
+	config.DB.Name = viper.GetString("Database.database")
 
 	config.CrawlerAgent = viper.GetString("Crawler.agent")
 

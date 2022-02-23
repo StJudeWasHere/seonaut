@@ -26,7 +26,8 @@
 			{{ if eq .Eid "ERROR_HREFLANG_RETURN" }}Missing hreflang{{ end }}
 			{{ if eq .Eid "ERROR_TOO_MANY_LINKS" }}Too Many Links{{ end }}
 			{{ if eq .Eid "ERROR_INTERNAL_NOFOLLOW" }}Internal nofollow links{{ end }}
-			{{ if eq .Eid "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }} External follow links{{ end }}
+			{{ if eq .Eid "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }}External follow links{{ end }}
+			{{ if eq .Eid "ERROR_CANONICALIZED_NON_CANONICAL" }}Canonicalized to non canonical{{ end }}
 		</span>
 	</div>
 </div>

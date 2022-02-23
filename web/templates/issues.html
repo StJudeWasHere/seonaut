@@ -253,6 +253,28 @@
 		{{ end }}
 	{{ end }}
 
+	{{ with (index .IssuesGroups "ERROR_CANONICALIZED_NON_CANONICAL") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="alert">
+				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} canonicalized to non canonical
+			</h2>
+			<div class="issue-description">
+			<p>
+				Pages canonicalized to a non canonical URL. Canonicalized pages should point to a canonical page, replace the canonical 
+				link URL in this pages so they point to a canonical one.
+			</p>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">View URLs →</a>
+			</p>
+		</div>
+		</div>
+		{{ end }}
+	{{ end }}
+	
+
+
 	{{/* Other issues */}}
 
 	{{ with (index .IssuesGroups "ERROR_HTTP_LINKS" )}}

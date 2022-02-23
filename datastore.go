@@ -1280,6 +1280,20 @@ func (ds *datastore) findExternalLinkWitoutNoFollow(cid int) []PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
+func (ds *datastore) findCanonicalizedToNonCanonical(cid int) []PageReport {
+	query := `
+		SELECT
+			a.url,
+			a.canonical,
+			b.url,
+			b.canonical
+		FROM pagereports AS a
+		INNER JOIN pagereports AS b ON a.url = b.canonical
+		WHERE a.crawl_id = ? AND b.crawl_id = ? AND a.canonical != "" AND a.canonical != a.url`
+
+	return ds.pageReportsQuery(query, cid, cid)
+}
+
 func (ds *datastore) pageReportsQuery(query string, args ...interface{}) []PageReport {
 	var pageReports []PageReport
 	rows, err := ds.db.Query(query, args...)

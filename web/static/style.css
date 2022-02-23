@@ -415,6 +415,7 @@ span.alert {
 	display: inline-block;
 	list-style-type: none;
 	padding: 0;
+	margin: .5rem 0;
 }
 
 .button.active {

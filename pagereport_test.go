@@ -214,4 +214,8 @@ func TestPageReportHTML(t *testing.T) {
 	if len(pageReport.Styles) == 1 && pageReport.Styles[0] != "https://example.com/css/style.css" {
 		t.Error("Styles[0] != https://example.com/css/style.css")
 	}
+
+	if pageReport.ValidHeadings == true {
+		t.Error("pageReport.validHeadings == true")
+	}
 }

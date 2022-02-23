@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 8.0.28)
 # Database: seo
-# Generation Time: 2022-02-17 16:09:07 +0000
+# Generation Time: 2022-02-23 19:23:57 +0000
 # ************************************************************
 
 
@@ -175,6 +175,7 @@ CREATE TABLE `pagereports` (
   `size` int DEFAULT NULL,
   `url_hash` varchar(256) NOT NULL DEFAULT '',
   `redirect_hash` varchar(256) DEFAULT NULL,
+  `valid_headings` tinyint NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`),
   KEY `pagereport_crawl` (`crawl_id`),
   KEY `pagereport_hash` (`url_hash`),

@@ -24,6 +24,7 @@ const (
 	ErrorExternalWithoutNoFollow     = "ERROR_EXTERNAL_WITHOUT_NOFOLLOW"
 	ErrorCanonicalizedToNonCanonical = "ERROR_CANONICALIZED_NON_CANONICAL"
 	ErrorRedirectLoop                = "ERROR_REDIRECT_LOOP"
+	ErrorNotValidHeadings            = "ERROR_NOT_VALID_HEADINGS"
 )
 
 type Issue struct {

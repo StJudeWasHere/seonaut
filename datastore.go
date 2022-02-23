@@ -482,9 +482,10 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 			h1,
 			h2,
 			words,
-			size
+			size,
+			valid_headings
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -513,6 +514,7 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 		r.H2,
 		r.Words,
 		len(r.Body),
+		r.ValidHeadings,
 	)
 
 	if err != nil {
@@ -659,7 +661,8 @@ func (ds *datastore) FindAllPageReportsByCrawlId(cid int) []PageReport {
 			h1,
 			h2,
 			words,
-			size
+			size,
+			valid_headings
 		FROM pagereports
 		WHERE crawl_id = ?`
 
@@ -686,6 +689,7 @@ func (ds *datastore) FindAllPageReportsByCrawlId(cid int) []PageReport {
 			&p.H2,
 			&p.Words,
 			&p.Size,
+			&p.ValidHeadings,
 		)
 		if err != nil {
 			log.Println(err)
@@ -717,7 +721,8 @@ func (ds *datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string)
 			h1,
 			h2,
 			words,
-			size
+			size,
+			valid_headings
 		FROM pagereports
 		WHERE crawl_id = ?
 		AND id in (SELECT pagereport_id FROM issues WHERE error_type = ? AND crawl_id = ?)`
@@ -745,6 +750,7 @@ func (ds *datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string)
 			&p.H2,
 			&p.Words,
 			&p.Size,
+			&p.ValidHeadings,
 		)
 		if err != nil {
 			log.Println(err)
@@ -775,7 +781,8 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 			h1,
 			h2,
 			words,
-			size
+			size,
+			valid_headings
 		FROM pagereports
 		WHERE id = ?`
 
@@ -798,6 +805,7 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 		&p.H2,
 		&p.Words,
 		&p.Size,
+		&p.ValidHeadings,
 	)
 	if err != nil {
 		log.Println(err)
@@ -1304,6 +1312,18 @@ func (ds *datastore) findRedirectLoops(cid int) []PageReport {
 		WHERE a.crawl_id = ? AND b.crawl_id = ?`
 
 	return ds.pageReportsQuery(query, cid, cid)
+}
+
+func (ds *datastore) findNotValidHeadingsOrder(cid int) []PageReport {
+	query := `
+		SELECT
+			id,
+			url,
+			title
+		FROM pagereports
+		WHERE crawl_id = ? AND valid_headings = 0`
+
+	return ds.pageReportsQuery(query, cid)
 }
 
 func (ds *datastore) pageReportsQuery(query string, args ...interface{}) []PageReport {

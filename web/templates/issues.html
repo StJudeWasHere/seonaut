@@ -332,6 +332,24 @@
 		{{ end }}
 	{{ end }}
 
+	{{ with (index .IssuesGroups "ERROR_NOT_VALID_HEADINGS" )}}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with not valid headings order</h2>
+			<div class="issue-description">
+			<p>
+				The heading tags in this pages doesn't follow the correct order. Change the H tags so they start with H1 and follow
+				the correct order.
+			</p>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_NOT_VALID_HEADINGS">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NOT_VALID_HEADINGS">View URLs →</a>
+			</p>
+		</div>
+		</div>
+		{{ end }}
+	{{ end }}
+
 	{{ with (index .IssuesGroups "ERROR_HREFLANG_RETURN") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">

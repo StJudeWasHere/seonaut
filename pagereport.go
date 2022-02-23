@@ -42,6 +42,7 @@ type PageReport struct {
 	Scripts       []string
 	Styles        []string
 	sanitizer     *bluemonday.Policy
+	ValidHeadings bool
 }
 
 type Link struct {
@@ -65,13 +66,14 @@ type Image struct {
 
 func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte, sanitizer *bluemonday.Policy) *PageReport {
 	pageReport := PageReport{
-		URL:         u.String(),
-		parsedURL:   u,
-		StatusCode:  status,
-		ContentType: headers.Get("Content-Type"),
-		Body:        body,
-		Size:        len(body),
-		sanitizer:   sanitizer,
+		URL:           u.String(),
+		parsedURL:     u,
+		StatusCode:    status,
+		ContentType:   headers.Get("Content-Type"),
+		Body:          body,
+		Size:          len(body),
+		sanitizer:     sanitizer,
+		ValidHeadings: true,
 	}
 
 	mediaType, _, err := mime.ParseMediaType(pageReport.ContentType)
@@ -282,6 +284,8 @@ func (pageReport *PageReport) parse() {
 	if len(body) > 0 {
 		pageReport.Words = countWords(body[0])
 	}
+
+	pageReport.ValidHeadings = headingOrderIsValid(body[0])
 }
 
 func (p *PageReport) newLink(n *html.Node) (Link, error) {
@@ -387,4 +391,47 @@ func countWords(n *html.Node) int {
 	t := re.ReplaceAllString(buf.String(), " ")
 
 	return len(strings.Fields(t))
+}
+
+func headingOrderIsValid(n *html.Node) bool {
+	headings := [6]string{"h1", "h2", "h3", "h4", "h5", "h6"}
+	current := 0
+
+	isValidHeading := func(el string) (int, bool) {
+		el = strings.ToLower(el)
+		for i, v := range headings {
+			if v == el {
+				return i, true
+			}
+		}
+
+		return 0, false
+	}
+
+	var output func(n *html.Node) bool
+	output = func(n *html.Node) bool {
+		if n.Type == html.ElementNode {
+			p, ok := isValidHeading(n.Data)
+			if ok {
+				if p > current+1 {
+					return false
+				}
+				current = p
+			}
+		}
+
+		for child := n.FirstChild; child != nil; child = child.NextSibling {
+			if child.Type == html.ElementNode {
+				if output(child) == false {
+					return false
+				}
+			}
+		}
+
+		return true
+	}
+
+	correct := output(n)
+
+	return correct
 }

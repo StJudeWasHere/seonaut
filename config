@@ -10,7 +10,7 @@ password = "root"
 database = "seo"
 
 [crawler]
-agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15"
+agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:97.0) Gecko/20100101 Firefox/97.0"
 
 [stripe]
 key = "pk_test_51Iz2cjJKR656aQz1TzWbwWbDhgvTie7zb4kRPImRLWOX6G0Qs2ycjs0EEpSwFl9Cd28EWsk51VLbfW9wFcZax6e8003KzPJz61"

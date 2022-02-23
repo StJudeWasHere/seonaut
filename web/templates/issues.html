@@ -110,6 +110,23 @@
 		{{ end }}
 	{{ end }}
 
+	{{ with (index .IssuesGroups "ERROR_REDIRECT_LOOP") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} are part of a redirect loop</h2>
+			<div class="issue-description">
+			<p>
+				Redirect loops are a couple of URLs that redirect to each other creating a never ending loop of redirects.
+			</p>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_REDIRECT_LOOP">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_LOOP">View URLs →</a>
+			</p>
+		</div>
+		</div>
+		{{ end }}
+	{{ end }}
+
 	{{/* Title issues */}}
 
 	{{ with (index .IssuesGroups "ERROR_DUPLICATED_TITLE") }}

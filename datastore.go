@@ -1293,6 +1293,19 @@ func (ds *datastore) findCanonicalizedToNonCanonical(cid int) []PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
+func (ds *datastore) findRedirectLoops(cid int) []PageReport {
+	query := `
+		SELECT
+			a.id,
+			a.url,
+			a.title
+		FROM pagereports AS a
+		INNER JOIN pagereports AS b ON a.redirect_hash = b.url_hash AND b.redirect_hash = a.url_hash
+		WHERE a.crawl_id = ? AND b.crawl_id = ?`
+
+	return ds.pageReportsQuery(query, cid, cid)
+}
+
 func (ds *datastore) pageReportsQuery(query string, args ...interface{}) []PageReport {
 	var pageReports []PageReport
 	rows, err := ds.db.Query(query, args...)

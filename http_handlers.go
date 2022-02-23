@@ -193,6 +193,7 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 		rm.addReporter(app.datastore.internalNoFollowLinks, ErrorInternalNoFollow)
 		rm.addReporter(app.datastore.findExternalLinkWitoutNoFollow, ErrorExternalWithoutNoFollow)
 		rm.addReporter(app.datastore.findCanonicalizedToNonCanonical, ErrorCanonicalizedToNonCanonical)
+		rm.addReporter(app.datastore.findCanonicalizedToNonCanonical, ErrorRedirectLoop)
 
 		issues := rm.createIssues(cid)
 		app.datastore.saveIssues(issues, cid)
@@ -250,7 +251,7 @@ func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) 
 
 	project.Host = parsedURL.Host
 
-	ca := []string{"ERROR_50x", "ERROR_40x", "ERROR_30x", "ERROR_REDIRECT_CHAIN"}
+	ca := []string{"ERROR_50x", "ERROR_40x", "ERROR_30x", "ERROR_REDIRECT_CHAIN", "ERROR_REDIRECT_LOOP"}
 	aa := []string{"ERROR_DUPLICATED_TITLE", "ERROR_EMPTY_TITLE", "ERROR_LONG_TITLE", "ERROR_SHORT_TITLE",
 		"ERROR_DUPLICATED_DESCRIPTION", "ERROR_LONG_DESCRIPTION", "ERROR_SHORT_DESCRIPTION", "ERROR_EMPTY_DESCRIPTION",
 		"ERROR_HTTP_LINKS", "ERROR_NO_H1", "ERROR_HREFLANG_RETURN", "ERROR_CANONICALIZED_NON_CANONICAL"}

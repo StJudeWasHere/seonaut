@@ -326,7 +326,7 @@ func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Reque
 	p := r.URL.Query()["p"]
 	page := 1
 	if len(p) > 0 {
-		page, err = strconv.Atoi(r.URL.Query()["p"][0])
+		page, err = strconv.Atoi(p[0])
 		if err != nil {
 			log.Println(err)
 			page = 1
@@ -395,7 +395,15 @@ func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Reque
 }
 
 func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Request) {
-	rid, err := strconv.Atoi(r.URL.Query()["rid"][0])
+	qrid, ok := r.URL.Query()["rid"]
+	if !ok || len(qrid) < 1 {
+		log.Println("serveResourcesView: rid paramenter missing")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	rid, err := strconv.Atoi(qrid[0])
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -403,7 +411,15 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	qcid, ok := r.URL.Query()["cid"]
+	if !ok || len(qcid) < 1 {
+		log.Println("serveResourcesView: cid parameter missing")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	cid, err := strconv.Atoi(qcid[0])
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -419,7 +435,15 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 		tab = tabs[0]
 	}
 
-	eid := r.URL.Query()["eid"][0]
+	qeid, ok := r.URL.Query()["eid"]
+	if !ok || len(qeid) < 1 {
+		log.Println("serveResourcesView: eid parameter missing")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	eid := qeid[0]
 
 	u, err := app.datastore.findCrawlUserId(cid)
 	if err != nil || u.Id != user.Id {
@@ -459,7 +483,8 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 	rv := ResourcesView{
 		PageReport: pageReport,
 		Project:    project,
-		Cid:        cid, Eid: eid,
+		Cid:        cid,
+		Eid:        eid,
 		ErrorTypes: errorTypes,
 		InLinks:    inLinks,
 		Redirects:  redirects,
@@ -575,7 +600,15 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) serveDownloadCSV(user *User, w http.ResponseWriter, r *http.Request) {
-	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	qcid, ok := r.URL.Query()["cid"]
+	if !ok || len(qcid) < 1 {
+		log.Println("serveDownloadCSV: cid parameter missing")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	cid, err := strconv.Atoi(qcid[0])
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -625,7 +658,15 @@ func (app *App) serveDownloadCSV(user *User, w http.ResponseWriter, r *http.Requ
 }
 
 func (app *App) serveSitemap(user *User, w http.ResponseWriter, r *http.Request) {
-	cid, err := strconv.Atoi(r.URL.Query()["cid"][0])
+	qcid, ok := r.URL.Query()["cid"]
+	if !ok || len(qcid) < 1 {
+		log.Println("serveSitemap: cid parameter missings")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	cid, err := strconv.Atoi(qcid[0])
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)

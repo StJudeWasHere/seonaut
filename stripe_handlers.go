@@ -129,6 +129,13 @@ func (app *App) handleCheckoutSession(user *User, w http.ResponseWriter, r *http
 	}
 
 	sessionID := r.URL.Query().Get("session_id")
+	if sessionID == "" {
+		log.Println("handleCheckoutSession: sessio_id parameter missing")
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
 	_, err := session.Get(sessionID, nil)
 	if err != nil {
 		log.Printf("CheckoutSession: %v\n", err)

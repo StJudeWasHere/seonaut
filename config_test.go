@@ -41,4 +41,24 @@ func TestLoadConfig(t *testing.T) {
 	if config.CrawlerAgent != "testing" {
 		t.Error("CrawlerAgent != testing")
 	}
+
+	if config.Stripe.Key != "stripe_key" {
+		t.Error("Stripe.Key != stripe_key")
+	}
+
+	if config.Stripe.Secret != "stripe_secret" {
+		t.Error("Stripe.Secret != stripe_secret")
+	}
+
+	if config.Stripe.WebhookSecret != "webhook_secret" {
+		t.Error("Stripe.WebhookSecret != webhook_secret")
+	}
+
+	if config.Stripe.AdvancedPriceId != "price_id" {
+		t.Error("Stripe.AdvancedPriceId != price_id")
+	}
+
+	if config.Stripe.ReturnURL != "http://localhost:9000" {
+		t.Error("Stripe.ReturnURL != http://localhost:9000")
+	}
 }

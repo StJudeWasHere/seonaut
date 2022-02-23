@@ -40,7 +40,7 @@ func NewApp(configPath string) *App {
 }
 
 func (app *App) Run() {
-	stripe.Key = app.config.StripeSecret
+	stripe.Key = app.config.Stripe.Secret
 
 	stripe.SetAppInfo(&stripe.AppInfo{
 		Name:    "stripe-samples/checkout-single-subscription",

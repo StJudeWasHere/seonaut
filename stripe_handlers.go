@@ -83,11 +83,9 @@ func (app *App) handleConfig(user *User, w http.ResponseWriter, r *http.Request)
 	writeJSON(w, struct {
 		PublishableKey string `json:"publishableKey"`
 		BasicPrice     string `json:"basicPrice"`
-		ProPrice       string `json:"proPrice"`
 	}{
-		PublishableKey: app.config.StripeKey,
-		BasicPrice:     app.config.StripeAdvancePriceId,
-		ProPrice:       app.config.StripeAdvancePriceId,
+		PublishableKey: app.config.Stripe.Key,
+		BasicPrice:     app.config.Stripe.AdvancedPriceId,
 	}, nil)
 }
 
@@ -100,8 +98,8 @@ func (app *App) handleCreateCheckoutSession(user *User, w http.ResponseWriter, r
 	r.ParseForm()
 	priceId := r.PostFormValue("priceId")
 	params := &stripe.CheckoutSessionParams{
-		SuccessURL:    stripe.String(app.config.StripeReturnURL + "/checkout-session?session_id={CHECKOUT_SESSION_ID}"),
-		CancelURL:     stripe.String(app.config.StripeReturnURL + "/canceled"),
+		SuccessURL:    stripe.String(app.config.Stripe.ReturnURL + "/checkout-session?session_id={CHECKOUT_SESSION_ID}"),
+		CancelURL:     stripe.String(app.config.Stripe.ReturnURL + "/canceled"),
 		Mode:          stripe.String(string(stripe.CheckoutSessionModeSubscription)),
 		CustomerEmail: &(user.Email),
 		LineItems: []*stripe.CheckoutSessionLineItemParams{
@@ -161,7 +159,7 @@ func (app *App) handleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event, err := webhook.ConstructEvent(b, r.Header.Get("Stripe-Signature"), app.config.StripeWebhookSecret)
+	event, err := webhook.ConstructEvent(b, r.Header.Get("Stripe-Signature"), app.config.Stripe.WebhookSecret)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		log.Printf("webhook.ConstructEvent: %v", err)
@@ -193,7 +191,7 @@ func (app *App) handleCustomerPortal(user *User, w http.ResponseWriter, r *http.
 		return
 	}
 
-	returnURL := app.config.StripeReturnURL
+	returnURL := app.config.Stripe.ReturnURL
 
 	params := &stripe.BillingPortalSessionParams{
 		Customer:  stripe.String(s.Customer.ID),

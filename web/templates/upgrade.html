@@ -29,7 +29,7 @@
 <script>
 	fetch("/config")
 	.then(r => r.json())
-	.then(({basicPrice, proPrice}) => {
+	.then(({basicPrice}) => {
 		const basicPriceInput = document.querySelector('#basicPrice');
 		basicPriceInput.value = basicPrice;
 	})

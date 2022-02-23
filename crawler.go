@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -41,7 +41,7 @@ func startCrawler(p Project, agent string, advanced bool, datastore *datastore, 
 
 	u, err := url.Parse(p.URL)
 	if err != nil {
-		fmt.Println(err)
+		log.Printf("startCrawler: %s %v\n", p.URL, err)
 		return 0
 	}
 
@@ -65,7 +65,7 @@ func startCrawler(p Project, agent string, advanced bool, datastore *datastore, 
 	}
 
 	datastore.saveEndCrawl(cid, time.Now(), totalURLs)
-	fmt.Printf("%d pages crawled.\n", totalURLs)
+	log.Printf("%d pages crawled.\n", totalURLs)
 
 	return int(cid)
 }

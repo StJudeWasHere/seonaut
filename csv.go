@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"io"
-
 	"strconv"
 	"unicode/utf8"
 )

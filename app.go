@@ -54,33 +54,34 @@ func (app *App) Run() {
 		URL:     "https://github.com/stripe-samples/checkout-single-subscription",
 	})
 
+	// Static
 	fileServer := http.FileServer(http.Dir("./static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
 	http.Handle("/robots.txt", fileServer)
 	http.Handle("/favicon.ico", fileServer)
 
+	// App
 	http.HandleFunc("/", app.requireAuth(app.serveHome))
 	http.HandleFunc("/new-project", app.requireAuth(app.serveProjectAdd))
 	http.HandleFunc("/crawl", app.requireAuth(app.serveCrawl))
 	http.HandleFunc("/issues", app.requireAuth(app.serveIssues))
 	http.HandleFunc("/issues/view", app.requireAuth(app.serveIssuesView))
 	http.HandleFunc("/download", app.requireAuth(app.serveDownloadCSV))
+	http.HandleFunc("/sitemap", app.requireAuth(app.serveSitemap))
 	http.HandleFunc("/resources", app.requireAuth(app.serveResourcesView))
+	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
 	http.HandleFunc("/signup", app.serveSignup)
 	http.HandleFunc("/signin", app.serveSignin)
-	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
 
-	http.HandleFunc("/sitemap", app.requireAuth(app.serveSitemap))
-
-	// STRIPE
+	// Stripe
 	http.HandleFunc("/upgrade", app.requireAuth(app.upgrade))
 	http.HandleFunc("/create-checkout-session", app.requireAuth(app.handleCreateCheckoutSession))
 	http.HandleFunc("/checkout-session", app.requireAuth(app.handleCheckoutSession))
 	http.HandleFunc("/config", app.requireAuth(app.handleConfig))
-	http.HandleFunc("/webhook", app.handleWebhook)
 	http.HandleFunc("/manage", app.requireAuth(app.handleManageAccount))
 	http.HandleFunc("/canceled", app.requireAuth(app.handleCanceled))
 	http.HandleFunc("/customer-portal", app.requireAuth(app.handleCustomerPortal))
+	http.HandleFunc("/webhook", app.handleWebhook)
 
 	fmt.Printf("Starting server at %s on port %d...\n", app.config.Server, app.config.ServerPort)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.Server, app.config.ServerPort), nil)

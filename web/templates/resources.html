@@ -184,8 +184,14 @@
 					{{ if eq . "ERROR_REDIRECT_CHAIN" }}
 					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">A redirect chain</a></li>
 					{{ end }}
+					{{ if eq . "ERROR_REDIRECT_LOOP" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_LOOP">Redirect loop</a></li>
+					{{ end }}
 					{{ if eq . "ERROR_NO_H1" }}
 					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Missing H1 heading</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_NOT_VALID_HEADINGS" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_LOOP">Not valid headings order</a></li>
 					{{ end }}
 					{{ if eq . "ERROR_HREFLANG_RETURN" }}
 					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
@@ -198,6 +204,9 @@
 					{{ end }}
 					{{ if eq . "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }}
 					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">External follow links</a></li>
+					{{ end }}
+					{{ if eq . "ERROR_CANONICALIZED_NON_CANONICAL" }}
+					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_CANONICALIZED_NON_CANONICAL">Canonicalized to non canonical</a></li>
 					{{ end }}
 					{{ end }}
 				</ul>

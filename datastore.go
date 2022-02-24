@@ -589,11 +589,11 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Images) > 0 {
-		sqlString := "INSERT INTO images (pagereport_id, url, alt) values "
+		sqlString := "INSERT INTO images (pagereport_id, url, alt, crawl_id) values "
 		v := []interface{}{}
 		for _, i := range r.Images {
-			sqlString += "(?, ?, ?),"
-			v = append(v, lid, i.URL, i.Alt)
+			sqlString += "(?, ?, ?, ?),"
+			v = append(v, lid, i.URL, i.Alt, cid)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ = ds.db.Prepare(sqlString)
@@ -606,11 +606,11 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Scripts) > 0 {
-		sqlString := "INSERT INTO scripts (pagereport_id, url) values "
+		sqlString := "INSERT INTO scripts (pagereport_id, url, crawl_id) values "
 		v := []interface{}{}
 		for _, s := range r.Scripts {
-			sqlString += "(?, ?),"
-			v = append(v, lid, s)
+			sqlString += "(?, ?, ?),"
+			v = append(v, lid, s, cid)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ := ds.db.Prepare(sqlString)
@@ -623,12 +623,12 @@ func (ds *datastore) savePageReport(r *PageReport, cid int64) {
 	}
 
 	if len(r.Styles) > 0 {
-		sqlString := "INSERT INTO styles (pagereport_id, url) values "
+		sqlString := "INSERT INTO styles (pagereport_id, url, crawl_id) values "
 		v := []interface{}{}
 
 		for _, s := range r.Styles {
-			sqlString += "(?, ?),"
-			v = append(v, lid, s)
+			sqlString += "(?, ?, ?),"
+			v = append(v, lid, s, cid)
 
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
@@ -908,6 +908,59 @@ func (ds *datastore) FindPageReportById(rid int) PageReport {
 	}
 
 	return p
+}
+
+func (ds *datastore) FindPreviousCrawlId(pid int) int {
+	query := `
+		SELECT
+			id
+		FROM crawls
+		WHERE project_id = ?
+		ORDER BY issues_end DESC
+		LIMIT 1, 1`
+
+	row := ds.db.QueryRow(query, pid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("FindPreviousCrawlId: %v\n", err)
+	}
+
+	return c
+}
+
+func (ds *datastore) DeletePreviousCrawl(pid int) {
+	previousCrawl := ds.FindPreviousCrawlId(pid)
+
+	var deleteFunc func(cid int, table string)
+	deleteFunc = func(cid int, table string) {
+		query := fmt.Sprintf("DELETE FROM %s WHERE crawl_id = ? ORDER BY id DESC LIMIT 1000", table)
+		_, err := ds.db.Exec(query, previousCrawl)
+		if err != nil {
+			log.Printf("DeletePreviousCeawl: pid %d table %s %v\n", pid, table, err)
+			return
+		}
+
+		query = fmt.Sprintf("SELECT count(*) FROM %s WHERE crawl_id = ?", table)
+		row := ds.db.QueryRow(query, previousCrawl)
+		var c int
+		if err := row.Scan(&c); err != nil {
+			log.Printf("DeletePreviousCrawl count: pid %d table %s %v\n", pid, table, err)
+		}
+
+		if c > 0 {
+			time.Sleep(1500 * time.Millisecond)
+			deleteFunc(cid, table)
+		}
+	}
+
+	deleteFunc(previousCrawl, "links")
+	deleteFunc(previousCrawl, "external_links")
+	deleteFunc(previousCrawl, "hreflangs")
+	deleteFunc(previousCrawl, "issues")
+	deleteFunc(previousCrawl, "images")
+	deleteFunc(previousCrawl, "scripts")
+	deleteFunc(previousCrawl, "styles")
+	deleteFunc(previousCrawl, "pagereports")
 }
 
 func (ds *datastore) FindPageReportsRedirectingToURL(u string, cid int) []PageReport {

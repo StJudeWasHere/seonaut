@@ -204,6 +204,9 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 		app.datastore.saveEndIssues(cid, time.Now(), totalIssues)
 
 		log.Printf("Done creating issues for %s...\n", p.URL)
+		log.Printf("Deleting previous crawl data for %s\n", p.URL)
+		app.datastore.DeletePreviousCrawl(p.Id)
+		log.Printf("Deleted previous crawl done for %s\n", p.URL)
 	}()
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)

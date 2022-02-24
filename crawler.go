@@ -87,9 +87,13 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	)
 
 	handleResourceResponse := func(r *colly.Response) {
+		if responseCounter >= c.MaxPageReports {
+			return
+		}
 		url := r.Request.URL
 		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
 		pr <- *pageReport
+		responseCounter++
 	}
 
 	handleResponse := func(r *colly.Response) {

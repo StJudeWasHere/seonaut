@@ -15,7 +15,7 @@ import (
 const (
 	consumerThreads        = 2
 	storageMaxSize         = 10000
-	MaxPageReports         = 500
+	MaxPageReports         = 300
 	AdvancedMaxPageReports = 5000
 	RendertronURL          = "http://127.0.0.1:3000/render/"
 )

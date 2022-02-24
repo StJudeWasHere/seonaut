@@ -916,7 +916,7 @@ func (ds *datastore) FindPreviousCrawlId(pid int) int {
 			id
 		FROM crawls
 		WHERE project_id = ?
-		ORDER BY issues_end DESC
+		ORDER BY end DESC
 		LIMIT 1, 1`
 
 	row := ds.db.QueryRow(query, pid)

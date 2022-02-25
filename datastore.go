@@ -25,6 +25,7 @@ const (
 
 type IssueGroup struct {
 	ErrorType string
+	Priority  int
 	Count     int
 }
 
@@ -379,7 +380,7 @@ func (ds *datastore) findProjectById(id int, uid int) (Project, error) {
 
 func (ds *datastore) saveIssues(issues []Issue, cid int) {
 	query := `
-		INSERT INTO issues (pagereport_id, crawl_id, error_type)
+		INSERT INTO issues (pagereport_id, crawl_id, issue_type_id)
 		VALUES (?, ?, ?)`
 
 	stmt, _ := ds.db.Prepare(query)
@@ -398,10 +399,12 @@ func (ds *datastore) findIssues(cid int) map[string]IssueGroup {
 	issues := map[string]IssueGroup{}
 	query := `
 		SELECT
-			error_type,
-			count(*)
+			issue_types.type,
+			issue_types.priority,
+			count(DISTINCT issues.pagereport_id)
 		FROM issues
-		WHERE crawl_id = ? GROUP BY error_type`
+		INNER JOIN  issue_types ON issue_types.id = issues.issue_type_id
+		WHERE crawl_id = ? GROUP BY issue_type_id`
 
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -411,7 +414,7 @@ func (ds *datastore) findIssues(cid int) map[string]IssueGroup {
 
 	for rows.Next() {
 		ig := IssueGroup{}
-		err := rows.Scan(&ig.ErrorType, &ig.Count)
+		err := rows.Scan(&ig.ErrorType, &ig.Priority, &ig.Count)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -435,7 +438,14 @@ func (ds *datastore) countIssuesByCrawl(cid int) int {
 
 func (ds *datastore) findErrorTypesByPage(pid, cid int) []string {
 	var et []string
-	query := `SELECT error_type FROM issues WHERE pagereport_id = ? and crawl_id = ? GROUP BY error_type`
+	query := `
+		SELECT 
+			issue_types.type
+		FROM issues
+		INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
+		WHERE pagereport_id = ? and crawl_id = ?
+		GROUP BY issue_type_id`
+
 	rows, err := ds.db.Query(query, pid, cid)
 	if err != nil {
 		log.Println(err)
@@ -725,7 +735,13 @@ func (ds *datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string)
 			valid_headings
 		FROM pagereports
 		WHERE crawl_id = ?
-		AND id in (SELECT pagereport_id FROM issues WHERE error_type = ? AND crawl_id = ?)`
+		AND id IN (
+			SELECT
+				pagereport_id 
+			FROM issues
+			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
+			WHERE issue_types.type = ? AND crawl_id = ?
+		)`
 
 	rows, err := ds.db.Query(query, cid, et, cid)
 	if err != nil {
@@ -1079,7 +1095,7 @@ func (ds *datastore) FindPageReportsWithDuplicatedTitle(cid int) []PageReport {
 			GROUP BY title, lang
 			HAVING c > 1
 		) d 
-		ON d.title = y.title
+		ON d.title = y.title AND d.lang = y.lang
 		WHERE media_type = "text/html" AND length(y.title) > 0 AND crawl_id = ?
 		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)`
 
@@ -1154,7 +1170,7 @@ func (ds *datastore) FindPageReportsWithDuplicatedDescription(cid int) []PageRep
 			GROUP BY description, lang
 			HAVING c > 1
 		) d 
-		ON d.description = y.description
+		ON d.description = y.description AND d.lang = y.lang
 		WHERE y.media_type = "text/html" AND length(y.description) > 0 AND y.crawl_id = ?
 		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url`
 
@@ -1238,9 +1254,10 @@ func (ds *datastore) FindInLinks(s string, cid int) []PageReport {
 
 func (ds *datastore) getNumberOfPagesForIssues(cid int, errorType string) int {
 	query := `
-		SELECT count(*)
+		SELECT count(DISTINCT pagereport_id)
 		FROM issues
-		WHERE error_type = ? and crawl_id  = ?`
+		INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
+		WHERE issue_types.type = ? and crawl_id  = ?`
 
 	row := ds.db.QueryRow(query, errorType, cid)
 	var c int
@@ -1262,9 +1279,10 @@ func (ds *datastore) findPageReportIssues(cid, p int, errorType string) []PageRe
 			title
 		FROM pagereports
 		WHERE id IN (
-			SELECT pagereport_id
+			SELECT DISTINCT pagereport_id
 			FROM issues
-			WHERE error_type = ? and crawl_id  = ?
+			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
+			WHERE issue_types.type = ? and crawl_id  = ?
 		) LIMIT ?, ?`
 
 	return ds.pageReportsQuery(query, errorType, cid, offset, max)

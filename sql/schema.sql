@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 8.0.28)
 # Database: seo
-# Generation Time: 2022-02-23 19:23:57 +0000
+# Generation Time: 2022-02-25 11:09:50 +0000
 # ************************************************************
 
 
@@ -98,9 +98,26 @@ CREATE TABLE `images` (
   `pagereport_id` int unsigned NOT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
   `alt` varchar(1024) DEFAULT NULL,
+  `crawl_id` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `images_pagereport` (`pagereport_id`),
+  KEY `images_crawl` (`crawl_id`),
+  CONSTRAINT `images_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
   CONSTRAINT `images_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+
+# Dump of table issue_types
+# ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `issue_types`;
+
+CREATE TABLE `issue_types` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `type` varchar(256) DEFAULT NULL,
+  `priority` int DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -114,12 +131,14 @@ CREATE TABLE `issues` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int unsigned NOT NULL,
   `crawl_id` int unsigned NOT NULL,
-  `error_type` varchar(50) NOT NULL DEFAULT '',
+  `issue_type_id` int unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `issue_crawl` (`crawl_id`),
   KEY `issue_pagereport` (`pagereport_id`),
+  KEY `issues_issue_type` (`issue_type_id`),
   CONSTRAINT `issue_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `issue_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
+  CONSTRAINT `issue_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `issues_issue_type` FOREIGN KEY (`issue_type_id`) REFERENCES `issue_types` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -213,8 +232,11 @@ CREATE TABLE `scripts` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int unsigned NOT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
+  `crawl_id` int unsigned NOT NULL,
   PRIMARY KEY (`id`),
   KEY `scripts_pagereport` (`pagereport_id`),
+  KEY `scripts_crawl` (`crawl_id`),
+  CONSTRAINT `scripts_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
   CONSTRAINT `scripts_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -229,8 +251,11 @@ CREATE TABLE `styles` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `pagereport_id` int unsigned NOT NULL,
   `url` varchar(2048) NOT NULL DEFAULT '',
+  `crawl_id` int unsigned DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `styles_pagereport` (`pagereport_id`),
+  KEY `styles_crawl` (`crawl_id`),
+  CONSTRAINT `styles_crawl` FOREIGN KEY (`crawl_id`) REFERENCES `crawls` (`id`) ON DELETE CASCADE,
   CONSTRAINT `styles_pagereport` FOREIGN KEY (`pagereport_id`) REFERENCES `pagereports` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

@@ -27,7 +27,7 @@
 		<p>Issues that are holding your site back. Fix them next.</p>
 	</div>
 	<div class="legend box">
-		<b>{{ .Notice }} {{ if eq .Notice 1 }} Warning {{ else }} Warnings {{ end }}</b>
+		<b>{{ .Warning }} {{ if eq .Warning 1 }} Warning {{ else }} Warnings {{ end }}</b>
 		<p>Issues you may want to keep an eye on.</p>
 	</div>
 </div>
@@ -368,6 +368,25 @@
 		{{ end }}
 	{{ end}}
 
+	{{ with (index .IssuesGroups "ERROR_IMAGES_NO_ALT") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
+			<div class="issue-description">
+			<p>
+				The image alt attribute improves your site's accessibility, it also helps search engines understand better
+				your images.
+			</p>
+			<p class="issues-buttons">
+				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Download URLs ↓</a>
+				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">View URLs →</a>
+			</p>
+		</div>
+		</div>
+		{{ end }}
+	{{ end}}
+
+
 	{{ with (index .IssuesGroups "ERROR_NO_LANG" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
@@ -400,24 +419,6 @@
 			<p class="issues-buttons">
 				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Download URLs ↓</a>
 				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssuesGroups "ERROR_IMAGES_NO_ALT") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
-			<div class="issue-description">
-			<p>
-				The image alt attribute improves your site's accessibility, it also helps search engines understand better
-				your images.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">View URLs →</a>
 			</p>
 		</div>
 		</div>

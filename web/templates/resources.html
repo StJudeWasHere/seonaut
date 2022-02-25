@@ -6,32 +6,7 @@
 	<div class="action">
 		<a href="/">Projects</a> /
 		<a href="/issues?cid={{ .Cid }}">{{ .Project.Host }}</a> /
-		<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">
-			{{ if eq .Eid "ERROR_50x" }}Status 50x{{ end }}
-			{{ if eq .Eid "ERROR_40x" }}Status 40x{{ end }}
-			{{ if eq .Eid "ERROR_30x" }}Status 30x{{ end }}
-			{{ if eq .Eid "ERROR_DUPLICATED_TITLE" }}Duplicate Title{{ end }}
-			{{ if eq .Eid "ERROR_LONG_TITLE" }}Long title{{ end }}
-			{{ if eq .Eid "ERROR_SHORT_TITLE" }}Short title{{ end }}
-			{{ if eq .Eid "ERROR_EMPTY_TITLE" }}Missing title{{ end }}
-			{{ if eq .Eid "ERROR_EMPTY_DESCRIPTION" }}Missing description{{ end }}
-			{{ if eq .Eid "ERROR_SHORT_DESCRIPTION" }}Short description{{ end }}
-			{{ if eq .Eid "ERROR_LONG_DESCRIPTION" }}Long description{{ end }}
-			{{ if eq .Eid "ERROR_DUPLICATED_DESCRIPTION" }}Duplicate description{{ end }}
-			{{ if eq .Eid "ERROR_LITTLE_CONTENT" }}Little content{{ end }}
-			{{ if eq .Eid "ERROR_IMAGES_NO_ALT" }}No alt attribute{{ end }}
-			{{ if eq .Eid "ERROR_REDIRECT_CHAIN" }}Redirect chain{{ end }}
-			{{ if eq .Eid "ERROR_NO_H1" }}Missing H1{{ end }}
-			{{ if eq .Eid "ERROR_NO_LANG" }}Missing language attribute{{ end }}
-			{{ if eq .Eid "ERROR_HTTP_LINKS" }}HTTPS to HTTP{{ end }}
-			{{ if eq .Eid "ERROR_HREFLANG_RETURN" }}Missing hreflang{{ end }}
-			{{ if eq .Eid "ERROR_TOO_MANY_LINKS" }}Too Many Links{{ end }}
-			{{ if eq .Eid "ERROR_INTERNAL_NOFOLLOW" }}Internal nofollow links{{ end }}
-			{{ if eq .Eid "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }}External follow links{{ end }}
-			{{ if eq .Eid "ERROR_CANONICALIZED_NON_CANONICAL" }}Canonicalized to non canonical{{ end }}
-			{{ if eq .Eid "ERROR_REDIRECT_LOOP" }}Redirect loop{{ end }}
-			{{ if eq .Eid "ERROR_NOT_VALID_HEADINGS" }}Not valid headings order{{ end }}
-		</a> /
+		<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">{{ trans .Eid }}</a> /
 		<span class="title">URL Explorer</span>
 	</div>
 </div>
@@ -142,73 +117,8 @@
 				<b>Issues in this URL:</b>
 				<ul class="pagereport-errors">
 				{{ range .ErrorTypes }}
-					{{ if eq . "ERROR_30x" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">Redirected page</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_40x" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">Page not found</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_50x" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">Error loading page</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_DUPLICATED_TITLE" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">Duplicated title</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_DUPLICATED_DESCRIPTION" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Duplicated description</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_EMPTY_TITLE" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">Empty or missing title</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_SHORT_TITLE" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">Short title</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_LONG_TITLE" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">Long title</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_EMPTY_DESCRIPTION" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">Empty or missing description</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_SHORT_DESCRIPTION" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">Short description</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_LONG_DESCRIPTION" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">Long description</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_LITTLE_CONTENT" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">Little content</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_IMAGES_NO_ALT" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">Images with no alt attribute</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_REDIRECT_CHAIN" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">A redirect chain</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_REDIRECT_LOOP" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_LOOP">Redirect loop</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_NO_H1" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">Missing H1 heading</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_NOT_VALID_HEADINGS" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_LOOP">Not valid headings order</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_HREFLANG_RETURN" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">Page referenes an hreflang page that doesn't reference back</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_TOO_MANY_LINKS" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">Page has too many links</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_INTERNAL_NOFOLLOW" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">Internal links with nofollow attribute</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_EXTERNAL_WITHOUT_NOFOLLOW" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">External follow links</a></li>
-					{{ end }}
-					{{ if eq . "ERROR_CANONICALIZED_NON_CANONICAL" }}
-					<li><a href="/issues/view?cid={{ $cid }}&eid=ERROR_CANONICALIZED_NON_CANONICAL">Canonicalized to non canonical</a></li>
-					{{ end }}
-					{{ end }}
+						<li><a href="/issues/view?cid={{ $cid }}&eid={{ . }}">{{ trans . }}</a></li>
+				{{ end }}
 				</ul>
 				{{ end }}
 			</div>

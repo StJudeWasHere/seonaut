@@ -1,0 +1,34 @@
+PROJECTS_VIEW: Projects
+ADD_PROJECT: Add project
+ISSUES_VIEW: Project Issues
+ISSUES_DETAIL: Issues Detail
+RESOURCES_VIEW: Page Resources
+SIGNUP_VIEW: Sign Up
+SIGNIN_VIEW: Sign In
+UPGRADE: Upgrade your account
+STRIPE_MANAGE: Manage your account
+STRIPE_CANCELED: Upgrade canceled
+ERROR_50x: Status 50x
+ERROR_40x: Status 40x
+ERROR_30x: Status 30x
+ERROR_DUPLICATED_TITLE: Duplicate Title
+ERROR_LONG_TITLE: Long title
+ERROR_SHORT_TITLE: Short title
+ERROR_EMPTY_TITLE: Missing title
+ERROR_EMPTY_DESCRIPTION: Missing description
+ERROR_SHORT_DESCRIPTION: Short description
+ERROR_LONG_DESCRIPTION: Long description
+ERROR_DUPLICATED_DESCRIPTION: Duplicate description
+ERROR_LITTLE_CONTENT: Little content
+ERROR_IMAGES_NO_ALT: No alt attribute
+ERROR_REDIRECT_CHAIN: Redirect chain
+ERROR_NO_H1: Missing H1
+ERROR_NO_LANG: Missing language attribute
+ERROR_HTTP_LINKS: HTTPS to HTTP
+ERROR_HREFLANG_RETURN: Missing hreflang
+ERROR_TOO_MANY_LINKS: Too Many Links
+ERROR_INTERNAL_NOFOLLOW: Internal nofollow links
+ERROR_EXTERNAL_WITHOUT_NOFOLLOW: External follow links
+ERROR_CANONICALIZED_NON_CANONICAL: Canonicalized to non canonical
+ERROR_REDIRECT_LOOP: Redirect loop
+ERROR_NOT_VALID_HEADINGS: Not valid headings order

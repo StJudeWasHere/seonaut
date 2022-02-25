@@ -8,47 +8,7 @@
 		<meta http-equiv="refresh" content="120"/>
 	{{ end }}
 	<title>
-		{{ if eq .PageTitle "PROJECTS_VIEW"}}
-			Projects
-		{{ end }}
-
-		{{ if eq .PageTitle "ADD_PROJECT"}}
-			Add project
-		{{ end }}
-
-		{{ if eq .PageTitle "ISSUES_VIEW"}}
-			Project Issues
-		{{ end }}
-
-		{{ if eq .PageTitle "ISSUES_DETAIL"}}
-			Issues Detail
-		{{ end }}
-
-		{{ if eq .PageTitle "RESOURCES_VIEW"}}
-			Page Resources
-		{{ end }}
-
-		{{ if eq .PageTitle "SIGNUP_VIEW"}}
-			Sign Up
-		{{ end }}
-
-		{{ if eq .PageTitle "SIGNIN_VIEW"}}
-			Sign In
-		{{ end }}
-
-		{{ if eq .PageTitle "UPGRADE" }}
-			Upgrade your account
-		{{ end }}
-
-		{{ if eq .PageTitle "STRIPE_MANAGE" }}
-			Manage your account
-		{{ end }}
-
-		{{ if eq .PageTitle "STRIPE_CANCELED" }}
-			Upgrade canceled
-		{{ end }}
-
-		- Lenkrr
+		{{ trans .PageTitle }} - Lenkrr
 	</title>
 	<link rel="stylesheet" href="/resources/style.css?v=0.6">
 </head>

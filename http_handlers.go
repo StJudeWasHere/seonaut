@@ -93,7 +93,7 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 		Refresh:   refresh,
 	}
 
-	renderTemplate(w, "home", v)
+	app.renderer.renderTemplate(w, "home", v)
 }
 
 func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Request) {
@@ -136,7 +136,7 @@ func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Reque
 		PageTitle: "ADD_PROJECT",
 	}
 
-	renderTemplate(w, "project_add", v)
+	app.renderer.renderTemplate(w, "project_add", v)
 }
 
 func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
@@ -289,7 +289,7 @@ func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) 
 		PageTitle: "ISSUES_VIEW",
 	}
 
-	renderTemplate(w, "issues", v)
+	app.renderer.renderTemplate(w, "issues", v)
 }
 
 func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Request) {
@@ -389,7 +389,7 @@ func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Reque
 		PageTitle: "ISSUES_DETAIL",
 	}
 
-	renderTemplate(w, "issues_view", v)
+	app.renderer.renderTemplate(w, "issues_view", v)
 }
 
 func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Request) {
@@ -495,7 +495,7 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 		PageTitle: "RESOURCES_VIEW",
 	}
 
-	renderTemplate(w, "resources", v)
+	app.renderer.renderTemplate(w, "resources", v)
 }
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
@@ -524,7 +524,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 
 		exists := app.datastore.emailExists(email)
 		if exists || password == "" {
-			renderTemplate(w, "signup", &PageView{
+			app.renderer.renderTemplate(w, "signup", &PageView{
 				PageTitle: "SIGNUP_VIEW",
 				Data: struct {
 					Invite, Error bool
@@ -548,7 +548,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	renderTemplate(w, "signup", &PageView{
+	app.renderer.renderTemplate(w, "signup", &PageView{
 		PageTitle: "SIGNUP_VIEW",
 		Data: struct {
 			Invite, Error bool
@@ -594,7 +594,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "SIGNIN_VIEW",
 	}
 
-	renderTemplate(w, "signin", v)
+	app.renderer.renderTemplate(w, "signin", v)
 }
 
 func (app *App) serveDownloadCSV(user *User, w http.ResponseWriter, r *http.Request) {

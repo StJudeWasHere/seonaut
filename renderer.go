@@ -1,9 +1,13 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
+
+	"gopkg.in/yaml.v3"
 )
 
 type PageView struct {
@@ -13,9 +17,28 @@ type PageView struct {
 	Refresh   bool
 }
 
-func renderTemplate(w http.ResponseWriter, t string, v *PageView) {
+type Renderer struct {
+	translationMap map[string]interface{}
+}
+
+func NewRenderer() *Renderer {
+	content, _ := ioutil.ReadFile("translation.en.yaml")
+	m := make(map[string]interface{})
+	err := yaml.Unmarshal(content, &m)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &Renderer{
+		translationMap: m,
+	}
+}
+
+func (r *Renderer) renderTemplate(w http.ResponseWriter, t string, v *PageView) {
 	var templates = template.Must(
-		template.ParseFiles(
+		template.New("").Funcs(template.FuncMap{
+			"trans": r.trans,
+		}).ParseFiles(
 			"web/templates/head.html",
 			"web/templates/footer.html",
 			"web/templates/home.html",
@@ -35,4 +58,14 @@ func renderTemplate(w http.ResponseWriter, t string, v *PageView) {
 	if err != nil {
 		log.Println(err)
 	}
+}
+
+func (r *Renderer) trans(s string) string {
+	t, ok := r.translationMap[s]
+	if !ok {
+		log.Printf("%s translation not found\n", s)
+		return s
+	}
+
+	return fmt.Sprintf("%v", t)
 }

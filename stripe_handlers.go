@@ -56,11 +56,11 @@ func (app *App) upgrade(user *User, w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	renderTemplate(w, "upgrade", &PageView{PageTitle: "UPGRADE", User: *user})
+	app.renderer.renderTemplate(w, "upgrade", &PageView{PageTitle: "UPGRADE", User: *user})
 }
 
 func (app *App) handleCanceled(user *User, w http.ResponseWriter, r *http.Request) {
-	renderTemplate(w, "canceled", &PageView{PageTitle: "STRIPE_CANCELED", User: *user})
+	app.renderer.renderTemplate(w, "canceled", &PageView{PageTitle: "STRIPE_CANCELED", User: *user})
 }
 
 func (app *App) handleManageAccount(user *User, w http.ResponseWriter, r *http.Request) {
@@ -68,7 +68,7 @@ func (app *App) handleManageAccount(user *User, w http.ResponseWriter, r *http.R
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	renderTemplate(w, "manage", &PageView{
+	app.renderer.renderTemplate(w, "manage", &PageView{
 		PageTitle: "STRIPE_MANAGE",
 		User:      *user,
 	})

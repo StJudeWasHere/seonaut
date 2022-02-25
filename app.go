@@ -16,6 +16,7 @@ type App struct {
 	datastore *datastore
 	cookie    *sessions.CookieStore
 	sanitizer *bluemonday.Policy
+	renderer  *Renderer
 }
 
 func NewApp(configPath string) *App {
@@ -35,6 +36,8 @@ func NewApp(configPath string) *App {
 
 	app.cookie = sessions.NewCookieStore([]byte("SESSION_ID"))
 	app.sanitizer = bluemonday.StrictPolicy()
+
+	app.renderer = NewRenderer()
 
 	return &app
 }

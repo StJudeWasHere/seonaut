@@ -1,10 +1,6 @@
 package main
 
-const (
-	configPath = "."
-)
-
 func main() {
-	app := NewApp(configPath)
+	app := NewApp(".")
 	app.Run()
 }

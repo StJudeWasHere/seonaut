@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -23,7 +22,7 @@ func NewApp(configPath string) *App {
 	var err error
 	var app App
 
-	app.config, err = loadConfig(configPath)
+	app.config, err = NewConfig(configPath)
 	if err != nil {
 		log.Fatalf("Error loading config: %v\n", err)
 	}

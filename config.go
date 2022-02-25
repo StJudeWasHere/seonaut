@@ -29,7 +29,7 @@ type Config struct {
 	Stripe StripeConfig
 }
 
-func loadConfig(path string) (*Config, error) {
+func NewConfig(path string) (*Config, error) {
 	viper.SetConfigName("config")
 	viper.SetConfigType("toml")
 	viper.AddConfigPath(path)

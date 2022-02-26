@@ -389,7 +389,7 @@ func (ds *datastore) saveIssues(issues []Issue, cid int) {
 	for _, i := range issues {
 		_, err := stmt.Exec(i.PageReportId, cid, i.ErrorType)
 		if err != nil {
-			log.Printf("saveIssues -> ID: %d ERROR: %s CRAWL: %d %v\n", i.PageReportId, i.ErrorType, cid, err)
+			log.Printf("saveIssues -> ID: %d ERROR: %d CRAWL: %d %v\n", i.PageReportId, i.ErrorType, cid, err)
 			continue
 		}
 	}

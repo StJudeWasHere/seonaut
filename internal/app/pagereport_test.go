@@ -91,7 +91,7 @@ func TestPageReportHTML(t *testing.T) {
 	contentType := "text/html"
 	statusCode := 200
 
-	body, err := ioutil.ReadFile("test/test.html")
+	body, err := ioutil.ReadFile("../../test/test.html")
 	if err != nil {
 		log.Fatal(err)
 	}

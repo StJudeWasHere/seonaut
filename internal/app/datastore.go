@@ -9,6 +9,7 @@ import (
 
 	"database/sql"
 
+	"github.com/mnlg/lenkrr/internal/config"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -31,7 +32,7 @@ type IssueGroup struct {
 	Count     int
 }
 
-func NewDataStore(config DBConfig) (*datastore, error) {
+func NewDataStore(config config.DBConfig) (*datastore, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		config.User,

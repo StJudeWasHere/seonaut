@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/mnlg/lenkrr/internal/config"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"github.com/gorilla/sessions"
@@ -20,7 +21,7 @@ type UserService interface {
 }
 
 type App struct {
-	config      *Config
+	config      *config.Config
 	datastore   *datastore
 	cookie      *sessions.CookieStore
 	sanitizer   *bluemonday.Policy
@@ -28,7 +29,7 @@ type App struct {
 	userService UserService
 }
 
-func NewApp(c *Config, ds *datastore, userService UserService, r *Renderer) *App {
+func NewApp(c *config.Config, ds *datastore, userService UserService, r *Renderer) *App {
 	return &App{
 		config:      c,
 		datastore:   ds,

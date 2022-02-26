@@ -5,13 +5,14 @@ import (
 	"log"
 
 	"github.com/mnlg/lenkrr/internal/app"
+	"github.com/mnlg/lenkrr/internal/config"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"gopkg.in/yaml.v3"
 )
 
 func main() {
-	config, err := app.NewConfig(".")
+	config, err := config.NewConfig(".")
 	if err != nil {
 		log.Fatalf("Error loading config: %v\n", err)
 	}

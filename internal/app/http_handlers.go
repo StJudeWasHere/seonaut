@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/mnlg/lenkrr/internal/user"
+
 	"github.com/turk/go-sitemap"
 )
 
@@ -64,7 +66,7 @@ type Project struct {
 	Created         time.Time
 }
 
-func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Request) {
 	var refresh bool
 	var views []ProjectView
 	projects := app.datastore.findProjectsByUser(user.Id)
@@ -86,7 +88,7 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 		Data: struct {
 			Projects    []ProjectView
 			MaxProjects int
-		}{Projects: views, MaxProjects: user.getMaxAllowedProjects()},
+		}{Projects: views, MaxProjects: user.GetMaxAllowedProjects()},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
 		Refresh:   refresh,
@@ -95,9 +97,9 @@ func (app *App) serveHome(user *User, w http.ResponseWriter, r *http.Request) {
 	app.renderer.renderTemplate(w, "home", v)
 }
 
-func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.Request) {
 	projects := app.datastore.findProjectsByUser(user.Id)
-	if len(projects) >= user.getMaxAllowedProjects() {
+	if len(projects) >= user.GetMaxAllowedProjects() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -138,7 +140,7 @@ func (app *App) serveProjectAdd(user *User, w http.ResponseWriter, r *http.Reque
 	app.renderer.renderTemplate(w, "project_add", v)
 }
 
-func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveCrawl(user *user.User, w http.ResponseWriter, r *http.Request) {
 	qpid, ok := r.URL.Query()["pid"]
 	if !ok || len(qpid) < 1 {
 		log.Println("serveCrawl: pid parameter is missing")
@@ -211,7 +213,7 @@ func (app *App) serveCrawl(user *User, w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Request) {
 	qcid, ok := r.URL.Query()["cid"]
 	if !ok || len(qcid) < 1 {
 		log.Println("serveIssues: cid parameter missing")
@@ -291,7 +293,7 @@ func (app *App) serveIssues(user *User, w http.ResponseWriter, r *http.Request) 
 	app.renderer.renderTemplate(w, "issues", v)
 }
 
-func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.Request) {
 	qeid, ok := r.URL.Query()["eid"]
 	if !ok || len(qeid) < 1 {
 		log.Println("serveIssuesView: eid parameter missing")
@@ -391,7 +393,7 @@ func (app *App) serveIssuesView(user *User, w http.ResponseWriter, r *http.Reque
 	app.renderer.renderTemplate(w, "issues_view", v)
 }
 
-func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *http.Request) {
 	qrid, ok := r.URL.Query()["rid"]
 	if !ok || len(qrid) < 1 {
 		log.Println("serveResourcesView: rid paramenter missing")
@@ -497,7 +499,7 @@ func (app *App) serveResourcesView(user *User, w http.ResponseWriter, r *http.Re
 	app.renderer.renderTemplate(w, "resources", v)
 }
 
-func (app *App) serveDownloadCSV(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http.Request) {
 	qcid, ok := r.URL.Query()["cid"]
 	if !ok || len(qcid) < 1 {
 		log.Println("serveDownloadCSV: cid parameter missing")
@@ -555,7 +557,7 @@ func (app *App) serveDownloadCSV(user *User, w http.ResponseWriter, r *http.Requ
 	}
 }
 
-func (app *App) serveSitemap(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Request) {
 	qcid, ok := r.URL.Query()["cid"]
 	if !ok || len(qcid) < 1 {
 		log.Println("serveSitemap: cid parameter missings")

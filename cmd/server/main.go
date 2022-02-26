@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/mnlg/lenkrr/internal/app"
+	"github.com/mnlg/lenkrr/internal/user"
 
 	"gopkg.in/yaml.v3"
 )
@@ -31,8 +32,9 @@ func main() {
 		log.Fatal(err)
 	}
 
+	userService := user.NewService(datastore)
 	renderer := app.NewRenderer(m)
 
-	lenkrr := app.NewApp(config, datastore, renderer)
+	lenkrr := app.NewApp(config, datastore, userService, renderer)
 	lenkrr.Run()
 }

@@ -4,12 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	"golang.org/x/crypto/bcrypt"
+	"github.com/mnlg/lenkrr/internal/user"
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 	var invite bool
-
 	inviteQ := r.URL.Query()["invite"]
 	if len(inviteQ) == 0 {
 		invite = false
@@ -31,7 +30,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		exists := app.datastore.emailExists(email)
+		exists := app.userService.Exists(email)
 		if exists || password == "" {
 			app.renderer.renderTemplate(w, "signup", &PageView{
 				PageTitle: "SIGNUP_VIEW",
@@ -43,16 +42,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
-			log.Println(err)
-			http.Redirect(w, r, "/signup", http.StatusSeeOther)
-
-			return
-		}
-
-		app.datastore.userSignup(email, string(hashedPassword))
-
+		app.userService.SignUp(email, password)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -79,13 +69,8 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 		email := r.FormValue("email")
 		password := r.FormValue("password")
 
-		u := app.datastore.findUserByEmail(email)
-		if u.Id == 0 {
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-			return
-		}
-
-		if err = bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
+		u, err := app.userService.SignIn(email, password)
+		if err != nil {
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
 		}
@@ -106,7 +91,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 	app.renderer.renderTemplate(w, "signin", v)
 }
 
-func (app *App) serveSignout(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveSignout(user *user.User, w http.ResponseWriter, r *http.Request) {
 	session, _ := app.cookie.Get(r, "SESSION_ID")
 	session.Values["authenticated"] = false
 	session.Values["uid"] = nil
@@ -115,7 +100,7 @@ func (app *App) serveSignout(user *User, w http.ResponseWriter, r *http.Request)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *App) requireAuth(f func(user *User, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+func (app *App) requireAuth(f func(user *user.User, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, _ := app.cookie.Get(r, "SESSION_ID")
 		var authenticated interface{} = session.Values["authenticated"]
@@ -124,7 +109,7 @@ func (app *App) requireAuth(f func(user *User, w http.ResponseWriter, r *http.Re
 			if isAuthenticated {
 				session, _ := app.cookie.Get(r, "SESSION_ID")
 				uid := session.Values["uid"].(int)
-				user := app.datastore.findUserById(uid)
+				user := app.userService.FindById(uid)
 				f(user, w, r)
 
 				return

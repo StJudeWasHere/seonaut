@@ -1,4 +1,4 @@
-package app
+package user
 
 import (
 	"database/sql"
@@ -17,7 +17,7 @@ type User struct {
 	StripeSessionId sql.NullString
 }
 
-func (u *User) getMaxAllowedProjects() int {
+func (u *User) GetMaxAllowedProjects() int {
 	if u.Advanced {
 		return AdvancedMaxProjects
 	}

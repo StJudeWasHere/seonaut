@@ -10,6 +10,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/mnlg/lenkrr/internal/user"
+
 	"github.com/stripe/stripe-go/v72"
 	portalsession "github.com/stripe/stripe-go/v72/billingportal/session"
 	"github.com/stripe/stripe-go/v72/checkout/session"
@@ -51,7 +53,7 @@ func writeJSON(w http.ResponseWriter, v interface{}, err error) {
 	}
 }
 
-func (app *App) upgrade(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) upgrade(user *user.User, w http.ResponseWriter, r *http.Request) {
 	if user.Advanced {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
@@ -59,11 +61,11 @@ func (app *App) upgrade(user *User, w http.ResponseWriter, r *http.Request) {
 	app.renderer.renderTemplate(w, "upgrade", &PageView{PageTitle: "UPGRADE", User: *user})
 }
 
-func (app *App) handleCanceled(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) handleCanceled(user *user.User, w http.ResponseWriter, r *http.Request) {
 	app.renderer.renderTemplate(w, "canceled", &PageView{PageTitle: "STRIPE_CANCELED", User: *user})
 }
 
-func (app *App) handleManageAccount(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) handleManageAccount(user *user.User, w http.ResponseWriter, r *http.Request) {
 	if user.Advanced == false {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
@@ -74,7 +76,7 @@ func (app *App) handleManageAccount(user *User, w http.ResponseWriter, r *http.R
 	})
 }
 
-func (app *App) handleConfig(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) handleConfig(user *user.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
@@ -89,7 +91,7 @@ func (app *App) handleConfig(user *User, w http.ResponseWriter, r *http.Request)
 	}, nil)
 }
 
-func (app *App) handleCreateCheckoutSession(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) handleCreateCheckoutSession(user *user.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
@@ -120,7 +122,7 @@ func (app *App) handleCreateCheckoutSession(user *User, w http.ResponseWriter, r
 	http.Redirect(w, r, s.URL, http.StatusSeeOther)
 }
 
-func (app *App) handleCheckoutSession(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) handleCheckoutSession(user *user.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return
@@ -177,7 +179,7 @@ func (app *App) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *App) handleCustomerPortal(user *User, w http.ResponseWriter, r *http.Request) {
+func (app *App) handleCustomerPortal(user *user.User, w http.ResponseWriter, r *http.Request) {
 	if r.Method != "POST" {
 		http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)
 		return

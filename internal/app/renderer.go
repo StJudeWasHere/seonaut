@@ -5,11 +5,13 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+
+	"github.com/mnlg/lenkrr/internal/user"
 )
 
 type PageView struct {
 	PageTitle string
-	User      User
+	User      user.User
 	Data      interface{}
 	Refresh   bool
 }

@@ -9,6 +9,8 @@ import (
 
 	"database/sql"
 
+	"github.com/mnlg/lenkrr/internal/user"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -110,7 +112,7 @@ func (ds *datastore) countListQuery(query string, cid int) CountList {
 	return m
 }
 
-func (ds *datastore) emailExists(email string) bool {
+func (ds *datastore) EmailExists(email string) bool {
 	query := `select exists (select id from users where email = ?)`
 	var exists bool
 	err := ds.db.QueryRow(query, email).Scan(&exists)
@@ -121,19 +123,19 @@ func (ds *datastore) emailExists(email string) bool {
 	return exists
 }
 
-func (ds *datastore) userSignup(user, password string) {
+func (ds *datastore) UserSignup(user, password string) {
 	query := `INSERT INTO users (email, password) VALUES (?, ?)`
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
 
 	_, err := stmt.Exec(user, password)
 	if err != nil {
-		log.Printf("userSignup: %v\n", err)
+		log.Printf("WserSignup: %v\n", err)
 	}
 }
 
-func (ds *datastore) findUserByEmail(email string) *User {
-	u := User{}
+func (ds *datastore) FindUserByEmail(email string) *user.User {
+	u := user.User{}
 	query := `
 		SELECT
 			id,
@@ -154,8 +156,8 @@ func (ds *datastore) findUserByEmail(email string) *User {
 	return &u
 }
 
-func (ds *datastore) findUserById(id int) *User {
-	u := User{}
+func (ds *datastore) FindUserById(id int) *user.User {
+	u := user.User{}
 	query := `
 		SELECT
 			id,
@@ -223,8 +225,8 @@ func (ds *datastore) renewSubscription(stripeCustomerId string) {
 	}
 }
 
-func (ds *datastore) findCrawlUserId(cid int) (*User, error) {
-	u := User{}
+func (ds *datastore) findCrawlUserId(cid int) (*user.User, error) {
+	u := user.User{}
 	query := `
 		SELECT 
 			users.id,

@@ -5,26 +5,37 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/mnlg/lenkrr/internal/user"
+
 	"github.com/gorilla/sessions"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/stripe/stripe-go/v72"
 )
 
-type App struct {
-	config    *Config
-	datastore *datastore
-	cookie    *sessions.CookieStore
-	sanitizer *bluemonday.Policy
-	renderer  *Renderer
+type UserService interface {
+	Exists(email string) bool
+	FindById(id int) *user.User
+	SignUp(email, password string) error
+	SignIn(email, password string) (*user.User, error)
 }
 
-func NewApp(c *Config, ds *datastore, r *Renderer) *App {
+type App struct {
+	config      *Config
+	datastore   *datastore
+	cookie      *sessions.CookieStore
+	sanitizer   *bluemonday.Policy
+	renderer    *Renderer
+	userService UserService
+}
+
+func NewApp(c *Config, ds *datastore, userService UserService, r *Renderer) *App {
 	return &App{
-		config:    c,
-		datastore: ds,
-		cookie:    sessions.NewCookieStore([]byte("SESSION_ID")),
-		sanitizer: bluemonday.StrictPolicy(),
-		renderer:  r,
+		config:      c,
+		datastore:   ds,
+		cookie:      sessions.NewCookieStore([]byte("SESSION_ID")),
+		sanitizer:   bluemonday.StrictPolicy(),
+		renderer:    r,
+		userService: userService,
 	}
 }
 

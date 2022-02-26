@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mnlg/lenkrr/internal/report"
+
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 	"github.com/microcosm-cc/bluemonday"
@@ -56,7 +58,7 @@ func startCrawler(p Project, agent string, advanced bool, datastore *datastore, 
 
 	cid := datastore.saveCrawl(p)
 
-	pageReport := make(chan PageReport)
+	pageReport := make(chan report.PageReport)
 	go c.Crawl(pageReport)
 
 	for r := range pageReport {
@@ -70,7 +72,7 @@ func startCrawler(p Project, agent string, advanced bool, datastore *datastore, 
 	return int(cid)
 }
 
-func (c *Crawler) Crawl(pr chan<- PageReport) {
+func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 	defer close(pr)
 
 	q, _ := queue.New(
@@ -91,7 +93,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 			return
 		}
 		url := r.Request.URL
-		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
+		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
 		pr <- *pageReport
 		responseCounter++
 	}
@@ -107,7 +109,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 			us = us[len(RendertronURL):]
 			url, _ = url.Parse(us)
 		}
-		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
+		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
 
 		if strings.Contains(pageReport.Robots, "noindex") {
 			return

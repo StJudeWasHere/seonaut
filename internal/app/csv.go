@@ -6,6 +6,8 @@ import (
 	"io"
 	"strconv"
 	"unicode/utf8"
+
+	"github.com/mnlg/lenkrr/internal/report"
 )
 
 type CSVWriter struct {
@@ -37,7 +39,7 @@ func newCSVWriter(f io.Writer) *CSVWriter {
 	return &cw
 }
 
-func (cw *CSVWriter) write(r PageReport) {
+func (cw *CSVWriter) write(r report.PageReport) {
 	cw.writer.Write([]string{
 		fmt.Sprintf("%d", r.StatusCode),
 		r.URL,

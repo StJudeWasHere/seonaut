@@ -1,4 +1,4 @@
-package app
+package report
 
 import (
 	"bytes"
@@ -19,7 +19,7 @@ import (
 type PageReport struct {
 	Id            int
 	URL           string
-	parsedURL     *url.URL
+	ParsedURL     *url.URL
 	RedirectURL   string
 	Refresh       string
 	StatusCode    int
@@ -47,7 +47,7 @@ type PageReport struct {
 
 type Link struct {
 	URL       string
-	parsedUrl *url.URL
+	ParsedURL *url.URL
 	Rel       string
 	Text      string
 	External  bool
@@ -67,7 +67,7 @@ type Image struct {
 func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte, sanitizer *bluemonday.Policy) *PageReport {
 	pageReport := PageReport{
 		URL:           u.String(),
-		parsedURL:     u,
+		ParsedURL:     u,
 		StatusCode:    status,
 		ContentType:   headers.Get("Content-Type"),
 		Body:          body,
@@ -299,10 +299,10 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 
 	l := Link{
 		URL:       u.String(),
-		parsedUrl: u,
+		ParsedURL: u,
 		Rel:       rel,
 		Text:      p.sanitizer.Sanitize(strings.TrimSpace(htmlquery.InnerText(n))),
-		External:  u.Host != p.parsedURL.Host,
+		External:  u.Host != p.ParsedURL.Host,
 		NoFollow:  strings.Contains(rel, "nofollow"),
 	}
 
@@ -327,17 +327,17 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 	}
 
 	if u.Scheme == "" {
-		u.Scheme = p.parsedURL.Scheme
+		u.Scheme = p.ParsedURL.Scheme
 	}
 
 	if u.Host == "" {
-		u.Host = p.parsedURL.Host
+		u.Host = p.ParsedURL.Host
 	}
 
 	u.Fragment = ""
 
 	if u.Path != "" && !strings.HasPrefix(u.Path, "/") {
-		basePath := p.parsedURL.Path
+		basePath := p.ParsedURL.Path
 		if !strings.HasSuffix(basePath, "/") {
 			basePath = basePath + "/"
 		}
@@ -345,7 +345,7 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 	}
 
 	if u.Path == "" {
-		basePath := p.parsedURL.Path
+		basePath := p.ParsedURL.Path
 		if basePath == "" {
 			basePath = "/"
 		}

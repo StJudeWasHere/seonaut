@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"github.com/turk/go-sitemap"
@@ -36,7 +37,7 @@ type IssuesGroupView struct {
 }
 
 type IssuesView struct {
-	PageReports  []PageReport
+	PageReports  []report.PageReport
 	Cid          int
 	Eid          string
 	Project      Project
@@ -47,12 +48,12 @@ type IssuesView struct {
 }
 
 type ResourcesView struct {
-	PageReport PageReport
+	PageReport report.PageReport
 	Cid        int
 	Eid        string
 	ErrorTypes []string
-	InLinks    []PageReport
-	Redirects  []PageReport
+	InLinks    []report.PageReport
+	Redirects  []report.PageReport
 	Project    Project
 	Tab        string
 }
@@ -248,13 +249,13 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 	statusCount := app.datastore.CountByStatusCode(cid)
 	statusChart := NewChart(statusCount)
 
-	parsedURL, err := url.Parse(project.URL)
+	ParsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	project.Host = parsedURL.Host
+	project.Host = ParsedURL.Host
 
 	var critical int
 	var alert int
@@ -363,13 +364,13 @@ func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	parsedURL, err := url.Parse(project.URL)
+	ParsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	project.Host = parsedURL.Host
+	project.Host = ParsedURL.Host
 
 	issues := app.datastore.findPageReportIssues(cid, page-1, eid)
 
@@ -458,23 +459,23 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	parsedURL, err := url.Parse(project.URL)
+	ParsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	project.Host = parsedURL.Host
+	project.Host = ParsedURL.Host
 
 	pageReport := app.datastore.FindPageReportById(rid)
 	errorTypes := app.datastore.findErrorTypesByPage(rid, cid)
 
-	var inLinks []PageReport
+	var inLinks []report.PageReport
 	if tab == "inlinks" {
 		inLinks = app.datastore.FindInLinks(pageReport.URL, cid)
 	}
 
-	var redirects []PageReport
+	var redirects []report.PageReport
 	if tab == "redirections" {
 		redirects = app.datastore.FindPageReportsRedirectingToURL(pageReport.URL, cid)
 	}
@@ -531,16 +532,16 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	parsedURL, err := url.Parse(project.URL)
+	ParsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	var pageReports []PageReport
+	var pageReports []report.PageReport
 
 	eid := r.URL.Query()["eid"]
-	fileName := parsedURL.Host + " crawl " + time.Now().Format("2-15-2006")
+	fileName := ParsedURL.Host + " crawl " + time.Now().Format("2-15-2006")
 
 	if len(eid) > 0 && eid[0] != "" {
 		fileName = fileName + "-" + eid[0]
@@ -588,7 +589,7 @@ func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Req
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	parsedURL, err := url.Parse(project.URL)
+	ParsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -596,7 +597,7 @@ func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Req
 
 	w.Header().Add(
 		"Content-Disposition",
-		fmt.Sprint("attachment; filename=\""+parsedURL.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
+		fmt.Sprint("attachment; filename=\""+ParsedURL.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
 	p := app.datastore.findSitemapPageReports(cid)

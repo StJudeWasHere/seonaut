@@ -1,4 +1,4 @@
-package app
+package report
 
 import (
 	"fmt"
@@ -39,8 +39,8 @@ func TestNewPageReport(t *testing.T) {
 		t.Error("NewPageReport URL != testURL")
 	}
 
-	if pageReport.parsedURL != u {
-		t.Error("NewPageReport parsedURL != u")
+	if pageReport.ParsedURL != u {
+		t.Error("NewPageReport ParsedURL != u")
 	}
 
 	if pageReport.StatusCode != statusCode {

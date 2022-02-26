@@ -1,5 +1,9 @@
 package app
 
+import (
+	"github.com/mnlg/lenkrr/internal/report"
+)
+
 const (
 	Error30x = iota + 1
 	Error40x
@@ -39,7 +43,7 @@ type Issue struct {
 }
 
 type IssueCallback struct {
-	Callback  func(int) []PageReport
+	Callback  func(int) []report.PageReport
 	ErrorType int
 }
 
@@ -47,7 +51,7 @@ type ReportManager struct {
 	callbacks []IssueCallback
 }
 
-func (r *ReportManager) addReporter(c func(int) []PageReport, t int) {
+func (r *ReportManager) addReporter(c func(int) []report.PageReport, t int) {
 	r.callbacks = append(r.callbacks, IssueCallback{Callback: c, ErrorType: t})
 }
 

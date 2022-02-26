@@ -3,11 +3,8 @@ package app
 import (
 	"fmt"
 	"html/template"
-	"io/ioutil"
 	"log"
 	"net/http"
-
-	"gopkg.in/yaml.v3"
 )
 
 type PageView struct {
@@ -21,14 +18,7 @@ type Renderer struct {
 	translationMap map[string]interface{}
 }
 
-func NewRenderer() *Renderer {
-	content, _ := ioutil.ReadFile("translation.en.yaml")
-	m := make(map[string]interface{})
-	err := yaml.Unmarshal(content, &m)
-	if err != nil {
-		log.Fatal(err)
-	}
-
+func NewRenderer(m map[string]interface{}) *Renderer {
 	return &Renderer{
 		translationMap: m,
 	}

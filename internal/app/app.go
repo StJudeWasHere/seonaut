@@ -18,27 +18,14 @@ type App struct {
 	renderer  *Renderer
 }
 
-func NewApp(configPath string) *App {
-	var err error
-	var app App
-
-	app.config, err = NewConfig(configPath)
-	if err != nil {
-		log.Fatalf("Error loading config: %v\n", err)
+func NewApp(c *Config, ds *datastore, r *Renderer) *App {
+	return &App{
+		config:    c,
+		datastore: ds,
+		cookie:    sessions.NewCookieStore([]byte("SESSION_ID")),
+		sanitizer: bluemonday.StrictPolicy(),
+		renderer:  r,
 	}
-
-	app.datastore, err = NewDataStore(app.config.DB)
-
-	if err != nil {
-		log.Fatalf("Error creating new datastore: %v\n", err)
-	}
-
-	app.cookie = sessions.NewCookieStore([]byte("SESSION_ID"))
-	app.sanitizer = bluemonday.StrictPolicy()
-
-	app.renderer = NewRenderer()
-
-	return &app
 }
 
 func (app *App) Run() {

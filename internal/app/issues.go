@@ -1,4 +1,4 @@
-package main
+package app
 
 const (
 	Error30x = iota + 1

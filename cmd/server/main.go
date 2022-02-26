@@ -6,6 +6,7 @@ import (
 
 	"github.com/mnlg/lenkrr/internal/app"
 	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/lenkrr/internal/stripe"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"gopkg.in/yaml.v3"
@@ -34,8 +35,16 @@ func main() {
 	}
 
 	userService := user.NewService(datastore)
+	stripeService := stripe.NewService(datastore)
 	renderer := app.NewRenderer(m)
 
-	lenkrr := app.NewApp(config, datastore, userService, renderer)
+	lenkrr := app.NewApp(
+		config,
+		datastore,
+		userService,
+		stripeService,
+		renderer,
+	)
+
 	lenkrr.Run()
 }

@@ -180,7 +180,7 @@ func (ds *datastore) FindUserById(id int) *user.User {
 	return &u
 }
 
-func (ds *datastore) userSetStripeId(email, stripeCustomerId string) {
+func (ds *datastore) UserSetStripeId(email, stripeCustomerId string) {
 	query := `
 		UPDATE users
 		SET stripe_customer_id = ?
@@ -195,7 +195,7 @@ func (ds *datastore) userSetStripeId(email, stripeCustomerId string) {
 	}
 }
 
-func (ds *datastore) userSetStripeSession(id int, stripeSessionId string) {
+func (ds *datastore) UserSetStripeSession(id int, stripeSessionId string) {
 	query := `
 		UPDATE users
 		SET stripe_session_id = ?
@@ -210,7 +210,7 @@ func (ds *datastore) userSetStripeSession(id int, stripeSessionId string) {
 	}
 }
 
-func (ds *datastore) renewSubscription(stripeCustomerId string) {
+func (ds *datastore) RenewSubscription(stripeCustomerId string) {
 	query := `
 		UPDATE users
 		SET period_end = ?

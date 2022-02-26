@@ -20,23 +20,31 @@ type UserService interface {
 	SignIn(email, password string) (*user.User, error)
 }
 
-type App struct {
-	config      *config.Config
-	datastore   *datastore
-	cookie      *sessions.CookieStore
-	sanitizer   *bluemonday.Policy
-	renderer    *Renderer
-	userService UserService
+type StripeService interface {
+	SetId(email, customerID string)
+	Renew(customerID string)
+	SetSession(userID int, sessionID string)
 }
 
-func NewApp(c *config.Config, ds *datastore, userService UserService, r *Renderer) *App {
+type App struct {
+	config        *config.Config
+	datastore     *datastore
+	cookie        *sessions.CookieStore
+	sanitizer     *bluemonday.Policy
+	renderer      *Renderer
+	userService   UserService
+	stripeService StripeService
+}
+
+func NewApp(c *config.Config, ds *datastore, userService UserService, stripeService StripeService, r *Renderer) *App {
 	return &App{
-		config:      c,
-		datastore:   ds,
-		cookie:      sessions.NewCookieStore([]byte("SESSION_ID")),
-		sanitizer:   bluemonday.StrictPolicy(),
-		renderer:    r,
-		userService: userService,
+		config:        c,
+		datastore:     ds,
+		cookie:        sessions.NewCookieStore([]byte("SESSION_ID")),
+		sanitizer:     bluemonday.StrictPolicy(),
+		renderer:      r,
+		userService:   userService,
+		stripeService: stripeService,
 	}
 }
 

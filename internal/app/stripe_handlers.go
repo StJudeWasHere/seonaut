@@ -143,7 +143,7 @@ func (app *App) handleCheckoutSession(user *user.User, w http.ResponseWriter, r 
 		return
 	}
 
-	app.datastore.userSetStripeSession(user.Id, sessionID)
+	app.stripeService.SetSession(user.Id, sessionID)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
@@ -171,11 +171,11 @@ func (app *App) handleWebhook(w http.ResponseWriter, r *http.Request) {
 	object := event.Data.Object
 
 	if event.Type == "customer.created" {
-		app.datastore.userSetStripeId(fmt.Sprint(object["email"]), fmt.Sprint(object["id"]))
+		app.stripeService.SetId(fmt.Sprint(object["email"]), fmt.Sprint(object["id"]))
 	}
 
 	if event.Type == "payment_intent.succeeded" {
-		app.datastore.renewSubscription(fmt.Sprint(object["customer"]))
+		app.stripeService.Renew(fmt.Sprint(object["customer"]))
 	}
 }
 

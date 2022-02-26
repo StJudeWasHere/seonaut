@@ -5,6 +5,7 @@ run:
 
 test:
 	go test github.com/mnlg/lenkrr/internal/app
+	go test github.com/mnlg/lenkrr/internal/user
 
 docker:
 	docker run -p 6306:3306 --name crawler-mysql -e MYSQL_ROOT_PASSWORD=root -d mysql:latest

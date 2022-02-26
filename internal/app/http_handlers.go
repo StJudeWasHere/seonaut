@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/mnlg/lenkrr/internal/encoding"
 	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 
@@ -552,9 +553,9 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
-	cw := newCSVWriter(w)
+	cw := encoding.NewCSVWriter(w)
 	for _, p := range pageReports {
-		cw.write(p)
+		cw.Write(p)
 	}
 }
 

@@ -1,4 +1,4 @@
-package app
+package encoding
 
 import (
 	"encoding/csv"
@@ -14,7 +14,7 @@ type CSVWriter struct {
 	writer *csv.Writer
 }
 
-func newCSVWriter(f io.Writer) *CSVWriter {
+func NewCSVWriter(f io.Writer) *CSVWriter {
 	cw := CSVWriter{}
 	cw.writer = csv.NewWriter(f)
 
@@ -39,7 +39,7 @@ func newCSVWriter(f io.Writer) *CSVWriter {
 	return &cw
 }
 
-func (cw *CSVWriter) write(r report.PageReport) {
+func (cw *CSVWriter) Write(r report.PageReport) {
 	cw.writer.Write([]string{
 		fmt.Sprintf("%d", r.StatusCode),
 		r.URL,

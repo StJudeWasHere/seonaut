@@ -10,6 +10,7 @@ import (
 	"database/sql"
 
 	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
@@ -27,12 +28,6 @@ const (
 	maxIddleConns        = 25
 	connMaxLifeInMinutes = 5
 )
-
-type IssueGroup struct {
-	ErrorType string
-	Priority  int
-	Count     int
-}
 
 func NewDataStore(config config.DBConfig) (*datastore, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf(
@@ -400,8 +395,8 @@ func (ds *datastore) saveIssues(issues []Issue, cid int) {
 	}
 }
 
-func (ds *datastore) findIssues(cid int) map[string]IssueGroup {
-	issues := map[string]IssueGroup{}
+func (ds *datastore) FindIssues(cid int) map[string]issue.IssueGroup {
+	issues := map[string]issue.IssueGroup{}
 	query := `
 		SELECT
 			issue_types.type,
@@ -418,7 +413,7 @@ func (ds *datastore) findIssues(cid int) map[string]IssueGroup {
 	}
 
 	for rows.Next() {
-		ig := IssueGroup{}
+		ig := issue.IssueGroup{}
 		err := rows.Scan(&ig.ErrorType, &ig.Priority, &ig.Count)
 		if err != nil {
 			log.Println(err)

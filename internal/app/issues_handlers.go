@@ -5,22 +5,20 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 )
 
 type IssuesGroupView struct {
-	IssuesGroups    map[string]IssueGroup
 	Project         project.Project
 	Crawl           Crawl
 	MediaCount      CountList
 	StatusCodeCount CountList
 	MediaChart      Chart
 	StatusChart     Chart
-	Critical        int
-	Alert           int
-	Warning         int
+	IssueCount      *issue.IssueCount
 }
 
 type IssuesView struct {
@@ -35,13 +33,7 @@ type IssuesView struct {
 }
 
 func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Request) {
-	qcid, ok := r.URL.Query()["cid"]
-	if !ok || len(qcid) < 1 {
-		log.Println("serveIssues: cid parameter missing")
-		return
-	}
-
-	cid, err := strconv.Atoi(qcid[0])
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -49,52 +41,29 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != user.Id {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	issueGroups := app.datastore.findIssues(cid)
-	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
+	project, err := app.projectService.FindProject(pid, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	mediaCount := app.datastore.CountByMediaType(cid)
+	crawl := app.datastore.getLastCrawl(&project)
+
+	issueCount := app.issueService.GetIssuesCount(crawl.Id)
+
+	mediaCount := app.datastore.CountByMediaType(crawl.Id)
 	mediaChart := NewChart(mediaCount)
-	statusCount := app.datastore.CountByStatusCode(cid)
+	statusCount := app.datastore.CountByStatusCode(crawl.Id)
 	statusChart := NewChart(statusCount)
 
-	var critical int
-	var alert int
-	var warning int
-
-	for _, v := range issueGroups {
-		switch v.Priority {
-		case Critical:
-			critical += v.Count
-		case Alert:
-			alert += v.Count
-		case Warning:
-			warning += v.Count
-		}
-	}
-
 	ig := IssuesGroupView{
-		IssuesGroups:    issueGroups,
+		IssueCount:      issueCount,
 		Crawl:           crawl,
 		Project:         project,
 		MediaCount:      mediaCount,
 		MediaChart:      mediaChart,
 		StatusChart:     statusChart,
 		StatusCodeCount: statusCount,
-		Critical:        critical,
-		Alert:           alert,
-		Warning:         warning,
 	}
 
 	v := &PageView{
@@ -107,25 +76,15 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 }
 
 func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.Request) {
-	qeid, ok := r.URL.Query()["eid"]
-	if !ok || len(qeid) < 1 {
+	eid := r.URL.Query().Get("eid")
+	if eid == "" {
 		log.Println("serveIssuesView: eid parameter missing")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
 
-	eid := qeid[0]
-
-	qcid, ok := r.URL.Query()["cid"]
-	if !ok || len(qcid) < 1 {
-		log.Println("serveIssuesView: cid parameter missing")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	cid, err := strconv.Atoi(qcid[0])
+	cid, err := strconv.Atoi(r.URL.Query().Get("cid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -135,20 +94,15 @@ func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.
 
 	totalPages := app.datastore.getNumberOfPagesForIssues(cid, eid)
 
-	p := r.URL.Query()["p"]
-	page := 1
-	if len(p) > 0 {
-		page, err = strconv.Atoi(p[0])
-		if err != nil {
-			log.Println(err)
-			page = 1
-		}
+	page, err := strconv.Atoi(r.URL.Query().Get("p"))
+	if err != nil {
+		page = 1
+	}
 
-		if page < 1 || page > totalPages {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+	if page < 1 || page > totalPages {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 
-			return
-		}
+		return
 	}
 
 	nextPage := 0

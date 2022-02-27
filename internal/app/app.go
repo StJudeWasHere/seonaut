@@ -8,6 +8,7 @@ import (
 
 	"github.com/mnlg/lenkrr/internal/config"
 	"github.com/mnlg/lenkrr/internal/crawler"
+	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	stripeService "github.com/mnlg/lenkrr/internal/stripe"
 	"github.com/mnlg/lenkrr/internal/user"
@@ -40,6 +41,10 @@ type CrawlerService interface {
 	StartCrawler(project.Project, string, bool, *bluemonday.Policy) int
 }
 
+type IssueService interface {
+	GetIssuesCount(int) *issue.IssueCount
+}
+
 type App struct {
 	config         *config.Config
 	datastore      *datastore
@@ -50,6 +55,7 @@ type App struct {
 	stripeService  StripeService
 	projectService ProjectService
 	crawlerService CrawlerService
+	issueService   IssueService
 }
 
 func NewApp(c *config.Config, ds *datastore) *App {
@@ -69,6 +75,7 @@ func NewApp(c *config.Config, ds *datastore) *App {
 	stripeService := stripeService.NewService(ds)
 	projectService := project.NewService(ds)
 	crawlerService := crawler.NewService(ds)
+	issueService := issue.NewService(ds)
 
 	return &App{
 		config:         c,
@@ -80,6 +87,7 @@ func NewApp(c *config.Config, ds *datastore) *App {
 		stripeService:  stripeService,
 		projectService: projectService,
 		crawlerService: crawlerService,
+		issueService:   issueService,
 	}
 }
 

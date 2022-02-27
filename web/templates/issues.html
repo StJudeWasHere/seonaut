@@ -15,19 +15,18 @@
 <div class="chart-block">
 	{{ template "charts" .}}
 </div>
-
 <div class="content legend-block">
 <div class="flex">
 	<div class="legend box">
-		<b>{{ .Critical }} Critical {{ if eq .Critical 1 }} error {{ else }} errors{{ end }}</b>
+		<b>{{ .IssueCount.Critical }} Critical {{ if eq .IssueCount.Critical 1 }} error {{ else }} errors{{ end }}</b>
 		<p>Critical errors affecting your ranking. Fix them first.</p>
 	</div>
 	<div class="legend box">
-		<b>{{ .Alert }} {{ if eq .Alert 1 }} Alert {{ else }} Alerts {{ end }}</b>
+		<b>{{ .IssueCount.Alert }} {{ if eq .IssueCount.Alert 1 }} Alert {{ else }} Alerts {{ end }}</b>
 		<p>Issues that are holding your site back. Fix them next.</p>
 	</div>
 	<div class="legend box">
-		<b>{{ .Warning }} {{ if eq .Warning 1 }} Warning {{ else }} Warnings {{ end }}</b>
+		<b>{{ .IssueCount.Warning }} {{ if eq .IssueCount.Warning 1 }} Warning {{ else }} Warnings {{ end }}</b>
 		<p>Issues you may want to keep an eye on.</p>
 	</div>
 </div>
@@ -37,7 +36,7 @@
 	{{ $cid := .Crawl.Id }}
 	{{/* Status code issues */}}
 
-	{{ with (index .IssuesGroups "ERROR_50x") }}
+	{{ with (index .IssueCount.Groups "ERROR_50x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 		<h2 class="error">
@@ -57,7 +56,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_40x") }}
+	{{ with (index .IssueCount.Groups "ERROR_40x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 		<h2 class="error">
@@ -74,7 +73,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_30x") }}
+	{{ with (index .IssueCount.Groups "ERROR_30x") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 		<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}URL is{{ else }}URLs are{{end }} redirecting somewhere else</h2>
@@ -92,7 +91,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_REDIRECT_CHAIN") }}
+	{{ with (index .IssueCount.Groups "ERROR_REDIRECT_CHAIN") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} are part of a redirect chain</h2>
@@ -110,7 +109,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_REDIRECT_LOOP") }}
+	{{ with (index .IssueCount.Groups "ERROR_REDIRECT_LOOP") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} are part of a redirect loop</h2>
@@ -129,7 +128,7 @@
 
 	{{/* Title issues */}}
 
-	{{ with (index .IssuesGroups "ERROR_DUPLICATED_TITLE") }}
+	{{ with (index .IssueCount.Groups "ERROR_DUPLICATED_TITLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
@@ -147,7 +146,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_EMPTY_TITLE") }}
+	{{ with (index .IssueCount.Groups "ERROR_EMPTY_TITLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with empty or missing title</h2>
@@ -162,7 +161,7 @@
 		{{ end }}
 	{{ end}}
 
-	{{ with (index .IssuesGroups "ERROR_LONG_TITLE") }}
+	{{ with (index .IssueCount.Groups "ERROR_LONG_TITLE") }}
 		{{ if ne .Count 0 }}
 			<div class="issues">
 				<h2 class="alert">
@@ -181,7 +180,7 @@
 		{{ end }}
 	{{ end}}
 
-	{{ with (index .IssuesGroups "ERROR_SHORT_TITLE") }}
+	{{ with (index .IssueCount.Groups "ERROR_SHORT_TITLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} short title</h2>
@@ -198,7 +197,7 @@
 
 	{{/* Description issues */}}
 
-	{{ with (index .IssuesGroups "ERROR_DUPLICATED_DESCRIPTION") }}
+	{{ with (index .IssueCount.Groups "ERROR_DUPLICATED_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with duplicate description tags</h2>
@@ -213,7 +212,7 @@
 		{{ end }}
 	{{ end}}
 
-	{{ with (index .IssuesGroups "ERROR_LONG_DESCRIPTION") }}
+	{{ with (index .IssueCount.Groups "ERROR_LONG_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long description</h2>
@@ -232,7 +231,7 @@
 		{{ end }}
 	{{ end}}
 
-	{{ with (index .IssuesGroups "ERROR_SHORT_DESCRIPTION") }}
+	{{ with (index .IssueCount.Groups "ERROR_SHORT_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 			<div class="issues">
 				<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with short description</h2>
@@ -250,7 +249,7 @@
 		{{ end }}
 	{{ end}}
 
-	{{ with (index .IssuesGroups "ERROR_EMPTY_DESCRIPTION") }}
+	{{ with (index .IssueCount.Groups "ERROR_EMPTY_DESCRIPTION") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
@@ -270,7 +269,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_CANONICALIZED_NON_CANONICAL") }}
+	{{ with (index .IssueCount.Groups "ERROR_CANONICALIZED_NON_CANONICAL") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
@@ -292,7 +291,7 @@
 
 	{{/* Other issues */}}
 
-	{{ with (index .IssuesGroups "ERROR_HTTP_LINKS" )}}
+	{{ with (index .IssueCount.Groups "ERROR_HTTP_LINKS" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
@@ -312,7 +311,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_NO_H1" )}}
+	{{ with (index .IssueCount.Groups "ERROR_NO_H1" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no H1 heading title</h2>
@@ -330,7 +329,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_NOT_VALID_HEADINGS" )}}
+	{{ with (index .IssueCount.Groups "ERROR_NOT_VALID_HEADINGS" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with not valid headings order</h2>
@@ -348,7 +347,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_HREFLANG_RETURN") }}
+	{{ with (index .IssueCount.Groups "ERROR_HREFLANG_RETURN") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">
@@ -366,7 +365,7 @@
 		{{ end }}
 	{{ end}}
 
-	{{ with (index .IssuesGroups "ERROR_IMAGES_NO_ALT") }}
+	{{ with (index .IssueCount.Groups "ERROR_IMAGES_NO_ALT") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
@@ -385,7 +384,7 @@
 	{{ end}}
 
 
-	{{ with (index .IssuesGroups "ERROR_NO_LANG" )}}
+	{{ with (index .IssueCount.Groups "ERROR_NO_LANG" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="notice">
@@ -405,7 +404,7 @@
 		{{ end }}
 	{{ end }}
 
-	{{ with (index .IssuesGroups "ERROR_LITTLE_CONTENT") }}
+	{{ with (index .IssueCount.Groups "ERROR_LITTLE_CONTENT") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with little content</h2>
@@ -423,7 +422,7 @@
 		{{ end }}
 	{{ end}}
 
-	{{ with (index .IssuesGroups "ERROR_TOO_MANY_LINKS") }}
+	{{ with (index .IssueCount.Groups "ERROR_TOO_MANY_LINKS") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with too many links</h2>
@@ -442,7 +441,7 @@
 		{{ end }}
 	{{ end}}
 	
-	{{ with (index .IssuesGroups "ERROR_INTERNAL_NOFOLLOW") }}
+	{{ with (index .IssueCount.Groups "ERROR_INTERNAL_NOFOLLOW") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="notice">
@@ -464,7 +463,7 @@
 		{{ end }}
 	{{ end}}
 	
-	{{ with (index .IssuesGroups "ERROR_EXTERNAL_WITHOUT_NOFOLLOW") }}
+	{{ with (index .IssueCount.Groups "ERROR_EXTERNAL_WITHOUT_NOFOLLOW") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
 			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with external follow links</h2>

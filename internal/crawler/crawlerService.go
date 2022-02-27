@@ -23,7 +23,6 @@ type CrawlerStore interface {
 	SaveCrawl(project.Project) int64
 	SavePageReport(*report.PageReport, int64)
 	SaveEndCrawl(int64, time.Time, int)
-	GetLastCrawl(*project.Project) Crawl
 }
 
 type CrawlerService struct {

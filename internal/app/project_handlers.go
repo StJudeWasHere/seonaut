@@ -5,38 +5,24 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mnlg/lenkrr/internal/crawler"
 	"github.com/mnlg/lenkrr/internal/project"
 
 	"github.com/mnlg/lenkrr/internal/user"
 )
 
-type ProjectView struct {
-	Project project.Project
-	Crawl   crawler.Crawl
-}
-
 func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Request) {
+	views := app.projectService.GetProjectViews(user.Id)
+
 	var refresh bool
-	var views []ProjectView
-	projects := app.projectService.GetProjects(user.Id)
-
-	for _, p := range projects {
-		c := app.datastore.GetLastCrawl(&p)
-		pv := ProjectView{
-			Project: p,
-			Crawl:   c,
-		}
-		views = append(views, pv)
-
-		if c.IssuesEnd.Valid == false {
+	for _, v := range views {
+		if v.Crawl.IssuesEnd.Valid == false {
 			refresh = true
 		}
 	}
 
 	v := &PageView{
 		Data: struct {
-			Projects    []ProjectView
+			Projects    []project.ProjectView
 			MaxProjects int
 		}{Projects: views, MaxProjects: user.GetMaxAllowedProjects()},
 		User:      *user,

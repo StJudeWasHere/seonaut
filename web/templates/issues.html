@@ -3,12 +3,12 @@
 {{ with .Data }}
 <div class="content">
 	<div class="action">
-		<a href="/">Projects</a> / <span class="title">{{ .Project.Host }}</span>
+		<a href="/">Projects</a> / <span class="title">{{ .ProjectView.Project.Host }}</span>
 	</div>
-	<small>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</small>
+	<small>Crawled on {{ .ProjectView.Crawl.Start.Format "Jan 02, 2006" }}.</small>
 	<div class="project-buttons action-buttons">
-		<a class="button" href="/download?cid={{ .Crawl.Id }}">Download all crawled URLs ↓</a>
-		<a class="button" href="/sitemap?cid={{ .Crawl.Id }}">Download sitemap.xml ↓</a>
+		<a class="button" href="/download?cid={{ .ProjectView.Crawl.Id }}">Download all crawled URLs ↓</a>
+		<a class="button" href="/sitemap?cid={{ .ProjectView.Crawl.Id }}">Download sitemap.xml ↓</a>
 	</div>
 </div>
 
@@ -33,7 +33,7 @@
 </div>
 
 <div class="content">
-	{{ $cid := .Crawl.Id }}
+	{{ $cid := .ProjectView.Crawl.Id }}
 	{{/* Status code issues */}}
 
 	{{ with (index .IssueCount.Groups "ERROR_50x") }}

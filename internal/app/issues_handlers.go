@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mnlg/lenkrr/internal/crawler"
 	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
@@ -13,8 +12,7 @@ import (
 )
 
 type IssuesGroupView struct {
-	Project     project.Project
-	Crawl       crawler.Crawl
+	ProjectView *project.ProjectView
 	MediaChart  Chart
 	StatusChart Chart
 	IssueCount  *issue.IssueCount
@@ -40,18 +38,16 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	project, err := app.projectService.FindProject(pid, user.Id)
+	pv, err := app.projectService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	crawl := app.datastore.GetLastCrawl(&project)
-	issueCount := app.issueService.GetIssuesCount(crawl.Id)
+	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)
 
 	ig := IssuesGroupView{
-		Project:     project,
-		Crawl:       crawl,
+		ProjectView: pv,
 		MediaChart:  NewChart(issueCount.MediaCount),
 		StatusChart: NewChart(issueCount.StatusCount),
 		IssueCount:  issueCount,

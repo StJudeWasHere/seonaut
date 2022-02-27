@@ -1,4 +1,4 @@
-package crawler
+package project
 
 import (
 	"database/sql"

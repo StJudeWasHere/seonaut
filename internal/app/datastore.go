@@ -10,7 +10,6 @@ import (
 	"database/sql"
 
 	"github.com/mnlg/lenkrr/internal/config"
-	"github.com/mnlg/lenkrr/internal/crawler"
 	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
@@ -283,7 +282,7 @@ func (ds *datastore) saveEndIssues(cid int, t time.Time, totalIssues int) {
 	}
 }
 
-func (ds *datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
+func (ds *datastore) GetLastCrawl(p *project.Project) project.Crawl {
 	query := `
 		SELECT
 			id,
@@ -298,7 +297,7 @@ func (ds *datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 
 	row := ds.db.QueryRow(query, p.Id)
 
-	crawl := crawler.Crawl{}
+	crawl := project.Crawl{}
 	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End, &crawl.TotalURLs, &crawl.TotalIssues, &crawl.IssuesEnd)
 	if err != nil {
 		log.Printf("GetLastCrawl: %v\n", err)
@@ -348,10 +347,10 @@ func (ds *datastore) FindProjectsByUser(uid int) []project.Project {
 	return projects
 }
 
-func (ds *datastore) findCrawlById(cid int) crawler.Crawl {
+func (ds *datastore) findCrawlById(cid int) project.Crawl {
 	row := ds.db.QueryRow("SELECT id, project_id, start, end FROM crawls WHERE id = ?", cid)
 
-	c := crawler.Crawl{}
+	c := project.Crawl{}
 	err := row.Scan(&c.Id, &c.ProjectId, &c.Start, &c.End)
 	if err != nil {
 		log.Println(err)

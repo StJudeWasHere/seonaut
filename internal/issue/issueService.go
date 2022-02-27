@@ -8,6 +8,8 @@ const (
 
 type IssueStore interface {
 	FindIssues(int) map[string]IssueGroup
+	CountByMediaType(int) CountList
+	CountByStatusCode(int) CountList
 }
 
 type IssueService struct {
@@ -21,10 +23,12 @@ type IssueGroup struct {
 }
 
 type IssueCount struct {
-	Groups   map[string]IssueGroup
-	Critical int
-	Alert    int
-	Warning  int
+	Groups      map[string]IssueGroup
+	Critical    int
+	Alert       int
+	Warning     int
+	MediaCount  CountList
+	StatusCount CountList
 }
 
 func NewService(s IssueStore) *IssueService {
@@ -33,10 +37,12 @@ func NewService(s IssueStore) *IssueService {
 	}
 }
 
-func (s *IssueService) GetIssuesCount(crawlId int) *IssueCount {
-	c := &IssueCount{}
-
-	c.Groups = s.store.FindIssues(crawlId)
+func (s *IssueService) GetIssuesCount(crawlID int) *IssueCount {
+	c := &IssueCount{
+		Groups:      s.store.FindIssues(crawlID),
+		MediaCount:  s.store.CountByMediaType(crawlID),
+		StatusCount: s.store.CountByStatusCode(crawlID),
+	}
 
 	for _, v := range c.Groups {
 		switch v.Priority {

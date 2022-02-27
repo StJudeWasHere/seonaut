@@ -65,7 +65,7 @@ func (ds *datastore) CountCrawled(cid int) int {
 	return c
 }
 
-func (ds *datastore) CountByMediaType(cid int) CountList {
+func (ds *datastore) CountByMediaType(cid int) issue.CountList {
 	query := `
 		SELECT media_type, count(*)
 		FROM pagereports
@@ -75,7 +75,7 @@ func (ds *datastore) CountByMediaType(cid int) CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *datastore) CountByStatusCode(cid int) CountList {
+func (ds *datastore) CountByStatusCode(cid int) issue.CountList {
 	query := `
 		SELECT
 			status_code,
@@ -87,8 +87,8 @@ func (ds *datastore) CountByStatusCode(cid int) CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *datastore) countListQuery(query string, cid int) CountList {
-	m := CountList{}
+func (ds *datastore) countListQuery(query string, cid int) issue.CountList {
+	m := issue.CountList{}
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
 		log.Println(err)
@@ -96,7 +96,7 @@ func (ds *datastore) countListQuery(query string, cid int) CountList {
 	}
 
 	for rows.Next() {
-		c := CountItem{}
+		c := issue.CountItem{}
 		err := rows.Scan(&c.Key, &c.Value)
 		if err != nil {
 			log.Println(err)

@@ -1,4 +1,4 @@
-package app
+package issue
 
 type CountItem struct {
 	Key   string

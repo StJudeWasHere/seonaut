@@ -12,13 +12,11 @@ import (
 )
 
 type IssuesGroupView struct {
-	Project         project.Project
-	Crawl           Crawl
-	MediaCount      CountList
-	StatusCodeCount CountList
-	MediaChart      Chart
-	StatusChart     Chart
-	IssueCount      *issue.IssueCount
+	Project     project.Project
+	Crawl       Crawl
+	MediaChart  Chart
+	StatusChart Chart
+	IssueCount  *issue.IssueCount
 }
 
 type IssuesView struct {
@@ -48,22 +46,14 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 	}
 
 	crawl := app.datastore.getLastCrawl(&project)
-
 	issueCount := app.issueService.GetIssuesCount(crawl.Id)
 
-	mediaCount := app.datastore.CountByMediaType(crawl.Id)
-	mediaChart := NewChart(mediaCount)
-	statusCount := app.datastore.CountByStatusCode(crawl.Id)
-	statusChart := NewChart(statusCount)
-
 	ig := IssuesGroupView{
-		IssueCount:      issueCount,
-		Crawl:           crawl,
-		Project:         project,
-		MediaCount:      mediaCount,
-		MediaChart:      mediaChart,
-		StatusChart:     statusChart,
-		StatusCodeCount: statusCount,
+		Project:     project,
+		Crawl:       crawl,
+		MediaChart:  NewChart(issueCount.MediaCount),
+		StatusChart: NewChart(issueCount.StatusCount),
+		IssueCount:  issueCount,
 	}
 
 	v := &PageView{

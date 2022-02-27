@@ -2,6 +2,8 @@ package app
 
 import (
 	"strconv"
+
+	"github.com/mnlg/lenkrr/internal/issue"
 )
 
 const (
@@ -16,7 +18,7 @@ type ChartItem struct {
 
 type Chart []ChartItem
 
-func NewChart(c CountList) Chart {
+func NewChart(c issue.CountList) Chart {
 	chart := Chart{}
 	total := 0
 

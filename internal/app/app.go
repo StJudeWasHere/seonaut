@@ -69,25 +69,18 @@ func NewApp(c *config.Config, ds *datastore) *App {
 	if err != nil {
 		log.Fatal(err)
 	}
-	renderer := NewRenderer(m)
-
-	userService := user.NewService(ds)
-	stripeService := stripeService.NewService(ds)
-	projectService := project.NewService(ds)
-	crawlerService := crawler.NewService(ds)
-	issueService := issue.NewService(ds)
 
 	return &App{
 		config:         c,
 		datastore:      ds,
 		cookie:         sessions.NewCookieStore([]byte("SESSION_ID")),
 		sanitizer:      bluemonday.StrictPolicy(),
-		renderer:       renderer,
-		userService:    userService,
-		stripeService:  stripeService,
-		projectService: projectService,
-		crawlerService: crawlerService,
-		issueService:   issueService,
+		renderer:       NewRenderer(m),
+		userService:    user.NewService(ds),
+		stripeService:  stripeService.NewService(ds),
+		projectService: project.NewService(ds),
+		crawlerService: crawler.NewService(ds),
+		issueService:   issue.NewService(ds),
 	}
 }
 

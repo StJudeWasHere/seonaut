@@ -24,7 +24,7 @@ func (app *App) serveCrawl(user *user.User, w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	p, err := app.datastore.findProjectById(pid, user.Id)
+	p, err := app.projectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return

@@ -365,7 +365,7 @@ func (ds *datastore) findCrawlById(cid int) Crawl {
 	return c
 }
 
-func (ds *datastore) findProjectById(id int, uid int) (project.Project, error) {
+func (ds *datastore) FindProjectById(id int, uid int) (project.Project, error) {
 	query := `
 		SELECT id, url, ignore_robotstxt, use_javascript, created
 		FROM projects

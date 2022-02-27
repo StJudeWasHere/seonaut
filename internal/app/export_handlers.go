@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -41,13 +40,7 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 
 	crawl := app.datastore.findCrawlById(cid)
 
-	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
-	if err != nil {
-		log.Println(err)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
-
-	ParsedURL, err := url.Parse(project.URL)
+	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -56,7 +49,7 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 	var pageReports []report.PageReport
 
 	eid := r.URL.Query()["eid"]
-	fileName := ParsedURL.Host + " crawl " + time.Now().Format("2-15-2006")
+	fileName := project.Host + " crawl " + time.Now().Format("2-15-2006")
 
 	if len(eid) > 0 && eid[0] != "" {
 		fileName = fileName + "-" + eid[0]
@@ -98,13 +91,7 @@ func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Req
 	}
 
 	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
-	if err != nil {
-		log.Println(err)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
-
-	ParsedURL, err := url.Parse(project.URL)
+	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -112,7 +99,7 @@ func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Req
 
 	w.Header().Add(
 		"Content-Disposition",
-		fmt.Sprint("attachment; filename=\""+ParsedURL.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
+		fmt.Sprint("attachment; filename=\""+project.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
 	p := app.datastore.findSitemapPageReports(cid)

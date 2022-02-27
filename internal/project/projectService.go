@@ -1,12 +1,14 @@
 package project
 
 import (
+	"net/url"
 	"time"
 )
 
 type ProjectStore interface {
 	FindProjectsByUser(int) []Project
 	SaveProject(string, bool, bool, int)
+	FindProjectById(id int, uid int) (Project, error)
 }
 
 type Project struct {
@@ -34,4 +36,20 @@ func (s *ProjectService) GetProjects(userId int) []Project {
 
 func (s *ProjectService) SaveProject(url string, ignoreRobotsTxt, useJavascript bool, userId int) {
 	s.store.SaveProject(url, ignoreRobotsTxt, useJavascript, userId)
+}
+
+func (s *ProjectService) FindProject(id, uid int) (Project, error) {
+	project, err := s.store.FindProjectById(id, uid)
+	if err != nil {
+		return project, nil
+	}
+
+	parsedURL, err := url.Parse(project.URL)
+	if err != nil {
+		return project, err
+	}
+
+	project.Host = parsedURL.Host
+
+	return project, nil
 }

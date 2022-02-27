@@ -3,7 +3,6 @@ package app
 import (
 	"log"
 	"net/http"
-	"net/url"
 	"strconv"
 
 	"github.com/mnlg/lenkrr/internal/project"
@@ -59,7 +58,7 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 
 	issueGroups := app.datastore.findIssues(cid)
 	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
+	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -69,14 +68,6 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 	mediaChart := NewChart(mediaCount)
 	statusCount := app.datastore.CountByStatusCode(cid)
 	statusChart := NewChart(statusCount)
-
-	ParsedURL, err := url.Parse(project.URL)
-	if err != nil {
-		log.Println(err)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
-
-	project.Host = ParsedURL.Host
 
 	var critical int
 	var alert int
@@ -179,19 +170,11 @@ func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.
 	}
 
 	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.datastore.findProjectById(crawl.ProjectId, user.Id)
+	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
-
-	ParsedURL, err := url.Parse(project.URL)
-	if err != nil {
-		log.Println(err)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
-
-	project.Host = ParsedURL.Host
 
 	issues := app.datastore.findPageReportIssues(cid, page-1, eid)
 

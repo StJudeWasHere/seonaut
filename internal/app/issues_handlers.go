@@ -6,13 +6,14 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 )
 
 type IssuesGroupView struct {
 	IssuesGroups    map[string]IssueGroup
-	Project         Project
+	Project         project.Project
 	Crawl           Crawl
 	MediaCount      CountList
 	StatusCodeCount CountList
@@ -27,7 +28,7 @@ type IssuesView struct {
 	PageReports  []report.PageReport
 	Cid          int
 	Eid          string
-	Project      Project
+	Project      project.Project
 	CurrentPage  int
 	NextPage     int
 	PreviousPage int

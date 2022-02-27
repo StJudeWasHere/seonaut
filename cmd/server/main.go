@@ -6,6 +6,7 @@ import (
 
 	"github.com/mnlg/lenkrr/internal/app"
 	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/stripe"
 	"github.com/mnlg/lenkrr/internal/user"
 
@@ -36,6 +37,8 @@ func main() {
 
 	userService := user.NewService(datastore)
 	stripeService := stripe.NewService(datastore)
+	projectService := project.NewService(datastore)
+
 	renderer := app.NewRenderer(m)
 
 	lenkrr := app.NewApp(
@@ -43,6 +46,7 @@ func main() {
 		datastore,
 		userService,
 		stripeService,
+		projectService,
 		renderer,
 	)
 

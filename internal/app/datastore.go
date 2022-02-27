@@ -10,6 +10,7 @@ import (
 	"database/sql"
 
 	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 
@@ -249,7 +250,7 @@ func (ds *datastore) findCrawlUserId(cid int) (*user.User, error) {
 	return &u, nil
 }
 
-func (ds *datastore) saveCrawl(p Project) int64 {
+func (ds *datastore) saveCrawl(p project.Project) int64 {
 	stmt, _ := ds.db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
 	defer stmt.Close()
 	res, err := stmt.Exec(p.Id)
@@ -286,7 +287,7 @@ func (ds *datastore) saveEndIssues(cid int, t time.Time, totalIssues int) {
 	}
 }
 
-func (ds *datastore) getLastCrawl(p *Project) Crawl {
+func (ds *datastore) getLastCrawl(p *project.Project) Crawl {
 	query := `
 		SELECT
 			id,
@@ -310,7 +311,7 @@ func (ds *datastore) getLastCrawl(p *Project) Crawl {
 	return crawl
 }
 
-func (ds *datastore) saveProject(s string, ignoreRobotsTxt, useJavascript bool, uid int) {
+func (ds *datastore) SaveProject(s string, ignoreRobotsTxt, useJavascript bool, uid int) {
 	query := `
 		INSERT INTO projects (url, ignore_robotstxt, use_javascript, user_id)
 		VALUES (?, ?, ?, ?)
@@ -324,8 +325,8 @@ func (ds *datastore) saveProject(s string, ignoreRobotsTxt, useJavascript bool, 
 	}
 }
 
-func (ds *datastore) findProjectsByUser(uid int) []Project {
-	var projects []Project
+func (ds *datastore) FindProjectsByUser(uid int) []project.Project {
+	var projects []project.Project
 	query := `
 		SELECT id, url, ignore_robotstxt, use_javascript, created
 		FROM projects
@@ -338,7 +339,7 @@ func (ds *datastore) findProjectsByUser(uid int) []Project {
 	}
 
 	for rows.Next() {
-		p := Project{}
+		p := project.Project{}
 		err := rows.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.UseJS, &p.Created)
 		if err != nil {
 			log.Println(err)
@@ -364,7 +365,7 @@ func (ds *datastore) findCrawlById(cid int) Crawl {
 	return c
 }
 
-func (ds *datastore) findProjectById(id int, uid int) (Project, error) {
+func (ds *datastore) findProjectById(id int, uid int) (project.Project, error) {
 	query := `
 		SELECT id, url, ignore_robotstxt, use_javascript, created
 		FROM projects
@@ -372,7 +373,7 @@ func (ds *datastore) findProjectById(id int, uid int) (Project, error) {
 
 	row := ds.db.QueryRow(query, id, uid)
 
-	p := Project{}
+	p := project.Project{}
 	err := row.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.UseJS, &p.Created)
 	if err != nil {
 		log.Println(err)

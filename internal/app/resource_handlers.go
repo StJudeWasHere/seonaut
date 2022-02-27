@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 )
@@ -17,7 +18,7 @@ type ResourcesView struct {
 	ErrorTypes []string
 	InLinks    []report.PageReport
 	Redirects  []report.PageReport
-	Project    Project
+	Project    project.Project
 	Tab        string
 }
 

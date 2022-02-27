@@ -4,29 +4,21 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
+
+	"github.com/mnlg/lenkrr/internal/project"
 
 	"github.com/mnlg/lenkrr/internal/user"
 )
 
 type ProjectView struct {
-	Project Project
+	Project project.Project
 	Crawl   Crawl
-}
-
-type Project struct {
-	Id              int
-	URL             string
-	Host            string
-	IgnoreRobotsTxt bool
-	UseJS           bool
-	Created         time.Time
 }
 
 func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Request) {
 	var refresh bool
 	var views []ProjectView
-	projects := app.datastore.findProjectsByUser(user.Id)
+	projects := app.projectService.GetProjects(user.Id)
 
 	for _, p := range projects {
 		c := app.datastore.getLastCrawl(&p)
@@ -55,7 +47,7 @@ func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Reques
 }
 
 func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.Request) {
-	projects := app.datastore.findProjectsByUser(user.Id)
+	projects := app.projectService.GetProjects(user.Id)
 	if len(projects) >= user.GetMaxAllowedProjects() {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -84,7 +76,7 @@ func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.
 			useJavascript = false
 		}
 
-		app.datastore.saveProject(url, ignoreRobotsTxt, useJavascript, user.Id)
+		app.projectService.SaveProject(url, ignoreRobotsTxt, useJavascript, user.Id)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"github.com/gorilla/sessions"
@@ -26,25 +27,32 @@ type StripeService interface {
 	SetSession(userID int, sessionID string)
 }
 
-type App struct {
-	config        *config.Config
-	datastore     *datastore
-	cookie        *sessions.CookieStore
-	sanitizer     *bluemonday.Policy
-	renderer      *Renderer
-	userService   UserService
-	stripeService StripeService
+type ProjectService interface {
+	GetProjects(int) []project.Project
+	SaveProject(string, bool, bool, int)
 }
 
-func NewApp(c *config.Config, ds *datastore, userService UserService, stripeService StripeService, r *Renderer) *App {
+type App struct {
+	config         *config.Config
+	datastore      *datastore
+	cookie         *sessions.CookieStore
+	sanitizer      *bluemonday.Policy
+	renderer       *Renderer
+	userService    UserService
+	stripeService  StripeService
+	projectService ProjectService
+}
+
+func NewApp(c *config.Config, ds *datastore, userService UserService, stripeService StripeService, projectService ProjectService, r *Renderer) *App {
 	return &App{
-		config:        c,
-		datastore:     ds,
-		cookie:        sessions.NewCookieStore([]byte("SESSION_ID")),
-		sanitizer:     bluemonday.StrictPolicy(),
-		renderer:      r,
-		userService:   userService,
-		stripeService: stripeService,
+		config:         c,
+		datastore:      ds,
+		cookie:         sessions.NewCookieStore([]byte("SESSION_ID")),
+		sanitizer:      bluemonday.StrictPolicy(),
+		renderer:       r,
+		userService:    userService,
+		stripeService:  stripeService,
+		projectService: projectService,
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
 
 	"github.com/gocolly/colly/v2"
@@ -31,7 +32,7 @@ type Crawler struct {
 	sanitizer       *bluemonday.Policy
 }
 
-func startCrawler(p Project, agent string, advanced bool, datastore *datastore, sanitizer *bluemonday.Policy) int {
+func startCrawler(p project.Project, agent string, advanced bool, datastore *datastore, sanitizer *bluemonday.Policy) int {
 	var totalURLs int
 	var max int
 

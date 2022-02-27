@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/mnlg/lenkrr/internal/crawler"
 	"github.com/mnlg/lenkrr/internal/project"
 
 	"github.com/mnlg/lenkrr/internal/user"
@@ -12,7 +13,7 @@ import (
 
 type ProjectView struct {
 	Project project.Project
-	Crawl   Crawl
+	Crawl   crawler.Crawl
 }
 
 func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Request) {
@@ -21,7 +22,7 @@ func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Reques
 	projects := app.projectService.GetProjects(user.Id)
 
 	for _, p := range projects {
-		c := app.datastore.getLastCrawl(&p)
+		c := app.datastore.GetLastCrawl(&p)
 		pv := ProjectView{
 			Project: p,
 			Crawl:   c,

@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -132,7 +131,6 @@ func (app *App) handleCheckoutSession(user *user.User, w http.ResponseWriter, r 
 	if sessionID == "" {
 		log.Println("handleCheckoutSession: sessio_id parameter missing")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -168,15 +166,7 @@ func (app *App) handleWebhook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	object := event.Data.Object
-
-	if event.Type == "customer.created" {
-		app.stripeService.SetId(fmt.Sprint(object["email"]), fmt.Sprint(object["id"]))
-	}
-
-	if event.Type == "payment_intent.succeeded" {
-		app.stripeService.Renew(fmt.Sprint(object["customer"]))
-	}
+	app.stripeService.HandleEvent(event.Type, event.Data.Object)
 }
 
 func (app *App) handleCustomerPortal(user *user.User, w http.ResponseWriter, r *http.Request) {

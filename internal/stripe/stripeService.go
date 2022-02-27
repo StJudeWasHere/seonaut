@@ -1,5 +1,9 @@
 package stripe
 
+import (
+	"fmt"
+)
+
 type StripeStore interface {
 	UserSetStripeId(string, string)
 	RenewSubscription(string)
@@ -16,14 +20,15 @@ func NewService(s StripeStore) *StripeService {
 	}
 }
 
-func (s *StripeService) SetId(email, customerID string) {
-	s.store.UserSetStripeId(email, customerID)
-}
-
-func (s *StripeService) Renew(customerID string) {
-	s.store.RenewSubscription(customerID)
-}
-
 func (s *StripeService) SetSession(userID int, sessionID string) {
 	s.store.UserSetStripeSession(userID, sessionID)
+}
+
+func (s *StripeService) HandleEvent(e string, object map[string]interface{}) {
+	switch e {
+	case "customer.created":
+		s.store.UserSetStripeId(fmt.Sprint(object["email"]), fmt.Sprint(object["id"]))
+	case "payment_intent.succeeded":
+		s.store.RenewSubscription(fmt.Sprint(object["customer"]))
+	}
 }

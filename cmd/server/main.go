@@ -1,17 +1,10 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 
 	"github.com/mnlg/lenkrr/internal/app"
 	"github.com/mnlg/lenkrr/internal/config"
-	"github.com/mnlg/lenkrr/internal/crawler"
-	"github.com/mnlg/lenkrr/internal/project"
-	"github.com/mnlg/lenkrr/internal/stripe"
-	"github.com/mnlg/lenkrr/internal/user"
-
-	"gopkg.in/yaml.v3"
 )
 
 func main() {
@@ -25,31 +18,9 @@ func main() {
 		log.Fatalf("Error creating new datastore: %v\n", err)
 	}
 
-	translation, err := ioutil.ReadFile("translation.en.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	m := make(map[string]interface{})
-	err = yaml.Unmarshal(translation, &m)
-	if err != nil {
-		log.Fatal(err)
-	}
-	renderer := app.NewRenderer(m)
-
-	userService := user.NewService(datastore)
-	stripeService := stripe.NewService(datastore)
-	projectService := project.NewService(datastore)
-	crawlerService := crawler.NewService(datastore)
-
 	lenkrr := app.NewApp(
 		config,
 		datastore,
-		userService,
-		stripeService,
-		projectService,
-		crawlerService,
-		renderer,
 	)
 
 	lenkrr.Run()

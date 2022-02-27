@@ -2,16 +2,20 @@ package app
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/lenkrr/internal/crawler"
 	"github.com/mnlg/lenkrr/internal/project"
+	stripeService "github.com/mnlg/lenkrr/internal/stripe"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"github.com/gorilla/sessions"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/stripe/stripe-go/v72"
+	"gopkg.in/yaml.v3"
 )
 
 type UserService interface {
@@ -22,9 +26,8 @@ type UserService interface {
 }
 
 type StripeService interface {
-	SetId(email, customerID string)
-	Renew(customerID string)
 	SetSession(userID int, sessionID string)
+	HandleEvent(string, map[string]interface{})
 }
 
 type ProjectService interface {
@@ -48,13 +51,30 @@ type App struct {
 	crawlerService CrawlerService
 }
 
-func NewApp(c *config.Config, ds *datastore, userService UserService, stripeService StripeService, projectService ProjectService, crawlerService CrawlerService, r *Renderer) *App {
+func NewApp(c *config.Config, ds *datastore) *App {
+	translation, err := ioutil.ReadFile("translation.en.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	m := make(map[string]interface{})
+	err = yaml.Unmarshal(translation, &m)
+	if err != nil {
+		log.Fatal(err)
+	}
+	renderer := NewRenderer(m)
+
+	userService := user.NewService(ds)
+	stripeService := stripeService.NewService(ds)
+	projectService := project.NewService(ds)
+	crawlerService := crawler.NewService(ds)
+
 	return &App{
 		config:         c,
 		datastore:      ds,
 		cookie:         sessions.NewCookieStore([]byte("SESSION_ID")),
 		sanitizer:      bluemonday.StrictPolicy(),
-		renderer:       r,
+		renderer:       renderer,
 		userService:    userService,
 		stripeService:  stripeService,
 		projectService: projectService,

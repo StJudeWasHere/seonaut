@@ -15,15 +15,7 @@ import (
 )
 
 func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http.Request) {
-	qcid, ok := r.URL.Query()["cid"]
-	if !ok || len(qcid) < 1 {
-		log.Println("serveDownloadCSV: cid parameter missing")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	cid, err := strconv.Atoi(qcid[0])
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -31,31 +23,23 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 		return
 	}
 
-	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != user.Id {
+	pv, err := app.projectService.GetProjectView(pid, user.Id)
+	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
-	}
-
-	crawl := app.datastore.findCrawlById(cid)
-
-	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
-	if err != nil {
-		log.Println(err)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	var pageReports []report.PageReport
 
-	eid := r.URL.Query()["eid"]
-	fileName := project.Host + " crawl " + time.Now().Format("2-15-2006")
+	eid := r.URL.Query().Get("eid")
+	fileName := pv.Project.Host + " crawl " + time.Now().Format("2-15-2006")
 
-	if len(eid) > 0 && eid[0] != "" {
-		fileName = fileName + "-" + eid[0]
-		pageReports = app.datastore.FindAllPageReportsByCrawlIdAndErrorType(cid, eid[0])
+	if eid != "" {
+		fileName = fileName + "-" + eid
+		pageReports = app.datastore.FindAllPageReportsByCrawlIdAndErrorType(pv.Crawl.Id, eid)
 	} else {
-		pageReports = app.datastore.FindAllPageReportsByCrawlId(cid)
+		pageReports = app.datastore.FindAllPageReportsByCrawlId(pv.Crawl.Id)
 	}
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
@@ -67,15 +51,7 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 }
 
 func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Request) {
-	qcid, ok := r.URL.Query()["cid"]
-	if !ok || len(qcid) < 1 {
-		log.Println("serveSitemap: cid parameter missings")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	cid, err := strconv.Atoi(qcid[0])
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -83,26 +59,19 @@ func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != user.Id {
+	pv, err := app.projectService.GetProjectView(pid, user.Id)
+	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
-	}
-
-	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
-	if err != nil {
-		log.Println(err)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
 	w.Header().Add(
 		"Content-Disposition",
-		fmt.Sprint("attachment; filename=\""+project.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
+		fmt.Sprint("attachment; filename=\""+pv.Project.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
-	p := app.datastore.findSitemapPageReports(cid)
+	p := app.datastore.findSitemapPageReports(pv.Crawl.Id)
 	for _, v := range p {
 		s.Add(v.URL, "")
 	}

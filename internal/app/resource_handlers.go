@@ -22,15 +22,7 @@ type ResourcesView struct {
 }
 
 func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *http.Request) {
-	qrid, ok := r.URL.Query()["rid"]
-	if !ok || len(qrid) < 1 {
-		log.Println("serveResourcesView: rid paramenter missing")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	rid, err := strconv.Atoi(qrid[0])
+	rid, err := strconv.Atoi(r.URL.Query().Get("rid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -38,15 +30,7 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 		return
 	}
 
-	qcid, ok := r.URL.Query()["cid"]
-	if !ok || len(qcid) < 1 {
-		log.Println("serveResourcesView: cid parameter missing")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	cid, err := strconv.Atoi(qcid[0])
+	cid, err := strconv.Atoi(r.URL.Query().Get("cid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -54,23 +38,18 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 		return
 	}
 
-	tabs := r.URL.Query()["t"]
-	var tab string
-	if len(tabs) == 0 {
+	tab := r.URL.Query().Get("t")
+	if tab == "" {
 		tab = "details"
-	} else {
-		tab = tabs[0]
 	}
 
-	qeid, ok := r.URL.Query()["eid"]
-	if !ok || len(qeid) < 1 {
+	eid := r.URL.Query().Get("eid")
+	if eid == "" {
 		log.Println("serveResourcesView: eid parameter missing")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
-
-	eid := qeid[0]
 
 	u, err := app.datastore.findCrawlUserId(cid)
 	if err != nil || u.Id != user.Id {

@@ -41,7 +41,7 @@ func (s *ProjectService) SaveProject(url string, ignoreRobotsTxt, useJavascript 
 func (s *ProjectService) FindProject(id, uid int) (Project, error) {
 	project, err := s.store.FindProjectById(id, uid)
 	if err != nil {
-		return project, nil
+		return project, err
 	}
 
 	parsedURL, err := url.Parse(project.URL)

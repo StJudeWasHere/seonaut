@@ -7,6 +7,10 @@ import (
 	"github.com/mnlg/lenkrr/internal/user"
 )
 
+const (
+	inviteCode = "bATjGfQsRBeknDqD"
+)
+
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 	var invite bool
 	inviteQ := r.URL.Query()["invite"]

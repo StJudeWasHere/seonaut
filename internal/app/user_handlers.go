@@ -7,20 +7,9 @@ import (
 	"github.com/mnlg/lenkrr/internal/user"
 )
 
-const (
-	inviteCode = "bATjGfQsRBeknDqD"
-)
-
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
-	var invite bool
-	inviteQ := r.URL.Query()["invite"]
-	if len(inviteQ) == 0 {
-		invite = false
-	} else {
-		if inviteQ[0] == inviteCode {
-			invite = true
-		}
-	}
+	var e bool
+	var email string
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
@@ -31,32 +20,24 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		email := r.FormValue("email")
+		email = r.FormValue("email")
 		password := r.FormValue("password")
 
-		exists := app.userService.Exists(email)
-		if exists || password == "" {
-			app.renderer.renderTemplate(w, "signup", &PageView{
-				PageTitle: "SIGNUP_VIEW",
-				Data: struct {
-					Invite, Error bool
-					Email         string
-				}{Invite: invite, Error: true, Email: email},
-			})
+		err = app.userService.SignUp(email, password)
+		if err == nil {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 
-		app.userService.SignUp(email, password)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
+		e = true
 	}
 
 	app.renderer.renderTemplate(w, "signup", &PageView{
 		PageTitle: "SIGNUP_VIEW",
 		Data: struct {
-			Invite, Error bool
-			Email         string
-		}{Invite: invite, Error: false, Email: ""},
+			Email string
+			Error bool
+		}{Error: e, Email: email},
 	})
 }
 

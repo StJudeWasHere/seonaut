@@ -32,6 +32,14 @@ func (s *UserService) FindById(id int) *User {
 }
 
 func (s *UserService) SignUp(email, password string) error {
+	if s.Exists(email) {
+		return errors.New("User already exists")
+	}
+
+	if len(password) < 1 {
+		return errors.New("Invalid password")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return err

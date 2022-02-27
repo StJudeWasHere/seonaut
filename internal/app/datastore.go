@@ -250,7 +250,7 @@ func (ds *datastore) findCrawlUserId(cid int) (*user.User, error) {
 	return &u, nil
 }
 
-func (ds *datastore) saveCrawl(p project.Project) int64 {
+func (ds *datastore) SaveCrawl(p project.Project) int64 {
 	stmt, _ := ds.db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
 	defer stmt.Close()
 	res, err := stmt.Exec(p.Id)
@@ -269,7 +269,7 @@ func (ds *datastore) saveCrawl(p project.Project) int64 {
 	return cid
 }
 
-func (ds *datastore) saveEndCrawl(cid int64, t time.Time, totalURLs int) {
+func (ds *datastore) SaveEndCrawl(cid int64, t time.Time, totalURLs int) {
 	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ?, total_urls= ? WHERE id = ?")
 	defer stmt.Close()
 	_, err := stmt.Exec(t, totalURLs, cid)
@@ -470,7 +470,7 @@ func (ds *datastore) findErrorTypesByPage(pid, cid int) []string {
 	return et
 }
 
-func (ds *datastore) savePageReport(r *report.PageReport, cid int64) {
+func (ds *datastore) SavePageReport(r *report.PageReport, cid int64) {
 	urlHash := hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {

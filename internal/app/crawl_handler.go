@@ -34,7 +34,7 @@ func (app *App) serveCrawl(user *user.User, w http.ResponseWriter, r *http.Reque
 		log.Printf("Crawling %s\n", p.URL)
 
 		start := time.Now()
-		cid := startCrawler(p, app.config.CrawlerAgent, user.Advanced, app.datastore, app.sanitizer)
+		cid := app.crawlerService.StartCrawler(p, app.config.CrawlerAgent, user.Advanced, app.sanitizer)
 
 		log.Printf("Done crawling %s in %s\n", p.URL, time.Since(start))
 		log.Printf("Creating issues for %s and crawl id %d\n", p.URL, cid)

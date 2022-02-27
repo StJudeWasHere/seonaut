@@ -1,4 +1,4 @@
-package app
+package crawler
 
 import (
 	"log"
@@ -32,7 +32,23 @@ type Crawler struct {
 	sanitizer       *bluemonday.Policy
 }
 
-func startCrawler(p project.Project, agent string, advanced bool, datastore *datastore, sanitizer *bluemonday.Policy) int {
+type CrawlerStore interface {
+	SaveCrawl(project.Project) int64
+	SavePageReport(*report.PageReport, int64)
+	SaveEndCrawl(int64, time.Time, int)
+}
+
+type CrawlerService struct {
+	store CrawlerStore
+}
+
+func NewService(s CrawlerStore) *CrawlerService {
+	return &CrawlerService{
+		store: s,
+	}
+}
+
+func (s *CrawlerService) StartCrawler(p project.Project, agent string, advanced bool, sanitizer *bluemonday.Policy) int {
 	var totalURLs int
 	var max int
 
@@ -57,17 +73,17 @@ func startCrawler(p project.Project, agent string, advanced bool, datastore *dat
 		sanitizer:       sanitizer,
 	}
 
-	cid := datastore.saveCrawl(p)
+	cid := s.store.SaveCrawl(p)
 
 	pageReport := make(chan report.PageReport)
 	go c.Crawl(pageReport)
 
 	for r := range pageReport {
 		totalURLs++
-		datastore.savePageReport(&r, cid)
+		s.store.SavePageReport(&r, cid)
 	}
 
-	datastore.saveEndCrawl(cid, time.Now(), totalURLs)
+	s.store.SaveEndCrawl(cid, time.Now(), totalURLs)
 	log.Printf("%d pages crawled.\n", totalURLs)
 
 	return int(cid)

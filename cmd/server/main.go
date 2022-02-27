@@ -6,6 +6,7 @@ import (
 
 	"github.com/mnlg/lenkrr/internal/app"
 	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/lenkrr/internal/crawler"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/stripe"
 	"github.com/mnlg/lenkrr/internal/user"
@@ -34,12 +35,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	renderer := app.NewRenderer(m)
 
 	userService := user.NewService(datastore)
 	stripeService := stripe.NewService(datastore)
 	projectService := project.NewService(datastore)
-
-	renderer := app.NewRenderer(m)
+	crawlerService := crawler.NewService(datastore)
 
 	lenkrr := app.NewApp(
 		config,
@@ -47,6 +48,7 @@ func main() {
 		userService,
 		stripeService,
 		projectService,
+		crawlerService,
 		renderer,
 	)
 

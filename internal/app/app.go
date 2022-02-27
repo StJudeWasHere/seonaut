@@ -32,6 +32,10 @@ type ProjectService interface {
 	SaveProject(string, bool, bool, int)
 }
 
+type CrawlerService interface {
+	StartCrawler(project.Project, string, bool, *bluemonday.Policy) int
+}
+
 type App struct {
 	config         *config.Config
 	datastore      *datastore
@@ -41,9 +45,10 @@ type App struct {
 	userService    UserService
 	stripeService  StripeService
 	projectService ProjectService
+	crawlerService CrawlerService
 }
 
-func NewApp(c *config.Config, ds *datastore, userService UserService, stripeService StripeService, projectService ProjectService, r *Renderer) *App {
+func NewApp(c *config.Config, ds *datastore, userService UserService, stripeService StripeService, projectService ProjectService, crawlerService CrawlerService, r *Renderer) *App {
 	return &App{
 		config:         c,
 		datastore:      ds,
@@ -53,6 +58,7 @@ func NewApp(c *config.Config, ds *datastore, userService UserService, stripeServ
 		userService:    userService,
 		stripeService:  stripeService,
 		projectService: projectService,
+		crawlerService: crawlerService,
 	}
 }
 

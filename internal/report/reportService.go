@@ -5,6 +5,9 @@ type ReportStore interface {
 	FindErrorTypesByPage(int, int) []string
 	FindInLinks(string, int) []PageReport
 	FindPageReportsRedirectingToURL(string, int) []PageReport
+	FindAllPageReportsByCrawlIdAndErrorType(int, string) []PageReport
+	FindAllPageReportsByCrawlId(int) []PageReport
+	FindSitemapPageReports(int) []PageReport
 }
 
 type ReportService struct {
@@ -38,4 +41,16 @@ func (s *ReportService) GetPageReport(rid, crawlId int, tab string) *PageReportV
 	}
 
 	return v
+}
+
+func (s *ReportService) GetPageReporsByIssueType(crawlId int, eid string) []PageReport {
+	if eid != "" {
+		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
+	}
+
+	return s.store.FindAllPageReportsByCrawlId(crawlId)
+}
+
+func (s *ReportService) GetSitemapPageReports(crawlId int) []PageReport {
+	return s.store.FindSitemapPageReports(crawlId)
 }

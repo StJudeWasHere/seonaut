@@ -1,4 +1,4 @@
-package app
+package datastore
 
 import (
 	"testing"

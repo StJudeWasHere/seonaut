@@ -1,4 +1,4 @@
-package app
+package datastore
 
 import (
 	"log"
@@ -6,7 +6,7 @@ import (
 	"github.com/mnlg/lenkrr/internal/report"
 )
 
-func (ds *datastore) FindPageReportsRedirectingToURL(u string, cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int) []report.PageReport {
 	uh := hash(u)
 	query := `
 		SELECT
@@ -19,7 +19,7 @@ func (ds *datastore) FindPageReportsRedirectingToURL(u string, cid int) []report
 	return ds.pageReportsQuery(query, uh, cid)
 }
 
-func (ds *datastore) FindPageReportsWithEmptyTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -32,7 +32,7 @@ func (ds *datastore) FindPageReportsWithEmptyTitle(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) Find40xPageReports(cid int) []report.PageReport {
+func (ds *Datastore) Find40xPageReports(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -44,7 +44,7 @@ func (ds *datastore) Find40xPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) Find30xPageReports(cid int) []report.PageReport {
+func (ds *Datastore) Find30xPageReports(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -56,7 +56,7 @@ func (ds *datastore) Find30xPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) Find50xPageReports(cid int) []report.PageReport {
+func (ds *Datastore) Find50xPageReports(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -68,7 +68,7 @@ func (ds *datastore) Find50xPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithLittleContent(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithLittleContent(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -80,7 +80,7 @@ func (ds *datastore) FindPageReportsWithLittleContent(cid int) []report.PageRepo
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithShortTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithShortTitle(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -92,7 +92,7 @@ func (ds *datastore) FindPageReportsWithShortTitle(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithLongTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithLongTitle(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -104,7 +104,7 @@ func (ds *datastore) FindPageReportsWithLongTitle(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithDuplicatedTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int) []report.PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -129,7 +129,7 @@ func (ds *datastore) FindPageReportsWithDuplicatedTitle(cid int) []report.PageRe
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) FindPageReportsWithoutH1(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithoutH1(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -142,7 +142,7 @@ func (ds *datastore) FindPageReportsWithoutH1(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithEmptyDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -155,7 +155,7 @@ func (ds *datastore) FindPageReportsWithEmptyDescription(cid int) []report.PageR
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithShortDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithShortDescription(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -167,7 +167,7 @@ func (ds *datastore) FindPageReportsWithShortDescription(cid int) []report.PageR
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithLongDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithLongDescription(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -179,7 +179,7 @@ func (ds *datastore) FindPageReportsWithLongDescription(cid int) []report.PageRe
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithDuplicatedDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int) []report.PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -204,7 +204,7 @@ func (ds *datastore) FindPageReportsWithDuplicatedDescription(cid int) []report.
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) FindImagesWithNoAlt(cid int) []report.PageReport {
+func (ds *Datastore) FindImagesWithNoAlt(cid int) []report.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -218,7 +218,7 @@ func (ds *datastore) FindImagesWithNoAlt(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithNoLangAttr(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int) []report.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -231,7 +231,7 @@ func (ds *datastore) FindPageReportsWithNoLangAttr(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindPageReportsWithHTTPLinks(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int) []report.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -247,7 +247,7 @@ func (ds *datastore) FindPageReportsWithHTTPLinks(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindMissingHrelangReturnLinks(cid int) []report.PageReport {
+func (ds *Datastore) FindMissingHrelangReturnLinks(cid int) []report.PageReport {
 	query := `
 		SELECT
 			distinct pagereports.id,
@@ -263,7 +263,7 @@ func (ds *datastore) FindMissingHrelangReturnLinks(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) FindInLinks(s string, cid int) []report.PageReport {
+func (ds *Datastore) FindInLinks(s string, cid int) []report.PageReport {
 	hash := hash(s)
 	query := `
 		SELECT 
@@ -279,7 +279,7 @@ func (ds *datastore) FindInLinks(s string, cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, hash, cid)
 }
 
-func (ds *datastore) FindPageReportIssues(cid, p int, errorType string) []report.PageReport {
+func (ds *Datastore) FindPageReportIssues(cid, p int, errorType string) []report.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 
@@ -299,7 +299,7 @@ func (ds *datastore) FindPageReportIssues(cid, p int, errorType string) []report
 	return ds.pageReportsQuery(query, errorType, cid, offset, max)
 }
 
-func (ds *datastore) findRedirectChains(cid int) []report.PageReport {
+func (ds *Datastore) FindRedirectChains(cid int) []report.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -312,7 +312,7 @@ func (ds *datastore) findRedirectChains(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) tooManyLinks(cid int) []report.PageReport {
+func (ds *Datastore) TooManyLinks(cid int) []report.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -333,7 +333,7 @@ func (ds *datastore) tooManyLinks(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) internalNoFollowLinks(cid int) []report.PageReport {
+func (ds *Datastore) InternalNoFollowLinks(cid int) []report.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports 
@@ -346,7 +346,7 @@ func (ds *datastore) internalNoFollowLinks(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) findSitemapPageReports(cid int) []report.PageReport {
+func (ds *Datastore) FindSitemapPageReports(cid int) []report.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports
@@ -356,7 +356,7 @@ func (ds *datastore) findSitemapPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) findExternalLinkWitoutNoFollow(cid int) []report.PageReport {
+func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int) []report.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -370,7 +370,7 @@ func (ds *datastore) findExternalLinkWitoutNoFollow(cid int) []report.PageReport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) findCanonicalizedToNonCanonical(cid int) []report.PageReport {
+func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int) []report.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -383,7 +383,7 @@ func (ds *datastore) findCanonicalizedToNonCanonical(cid int) []report.PageRepor
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) findRedirectLoops(cid int) []report.PageReport {
+func (ds *Datastore) FindRedirectLoops(cid int) []report.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -396,7 +396,7 @@ func (ds *datastore) findRedirectLoops(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *datastore) findNotValidHeadingsOrder(cid int) []report.PageReport {
+func (ds *Datastore) FindNotValidHeadingsOrder(cid int) []report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -408,7 +408,7 @@ func (ds *datastore) findNotValidHeadingsOrder(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *datastore) pageReportsQuery(query string, args ...interface{}) []report.PageReport {
+func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) []report.PageReport {
 	var pageReports []report.PageReport
 	rows, err := ds.db.Query(query, args...)
 	if err != nil {

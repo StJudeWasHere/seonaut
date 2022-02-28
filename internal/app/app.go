@@ -8,6 +8,7 @@ import (
 
 	"github.com/mnlg/lenkrr/internal/config"
 	"github.com/mnlg/lenkrr/internal/crawler"
+	"github.com/mnlg/lenkrr/internal/datastore"
 	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
@@ -18,6 +19,33 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/stripe/stripe-go/v72"
 	"gopkg.in/yaml.v3"
+)
+
+const (
+	Error30x = iota + 1
+	Error40x
+	Error50x
+	ErrorDuplicatedTitle
+	ErrorDuplicatedDescription
+	ErrorEmptyTitle
+	ErrorShortTitle
+	ErrorLongTitle
+	ErrorEmptyDescription
+	ErrorShortDescription
+	ErrorLongDescription
+	ErrorLittleContent
+	ErrorImagesWithNoAlt
+	ErrorRedirectChain
+	ErrorNoH1
+	ErrorNoLang
+	ErrorHTTPLinks
+	ErrorHreflangsReturnLink
+	ErrorTooManyLinks
+	ErrorInternalNoFollow
+	ErrorExternalWithoutNoFollow
+	ErrorCanonicalizedToNonCanonical
+	ErrorRedirectLoop
+	ErrorNotValidHeadings
 )
 
 type UserService interface {
@@ -51,11 +79,17 @@ type IssueService interface {
 
 type ReportService interface {
 	GetPageReport(int, int, string) *report.PageReportView
+	GetPageReporsByIssueType(int, string) []report.PageReport
+	GetSitemapPageReports(int) []report.PageReport
+}
+
+type ReportManager interface {
+	CreateIssues(int) []issue.Issue
 }
 
 type App struct {
 	config         *config.Config
-	datastore      *datastore
+	datastore      *datastore.Datastore
 	cookie         *sessions.CookieStore
 	sanitizer      *bluemonday.Policy
 	renderer       *Renderer
@@ -65,9 +99,10 @@ type App struct {
 	crawlerService CrawlerService
 	issueService   IssueService
 	reportService  ReportService
+	reportManager  ReportManager
 }
 
-func NewApp(c *config.Config, ds *datastore) *App {
+func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 	translation, err := ioutil.ReadFile("translation.en.yaml")
 	if err != nil {
 		log.Fatal(err)
@@ -78,6 +113,33 @@ func NewApp(c *config.Config, ds *datastore) *App {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	rm := issue.NewReportManager(ds)
+
+	rm.AddReporter(ds.Find30xPageReports, Error30x)
+	rm.AddReporter(ds.Find40xPageReports, Error40x)
+	rm.AddReporter(ds.Find50xPageReports, Error50x)
+	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedTitle)
+	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedDescription)
+	rm.AddReporter(ds.FindPageReportsWithEmptyTitle, ErrorEmptyTitle)
+	rm.AddReporter(ds.FindPageReportsWithShortTitle, ErrorShortTitle)
+	rm.AddReporter(ds.FindPageReportsWithLongTitle, ErrorLongTitle)
+	rm.AddReporter(ds.FindPageReportsWithEmptyDescription, ErrorEmptyDescription)
+	rm.AddReporter(ds.FindPageReportsWithShortDescription, ErrorShortDescription)
+	rm.AddReporter(ds.FindPageReportsWithLongDescription, ErrorLongDescription)
+	rm.AddReporter(ds.FindPageReportsWithLittleContent, ErrorLittleContent)
+	rm.AddReporter(ds.FindImagesWithNoAlt, ErrorImagesWithNoAlt)
+	rm.AddReporter(ds.FindRedirectChains, ErrorRedirectChain)
+	rm.AddReporter(ds.FindPageReportsWithoutH1, ErrorNoH1)
+	rm.AddReporter(ds.FindPageReportsWithNoLangAttr, ErrorNoLang)
+	rm.AddReporter(ds.FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
+	rm.AddReporter(ds.FindMissingHrelangReturnLinks, ErrorHreflangsReturnLink)
+	rm.AddReporter(ds.TooManyLinks, ErrorTooManyLinks)
+	rm.AddReporter(ds.InternalNoFollowLinks, ErrorInternalNoFollow)
+	rm.AddReporter(ds.FindExternalLinkWitoutNoFollow, ErrorExternalWithoutNoFollow)
+	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorCanonicalizedToNonCanonical)
+	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorRedirectLoop)
+	rm.AddReporter(ds.FindNotValidHeadingsOrder, ErrorNotValidHeadings)
 
 	return &App{
 		config:         c,
@@ -91,6 +153,7 @@ func NewApp(c *config.Config, ds *datastore) *App {
 		crawlerService: crawler.NewService(ds),
 		issueService:   issue.NewService(ds),
 		reportService:  report.NewService(ds),
+		reportManager:  rm,
 	}
 }
 

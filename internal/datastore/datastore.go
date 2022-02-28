@@ -1,4 +1,4 @@
-package app
+package datastore
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-type datastore struct {
+type Datastore struct {
 	db *sql.DB
 }
 
@@ -29,7 +29,7 @@ const (
 	connMaxLifeInMinutes = 5
 )
 
-func NewDataStore(config config.DBConfig) (*datastore, error) {
+func NewDataStore(config config.DBConfig) (*Datastore, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?parseTime=true",
 		config.User,
@@ -52,10 +52,10 @@ func NewDataStore(config config.DBConfig) (*datastore, error) {
 		return nil, err
 	}
 
-	return &datastore{db: db}, nil
+	return &Datastore{db: db}, nil
 }
 
-func (ds *datastore) CountCrawled(cid int) int {
+func (ds *Datastore) CountCrawled(cid int) int {
 	row := ds.db.QueryRow("SELECT count(*) FROM pagereports WHERE crawl_id = ?", cid)
 	var c int
 	if err := row.Scan(&c); err != nil {
@@ -65,7 +65,7 @@ func (ds *datastore) CountCrawled(cid int) int {
 	return c
 }
 
-func (ds *datastore) CountByMediaType(cid int) issue.CountList {
+func (ds *Datastore) CountByMediaType(cid int) issue.CountList {
 	query := `
 		SELECT media_type, count(*)
 		FROM pagereports
@@ -75,7 +75,7 @@ func (ds *datastore) CountByMediaType(cid int) issue.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *datastore) CountByStatusCode(cid int) issue.CountList {
+func (ds *Datastore) CountByStatusCode(cid int) issue.CountList {
 	query := `
 		SELECT
 			status_code,
@@ -87,7 +87,7 @@ func (ds *datastore) CountByStatusCode(cid int) issue.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *datastore) countListQuery(query string, cid int) issue.CountList {
+func (ds *Datastore) countListQuery(query string, cid int) issue.CountList {
 	m := issue.CountList{}
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -110,7 +110,7 @@ func (ds *datastore) countListQuery(query string, cid int) issue.CountList {
 	return m
 }
 
-func (ds *datastore) EmailExists(email string) bool {
+func (ds *Datastore) EmailExists(email string) bool {
 	query := `select exists (select id from users where email = ?)`
 	var exists bool
 	err := ds.db.QueryRow(query, email).Scan(&exists)
@@ -121,7 +121,7 @@ func (ds *datastore) EmailExists(email string) bool {
 	return exists
 }
 
-func (ds *datastore) UserSignup(user, password string) {
+func (ds *Datastore) UserSignup(user, password string) {
 	query := `INSERT INTO users (email, password) VALUES (?, ?)`
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
@@ -132,7 +132,7 @@ func (ds *datastore) UserSignup(user, password string) {
 	}
 }
 
-func (ds *datastore) FindUserByEmail(email string) *user.User {
+func (ds *Datastore) FindUserByEmail(email string) *user.User {
 	u := user.User{}
 	query := `
 		SELECT
@@ -154,7 +154,7 @@ func (ds *datastore) FindUserByEmail(email string) *user.User {
 	return &u
 }
 
-func (ds *datastore) FindUserById(id int) *user.User {
+func (ds *Datastore) FindUserById(id int) *user.User {
 	u := user.User{}
 	query := `
 		SELECT
@@ -176,7 +176,7 @@ func (ds *datastore) FindUserById(id int) *user.User {
 	return &u
 }
 
-func (ds *datastore) UserSetStripeId(email, stripeCustomerId string) {
+func (ds *Datastore) UserSetStripeId(email, stripeCustomerId string) {
 	query := `
 		UPDATE users
 		SET stripe_customer_id = ?
@@ -191,7 +191,7 @@ func (ds *datastore) UserSetStripeId(email, stripeCustomerId string) {
 	}
 }
 
-func (ds *datastore) UserSetStripeSession(id int, stripeSessionId string) {
+func (ds *Datastore) UserSetStripeSession(id int, stripeSessionId string) {
 	query := `
 		UPDATE users
 		SET stripe_session_id = ?
@@ -206,7 +206,7 @@ func (ds *datastore) UserSetStripeSession(id int, stripeSessionId string) {
 	}
 }
 
-func (ds *datastore) RenewSubscription(stripeCustomerId string) {
+func (ds *Datastore) RenewSubscription(stripeCustomerId string) {
 	query := `
 		UPDATE users
 		SET period_end = ?
@@ -223,29 +223,7 @@ func (ds *datastore) RenewSubscription(stripeCustomerId string) {
 	}
 }
 
-func (ds *datastore) findCrawlUserId(cid int) (*user.User, error) {
-	u := user.User{}
-	query := `
-		SELECT 
-			users.id,
-			users.email,
-			users.password
-		FROM crawls
-		LEFT JOIN projects ON projects.id = crawls.project_id
-		LEFT JOIN users ON projects.user_id = users.id
-		WHERE crawls.id = ?`
-
-	row := ds.db.QueryRow(query, cid)
-	err := row.Scan(&u.Id, &u.Email, &u.Password)
-	if err != nil {
-		log.Println(err)
-		return &u, err
-	}
-
-	return &u, nil
-}
-
-func (ds *datastore) SaveCrawl(p project.Project) int64 {
+func (ds *Datastore) SaveCrawl(p project.Project) int64 {
 	stmt, _ := ds.db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
 	defer stmt.Close()
 	res, err := stmt.Exec(p.Id)
@@ -264,7 +242,7 @@ func (ds *datastore) SaveCrawl(p project.Project) int64 {
 	return cid
 }
 
-func (ds *datastore) SaveEndCrawl(cid int64, t time.Time, totalURLs int) {
+func (ds *Datastore) SaveEndCrawl(cid int64, t time.Time, totalURLs int) {
 	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ?, total_urls= ? WHERE id = ?")
 	defer stmt.Close()
 	_, err := stmt.Exec(t, totalURLs, cid)
@@ -273,7 +251,7 @@ func (ds *datastore) SaveEndCrawl(cid int64, t time.Time, totalURLs int) {
 	}
 }
 
-func (ds *datastore) saveEndIssues(cid int, t time.Time, totalIssues int) {
+func (ds *Datastore) SaveEndIssues(cid int, t time.Time, totalIssues int) {
 	stmt, _ := ds.db.Prepare("UPDATE crawls SET issues_end = ?, total_issues = ? WHERE id = ?")
 	defer stmt.Close()
 	_, err := stmt.Exec(t, totalIssues, cid)
@@ -282,7 +260,7 @@ func (ds *datastore) saveEndIssues(cid int, t time.Time, totalIssues int) {
 	}
 }
 
-func (ds *datastore) GetLastCrawl(p *project.Project) project.Crawl {
+func (ds *Datastore) GetLastCrawl(p *project.Project) project.Crawl {
 	query := `
 		SELECT
 			id,
@@ -306,7 +284,7 @@ func (ds *datastore) GetLastCrawl(p *project.Project) project.Crawl {
 	return crawl
 }
 
-func (ds *datastore) SaveProject(s string, ignoreRobotsTxt, useJavascript bool, uid int) {
+func (ds *Datastore) SaveProject(s string, ignoreRobotsTxt, useJavascript bool, uid int) {
 	query := `
 		INSERT INTO projects (url, ignore_robotstxt, use_javascript, user_id)
 		VALUES (?, ?, ?, ?)
@@ -320,7 +298,7 @@ func (ds *datastore) SaveProject(s string, ignoreRobotsTxt, useJavascript bool, 
 	}
 }
 
-func (ds *datastore) FindProjectsByUser(uid int) []project.Project {
+func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 	var projects []project.Project
 	query := `
 		SELECT id, url, ignore_robotstxt, use_javascript, created
@@ -347,20 +325,7 @@ func (ds *datastore) FindProjectsByUser(uid int) []project.Project {
 	return projects
 }
 
-func (ds *datastore) findCrawlById(cid int) project.Crawl {
-	row := ds.db.QueryRow("SELECT id, project_id, start, end FROM crawls WHERE id = ?", cid)
-
-	c := project.Crawl{}
-	err := row.Scan(&c.Id, &c.ProjectId, &c.Start, &c.End)
-	if err != nil {
-		log.Println(err)
-		return c
-	}
-
-	return c
-}
-
-func (ds *datastore) FindProjectById(id int, uid int) (project.Project, error) {
+func (ds *Datastore) FindProjectById(id int, uid int) (project.Project, error) {
 	query := `
 		SELECT id, url, ignore_robotstxt, use_javascript, created
 		FROM projects
@@ -378,7 +343,7 @@ func (ds *datastore) FindProjectById(id int, uid int) (project.Project, error) {
 	return p, nil
 }
 
-func (ds *datastore) saveIssues(issues []issue.Issue, cid int) {
+func (ds *Datastore) SaveIssues(issues []issue.Issue, cid int) {
 	query := `
 		INSERT INTO issues (pagereport_id, crawl_id, issue_type_id)
 		VALUES (?, ?, ?)`
@@ -395,7 +360,7 @@ func (ds *datastore) saveIssues(issues []issue.Issue, cid int) {
 	}
 }
 
-func (ds *datastore) FindIssues(cid int) map[string]issue.IssueGroup {
+func (ds *Datastore) FindIssues(cid int) map[string]issue.IssueGroup {
 	issues := map[string]issue.IssueGroup{}
 	query := `
 		SELECT
@@ -426,17 +391,7 @@ func (ds *datastore) FindIssues(cid int) map[string]issue.IssueGroup {
 	return issues
 }
 
-func (ds *datastore) countIssuesByCrawl(cid int) int {
-	var c int
-	row := ds.db.QueryRow("SELECT count(*) FROM issues WHERE crawl_id = ?", cid)
-	if err := row.Scan(&c); err != nil {
-		log.Println(err)
-	}
-
-	return c
-}
-
-func (ds *datastore) FindErrorTypesByPage(pid, cid int) []string {
+func (ds *Datastore) FindErrorTypesByPage(pid, cid int) []string {
 	var et []string
 	query := `
 		SELECT 
@@ -465,7 +420,7 @@ func (ds *datastore) FindErrorTypesByPage(pid, cid int) []string {
 	return et
 }
 
-func (ds *datastore) SavePageReport(r *report.PageReport, cid int64) {
+func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
 	urlHash := hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
@@ -652,7 +607,7 @@ func (ds *datastore) SavePageReport(r *report.PageReport, cid int64) {
 	}
 }
 
-func (ds *datastore) FindAllPageReportsByCrawlId(cid int) []report.PageReport {
+func (ds *Datastore) FindAllPageReportsByCrawlId(cid int) []report.PageReport {
 	var pageReports []report.PageReport
 	query := `
 		SELECT
@@ -712,7 +667,7 @@ func (ds *datastore) FindAllPageReportsByCrawlId(cid int) []report.PageReport {
 	return pageReports
 }
 
-func (ds *datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []report.PageReport {
+func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []report.PageReport {
 	var pageReports []report.PageReport
 	query := `
 		SELECT
@@ -779,7 +734,7 @@ func (ds *datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string)
 	return pageReports
 }
 
-func (ds *datastore) FindPageReportById(rid int) report.PageReport {
+func (ds *Datastore) FindPageReportById(rid int) report.PageReport {
 	query := `
 		SELECT
 			id,
@@ -926,7 +881,7 @@ func (ds *datastore) FindPageReportById(rid int) report.PageReport {
 	return p
 }
 
-func (ds *datastore) FindPreviousCrawlId(pid int) int {
+func (ds *Datastore) FindPreviousCrawlId(pid int) int {
 	query := `
 		SELECT
 			id
@@ -944,7 +899,7 @@ func (ds *datastore) FindPreviousCrawlId(pid int) int {
 	return c
 }
 
-func (ds *datastore) DeletePreviousCrawl(pid int) {
+func (ds *Datastore) DeletePreviousCrawl(pid int) {
 	previousCrawl := ds.FindPreviousCrawlId(pid)
 
 	var deleteFunc func(cid int, table string)
@@ -979,7 +934,7 @@ func (ds *datastore) DeletePreviousCrawl(pid int) {
 	deleteFunc(previousCrawl, "pagereports")
 }
 
-func (ds *datastore) GetNumberOfPagesForIssues(cid int, errorType string) int {
+func (ds *Datastore) GetNumberOfPagesForIssues(cid int, errorType string) int {
 	query := `
 		SELECT count(DISTINCT pagereport_id)
 		FROM issues

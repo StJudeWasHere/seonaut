@@ -23,6 +23,7 @@ type CrawlerStore interface {
 	SaveCrawl(project.Project) int64
 	SavePageReport(*report.PageReport, int64)
 	SaveEndCrawl(int64, time.Time, int)
+	DeletePreviousCrawl(int)
 }
 
 type CrawlerService struct {
@@ -38,6 +39,9 @@ func NewService(s CrawlerStore) *CrawlerService {
 func (s *CrawlerService) StartCrawler(p project.Project, agent string, advanced bool, sanitizer *bluemonday.Policy) int {
 	var totalURLs int
 	var max int
+
+	log.Printf("Crawling %s\n", p.URL)
+	start := time.Now()
 
 	if advanced {
 		max = AdvancedMaxPageReports
@@ -71,7 +75,14 @@ func (s *CrawlerService) StartCrawler(p project.Project, agent string, advanced 
 	}
 
 	s.store.SaveEndCrawl(cid, time.Now(), totalURLs)
+	log.Printf("Done crawling %s in %s\n", p.URL, time.Since(start))
 	log.Printf("%d pages crawled.\n", totalURLs)
+
+	go func() {
+		log.Printf("Deleting previous crawl data for %s\n", p.URL)
+		s.store.DeletePreviousCrawl(p.Id)
+		log.Printf("Deleted previous crawl done for %s\n", p.URL)
+	}()
 
 	return int(cid)
 }

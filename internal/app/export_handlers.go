@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/mnlg/lenkrr/internal/encoding"
-	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"github.com/turk/go-sitemap"
@@ -30,17 +29,13 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 		return
 	}
 
-	var pageReports []report.PageReport
-
 	eid := r.URL.Query().Get("eid")
 	fileName := pv.Project.Host + " crawl " + time.Now().Format("2-15-2006")
-
 	if eid != "" {
 		fileName = fileName + "-" + eid
-		pageReports = app.datastore.FindAllPageReportsByCrawlIdAndErrorType(pv.Crawl.Id, eid)
-	} else {
-		pageReports = app.datastore.FindAllPageReportsByCrawlId(pv.Crawl.Id)
 	}
+
+	pageReports := app.reportService.GetPageReporsByIssueType(pv.Crawl.Id, eid)
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
@@ -71,7 +66,7 @@ func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Req
 		fmt.Sprint("attachment; filename=\""+pv.Project.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
-	p := app.datastore.findSitemapPageReports(pv.Crawl.Id)
+	p := app.reportService.GetSitemapPageReports(pv.Crawl.Id)
 	for _, v := range p {
 		s.Add(v.URL, "")
 	}

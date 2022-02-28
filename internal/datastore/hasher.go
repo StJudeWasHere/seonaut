@@ -1,4 +1,4 @@
-package app
+package datastore
 
 import (
 	"crypto/sha256"

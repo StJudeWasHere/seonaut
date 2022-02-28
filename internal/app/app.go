@@ -45,6 +45,7 @@ type CrawlerService interface {
 
 type IssueService interface {
 	GetIssuesCount(int) *issue.IssueCount
+	GetPaginatedReportsByIssue(int, int, string) (issue.PaginatorView, error)
 }
 
 type App struct {

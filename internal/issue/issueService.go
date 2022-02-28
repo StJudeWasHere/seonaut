@@ -1,5 +1,11 @@
 package issue
 
+import (
+	"errors"
+
+	"github.com/mnlg/lenkrr/internal/report"
+)
+
 const (
 	Critical = iota + 1
 	Alert
@@ -10,6 +16,13 @@ type IssueStore interface {
 	FindIssues(int) map[string]IssueGroup
 	CountByMediaType(int) CountList
 	CountByStatusCode(int) CountList
+	GetNumberOfPagesForIssues(int, string) int
+	FindPageReportIssues(int, int, string) []report.PageReport
+}
+
+type Issue struct {
+	PageReportId int
+	ErrorType    int
 }
 
 type IssueService struct {
@@ -29,6 +42,18 @@ type IssueCount struct {
 	Warning     int
 	MediaCount  CountList
 	StatusCount CountList
+}
+
+type Paginator struct {
+	CurrentPage  int
+	NextPage     int
+	PreviousPage int
+	TotalPages   int
+}
+
+type PaginatorView struct {
+	Paginator   Paginator
+	PageReports []report.PageReport
 }
 
 func NewService(s IssueStore) *IssueService {
@@ -56,4 +81,29 @@ func (s *IssueService) GetIssuesCount(crawlID int) *IssueCount {
 	}
 
 	return c
+}
+
+func (s *IssueService) GetPaginatedReportsByIssue(crawlId, currentPage int, issueId string) (PaginatorView, error) {
+	paginator := Paginator{
+		TotalPages: s.store.GetNumberOfPagesForIssues(crawlId, issueId),
+	}
+
+	if currentPage < 1 || currentPage > paginator.TotalPages {
+		return PaginatorView{}, errors.New("Page out of bounds")
+	}
+
+	if currentPage < paginator.TotalPages {
+		paginator.NextPage = currentPage + 1
+	}
+
+	if currentPage > 1 {
+		paginator.PreviousPage = currentPage - 1
+	}
+
+	paginatorView := PaginatorView{
+		Paginator:   paginator,
+		PageReports: s.store.FindPageReportIssues(crawlId, currentPage, issueId),
+	}
+
+	return paginatorView, nil
 }

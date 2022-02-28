@@ -33,7 +33,6 @@
 </div>
 
 <div class="content">
-	{{ $cid := .ProjectView.Crawl.Id }}
 	{{ $pid := .ProjectView.Project.Id }}
 
 	{{/* Status code issues */}}
@@ -51,7 +50,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_50x">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_50x">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_50x">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -68,7 +67,7 @@
 		<p>This pages are missing and your both your users and search engines are getting lost.</p>
 		<p class="issues-buttons">
 			<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_40x">Download URLs ↓</a>
-			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_40x">View URLs →</a>
+			<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_40x">View URLs →</a>
 		</p>
 		</div>
 	</div>
@@ -86,7 +85,7 @@
 		</p>
 		<p class="issues-buttons">
 			<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_30x">Download URLs ↓</a>
-			<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_30x">View URLs →</a>
+			<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_30x">View URLs →</a>
 		</p>
 		</div>
 	</div>
@@ -104,7 +103,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_REDIRECT_CHAIN">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_CHAIN">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_REDIRECT_CHAIN">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -121,7 +120,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_REDIRECT_LOOP">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_REDIRECT_LOOP">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_REDIRECT_LOOP">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -141,7 +140,7 @@
 			If multiple pages have the same title, they will compete for a given search query confusing search engines.</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_DUPLICATED_TITLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_TITLE">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_DUPLICATED_TITLE">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -156,7 +155,7 @@
 			<p>The page title is one of the most important elements for search engines.</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_EMPTY_TITLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_TITLE">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_EMPTY_TITLE">View URLs →</a>
 			</p>
 		</div>
 	</div>
@@ -175,7 +174,7 @@
 				</p>
 				<p class="issues-buttons">
 					<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_LONG_TITLE">Download URLs ↓</a>
-					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_TITLE">View URLs →</a>
+					<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_LONG_TITLE">View URLs →</a>
 				</p>
 			</div>
 		</div>
@@ -190,7 +189,7 @@
 			<p>This pages have titles that are too short. Search engines will be happier if you provide longer titles.</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_SHORT_TITLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_TITLE">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_SHORT_TITLE">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -207,7 +206,7 @@
 			<p>It is recomended to have unique descriptions for each page so search engines can understand better your page.</p>
 				<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_DUPLICATED_DESCRIPTION">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_DUPLICATED_DESCRIPTION">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -226,7 +225,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_LONG_DESCRIPTION">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LONG_DESCRIPTION">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_LONG_DESCRIPTION">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -244,7 +243,7 @@
 				</p>
 				<p class="issues-buttons">
 					<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_SHORT_DESCRIPTION">Download URLs ↓</a>
-					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_SHORT_DESCRIPTION">View URLs →</a>
+					<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_SHORT_DESCRIPTION">View URLs →</a>
 				</p>
 			</div>
 		</div>
@@ -264,7 +263,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_EMPTY_DESCRIPTION">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EMPTY_DESCRIPTION">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_EMPTY_DESCRIPTION">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -284,7 +283,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_CANONICALIZED_NON_CANONICAL">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_CANONICALIZED_NON_CANONICAL">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_CANONICALIZED_NON_CANONICAL">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -306,7 +305,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HTTP_LINKS">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HTTP_LINKS">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HTTP_LINKS">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -324,7 +323,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NO_H1">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_H1">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NO_H1">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -342,7 +341,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NOT_VALID_HEADINGS">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NOT_VALID_HEADINGS">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NOT_VALID_HEADINGS">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -360,7 +359,7 @@
 			<p>When referencing a page with hreflang, that page must reference back with a hreflang tag too.</p>
 				<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HREFLANG_RETURN">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_HREFLANG_RETURN">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HREFLANG_RETURN">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -378,7 +377,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_IMAGES_NO_ALT">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_IMAGES_NO_ALT">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_IMAGES_NO_ALT">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -399,7 +398,7 @@
 				</p>
 				<p class="issues-buttons">
 					<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NO_LANG">Download URLs ↓</a>
-					<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_NO_LANG">View URLs →</a>
+					<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NO_LANG">View URLs →</a>
 				</p>
 			</div>
 		</div>
@@ -417,7 +416,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_LITTLE_CONTENT">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_LITTLE_CONTENT">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_LITTLE_CONTENT">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -436,7 +435,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_TOO_MANY_LINKS">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_TOO_MANY_LINKS">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_TOO_MANY_LINKS">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -458,7 +457,7 @@
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_INTERNAL_NOFOLLOW">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_INTERNAL_NOFOLLOW">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_INTERNAL_NOFOLLOW">View URLs →</a>
 			</p>
 		</div>
 		</div>
@@ -476,7 +475,7 @@
 				</p>
 				<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">Download URLs ↓</a>
-				<a class="button" href="/issues/view?cid={{ $cid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">View URLs →</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">View URLs →</a>
 				</p>
 			</div>
 		</div>

@@ -7,7 +7,6 @@ import (
 
 	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
-	"github.com/mnlg/lenkrr/internal/report"
 	"github.com/mnlg/lenkrr/internal/user"
 )
 
@@ -19,14 +18,10 @@ type IssuesGroupView struct {
 }
 
 type IssuesView struct {
-	PageReports  []report.PageReport
-	Cid          int
-	Eid          string
-	Project      project.Project
-	CurrentPage  int
-	NextPage     int
-	PreviousPage int
-	TotalPages   int
+	ProjectView   *project.ProjectView
+	Eid           string
+	Project       project.Project
+	PaginatorView issue.PaginatorView
 }
 
 func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Request) {
@@ -71,63 +66,40 @@ func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.
 		return
 	}
 
-	cid, err := strconv.Atoi(r.URL.Query().Get("cid"))
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
-
-	totalPages := app.datastore.getNumberOfPagesForIssues(cid, eid)
 
 	page, err := strconv.Atoi(r.URL.Query().Get("p"))
 	if err != nil {
 		page = 1
 	}
 
-	if page < 1 || page > totalPages {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	nextPage := 0
-	previousPage := 0
-
-	if page < totalPages {
-		nextPage = page + 1
-	}
-
-	if page > 1 {
-		previousPage = page - 1
-	}
-
-	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != user.Id {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
+	pv, err := app.projectService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
 	}
 
-	issues := app.datastore.findPageReportIssues(cid, page-1, eid)
+	paginatorView, err := app.issueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
 
 	view := IssuesView{
-		Cid:          cid,
-		Eid:          eid,
-		PageReports:  issues,
-		Project:      project,
-		CurrentPage:  page,
-		NextPage:     nextPage,
-		PreviousPage: previousPage,
-		TotalPages:   totalPages,
+		ProjectView:   pv,
+		Eid:           eid,
+		Project:       pv.Project,
+		PaginatorView: paginatorView,
 	}
 
 	v := &PageView{

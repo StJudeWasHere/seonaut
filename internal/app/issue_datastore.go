@@ -279,9 +279,9 @@ func (ds *datastore) FindInLinks(s string, cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, hash, cid)
 }
 
-func (ds *datastore) findPageReportIssues(cid, p int, errorType string) []report.PageReport {
+func (ds *datastore) FindPageReportIssues(cid, p int, errorType string) []report.PageReport {
 	max := paginationMax
-	offset := max * p
+	offset := max * (p - 1)
 
 	query := `
 		SELECT

@@ -378,7 +378,7 @@ func (ds *datastore) FindProjectById(id int, uid int) (project.Project, error) {
 	return p, nil
 }
 
-func (ds *datastore) saveIssues(issues []Issue, cid int) {
+func (ds *datastore) saveIssues(issues []issue.Issue, cid int) {
 	query := `
 		INSERT INTO issues (pagereport_id, crawl_id, issue_type_id)
 		VALUES (?, ?, ?)`
@@ -979,7 +979,7 @@ func (ds *datastore) DeletePreviousCrawl(pid int) {
 	deleteFunc(previousCrawl, "pagereports")
 }
 
-func (ds *datastore) getNumberOfPagesForIssues(cid int, errorType string) int {
+func (ds *datastore) GetNumberOfPagesForIssues(cid int, errorType string) int {
 	query := `
 		SELECT count(DISTINCT pagereport_id)
 		FROM issues

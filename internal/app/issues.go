@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/report"
 )
 
@@ -37,11 +38,6 @@ const (
 	Warning
 )
 
-type Issue struct {
-	PageReportId int
-	ErrorType    int
-}
-
 type IssueCallback struct {
 	Callback  func(int) []report.PageReport
 	ErrorType int
@@ -55,12 +51,12 @@ func (r *ReportManager) addReporter(c func(int) []report.PageReport, t int) {
 	r.callbacks = append(r.callbacks, IssueCallback{Callback: c, ErrorType: t})
 }
 
-func (r *ReportManager) createIssues(cid int) []Issue {
-	var issues []Issue
+func (r *ReportManager) createIssues(cid int) []issue.Issue {
+	var issues []issue.Issue
 
 	for _, c := range r.callbacks {
 		for _, p := range c.Callback(cid) {
-			i := Issue{
+			i := issue.Issue{
 				PageReportId: p.Id,
 				ErrorType:    c.ErrorType,
 			}

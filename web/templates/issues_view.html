@@ -11,14 +11,11 @@
 
 <div class="content">
 	<p class="list-header">URLs</p>
-	{{ $cid := .Cid }}
-	{{ $eid := .Eid }}
-	{{ $pp := .PreviousPage }}
-	{{ $np := .NextPage }}
-	{{ $tp := .TotalPages }}
-	{{ if .PageReports }}
+	{{ if .PaginatorView.PageReports }}
 		<ul class="url-list">
-		{{ range .PageReports }}
+		{{ $cid := .ProjectView.Crawl.Id }}
+		{{ $eid := .Eid }}
+		{{ range .PaginatorView.PageReports }}
 			<li>
 				<div>
 					{{ if .Title }}{{ .Title }}<br />{{ end }}
@@ -27,16 +24,20 @@
 			</li>
 		{{ end }}
 	</ul>
-		{{ if gt $tp 1 }}
+		{{ if gt .PaginatorView.Paginator.TotalPages 1 }}
 			<div class="pagination">
 				<div class="prev">
-				{{ if $pp }}
-					<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $pp }}">← previous page</a>
+				{{ if .PaginatorView.Paginator.PreviousPage }}
+					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.PreviousPage }}">
+						← previous page
+					</a>
 				{{ end }}
 				</div>
 				<div class="next">
-				{{ if $np }}
-					<a href="/issues/view?cid={{ $cid }}&eid={{ $eid }}&p={{ $np }}">next page →</a>
+				{{ if .PaginatorView.Paginator.NextPage }}
+					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.NextPage }}">
+						next page →
+					</a>
 				{{ end }}
 				</div>
 			</div>

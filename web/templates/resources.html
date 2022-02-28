@@ -38,6 +38,7 @@
 	</div>
 </div>
 	{{ $cid := .ProjectView.Crawl.Id }}
+	{{ $pid := .ProjectView.Project.Id }}
 	{{ $eid := .Eid }}
 	
 	{{ if eq .Tab "details" }}
@@ -117,7 +118,7 @@
 				<b>Issues in this URL:</b>
 				<ul class="pagereport-errors">
 				{{ range .PageReportView.ErrorTypes }}
-						<li><a href="/issues/view?cid={{ $cid }}&eid={{ . }}">{{ trans . }}</a></li>
+						<li><a href="/issues/view?pid={{ $pid }}&eid={{ . }}">{{ trans . }}</a></li>
 				{{ end }}
 				</ul>
 				{{ end }}

@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/mnlg/lenkrr/internal/app"
 	"github.com/mnlg/lenkrr/internal/config"
 	"github.com/mnlg/lenkrr/internal/datastore"
+	"github.com/mnlg/lenkrr/internal/http"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 		log.Fatalf("Error creating new datastore: %v\n", err)
 	}
 
-	lenkrr := app.NewApp(
+	lenkrr := http.NewApp(
 		config,
 		datastore,
 	)

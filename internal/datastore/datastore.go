@@ -13,7 +13,6 @@ import (
 	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
-	"github.com/mnlg/lenkrr/internal/user"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -108,119 +107,6 @@ func (ds *Datastore) countListQuery(query string, cid int) issue.CountList {
 	sort.Sort(sort.Reverse(m))
 
 	return m
-}
-
-func (ds *Datastore) EmailExists(email string) bool {
-	query := `select exists (select id from users where email = ?)`
-	var exists bool
-	err := ds.db.QueryRow(query, email).Scan(&exists)
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("Error checking if email exists '%s' %v", email, err)
-	}
-
-	return exists
-}
-
-func (ds *Datastore) UserSignup(user, password string) {
-	query := `INSERT INTO users (email, password) VALUES (?, ?)`
-	stmt, _ := ds.db.Prepare(query)
-	defer stmt.Close()
-
-	_, err := stmt.Exec(user, password)
-	if err != nil {
-		log.Printf("WserSignup: %v\n", err)
-	}
-}
-
-func (ds *Datastore) FindUserByEmail(email string) *user.User {
-	u := user.User{}
-	query := `
-		SELECT
-			id,
-			email,
-			password,
-			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced,
-			stripe_session_id
-		FROM users
-		WHERE email = ?`
-
-	row := ds.db.QueryRow(query, email)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced, &u.StripeSessionId)
-	if err != nil {
-		log.Println(err)
-		return &u
-	}
-
-	return &u
-}
-
-func (ds *Datastore) FindUserById(id int) *user.User {
-	u := user.User{}
-	query := `
-		SELECT
-			id,
-			email,
-			password,
-			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced,
-			stripe_session_id
-		FROM users
-		WHERE id = ?`
-
-	row := ds.db.QueryRow(query, id)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced, &u.StripeSessionId)
-	if err != nil {
-		log.Println(err)
-		return &u
-	}
-
-	return &u
-}
-
-func (ds *Datastore) UserSetStripeId(email, stripeCustomerId string) {
-	query := `
-		UPDATE users
-		SET stripe_customer_id = ?
-		WHERE email = ?`
-
-	stmt, _ := ds.db.Prepare(query)
-	defer stmt.Close()
-
-	_, err := stmt.Exec(stripeCustomerId, email)
-	if err != nil {
-		log.Printf("userUpgrade: %v\n", err)
-	}
-}
-
-func (ds *Datastore) UserSetStripeSession(id int, stripeSessionId string) {
-	query := `
-		UPDATE users
-		SET stripe_session_id = ?
-		WHERE id = ?`
-
-	stmt, _ := ds.db.Prepare(query)
-	defer stmt.Close()
-
-	_, err := stmt.Exec(stripeSessionId, id)
-	if err != nil {
-		log.Printf("userUpgrade: %v\n", err)
-	}
-}
-
-func (ds *Datastore) RenewSubscription(stripeCustomerId string) {
-	query := `
-		UPDATE users
-		SET period_end = ?
-		WHERE stripe_customer_id = ?`
-
-	stmt, _ := ds.db.Prepare(query)
-	defer stmt.Close()
-
-	periodEnd := time.Now().AddDate(0, 1, 2)
-
-	_, err := stmt.Exec(periodEnd, stripeCustomerId)
-	if err != nil {
-		log.Printf("userUpgrade: %v\n", err)
-	}
 }
 
 func (ds *Datastore) SaveCrawl(p project.Project) int64 {

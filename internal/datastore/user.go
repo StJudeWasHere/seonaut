@@ -8,7 +8,7 @@ import (
 )
 
 func (ds *Datastore) EmailExists(email string) bool {
-	query := `select exists (select id from users where email = ?)`
+	query := `SELECT exists (SELECT id FROM users WHERE email = ?)`
 	var exists bool
 	err := ds.db.QueryRow(query, email).Scan(&exists)
 	if err != nil && err != sql.ErrNoRows {
@@ -25,7 +25,7 @@ func (ds *Datastore) UserSignup(user, password string) {
 
 	_, err := stmt.Exec(user, password)
 	if err != nil {
-		log.Printf("WserSignup: %v\n", err)
+		log.Printf("UserSignup: %v\n", err)
 	}
 }
 

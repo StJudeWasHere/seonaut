@@ -114,33 +114,6 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 		log.Fatal(err)
 	}
 
-	rm := issue.NewReportManager(ds)
-
-	rm.AddReporter(ds.Find30xPageReports, Error30x)
-	rm.AddReporter(ds.Find40xPageReports, Error40x)
-	rm.AddReporter(ds.Find50xPageReports, Error50x)
-	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedTitle)
-	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedDescription)
-	rm.AddReporter(ds.FindPageReportsWithEmptyTitle, ErrorEmptyTitle)
-	rm.AddReporter(ds.FindPageReportsWithShortTitle, ErrorShortTitle)
-	rm.AddReporter(ds.FindPageReportsWithLongTitle, ErrorLongTitle)
-	rm.AddReporter(ds.FindPageReportsWithEmptyDescription, ErrorEmptyDescription)
-	rm.AddReporter(ds.FindPageReportsWithShortDescription, ErrorShortDescription)
-	rm.AddReporter(ds.FindPageReportsWithLongDescription, ErrorLongDescription)
-	rm.AddReporter(ds.FindPageReportsWithLittleContent, ErrorLittleContent)
-	rm.AddReporter(ds.FindImagesWithNoAlt, ErrorImagesWithNoAlt)
-	rm.AddReporter(ds.FindRedirectChains, ErrorRedirectChain)
-	rm.AddReporter(ds.FindPageReportsWithoutH1, ErrorNoH1)
-	rm.AddReporter(ds.FindPageReportsWithNoLangAttr, ErrorNoLang)
-	rm.AddReporter(ds.FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
-	rm.AddReporter(ds.FindMissingHrelangReturnLinks, ErrorHreflangsReturnLink)
-	rm.AddReporter(ds.TooManyLinks, ErrorTooManyLinks)
-	rm.AddReporter(ds.InternalNoFollowLinks, ErrorInternalNoFollow)
-	rm.AddReporter(ds.FindExternalLinkWitoutNoFollow, ErrorExternalWithoutNoFollow)
-	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorCanonicalizedToNonCanonical)
-	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorRedirectLoop)
-	rm.AddReporter(ds.FindNotValidHeadingsOrder, ErrorNotValidHeadings)
-
 	return &App{
 		config:         c,
 		datastore:      ds,
@@ -153,7 +126,7 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 		crawlerService: crawler.NewService(ds),
 		issueService:   issue.NewService(ds),
 		reportService:  report.NewService(ds),
-		reportManager:  rm,
+		reportManager:  newReportManager(ds),
 	}
 }
 
@@ -200,4 +173,35 @@ func (app *App) Run() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
+	rm := issue.NewReportManager(ds)
+
+	rm.AddReporter(ds.Find30xPageReports, Error30x)
+	rm.AddReporter(ds.Find40xPageReports, Error40x)
+	rm.AddReporter(ds.Find50xPageReports, Error50x)
+	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedTitle)
+	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedDescription)
+	rm.AddReporter(ds.FindPageReportsWithEmptyTitle, ErrorEmptyTitle)
+	rm.AddReporter(ds.FindPageReportsWithShortTitle, ErrorShortTitle)
+	rm.AddReporter(ds.FindPageReportsWithLongTitle, ErrorLongTitle)
+	rm.AddReporter(ds.FindPageReportsWithEmptyDescription, ErrorEmptyDescription)
+	rm.AddReporter(ds.FindPageReportsWithShortDescription, ErrorShortDescription)
+	rm.AddReporter(ds.FindPageReportsWithLongDescription, ErrorLongDescription)
+	rm.AddReporter(ds.FindPageReportsWithLittleContent, ErrorLittleContent)
+	rm.AddReporter(ds.FindImagesWithNoAlt, ErrorImagesWithNoAlt)
+	rm.AddReporter(ds.FindRedirectChains, ErrorRedirectChain)
+	rm.AddReporter(ds.FindPageReportsWithoutH1, ErrorNoH1)
+	rm.AddReporter(ds.FindPageReportsWithNoLangAttr, ErrorNoLang)
+	rm.AddReporter(ds.FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
+	rm.AddReporter(ds.FindMissingHrelangReturnLinks, ErrorHreflangsReturnLink)
+	rm.AddReporter(ds.TooManyLinks, ErrorTooManyLinks)
+	rm.AddReporter(ds.InternalNoFollowLinks, ErrorInternalNoFollow)
+	rm.AddReporter(ds.FindExternalLinkWitoutNoFollow, ErrorExternalWithoutNoFollow)
+	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorCanonicalizedToNonCanonical)
+	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorRedirectLoop)
+	rm.AddReporter(ds.FindNotValidHeadingsOrder, ErrorNotValidHeadings)
+
+	return rm
 }

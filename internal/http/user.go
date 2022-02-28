@@ -14,7 +14,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			log.Println(err)
+			log.Printf("serveSignup ParseForm: %v\n", err)
 			http.Redirect(w, r, "/signup", http.StatusSeeOther)
 
 			return
@@ -25,6 +25,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 
 		err = app.userService.SignUp(email, password)
 		if err == nil {
+			log.Printf("serveSignup SignUp: %v\n", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
@@ -45,7 +46,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			log.Println(err)
+			log.Printf("serveSignin ParseForm: %v\n", err)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 
 			return
@@ -56,6 +57,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 
 		u, err := app.userService.SignIn(email, password)
 		if err != nil {
+			log.Printf("serveSignin SignIn: %v\n", err)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
 		}

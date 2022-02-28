@@ -16,7 +16,7 @@ import (
 func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Println(err)
+		log.Printf("serveDownloadCSV pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -48,7 +48,7 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Println(err)
+		log.Printf("serveSitemap pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return

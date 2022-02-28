@@ -20,7 +20,7 @@ type ResourcesView struct {
 func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Println(err)
+		log.Printf("serveResourcesView pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -28,7 +28,7 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 
 	rid, err := strconv.Atoi(r.URL.Query().Get("rid"))
 	if err != nil {
-		log.Println(err)
+		log.Printf("serveResourcesView rid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -49,8 +49,10 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 
 	pv, err := app.projectService.GetProjectView(pid, user.Id)
 	if err != nil {
-		log.Println(err)
+		log.Printf("serveResourcesView GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
 	}
 
 	rv := ResourcesView{

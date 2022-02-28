@@ -11,7 +11,7 @@ import (
 func (app *App) serveCrawl(user *user.User, w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Println(err)
+		log.Printf("serveCrawl pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return

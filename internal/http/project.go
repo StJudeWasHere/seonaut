@@ -43,8 +43,9 @@ func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
+			log.Println("serveProjectAdd ParseForm: %v\n", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
-			log.Println(err)
+			return
 		}
 
 		url := r.FormValue("url")

@@ -48,14 +48,14 @@ func (r *Renderer) renderTemplate(w http.ResponseWriter, t string, v *PageView) 
 
 	err := templates.ExecuteTemplate(w, t+".html", v)
 	if err != nil {
-		log.Println(err)
+		log.Printf("renderTemplate: %v\n", err)
 	}
 }
 
 func (r *Renderer) trans(s string) string {
 	t, ok := r.translationMap[s]
 	if !ok {
-		log.Printf("%s translation not found\n", s)
+		log.Printf("trans: %s translation not found\n", s)
 		return s
 	}
 

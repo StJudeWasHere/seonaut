@@ -11,36 +11,27 @@ import (
 )
 
 type ResourcesView struct {
-	PageReport report.PageReport
-	Cid        int
-	Eid        string
-	ErrorTypes []string
-	InLinks    []report.PageReport
-	Redirects  []report.PageReport
-	Project    project.Project
-	Tab        string
+	PageReportView *report.PageReportView
+	ProjectView    *project.ProjectView
+	Eid            string
+	Tab            string
 }
 
 func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		log.Println(err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
 	rid, err := strconv.Atoi(r.URL.Query().Get("rid"))
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
-	}
-
-	cid, err := strconv.Atoi(r.URL.Query().Get("cid"))
-	if err != nil {
-		log.Println(err)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
-	}
-
-	tab := r.URL.Query().Get("t")
-	if tab == "" {
-		tab = "details"
 	}
 
 	eid := r.URL.Query().Get("eid")
@@ -51,42 +42,22 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 		return
 	}
 
-	u, err := app.datastore.findCrawlUserId(cid)
-	if err != nil || u.Id != user.Id {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-		return
+	tab := r.URL.Query().Get("t")
+	if tab == "" {
+		tab = "details"
 	}
 
-	crawl := app.datastore.findCrawlById(cid)
-	project, err := app.projectService.FindProject(crawl.ProjectId, user.Id)
+	pv, err := app.projectService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Println(err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
-	pageReport := app.datastore.FindPageReportById(rid)
-	errorTypes := app.datastore.findErrorTypesByPage(rid, cid)
-
-	var inLinks []report.PageReport
-	if tab == "inlinks" {
-		inLinks = app.datastore.FindInLinks(pageReport.URL, cid)
-	}
-
-	var redirects []report.PageReport
-	if tab == "redirections" {
-		redirects = app.datastore.FindPageReportsRedirectingToURL(pageReport.URL, cid)
-	}
-
 	rv := ResourcesView{
-		PageReport: pageReport,
-		Project:    project,
-		Cid:        cid,
-		Eid:        eid,
-		ErrorTypes: errorTypes,
-		InLinks:    inLinks,
-		Redirects:  redirects,
-		Tab:        tab,
+		ProjectView:    pv,
+		Eid:            eid,
+		Tab:            tab,
+		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab),
 	}
 
 	v := &PageView{

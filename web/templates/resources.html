@@ -5,8 +5,8 @@
 <div class="content">
 	<div class="action">
 		<a href="/">Projects</a> /
-		<a href="/issues?pid={{ .Project.Id }}">{{ .Project.Host }}</a> /
-		<a href="/issues/view?cid={{ .Cid }}&eid={{ .Eid }}">{{ trans .Eid }}</a> /
+		<a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
+		<a href="/issues/view?cid={{ .ProjectView.Crawl.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a> /
 		<span class="title">URL Explorer</span>
 	</div>
 </div>
@@ -14,36 +14,36 @@
 <div class="content">
 	<div class="box">
 	<h2 class="pagereport-title list-header">
-		{{ .PageReport.URL }} <a href="{{ .PageReport.URL }}" target="_blank" class="link-out">↗</a>
+		{{ .PageReportView.PageReport.URL }} <a href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="link-out">↗</a>
 	</h2>
 
 	<div class="tabs">
 		<ul>
-			<li><a class="button{{ if eq .Tab "details" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=details">Details</a></li>
+			<li><a class="button{{ if eq .Tab "details" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=details">Details</a></li>
 
-			<li><a class="button{{ if eq .Tab "inlinks" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=inlinks">Inlinks</a></li>
+			<li><a class="button{{ if eq .Tab "inlinks" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks">Inlinks</a></li>
 
-			<li><a class="button {{ if eq .Tab "internal" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=internal">Internal links</a></li>
+			<li><a class="button {{ if eq .Tab "internal" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal">Internal links</a></li>
 
-			<li><a class="button {{ if eq .Tab "external"}} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=external">External links</a></li>
+			<li><a class="button {{ if eq .Tab "external"}} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external">External links</a></li>
 
-			<li><a class="button {{ if eq .Tab "redirections" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=redirections">Redirections</a></li>
+			<li><a class="button {{ if eq .Tab "redirections" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections">Redirections</a></li>
 
-			<li><a class="button {{ if eq .Tab "images" }} active{{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=images">Images</a></li>
+			<li><a class="button {{ if eq .Tab "images" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=images">Images</a></li>
 
-			<li><a class="button {{ if eq .Tab "scripts" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=scripts">Scripts</a></li>
+			<li><a class="button {{ if eq .Tab "scripts" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=scripts">Scripts</a></li>
 
-			<li><a class="button{{ if eq .Tab "styles" }} active {{ end }}" href="/resources?cid={{ .Cid }}&rid={{ .PageReport.Id }}&eid={{ .Eid }}&t=styles">Styles</a></li>
+			<li><a class="button{{ if eq .Tab "styles" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=styles">Styles</a></li>
 		</ul>
 	</div>
 </div>
-	{{ $cid := .Cid }}
+	{{ $cid := .ProjectView.Crawl.Id }}
 	{{ $eid := .Eid }}
 	
 	{{ if eq .Tab "details" }}
 	<div class="report-block">
 		<div class="page-details">
-			{{ with .PageReport }}
+			{{ with .PageReportView.PageReport }}
 			<div class="report-box">
 				<div><b>Status Code:</b> <small>{{ .StatusCode }}</small><br></div>
 				<div><b>Content Type:</b> <small>{{ .ContentType }}</small><br></div>
@@ -113,10 +113,10 @@
 			{{ end }}
 
 			<div class="report-box">
-				{{ if .ErrorTypes }}
+				{{ if .PageReportView.ErrorTypes }}
 				<b>Issues in this URL:</b>
 				<ul class="pagereport-errors">
-				{{ range .ErrorTypes }}
+				{{ range .PageReportView.ErrorTypes }}
 						<li><a href="/issues/view?cid={{ $cid }}&eid={{ . }}">{{ trans . }}</a></li>
 				{{ end }}
 				</ul>
@@ -128,9 +128,9 @@
 
 	{{ if eq .Tab "inlinks" }}
 		<div class="report-block">
-			{{ if .InLinks }}
+			{{ if .PageReportView.InLinks }}
 			<ul class="url-list">
-				{{ range .InLinks }}
+				{{ range .PageReportView.InLinks }}
 					<li>
 						{{ if .Title }}{{ .Title }}<br/>{{ end }}
 						<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
@@ -145,9 +145,9 @@
 
 	{{ if eq .Tab "redirections" }}
 		<div class="report-block">
-			{{ if .Redirects }}
+			{{ if .PageReportView.Redirects }}
 				<ul class="url-list">
-					{{ range .Redirects }}
+					{{ range .PageReportView.Redirects }}
 						<li>
 							{{ if .Title }}{{ .Title }}<br/>{{ end }}
 							<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
@@ -162,9 +162,9 @@
 
 	{{ if eq .Tab "internal" }}
 		<div class="report-block">
-			{{ if .PageReport.Links }}
+			{{ if .PageReportView.PageReport.Links }}
 				<ul class="url-list">
-					{{ range .PageReport.Links }}
+					{{ range .PageReportView.PageReport.Links }}
 						<li>
 							{{ if .Text }}{{ .Text }}<br/>{{ end }}
 							<span class="url">{{ .URL }}</span>
@@ -180,9 +180,9 @@
 
 	{{ if eq .Tab "external" }}
 		<div class="report-block">
-			{{ if .PageReport.ExternalLinks }}
+			{{ if .PageReportView.PageReport.ExternalLinks }}
 			<ul class="url-list">
-				{{ range .PageReport.ExternalLinks }}
+				{{ range .PageReportView.PageReport.ExternalLinks }}
 					<li>
 						{{ if .Text }}{{ .Text }} <br> {{ end }}
 						<span class="url">{{ .URL }}</span>
@@ -198,9 +198,9 @@
 
 	{{ if eq .Tab "images" }}
 		<div class="report-block">
-			{{ if .PageReport.Images }}
+			{{ if .PageReportView.PageReport.Images }}
 			<ul class="url-list">
-				{{ range .PageReport.Images }}
+				{{ range .PageReportView.PageReport.Images }}
 					<li>
 						{{ if .Alt}}{{ .Alt }}<br>{{ end }}
 						<span class="url">{{ .URL }}</span>
@@ -216,9 +216,9 @@
 
 	{{ if eq .Tab "scripts" }}
 		<div class="report-block">
-			{{ if .PageReport.Scripts }}
+			{{ if .PageReportView.PageReport.Scripts }}
 			<ul class="url-list">
-				{{ range .PageReport.Scripts }}
+				{{ range .PageReportView.PageReport.Scripts }}
 					<li class="url">{{ . }}</li>
 				{{ end }}
 			</ul>
@@ -230,9 +230,9 @@
 	
 	{{ if eq .Tab "styles" }}
 		<div class="report-block">
-		{{ if .PageReport.Styles }}
+		{{ if .PageReportView.PageReport.Styles }}
 			<ul class="url-list">
-				{{ range .PageReport.Styles }}
+				{{ range .PageReportView.PageReport.Styles }}
 				<li class="url">{{ . }}</li>
 				{{ end }}
 			</ul>

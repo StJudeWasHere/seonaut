@@ -20,7 +20,6 @@ type IssuesGroupView struct {
 type IssuesView struct {
 	ProjectView   *project.ProjectView
 	Eid           string
-	Project       project.Project
 	PaginatorView issue.PaginatorView
 }
 
@@ -98,7 +97,6 @@ func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.
 	view := IssuesView{
 		ProjectView:   pv,
 		Eid:           eid,
-		Project:       pv.Project,
 		PaginatorView: paginatorView,
 	}
 

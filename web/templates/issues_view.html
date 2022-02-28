@@ -4,7 +4,7 @@
 <div class="content">
 	<div class="action">
 		<a href="/">Projects</a> /
-		<a href="/issues?pid={{ .Project.Id }}">{{ .Project.Host }}</a> /
+		<a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
 		<span class="title">{{ trans .Eid }}</span>
 	</div>
 </div>
@@ -13,13 +13,13 @@
 	<p class="list-header">URLs</p>
 	{{ if .PaginatorView.PageReports }}
 		<ul class="url-list">
-		{{ $cid := .ProjectView.Crawl.Id }}
+		{{ $pid := .ProjectView.Project.Id }}
 		{{ $eid := .Eid }}
 		{{ range .PaginatorView.PageReports }}
 			<li>
 				<div>
 					{{ if .Title }}{{ .Title }}<br />{{ end }}
-					<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+					<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
 				<div>
 			</li>
 		{{ end }}

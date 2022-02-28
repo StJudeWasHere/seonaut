@@ -436,7 +436,7 @@ func (ds *datastore) countIssuesByCrawl(cid int) int {
 	return c
 }
 
-func (ds *datastore) findErrorTypesByPage(pid, cid int) []string {
+func (ds *datastore) FindErrorTypesByPage(pid, cid int) []string {
 	var et []string
 	query := `
 		SELECT 

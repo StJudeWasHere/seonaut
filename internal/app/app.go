@@ -10,6 +10,7 @@ import (
 	"github.com/mnlg/lenkrr/internal/crawler"
 	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
+	"github.com/mnlg/lenkrr/internal/report"
 	stripeService "github.com/mnlg/lenkrr/internal/stripe"
 	"github.com/mnlg/lenkrr/internal/user"
 
@@ -48,6 +49,10 @@ type IssueService interface {
 	GetPaginatedReportsByIssue(int, int, string) (issue.PaginatorView, error)
 }
 
+type ReportService interface {
+	GetPageReport(int, int, string) *report.PageReportView
+}
+
 type App struct {
 	config         *config.Config
 	datastore      *datastore
@@ -59,6 +64,7 @@ type App struct {
 	projectService ProjectService
 	crawlerService CrawlerService
 	issueService   IssueService
+	reportService  ReportService
 }
 
 func NewApp(c *config.Config, ds *datastore) *App {
@@ -84,6 +90,7 @@ func NewApp(c *config.Config, ds *datastore) *App {
 		projectService: project.NewService(ds),
 		crawlerService: crawler.NewService(ds),
 		issueService:   issue.NewService(ds),
+		reportService:  report.NewService(ds),
 	}
 }
 

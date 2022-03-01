@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 
 	"github.com/mnlg/lenkrr/internal/report"
 
@@ -16,7 +15,6 @@ import (
 type Crawler struct {
 	URL             *url.URL
 	MaxPageReports  int
-	UseJS           bool
 	IgnoreRobotsTxt bool
 	UserAgent       string
 	sanitizer       *bluemonday.Policy
@@ -53,12 +51,7 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 			return
 		}
 
-		us := r.Request.URL.String()
 		url := r.Request.URL
-		if c.UseJS == true {
-			us = us[len(RendertronURL):]
-			url, _ = url.Parse(us)
-		}
 		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
 
 		if strings.Contains(pageReport.Robots, "noindex") {
@@ -77,12 +70,7 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 				continue
 			}
 
-			lurl := r.Request.AbsoluteURL(l.URL)
-			if c.UseJS == true {
-				lurl = RendertronURL + lurl
-			}
-
-			q.AddURL(lurl)
+			q.AddURL(r.Request.AbsoluteURL(l.URL))
 		}
 
 		if pageReport.RedirectURL != "" {
@@ -184,11 +172,6 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 	}
 
 	us := c.URL.String()
-	if c.UseJS == true {
-		us = RendertronURL + us
-		n, _ := time.ParseDuration("30s")
-		co.SetRequestTimeout(n)
-	}
 
 	q.AddURL(us)
 	q.Run(co)

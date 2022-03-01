@@ -7,7 +7,7 @@ import (
 
 type ProjectStore interface {
 	FindProjectsByUser(int) []Project
-	SaveProject(string, bool, bool, int)
+	SaveProject(string, bool, int)
 	FindProjectById(id int, uid int) (Project, error)
 
 	GetLastCrawl(*Project) Crawl
@@ -18,7 +18,6 @@ type Project struct {
 	URL             string
 	Host            string
 	IgnoreRobotsTxt bool
-	UseJS           bool
 	Created         time.Time
 }
 
@@ -41,8 +40,8 @@ func (s *ProjectService) GetProjects(userId int) []Project {
 	return s.store.FindProjectsByUser(userId)
 }
 
-func (s *ProjectService) SaveProject(url string, ignoreRobotsTxt, useJavascript bool, userId int) {
-	s.store.SaveProject(url, ignoreRobotsTxt, useJavascript, userId)
+func (s *ProjectService) SaveProject(url string, ignoreRobotsTxt bool, userId int) {
+	s.store.SaveProject(url, ignoreRobotsTxt, userId)
 }
 
 func (s *ProjectService) FindProject(id, uid int) (Project, error) {

@@ -62,7 +62,7 @@ type StripeService interface {
 
 type ProjectService interface {
 	GetProjects(int) []project.Project
-	SaveProject(string, bool, bool, int)
+	SaveProject(string, bool, int)
 	FindProject(id, uid int) (project.Project, error)
 	GetProjectView(id, uid int) (*project.ProjectView, error)
 	GetProjectViews(uid int) []project.ProjectView

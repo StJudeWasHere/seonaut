@@ -16,7 +16,6 @@ const (
 	storageMaxSize         = 10000
 	MaxPageReports         = 300
 	AdvancedMaxPageReports = 5000
-	RendertronURL          = "http://127.0.0.1:3000/render/"
 )
 
 type CrawlerStore interface {
@@ -58,7 +57,6 @@ func (s *CrawlerService) StartCrawler(p project.Project, agent string, advanced 
 	c := &Crawler{
 		URL:             u,
 		MaxPageReports:  max,
-		UseJS:           p.UseJS,
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
 		UserAgent:       agent,
 		sanitizer:       sanitizer,

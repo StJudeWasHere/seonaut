@@ -55,16 +55,7 @@ func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.
 			ignoreRobotsTxt = false
 		}
 
-		useJavascript, err := strconv.ParseBool(r.FormValue("use_javascript"))
-		if err != nil {
-			useJavascript = false
-		}
-
-		if user.Advanced == false {
-			useJavascript = false
-		}
-
-		app.projectService.SaveProject(url, ignoreRobotsTxt, useJavascript, user.Id)
+		app.projectService.SaveProject(url, ignoreRobotsTxt, user.Id)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

@@ -9,7 +9,6 @@ require (
 	github.com/gorilla/sessions v1.2.1
 	github.com/microcosm-cc/bluemonday v1.0.18
 	github.com/spf13/viper v1.10.1
-	github.com/stripe/stripe-go/v72 v72.87.0
 	github.com/turk/go-sitemap v0.0.0-20210912154218-82ad01095e30
 	golang.org/x/crypto v0.0.0-20220112180741-5e0467b6c7ce
 	golang.org/x/net v0.0.0-20220127200216-cd36cc0744dd

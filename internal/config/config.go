@@ -12,21 +12,12 @@ type DBConfig struct {
 	Name   string
 }
 
-type StripeConfig struct {
-	Key             string
-	Secret          string
-	WebhookSecret   string
-	AdvancedPriceId string
-	ReturnURL       string
-}
-
 type Config struct {
 	Server       string
 	ServerPort   int
 	CrawlerAgent string
 
-	DB     DBConfig
-	Stripe StripeConfig
+	DB DBConfig
 }
 
 func NewConfig(path string) (*Config, error) {
@@ -49,12 +40,6 @@ func NewConfig(path string) (*Config, error) {
 	config.DB.Name = viper.GetString("Database.database")
 
 	config.CrawlerAgent = viper.GetString("Crawler.agent")
-
-	config.Stripe.Key = viper.GetString("Stripe.key")
-	config.Stripe.Secret = viper.GetString("Stripe.secret")
-	config.Stripe.WebhookSecret = viper.GetString("Stripe.webhook_secret")
-	config.Stripe.AdvancedPriceId = viper.GetString("Stripe.advanced_price_id")
-	config.Stripe.ReturnURL = viper.GetString("Stripe.return_url")
 
 	return &config, nil
 }

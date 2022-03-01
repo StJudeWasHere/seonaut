@@ -11,10 +11,3 @@ database = "test"
 
 [crawler]
 agent = "testing"
-
-[stripe]
-key = "stripe_key"
-secret = "stripe_secret"
-webhook_secret = "webhook_secret"
-advanced_price_id = "price_id"
-return_url = "http://localhost:9000"

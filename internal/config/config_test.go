@@ -28,11 +28,6 @@ func TestLoadConfig(t *testing.T) {
 		{config.DB.Pass, "root"},
 		{config.DB.Name, "test"},
 		{config.CrawlerAgent, "testing"},
-		{config.Stripe.Key, "stripe_key"},
-		{config.Stripe.Secret, "stripe_secret"},
-		{config.Stripe.WebhookSecret, "webhook_secret"},
-		{config.Stripe.AdvancedPriceId, "price_id"},
-		{config.Stripe.ReturnURL, "http://localhost:9000"},
 	}
 
 	for _, v := range m {

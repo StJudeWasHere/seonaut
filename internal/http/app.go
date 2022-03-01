@@ -12,12 +12,10 @@ import (
 	"github.com/mnlg/lenkrr/internal/issue"
 	"github.com/mnlg/lenkrr/internal/project"
 	"github.com/mnlg/lenkrr/internal/report"
-	stripeService "github.com/mnlg/lenkrr/internal/stripe"
 	"github.com/mnlg/lenkrr/internal/user"
 
 	"github.com/gorilla/sessions"
 	"github.com/microcosm-cc/bluemonday"
-	"github.com/stripe/stripe-go/v72"
 	"gopkg.in/yaml.v3"
 )
 
@@ -55,11 +53,6 @@ type UserService interface {
 	SignIn(email, password string) (*user.User, error)
 }
 
-type StripeService interface {
-	SetSession(userID int, sessionID string)
-	HandleEvent(string, map[string]interface{})
-}
-
 type ProjectService interface {
 	GetProjects(int) []project.Project
 	SaveProject(string, bool, int)
@@ -94,7 +87,6 @@ type App struct {
 	sanitizer      *bluemonday.Policy
 	renderer       *Renderer
 	userService    UserService
-	stripeService  StripeService
 	projectService ProjectService
 	crawlerService CrawlerService
 	issueService   IssueService
@@ -121,7 +113,6 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 		sanitizer:      bluemonday.StrictPolicy(),
 		renderer:       NewRenderer(m),
 		userService:    user.NewService(ds),
-		stripeService:  stripeService.NewService(ds),
 		projectService: project.NewService(ds),
 		crawlerService: crawler.NewService(ds),
 		issueService:   issue.NewService(ds),
@@ -131,14 +122,6 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 }
 
 func (app *App) Run() {
-	stripe.Key = app.config.Stripe.Secret
-
-	stripe.SetAppInfo(&stripe.AppInfo{
-		Name:    "stripe-samples/checkout-single-subscription",
-		Version: "0.0.1",
-		URL:     "https://github.com/stripe-samples/checkout-single-subscription",
-	})
-
 	// Static
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
@@ -157,16 +140,6 @@ func (app *App) Run() {
 	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
 	http.HandleFunc("/signup", app.serveSignup)
 	http.HandleFunc("/signin", app.serveSignin)
-
-	// Stripe
-	http.HandleFunc("/upgrade", app.requireAuth(app.upgrade))
-	http.HandleFunc("/create-checkout-session", app.requireAuth(app.handleCreateCheckoutSession))
-	http.HandleFunc("/checkout-session", app.requireAuth(app.handleCheckoutSession))
-	http.HandleFunc("/config", app.requireAuth(app.handleConfig))
-	http.HandleFunc("/manage", app.requireAuth(app.handleManageAccount))
-	http.HandleFunc("/canceled", app.requireAuth(app.handleCanceled))
-	http.HandleFunc("/customer-portal", app.requireAuth(app.handleCustomerPortal))
-	http.HandleFunc("/webhook", app.handleWebhook)
 
 	fmt.Printf("Starting server at %s on port %d...\n", app.config.Server, app.config.ServerPort)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.Server, app.config.ServerPort), nil)

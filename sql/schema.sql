@@ -7,7 +7,7 @@
 #
 # Host: 0.0.0.0 (MySQL 8.0.28)
 # Database: seo
-# Generation Time: 2022-03-01 16:47:27 +0000
+# Generation Time: 2022-03-01 17:42:53 +0000
 # ************************************************************
 
 
@@ -301,8 +301,6 @@ CREATE TABLE `users` (
   `id` int unsigned NOT NULL AUTO_INCREMENT,
   `email` varchar(256) NOT NULL DEFAULT '',
   `password` varchar(512) NOT NULL DEFAULT '',
-  `stripe_session_id` varchar(256) DEFAULT NULL,
-  `stripe_customer_id` varchar(256) DEFAULT NULL,
   `period_end` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;

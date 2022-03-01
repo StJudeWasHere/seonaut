@@ -36,13 +36,12 @@ func (ds *Datastore) FindUserByEmail(email string) *user.User {
 			id,
 			email,
 			password,
-			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced,
-			stripe_session_id
+			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced
 		FROM users
 		WHERE email = ?`
 
 	row := ds.db.QueryRow(query, email)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced, &u.StripeSessionId)
+	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
 	if err != nil {
 		log.Println(err)
 		return &u
@@ -58,13 +57,12 @@ func (ds *Datastore) FindUserById(id int) *user.User {
 			id,
 			email,
 			password,
-			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced,
-			stripe_session_id
+			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced
 		FROM users
 		WHERE id = ?`
 
 	row := ds.db.QueryRow(query, id)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced, &u.StripeSessionId)
+	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
 	if err != nil {
 		log.Println(err)
 		return &u

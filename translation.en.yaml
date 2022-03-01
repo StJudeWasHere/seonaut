@@ -6,8 +6,6 @@ RESOURCES_VIEW: Page Resources
 SIGNUP_VIEW: Sign Up
 SIGNIN_VIEW: Sign In
 UPGRADE: Upgrade your account
-STRIPE_MANAGE: Manage your account
-STRIPE_CANCELED: Upgrade canceled
 ERROR_50x: Status 50x
 ERROR_40x: Status 40x
 ERROR_30x: Status 30x

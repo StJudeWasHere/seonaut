@@ -18,11 +18,6 @@
 			<span class="logo"><a href="/">Lenkrr</a></span>
 			{{ if .User.Id }}
 				<span class="logout">
-					{{ if and .User.Advanced }}
-						<a href="/manage">Account</a>
-					{{ else }}
-						<a href="/upgrade">Upgrade</a>
-					{{ end }}
 					<a href="/signout">Logout</a>
 				</span>
 			{{ end }}

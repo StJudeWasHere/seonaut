@@ -24,7 +24,7 @@ func (app *App) serveCrawl(user *user.User, w http.ResponseWriter, r *http.Reque
 	}
 
 	go func() {
-		cid := app.crawlerService.StartCrawler(p, app.config.CrawlerAgent, user.Advanced, app.sanitizer)
+		cid := app.crawlerService.StartCrawler(p, app.config.CrawlerAgent, app.sanitizer)
 
 		log.Printf("Creating issues for %s and crawl id %d\n", p.URL, cid)
 		app.reportManager.CreateIssues(cid)

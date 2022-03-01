@@ -35,13 +35,12 @@ func (ds *Datastore) FindUserByEmail(email string) *user.User {
 		SELECT
 			id,
 			email,
-			password,
-			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced
+			password
 		FROM users
 		WHERE email = ?`
 
 	row := ds.db.QueryRow(query, email)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
 	if err != nil {
 		log.Println(err)
 		return &u
@@ -56,13 +55,12 @@ func (ds *Datastore) FindUserById(id int) *user.User {
 		SELECT
 			id,
 			email,
-			password,
-			IF (period_end > NOW() is NULL, FALSE, period_end > NOW()) AS advanced
+			password
 		FROM users
 		WHERE id = ?`
 
 	row := ds.db.QueryRow(query, id)
-	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Advanced)
+	err := row.Scan(&u.Id, &u.Email, &u.Password)
 	if err != nil {
 		log.Println(err)
 		return &u

@@ -12,10 +12,9 @@ import (
 )
 
 const (
-	consumerThreads        = 2
-	storageMaxSize         = 10000
-	MaxPageReports         = 300
-	AdvancedMaxPageReports = 5000
+	consumerThreads = 2
+	storageMaxSize  = 10000
+	MaxPageReports  = 10000
 )
 
 type CrawlerStore interface {
@@ -35,18 +34,14 @@ func NewService(s CrawlerStore) *CrawlerService {
 	}
 }
 
-func (s *CrawlerService) StartCrawler(p project.Project, agent string, advanced bool, sanitizer *bluemonday.Policy) int {
+func (s *CrawlerService) StartCrawler(p project.Project, agent string, sanitizer *bluemonday.Policy) int {
 	var totalURLs int
 	var max int
 
 	log.Printf("Crawling %s\n", p.URL)
 	start := time.Now()
 
-	if advanced {
-		max = AdvancedMaxPageReports
-	} else {
-		max = MaxPageReports
-	}
+	max = MaxPageReports
 
 	u, err := url.Parse(p.URL)
 	if err != nil {

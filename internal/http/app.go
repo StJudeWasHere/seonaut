@@ -62,7 +62,7 @@ type ProjectService interface {
 }
 
 type CrawlerService interface {
-	StartCrawler(project.Project, string, bool, *bluemonday.Policy) int
+	StartCrawler(project.Project, string, *bluemonday.Policy) int
 }
 
 type IssueService interface {

@@ -41,9 +41,6 @@ func (r *Renderer) renderTemplate(w http.ResponseWriter, t string, v *PageView) 
 			"web/templates/resources.html",
 			"web/templates/signin.html",
 			"web/templates/signup.html",
-			"web/templates/upgrade.html",
-			"web/templates/manage.html",
-			"web/templates/canceled.html",
 		))
 
 	err := templates.ExecuteTemplate(w, t+".html", v)

@@ -22,9 +22,8 @@ func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Reques
 
 	v := &PageView{
 		Data: struct {
-			Projects    []project.ProjectView
-			MaxProjects int
-		}{Projects: views, MaxProjects: user.GetMaxAllowedProjects()},
+			Projects []project.ProjectView
+		}{Projects: views},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
 		Refresh:   refresh,
@@ -34,12 +33,6 @@ func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Reques
 }
 
 func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.Request) {
-	projects := app.projectService.GetProjects(user.Id)
-	if len(projects) >= user.GetMaxAllowedProjects() {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {

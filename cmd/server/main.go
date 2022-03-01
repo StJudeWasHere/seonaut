@@ -19,10 +19,10 @@ func main() {
 		log.Fatalf("Error creating new datastore: %v\n", err)
 	}
 
-	lenkrr := http.NewApp(
+	server := http.NewApp(
 		config,
 		datastore,
 	)
 
-	lenkrr.Run()
+	server.Run()
 }

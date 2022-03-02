@@ -7,10 +7,10 @@ import (
 )
 
 func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
-	urlHash := hash(r.URL)
+	urlHash := Hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
-		redirectHash = hash(r.RedirectURL)
+		redirectHash = Hash(r.RedirectURL)
 	}
 
 	query := `
@@ -83,7 +83,7 @@ func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
 		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, url_hash) values "
 		v := []interface{}{}
 		for _, l := range r.Links {
-			hash := hash(l.URL)
+			hash := Hash(l.URL)
 			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
 			v = append(v, lid, cid, l.URL, l.ParsedURL.Scheme, l.Rel, l.NoFollow, l.Text, hash)
 		}
@@ -127,7 +127,7 @@ func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
 		v := []interface{}{}
 		for _, h := range r.Hreflangs {
 			sqlString += "(?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, hash(r.URL), hash(h.URL))
+			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, Hash(r.URL), Hash(h.URL))
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ := ds.db.Prepare(sqlString)

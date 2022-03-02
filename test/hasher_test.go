@@ -1,7 +1,9 @@
-package datastore
+package test
 
 import (
 	"testing"
+
+	"github.com/mnlg/seonaut/internal/datastore"
 )
 
 const (
@@ -12,12 +14,12 @@ const (
 )
 
 func TestHash(t *testing.T) {
-	h := hash(url1)
+	h := datastore.Hash(url1)
 	if h != hash1 {
 		t.Error("Error hashing url1")
 	}
 
-	h = hash(url2)
+	h = datastore.Hash(url2)
 	if h != hash2 {
 		t.Error("Error hashing url2")
 	}

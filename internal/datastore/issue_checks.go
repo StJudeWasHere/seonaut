@@ -7,7 +7,7 @@ import (
 )
 
 func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int) []report.PageReport {
-	uh := hash(u)
+	uh := Hash(u)
 	query := `
 		SELECT
 			id,
@@ -264,7 +264,7 @@ func (ds *Datastore) FindMissingHrelangReturnLinks(cid int) []report.PageReport 
 }
 
 func (ds *Datastore) FindInLinks(s string, cid int) []report.PageReport {
-	hash := hash(s)
+	hash := Hash(s)
 	query := `
 		SELECT 
 			pagereports.id,

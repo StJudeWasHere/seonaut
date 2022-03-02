@@ -1,11 +1,13 @@
-package config
+package test
 
 import (
 	"testing"
+
+	"github.com/mnlg/seonaut/internal/config"
 )
 
 func TestLoadConfig(t *testing.T) {
-	config, err := NewConfig("../../test/")
+	config, err := config.NewConfig("data")
 	if err != nil {
 		t.Errorf("Error loading config file: %v\n", err)
 	}

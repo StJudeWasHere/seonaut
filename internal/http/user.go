@@ -26,11 +26,11 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 
 		err = app.userService.SignUp(email, password)
 		if err == nil {
-			log.Printf("serveSignup SignUp: %v\n", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 
+		log.Printf("serveSignup SignUp: %v\n", err)
 		e = true
 	}
 

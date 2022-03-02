@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/mnlg/lenkrr/internal/config"
-	"github.com/mnlg/lenkrr/internal/datastore"
-	"github.com/mnlg/lenkrr/internal/http"
+	"github.com/mnlg/seonaut/internal/config"
+	"github.com/mnlg/seonaut/internal/datastore"
+	"github.com/mnlg/seonaut/internal/http"
 )
 
 func main() {

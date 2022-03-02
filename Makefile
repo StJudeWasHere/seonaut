@@ -4,10 +4,10 @@ run:
 	go run cmd/server/main.go
 
 test:
-	go test github.com/mnlg/lenkrr/internal/user
-	go test github.com/mnlg/lenkrr/internal/config
-	go test github.com/mnlg/lenkrr/internal/report
-	go test github.com/mnlg/lenkrr/internal/datastore
+	go test github.com/mnlg/seonaut/internal/user
+	go test github.com/mnlg/seonaut/internal/config
+	go test github.com/mnlg/seonaut/internal/report
+	go test github.com/mnlg/seonaut/internal/datastore
 
 docker:
 	docker run -p 6306:3306 --name crawler-mysql -e MYSQL_ROOT_PASSWORD=root -d mysql:latest

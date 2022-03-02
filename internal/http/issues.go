@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mnlg/lenkrr/internal/issue"
-	"github.com/mnlg/lenkrr/internal/project"
-	"github.com/mnlg/lenkrr/internal/user"
+	"github.com/mnlg/seonaut/internal/issue"
+	"github.com/mnlg/seonaut/internal/project"
+	"github.com/mnlg/seonaut/internal/user"
 )
 
 type IssuesGroupView struct {

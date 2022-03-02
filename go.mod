@@ -1,4 +1,4 @@
-module github.com/mnlg/lenkrr
+module github.com/mnlg/seonaut
 
 go 1.16
 

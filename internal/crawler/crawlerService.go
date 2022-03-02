@@ -5,8 +5,8 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/mnlg/lenkrr/internal/project"
-	"github.com/mnlg/lenkrr/internal/report"
+	"github.com/mnlg/seonaut/internal/project"
+	"github.com/mnlg/seonaut/internal/report"
 
 	"github.com/microcosm-cc/bluemonday"
 )

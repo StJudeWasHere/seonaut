@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mnlg/lenkrr/internal/project"
-	"github.com/mnlg/lenkrr/internal/report"
-	"github.com/mnlg/lenkrr/internal/user"
+	"github.com/mnlg/seonaut/internal/project"
+	"github.com/mnlg/seonaut/internal/report"
+	"github.com/mnlg/seonaut/internal/user"
 )
 
 type ResourcesView struct {

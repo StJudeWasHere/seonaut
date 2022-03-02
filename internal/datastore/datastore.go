@@ -7,7 +7,7 @@ import (
 
 	"database/sql"
 
-	"github.com/mnlg/lenkrr/internal/config"
+	"github.com/mnlg/seonaut/internal/config"
 
 	_ "github.com/go-sql-driver/mysql"
 )

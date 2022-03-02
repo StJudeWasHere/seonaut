@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"unicode/utf8"
 
-	"github.com/mnlg/lenkrr/internal/report"
+	"github.com/mnlg/seonaut/internal/report"
 )
 
 type CSVWriter struct {

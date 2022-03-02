@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/mnlg/lenkrr/internal/user"
+	"github.com/mnlg/seonaut/internal/user"
 )
 
 func (ds *Datastore) EmailExists(email string) bool {

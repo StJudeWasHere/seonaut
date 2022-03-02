@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/mnlg/lenkrr/internal/encoding"
-	"github.com/mnlg/lenkrr/internal/user"
+	"github.com/mnlg/seonaut/internal/encoding"
+	"github.com/mnlg/seonaut/internal/user"
 
 	"github.com/turk/go-sitemap"
 )

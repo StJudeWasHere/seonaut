@@ -4,7 +4,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mnlg/lenkrr/internal/user"
+	"github.com/mnlg/seonaut/internal/user"
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {

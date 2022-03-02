@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mnlg/lenkrr/internal/user"
+	"github.com/mnlg/seonaut/internal/user"
 )
 
 func (app *App) serveCrawl(user *user.User, w http.ResponseWriter, r *http.Request) {

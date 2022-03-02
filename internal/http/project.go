@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mnlg/lenkrr/internal/project"
+	"github.com/mnlg/seonaut/internal/project"
 
-	"github.com/mnlg/lenkrr/internal/user"
+	"github.com/mnlg/seonaut/internal/user"
 )
 
 func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Request) {

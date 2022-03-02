@@ -3,7 +3,7 @@ package datastore
 import (
 	"log"
 
-	"github.com/mnlg/lenkrr/internal/report"
+	"github.com/mnlg/seonaut/internal/report"
 )
 
 func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {

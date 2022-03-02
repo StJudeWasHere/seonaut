@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/mnlg/lenkrr/internal/project"
+	"github.com/mnlg/seonaut/internal/project"
 )
 
 func (ds *Datastore) SaveProject(s string, ignoreRobotsTxt bool, uid int) {

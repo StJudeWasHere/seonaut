@@ -3,7 +3,7 @@ package http
 import (
 	"strconv"
 
-	"github.com/mnlg/lenkrr/internal/issue"
+	"github.com/mnlg/seonaut/internal/issue"
 )
 
 const (

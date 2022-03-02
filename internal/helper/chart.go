@@ -3,7 +3,7 @@ package helper
 import (
 	"strconv"
 
-	"github.com/mnlg/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/issue"
 )
 
 const (

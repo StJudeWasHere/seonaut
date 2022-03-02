@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/mnlg/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/report"
 
 	"github.com/microcosm-cc/bluemonday"
 )

@@ -6,7 +6,7 @@ import (
 	"sort"
 	"time"
 
-	"github.com/mnlg/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/issue"
 )
 
 func (ds *Datastore) CountByMediaType(cid int) issue.CountList {

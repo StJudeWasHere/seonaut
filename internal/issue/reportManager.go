@@ -3,7 +3,7 @@ package issue
 import (
 	"time"
 
-	"github.com/mnlg/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/report"
 )
 
 type IssueCallback struct {

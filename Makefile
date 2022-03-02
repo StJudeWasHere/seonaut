@@ -4,7 +4,7 @@ run:
 	go run cmd/server/main.go
 
 test:
-	go test github.com/mnlg/seonaut/test
+	go test github.com/stjudewashere/seonaut/test
 
 docker:
 	docker run -p 6306:3306 --name crawler-mysql -e MYSQL_ROOT_PASSWORD=root -d mysql:latest

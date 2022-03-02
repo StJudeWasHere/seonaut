@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mnlg/seonaut/internal/helper"
-	"github.com/mnlg/seonaut/internal/user"
+	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {

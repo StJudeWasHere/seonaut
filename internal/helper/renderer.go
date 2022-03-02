@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/mnlg/seonaut/internal/user"
+	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 type PageView struct {

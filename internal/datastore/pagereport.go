@@ -3,8 +3,8 @@ package datastore
 import (
 	"log"
 
-	"github.com/mnlg/seonaut/internal/helper"
-	"github.com/mnlg/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/report"
 )
 
 func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {

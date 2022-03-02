@@ -3,7 +3,7 @@ package issue
 import (
 	"errors"
 
-	"github.com/mnlg/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/report"
 )
 
 const (

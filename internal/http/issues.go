@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/mnlg/seonaut/internal/helper"
-	"github.com/mnlg/seonaut/internal/issue"
-	"github.com/mnlg/seonaut/internal/project"
-	"github.com/mnlg/seonaut/internal/user"
+	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 type IssuesGroupView struct {

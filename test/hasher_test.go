@@ -3,7 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/mnlg/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/helper"
 )
 
 const (

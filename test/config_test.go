@@ -3,7 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/mnlg/seonaut/internal/config"
+	"github.com/stjudewashere/seonaut/internal/config"
 )
 
 func TestLoadConfig(t *testing.T) {

@@ -124,7 +124,7 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 	}
 
 	co := colly.NewCollector(
-		colly.AllowedDomains(WWWHost, nonWWWHost, "127.0.0.1"),
+		colly.AllowedDomains(WWWHost, nonWWWHost),
 		colly.UserAgent(c.UserAgent),
 		func(co *colly.Collector) {
 			co.IgnoreRobotsTxt = c.IgnoreRobotsTxt

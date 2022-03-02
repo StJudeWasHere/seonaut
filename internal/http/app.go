@@ -96,7 +96,7 @@ type App struct {
 }
 
 func NewApp(c *config.Config, ds *datastore.Datastore) *App {
-	translation, err := ioutil.ReadFile("translation.en.yaml")
+	translation, err := ioutil.ReadFile("translations/translation.en.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}

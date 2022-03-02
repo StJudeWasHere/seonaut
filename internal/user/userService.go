@@ -17,6 +17,12 @@ type UserService struct {
 	store UserStore
 }
 
+type User struct {
+	Id       int
+	Email    string
+	Password string
+}
+
 func NewService(s UserStore) *UserService {
 	return &UserService{
 		store: s,

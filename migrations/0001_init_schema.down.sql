@@ -1,0 +1,12 @@
+DROP TABLE IF EXISTS `crawls`;
+DROP TABLE IF EXISTS `external_links`;
+DROP TABLE IF EXISTS `hreflangs`;
+DROP TABLE IF EXISTS `images`;
+DROP TABLE IF EXISTS `issue_types`;
+DROP TABLE IF EXISTS `issues`;
+DROP TABLE IF EXISTS `links`;
+DROP TABLE IF EXISTS `pagereports`;
+DROP TABLE IF EXISTS `projects`;
+DROP TABLE IF EXISTS `scripts`;
+DROP TABLE IF EXISTS `styles`;
+DROP TABLE IF EXISTS `users`;

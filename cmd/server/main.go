@@ -19,6 +19,11 @@ func main() {
 		log.Fatalf("Error creating new datastore: %v\n", err)
 	}
 
+	err = datastore.Migrate()
+	if err != nil {
+		log.Fatalf("Error running migrations: %v\n", err)
+	}
+
 	server := http.NewApp(
 		config,
 		datastore,

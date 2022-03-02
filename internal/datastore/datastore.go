@@ -25,7 +25,7 @@ const (
 
 func NewDataStore(config config.DBConfig) (*Datastore, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s?parseTime=true",
+		"%s:%s@tcp(%s:%d)/%s?parseTime=true&multiStatements=true",
 		config.User,
 		config.Pass,
 		config.Server,

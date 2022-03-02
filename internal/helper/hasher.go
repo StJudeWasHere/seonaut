@@ -1,4 +1,4 @@
-package datastore
+package helper
 
 import (
 	"crypto/sha256"

@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/mnlg/seonaut/internal/helper"
 	"github.com/mnlg/seonaut/internal/project"
-
 	"github.com/mnlg/seonaut/internal/user"
 )
 
@@ -20,7 +20,7 @@ func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Reques
 		}
 	}
 
-	v := &PageView{
+	v := &helper.PageView{
 		Data: struct {
 			Projects []project.ProjectView
 		}{Projects: views},
@@ -29,7 +29,7 @@ func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Reques
 		Refresh:   refresh,
 	}
 
-	app.renderer.renderTemplate(w, "home", v)
+	app.renderer.RenderTemplate(w, "home", v)
 }
 
 func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.Request) {
@@ -53,10 +53,10 @@ func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.
 		return
 	}
 
-	v := &PageView{
+	v := &helper.PageView{
 		User:      *user,
 		PageTitle: "ADD_PROJECT",
 	}
 
-	app.renderer.renderTemplate(w, "project_add", v)
+	app.renderer.RenderTemplate(w, "project_add", v)
 }

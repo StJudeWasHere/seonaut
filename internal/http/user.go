@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/mnlg/seonaut/internal/helper"
 	"github.com/mnlg/seonaut/internal/user"
 )
 
@@ -33,7 +34,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 		e = true
 	}
 
-	app.renderer.renderTemplate(w, "signup", &PageView{
+	app.renderer.RenderTemplate(w, "signup", &helper.PageView{
 		PageTitle: "SIGNUP_VIEW",
 		Data: struct {
 			Email string
@@ -71,11 +72,11 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := &PageView{
+	v := &helper.PageView{
 		PageTitle: "SIGNIN_VIEW",
 	}
 
-	app.renderer.renderTemplate(w, "signin", v)
+	app.renderer.RenderTemplate(w, "signin", v)
 }
 
 func (app *App) serveSignout(user *user.User, w http.ResponseWriter, r *http.Request) {

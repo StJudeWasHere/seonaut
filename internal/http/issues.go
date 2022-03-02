@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/mnlg/seonaut/internal/helper"
 	"github.com/mnlg/seonaut/internal/issue"
 	"github.com/mnlg/seonaut/internal/project"
 	"github.com/mnlg/seonaut/internal/user"
@@ -12,8 +13,8 @@ import (
 
 type IssuesGroupView struct {
 	ProjectView *project.ProjectView
-	MediaChart  Chart
-	StatusChart Chart
+	MediaChart  helper.Chart
+	StatusChart helper.Chart
 	IssueCount  *issue.IssueCount
 }
 
@@ -42,18 +43,18 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 
 	ig := IssuesGroupView{
 		ProjectView: pv,
-		MediaChart:  NewChart(issueCount.MediaCount),
-		StatusChart: NewChart(issueCount.StatusCount),
+		MediaChart:  helper.NewChart(issueCount.MediaCount),
+		StatusChart: helper.NewChart(issueCount.StatusCount),
 		IssueCount:  issueCount,
 	}
 
-	v := &PageView{
+	v := &helper.PageView{
 		Data:      ig,
 		User:      *user,
 		PageTitle: "ISSUES_VIEW",
 	}
 
-	app.renderer.renderTemplate(w, "issues", v)
+	app.renderer.RenderTemplate(w, "issues", v)
 }
 
 func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.Request) {
@@ -100,11 +101,11 @@ func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.
 		PaginatorView: paginatorView,
 	}
 
-	v := &PageView{
+	v := &helper.PageView{
 		Data:      view,
 		User:      *user,
 		PageTitle: "ISSUES_DETAIL",
 	}
 
-	app.renderer.renderTemplate(w, "issues_view", v)
+	app.renderer.RenderTemplate(w, "issues_view", v)
 }

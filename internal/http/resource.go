@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/mnlg/seonaut/internal/helper"
 	"github.com/mnlg/seonaut/internal/project"
 	"github.com/mnlg/seonaut/internal/report"
 	"github.com/mnlg/seonaut/internal/user"
@@ -62,11 +63,11 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab),
 	}
 
-	v := &PageView{
+	v := &helper.PageView{
 		Data:      rv,
 		User:      *user,
 		PageTitle: "RESOURCES_VIEW",
 	}
 
-	app.renderer.renderTemplate(w, "resources", v)
+	app.renderer.RenderTemplate(w, "resources", v)
 }

@@ -1,4 +1,4 @@
-package http
+package helper
 
 import (
 	"fmt"
@@ -26,7 +26,7 @@ func NewRenderer(m map[string]interface{}) *Renderer {
 	}
 }
 
-func (r *Renderer) renderTemplate(w http.ResponseWriter, t string, v *PageView) {
+func (r *Renderer) RenderTemplate(w http.ResponseWriter, t string, v *PageView) {
 	var templates = template.Must(
 		template.New("").Funcs(template.FuncMap{
 			"trans": r.trans,
@@ -45,7 +45,7 @@ func (r *Renderer) renderTemplate(w http.ResponseWriter, t string, v *PageView) 
 
 	err := templates.ExecuteTemplate(w, t+".html", v)
 	if err != nil {
-		log.Printf("renderTemplate: %v\n", err)
+		log.Printf("RenderTemplate: %v\n", err)
 	}
 }
 

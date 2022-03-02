@@ -3,11 +3,12 @@ package datastore
 import (
 	"log"
 
+	"github.com/mnlg/seonaut/internal/helper"
 	"github.com/mnlg/seonaut/internal/report"
 )
 
 func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int) []report.PageReport {
-	uh := Hash(u)
+	uh := helper.Hash(u)
 	query := `
 		SELECT
 			id,
@@ -264,7 +265,7 @@ func (ds *Datastore) FindMissingHrelangReturnLinks(cid int) []report.PageReport 
 }
 
 func (ds *Datastore) FindInLinks(s string, cid int) []report.PageReport {
-	hash := Hash(s)
+	hash := helper.Hash(s)
 	query := `
 		SELECT 
 			pagereports.id,

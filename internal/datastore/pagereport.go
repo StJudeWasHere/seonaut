@@ -3,14 +3,15 @@ package datastore
 import (
 	"log"
 
+	"github.com/mnlg/seonaut/internal/helper"
 	"github.com/mnlg/seonaut/internal/report"
 )
 
 func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
-	urlHash := Hash(r.URL)
+	urlHash := helper.Hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
-		redirectHash = Hash(r.RedirectURL)
+		redirectHash = helper.Hash(r.RedirectURL)
 	}
 
 	query := `
@@ -83,7 +84,7 @@ func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
 		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, url_hash) values "
 		v := []interface{}{}
 		for _, l := range r.Links {
-			hash := Hash(l.URL)
+			hash := helper.Hash(l.URL)
 			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
 			v = append(v, lid, cid, l.URL, l.ParsedURL.Scheme, l.Rel, l.NoFollow, l.Text, hash)
 		}
@@ -127,7 +128,7 @@ func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
 		v := []interface{}{}
 		for _, h := range r.Hreflangs {
 			sqlString += "(?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, Hash(r.URL), Hash(h.URL))
+			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, helper.Hash(r.URL), helper.Hash(h.URL))
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ := ds.db.Prepare(sqlString)

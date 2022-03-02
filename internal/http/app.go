@@ -9,6 +9,7 @@ import (
 	"github.com/mnlg/seonaut/internal/config"
 	"github.com/mnlg/seonaut/internal/crawler"
 	"github.com/mnlg/seonaut/internal/datastore"
+	"github.com/mnlg/seonaut/internal/helper"
 	"github.com/mnlg/seonaut/internal/issue"
 	"github.com/mnlg/seonaut/internal/project"
 	"github.com/mnlg/seonaut/internal/report"
@@ -85,7 +86,7 @@ type App struct {
 	datastore      *datastore.Datastore
 	cookie         *sessions.CookieStore
 	sanitizer      *bluemonday.Policy
-	renderer       *Renderer
+	renderer       *helper.Renderer
 	userService    UserService
 	projectService ProjectService
 	crawlerService CrawlerService
@@ -111,7 +112,7 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 		datastore:      ds,
 		cookie:         sessions.NewCookieStore([]byte("SESSION_ID")),
 		sanitizer:      bluemonday.StrictPolicy(),
-		renderer:       NewRenderer(m),
+		renderer:       helper.NewRenderer(m),
 		userService:    user.NewService(ds),
 		projectService: project.NewService(ds),
 		crawlerService: crawler.NewService(ds),

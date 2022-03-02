@@ -3,7 +3,7 @@ package test
 import (
 	"testing"
 
-	"github.com/mnlg/seonaut/internal/datastore"
+	"github.com/mnlg/seonaut/internal/helper"
 )
 
 const (
@@ -13,13 +13,13 @@ const (
 	hash2 = "73d942d72d2df275546b54948c19f71112007be1bba007a082563a17957cdcaa"
 )
 
-func Testhelper.Hash(t *testing.T) {
-	h := datastore.helper.Hash(url1)
+func TestHash(t *testing.T) {
+	h := helper.Hash(url1)
 	if h != hash1 {
 		t.Error("Error hashing url1")
 	}
 
-	h = datastore.helper.Hash(url2)
+	h = helper.Hash(url2)
 	if h != hash2 {
 		t.Error("Error hashing url2")
 	}

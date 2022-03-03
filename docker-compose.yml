@@ -21,8 +21,14 @@ services:
       - "9000:9000"
     depends_on:
       - db
+    command: sh -c "/wait && /seonaut"
     networks:
       - fullstack
+    environment:
+      - WAIT_HOSTS=db:3306
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=30
+      - WAIT_HOST_CONNECT_TIMEOUT=30
 
 networks:
   fullstack:

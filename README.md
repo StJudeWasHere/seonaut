@@ -1,7 +1,9 @@
 # SEOnaut
 ![SEOnaut technical SEO tool](https://seonaut.org/seonaut.png)
 
-This repo contains the code for SEOnaut, a web based technical SEO audit tool.
+This repository contains the code for SEOnaut, a web based technical SEO audit tool.
+
+A hosted version of SEOnaut is available at [seonaut.org](https://seonaut.org).
 
 ## Running SEOnaut with Docker
 

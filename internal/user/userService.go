@@ -39,11 +39,11 @@ func (s *UserService) FindById(id int) *User {
 
 func (s *UserService) SignUp(email, password string) error {
 	if s.Exists(email) {
-		return errors.New("User already exists")
+		return errors.New("user already exists")
 	}
 
 	if len(password) < 1 {
-		return errors.New("Invalid password")
+		return errors.New("invalid password")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -59,11 +59,11 @@ func (s *UserService) SignUp(email, password string) error {
 func (s *UserService) SignIn(email, password string) (*User, error) {
 	u := s.store.FindUserByEmail(email)
 	if u.Id == 0 {
-		return nil, errors.New("User does not exist")
+		return nil, errors.New("user does not exist")
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
-		return nil, errors.New("Incorrect password")
+		return nil, errors.New("incorrect password")
 	}
 
 	return u, nil

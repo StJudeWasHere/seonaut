@@ -4,11 +4,15 @@
 	<h1 class="title">Sign In</h1>
 	<form method="POST">
 		<label for="email">Email:</label>
-		<input type="email" name="email" autofocus>
+		<input type="email" name="email" value="{{ .Data.Email }}" autofocus>
 		<label for="password">Password:</label>
 		<input type="password" name="password">
 		<input type="submit" value="Sign In">
 	</form>
+
+	{{ if .Data.Error }}
+		<p class="error">The email address or password is not valid.</p>
+	{{ end }}
 
 	<p>
 		<a href="/signup">Sign up</a> if you don't have an account yet.

@@ -2,6 +2,7 @@ package user
 
 import (
 	"errors"
+	"net/mail"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -44,6 +45,11 @@ func (s *UserService) SignUp(email, password string) error {
 
 	if len(password) < 1 {
 		return errors.New("invalid password")
+	}
+
+	_, err := mail.ParseAddress(email)
+	if err != nil {
+		return errors.New("invalid email")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

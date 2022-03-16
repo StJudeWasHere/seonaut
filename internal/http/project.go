@@ -10,7 +10,14 @@ import (
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
-func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
 	views := app.projectService.GetProjectViews(user.Id)
 
 	var refresh bool
@@ -32,7 +39,14 @@ func (app *App) serveHome(user *user.User, w http.ResponseWriter, r *http.Reques
 	app.renderer.RenderTemplate(w, "home", v)
 }
 
-func (app *App) serveProjectAdd(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {

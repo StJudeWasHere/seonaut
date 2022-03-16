@@ -13,12 +13,19 @@ import (
 	"github.com/turk/go-sitemap"
 )
 
-func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Printf("serveDownloadCSV pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
+		return
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}
 
@@ -45,12 +52,19 @@ func (app *App) serveDownloadCSV(user *user.User, w http.ResponseWriter, r *http
 	}
 }
 
-func (app *App) serveSitemap(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Printf("serveSitemap pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
+		return
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}
 

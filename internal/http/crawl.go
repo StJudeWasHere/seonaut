@@ -8,12 +8,19 @@ import (
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
-func (app *App) serveCrawl(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Printf("serveCrawl pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
+		return
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}
 

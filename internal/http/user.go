@@ -1,11 +1,11 @@
 package http
 
 import (
+	"context"
 	"log"
 	"net/http"
 
 	"github.com/stjudewashere/seonaut/internal/helper"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
@@ -85,7 +85,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 	app.renderer.RenderTemplate(w, "signin", v)
 }
 
-func (app *App) serveSignout(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {
 	session, _ := app.cookie.Get(r, "SESSION_ID")
 	session.Values["authenticated"] = false
 	session.Values["uid"] = nil
@@ -94,7 +94,7 @@ func (app *App) serveSignout(user *user.User, w http.ResponseWriter, r *http.Req
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-func (app *App) requireAuth(f func(user *user.User, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+func (app *App) requireAuth(f func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, _ := app.cookie.Get(r, "SESSION_ID")
 		var authenticated interface{} = session.Values["authenticated"]
@@ -104,7 +104,9 @@ func (app *App) requireAuth(f func(user *user.User, w http.ResponseWriter, r *ht
 				session, _ := app.cookie.Get(r, "SESSION_ID")
 				uid := session.Values["uid"].(int)
 				user := app.userService.FindById(uid)
-				f(user, w, r)
+				ctx := context.WithValue(r.Context(), "user", user)
+				req := r.WithContext(ctx)
+				f(w, req)
 
 				return
 			}

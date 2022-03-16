@@ -24,7 +24,14 @@ type IssuesView struct {
 	PaginatorView issue.PaginatorView
 }
 
-func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Printf("serveIssues pid: %v\n", err)
@@ -57,7 +64,14 @@ func (app *App) serveIssues(user *user.User, w http.ResponseWriter, r *http.Requ
 	app.renderer.RenderTemplate(w, "issues", v)
 }
 
-func (app *App) serveIssuesView(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
 	eid := r.URL.Query().Get("eid")
 	if eid == "" {
 		log.Println("serveIssuesView: eid parameter missing")

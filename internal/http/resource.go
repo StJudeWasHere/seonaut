@@ -18,7 +18,7 @@ type ResourcesView struct {
 	Tab            string
 }
 
-func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *http.Request) {
+func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Printf("serveResourcesView pid: %v\n", err)
@@ -46,6 +46,13 @@ func (app *App) serveResourcesView(user *user.User, w http.ResponseWriter, r *ht
 	tab := r.URL.Query().Get("t")
 	if tab == "" {
 		tab = "details"
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
 	}
 
 	pv, err := app.projectService.GetProjectView(pid, user.Id)

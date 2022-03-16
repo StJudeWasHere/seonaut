@@ -13,7 +13,7 @@ Run SEOnaut with docker-compose:
 $ docker-compose up -d --build
 ```
 
-Edit the _config_ file if you need to customize the settings.
+Edit the _config_ file if you need to customize the settings, then browse to ```http://localhost:9000```.
 
 ## Contributing
 

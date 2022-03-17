@@ -31,6 +31,7 @@
 	--main-bg-color: rgb(248, 248, 248);
 	--light-bg-color: rgb(252,252,252);
 	--primary-color: black;
+	--primary-light-color: #777;
 	--secondary-color: white;
 	--content-max-width: 80ch;
 	--main-fontfamily: 'Fira Code', monospace, monospace;
@@ -46,7 +47,7 @@ body {
 	font-family: var(--main-fontfamily);
 	line-height: 1.6rem;
 	font-size: 1rem;
-	padding: 0 0 3rem 0;
+	padding: 0;
 	background-color: var(--main-bg-color);
 	margin:0;
 	text-rendering: optimizeLegibility;
@@ -148,6 +149,23 @@ button {
 
 #header {
 	margin: 3rem 0 5rem 0;
+}
+
+#main {
+	min-height: 100%;
+}
+
+#footer {
+	background-color: var(--secondary-color);
+	font-size: .8rem;
+	padding: 3rem 0;
+	margin-top: 3rem;
+	border-top: 1px solid var(--light-bg-color);
+}
+
+#footer a {
+	border: 0;
+	color: var(--primary-light-color);
 }
 
 .content { padding: 0 3rem; }

@@ -1,7 +1,9 @@
 package project
 
 import (
+	"errors"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -40,8 +42,20 @@ func (s *ProjectService) GetProjects(userId int) []Project {
 	return s.store.FindProjectsByUser(userId)
 }
 
-func (s *ProjectService) SaveProject(url string, ignoreRobotsTxt bool, userId int) {
-	s.store.SaveProject(url, ignoreRobotsTxt, userId)
+func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt bool, userId int) error {
+	u = strings.TrimSpace(u)
+	p, err := url.ParseRequestURI(u)
+	if err != nil {
+		return err
+	}
+
+	if p.Scheme != "http" && p.Scheme != "https" {
+		return errors.New("Protocol not supported")
+	}
+
+	s.store.SaveProject(u, ignoreRobotsTxt, userId)
+
+	return nil
 }
 
 func (s *ProjectService) FindProject(id, uid int) (Project, error) {

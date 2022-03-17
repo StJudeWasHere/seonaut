@@ -47,6 +47,8 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var e bool
+
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
@@ -62,14 +64,21 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			ignoreRobotsTxt = false
 		}
 
-		app.projectService.SaveProject(url, ignoreRobotsTxt, user.Id)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
+		err = app.projectService.SaveProject(url, ignoreRobotsTxt, user.Id)
+
+		if err == nil {
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		e = true
+
 	}
 
 	v := &helper.PageView{
 		User:      *user,
 		PageTitle: "ADD_PROJECT",
+		Data:      struct{ Error bool }{Error: e},
 	}
 
 	app.renderer.RenderTemplate(w, "project_add", v)

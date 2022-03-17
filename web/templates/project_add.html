@@ -11,6 +11,9 @@
 	<form method="POST">
 		<label for="url">URL:</label>
 		<input type="url" name="url" autofocus>
+		{{ if .Data.Error }}
+			<p class="error">The URL is not valid.</p>
+		{{ end }}
 		<p>
 			<input type="checkbox" value="1" name="ignore_robotstxt">
 			<label class="checkbox" for="ignore_robotstxt">Ignore robots.txt</label>

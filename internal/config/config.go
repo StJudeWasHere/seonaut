@@ -4,20 +4,27 @@ import (
 	"github.com/spf13/viper"
 )
 
+type HTTPServerConfig struct {
+	Server string `mapstructure:"host"`
+	Port   int    `mapstructure:"port"`
+}
+
 type DBConfig struct {
-	Server string
-	Port   int
-	User   string
-	Pass   string
-	Name   string
+	Server string `mapstructure:"server"`
+	Port   int    `mapstructure:"port"`
+	User   string `mapstructure:"user"`
+	Pass   string `mapstructure:"password"`
+	Name   string `mapstructure:"database"`
+}
+
+type CrawlerConfig struct {
+	Agent string `mapstructure:"agent"`
 }
 
 type Config struct {
-	Server       string
-	ServerPort   int
-	CrawlerAgent string
-
-	DB DBConfig
+	Crawler    CrawlerConfig    `mapstructure:"crawler"`
+	HTTPServer HTTPServerConfig `mapstructure:"server"`
+	DB         DBConfig         `mapstructure:"database"`
 }
 
 func NewConfig(path string) (*Config, error) {
@@ -30,16 +37,10 @@ func NewConfig(path string) (*Config, error) {
 
 	var config Config
 
-	config.Server = viper.GetString("Server.host")
-	config.ServerPort = viper.GetInt("Server.port")
-
-	config.DB.Server = viper.GetString("Database.server")
-	config.DB.Port = viper.GetInt("Database.port")
-	config.DB.User = viper.GetString("Database.user")
-	config.DB.Pass = viper.GetString("Database.password")
-	config.DB.Name = viper.GetString("Database.database")
-
-	config.CrawlerAgent = viper.GetString("Crawler.agent")
+	err := viper.Unmarshal(&config)
+	if err != nil {
+		return nil, err
+	}
 
 	return &config, nil
 }

@@ -12,24 +12,30 @@ func TestLoadConfig(t *testing.T) {
 		t.Errorf("Error loading config file: %v\n", err)
 	}
 
-	if config.ServerPort != 9000 {
-		t.Error("ServerPort != 9000")
+	pm := []struct {
+		input int
+		want  int
+	}{
+		{config.HTTPServer.Port, 9000},
+		{config.DB.Port, 3306},
 	}
 
-	if config.DB.Port != 3306 {
-		t.Error("DB.Port != 3306")
+	for _, pv := range pm {
+		if pv.input != pv.want {
+			t.Errorf("%d != %d\n", pv.input, pv.want)
+		}
 	}
 
 	m := []struct {
 		input string
 		want  string
 	}{
-		{config.Server, "example.com"},
+		{config.HTTPServer.Server, "example.com"},
 		{config.DB.Server, "dbexample.com"},
 		{config.DB.User, "root"},
 		{config.DB.Pass, "root"},
 		{config.DB.Name, "test"},
-		{config.CrawlerAgent, "testing"},
+		{config.Crawler.Agent, "testing"},
 	}
 
 	for _, v := range m {

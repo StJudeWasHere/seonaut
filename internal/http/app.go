@@ -142,8 +142,8 @@ func (app *App) Run() {
 	http.HandleFunc("/signup", app.serveSignup)
 	http.HandleFunc("/signin", app.serveSignin)
 
-	fmt.Printf("Starting server at %s on port %d...\n", app.config.Server, app.config.ServerPort)
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.Server, app.config.ServerPort), nil)
+	fmt.Printf("Starting server at %s on port %d...\n", app.config.HTTPServer.Server, app.config.HTTPServer.Port)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.HTTPServer.Server, app.config.HTTPServer.Port), nil)
 	if err != nil {
 		log.Fatal(err)
 	}

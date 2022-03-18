@@ -8,15 +8,15 @@ import (
 	"github.com/stjudewashere/seonaut/internal/project"
 )
 
-func (ds *Datastore) SaveProject(s string, ignoreRobotsTxt bool, uid int) {
+func (ds *Datastore) SaveProject(s string, ignoreRobotsTxt, followNofollow bool, uid int) {
 	query := `
-		INSERT INTO projects (url, ignore_robotstxt, user_id)
-		VALUES (?, ?, ?)
+		INSERT INTO projects (url, ignore_robotstxt, follow_nofollow, user_id)
+		VALUES (?, ?, ?, ?)
 	`
 
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
-	_, err := stmt.Exec(s, ignoreRobotsTxt, uid)
+	_, err := stmt.Exec(s, ignoreRobotsTxt, followNofollow, uid)
 	if err != nil {
 		log.Printf("saveProject: %v\n", err)
 	}
@@ -25,7 +25,7 @@ func (ds *Datastore) SaveProject(s string, ignoreRobotsTxt bool, uid int) {
 func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 	var projects []project.Project
 	query := `
-		SELECT id, url, ignore_robotstxt, created
+		SELECT id, url, ignore_robotstxt, follow_nofollow, created
 		FROM projects
 		WHERE user_id = ?`
 
@@ -37,7 +37,7 @@ func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 
 	for rows.Next() {
 		p := project.Project{}
-		err := rows.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.Created)
+		err := rows.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.FollowNofollow, &p.Created)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -51,14 +51,14 @@ func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 
 func (ds *Datastore) FindProjectById(id int, uid int) (project.Project, error) {
 	query := `
-		SELECT id, url, ignore_robotstxt, created
+		SELECT id, url, ignore_robotstxt, follow_nofollow, created
 		FROM projects
 		WHERE id = ? AND user_id = ?`
 
 	row := ds.db.QueryRow(query, id, uid)
 
 	p := project.Project{}
-	err := row.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.Created)
+	err := row.Scan(&p.Id, &p.URL, &p.IgnoreRobotsTxt, &p.FollowNofollow, &p.Created)
 	if err != nil {
 		log.Println(err)
 		return p, err

@@ -16,6 +16,7 @@ type Crawler struct {
 	URL             *url.URL
 	MaxPageReports  int
 	IgnoreRobotsTxt bool
+	FollowNofollow  bool
 	UserAgent       string
 	sanitizer       *bluemonday.Policy
 }
@@ -61,12 +62,12 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 		pr <- *pageReport
 		responseCounter++
 
-		if strings.Contains(pageReport.Robots, "nofollow") {
+		if strings.Contains(pageReport.Robots, "nofollow") && c.FollowNofollow == false {
 			return
 		}
 
 		for _, l := range pageReport.Links {
-			if l.NoFollow {
+			if l.NoFollow && c.FollowNofollow == false {
 				continue
 			}
 

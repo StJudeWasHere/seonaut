@@ -53,6 +53,7 @@ func (s *CrawlerService) StartCrawler(p project.Project, agent string, sanitizer
 		URL:             u,
 		MaxPageReports:  max,
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
+		FollowNofollow:  p.FollowNofollow,
 		UserAgent:       agent,
 		sanitizer:       sanitizer,
 	}

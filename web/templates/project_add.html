@@ -19,6 +19,11 @@
 			<label class="checkbox" for="ignore_robotstxt">Ignore robots.txt</label>
 			<br><small>If checked the crawler will bypass any restriction you have set in your robots file. </small>
 		</p>
+		<p>
+			<input type="checkbox" value="1" name="follow_nofollow">
+			<label class="checkbox" for="follow_nofollow">Follow <i>nofollow</i> internal links</label>
+			<br><small>If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag. </small>
+		</p>
 		<input type="submit" value="Add">
 	</form>
 </div>

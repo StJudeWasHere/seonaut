@@ -64,7 +64,12 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			ignoreRobotsTxt = false
 		}
 
-		err = app.projectService.SaveProject(url, ignoreRobotsTxt, user.Id)
+		followNofollow, err := strconv.ParseBool(r.FormValue("follow_nofollow"))
+		if err != nil {
+			followNofollow = false
+		}
+
+		err = app.projectService.SaveProject(url, ignoreRobotsTxt, followNofollow, user.Id)
 
 		if err == nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)

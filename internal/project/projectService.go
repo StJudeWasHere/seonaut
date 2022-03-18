@@ -9,7 +9,7 @@ import (
 
 type ProjectStore interface {
 	FindProjectsByUser(int) []Project
-	SaveProject(string, bool, int)
+	SaveProject(string, bool, bool, int)
 	FindProjectById(id int, uid int) (Project, error)
 
 	GetLastCrawl(*Project) Crawl
@@ -20,6 +20,7 @@ type Project struct {
 	URL             string
 	Host            string
 	IgnoreRobotsTxt bool
+	FollowNofollow  bool
 	Created         time.Time
 }
 
@@ -42,7 +43,7 @@ func (s *ProjectService) GetProjects(userId int) []Project {
 	return s.store.FindProjectsByUser(userId)
 }
 
-func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt bool, userId int) error {
+func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow bool, userId int) error {
 	u = strings.TrimSpace(u)
 	p, err := url.ParseRequestURI(u)
 	if err != nil {
@@ -53,7 +54,7 @@ func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt bool, userId int)
 		return errors.New("Protocol not supported")
 	}
 
-	s.store.SaveProject(u, ignoreRobotsTxt, userId)
+	s.store.SaveProject(u, ignoreRobotsTxt, followNofollow, userId)
 
 	return nil
 }

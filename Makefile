@@ -1,7 +1,7 @@
 .PHONY: run test linux docker
 
 run:
-	go run cmd/server/main.go
+	go run cmd/server/main.go -c config.local 
 
 test:
 	go test github.com/stjudewashere/seonaut/test

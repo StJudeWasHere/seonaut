@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 
 	"github.com/stjudewashere/seonaut/internal/config"
@@ -9,7 +10,14 @@ import (
 )
 
 func main() {
-	config, err := config.NewConfig(".")
+	var fname string
+	var path string
+
+	flag.StringVar(&fname, "c", "config", "Specify config filename. Default is config")
+	flag.StringVar(&path, "p", ".", "Specify config path. Default is current directory")
+	flag.Parse()
+
+	config, err := config.NewConfig(path, fname)
 	if err != nil {
 		log.Fatalf("Error loading config: %v\n", err)
 	}

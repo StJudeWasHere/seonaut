@@ -27,8 +27,8 @@ type Config struct {
 	DB         DBConfig         `mapstructure:"database"`
 }
 
-func NewConfig(path string) (*Config, error) {
-	viper.SetConfigName("config")
+func NewConfig(path, filename string) (*Config, error) {
+	viper.SetConfigName(filename)
 	viper.SetConfigType("toml")
 	viper.AddConfigPath(path)
 	if err := viper.ReadInConfig(); err != nil {

@@ -166,6 +166,7 @@ button {
 #footer a {
 	border: 0;
 	color: var(--primary-light-color);
+	margin-right: 1rem;
 }
 
 .content { padding: 0 3rem; }

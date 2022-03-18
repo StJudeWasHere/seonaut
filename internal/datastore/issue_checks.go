@@ -295,7 +295,7 @@ func (ds *Datastore) FindPageReportIssues(cid, p int, errorType string) []report
 			FROM issues
 			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
 			WHERE issue_types.type = ? and crawl_id  = ?
-		) LIMIT ?, ?`
+		) ORDER BY url ASC LIMIT ?, ?`
 
 	return ds.pageReportsQuery(query, errorType, cid, offset, max)
 }

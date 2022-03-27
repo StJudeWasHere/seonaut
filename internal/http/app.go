@@ -84,7 +84,6 @@ type ReportManager interface {
 
 type App struct {
 	config         *config.Config
-	datastore      *datastore.Datastore
 	cookie         *sessions.CookieStore
 	sanitizer      *bluemonday.Policy
 	renderer       *helper.Renderer
@@ -124,7 +123,6 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 
 	return &App{
 		config:         c,
-		datastore:      ds,
 		cookie:         cookie,
 		sanitizer:      bluemonday.StrictPolicy(),
 		renderer:       helper.NewRenderer(m),

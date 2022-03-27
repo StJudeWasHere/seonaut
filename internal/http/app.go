@@ -15,6 +15,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
 
+	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/microcosm-cc/bluemonday"
 	"gopkg.in/yaml.v3"
@@ -107,10 +108,24 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 		log.Fatal(err)
 	}
 
+	authKeyOne := securecookie.GenerateRandomKey(64)
+	encryptionKeyOne := securecookie.GenerateRandomKey(32)
+
+	cookie := sessions.NewCookieStore(
+		authKeyOne,
+		encryptionKeyOne,
+	)
+
+	cookie.Options = &sessions.Options{
+		Path:     "/",
+		MaxAge:   60 * 15,
+		HttpOnly: true,
+	}
+
 	return &App{
 		config:         c,
 		datastore:      ds,
-		cookie:         sessions.NewCookieStore([]byte("SESSION_ID")),
+		cookie:         cookie,
 		sanitizer:      bluemonday.StrictPolicy(),
 		renderer:       helper.NewRenderer(m),
 		userService:    user.NewService(ds),

@@ -52,7 +52,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			log.Println("serveProjectAdd ParseForm: %v\n", err)
+			log.Printf("serveProjectAdd ParseForm: %v\n", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}

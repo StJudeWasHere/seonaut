@@ -8,7 +8,6 @@ import (
 )
 
 type UserStore interface {
-	EmailExists(string) bool
 	FindUserById(int) *User
 	UserSignup(string, string)
 	FindUserByEmail(string) *User
@@ -30,16 +29,13 @@ func NewService(s UserStore) *UserService {
 	}
 }
 
-func (s *UserService) Exists(email string) bool {
-	return s.store.EmailExists(email)
-}
-
 func (s *UserService) FindById(id int) *User {
 	return s.store.FindUserById(id)
 }
 
 func (s *UserService) SignUp(email, password string) error {
-	if s.Exists(email) {
+	u := s.store.FindUserByEmail(email)
+	if u.Id != 0 {
 		return errors.New("user already exists")
 	}
 

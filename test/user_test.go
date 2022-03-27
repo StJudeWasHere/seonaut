@@ -29,13 +29,6 @@ func (s *storage) FindUserById(i int) *user.User {
 }
 
 func (s *storage) UserSignup(e, p string) {}
-func (s *storage) EmailExists(e string) bool {
-	if e == testUser.Email {
-		return true
-	}
-
-	return false
-}
 
 func (s *storage) FindUserByEmail(e string) *user.User {
 	if e == testUser.Email {

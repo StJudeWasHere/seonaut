@@ -1,22 +1,10 @@
 package datastore
 
 import (
-	"database/sql"
 	"log"
 
 	"github.com/stjudewashere/seonaut/internal/user"
 )
-
-func (ds *Datastore) EmailExists(email string) bool {
-	query := `SELECT exists (SELECT id FROM users WHERE email = ?)`
-	var exists bool
-	err := ds.db.QueryRow(query, email).Scan(&exists)
-	if err != nil && err != sql.ErrNoRows {
-		log.Printf("Error checking if email exists '%s' %v", email, err)
-	}
-
-	return exists
-}
 
 func (ds *Datastore) UserSignup(user, password string) {
 	query := `INSERT INTO users (email, password) VALUES (?, ?)`

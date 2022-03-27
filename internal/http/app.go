@@ -49,7 +49,6 @@ const (
 )
 
 type UserService interface {
-	Exists(email string) bool
 	FindById(id int) *user.User
 	SignUp(email, password string) error
 	SignIn(email, password string) (*user.User, error)

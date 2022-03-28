@@ -3,10 +3,13 @@ package helper
 import (
 	"fmt"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/stjudewashere/seonaut/internal/user"
+
+	"gopkg.in/yaml.v3"
 )
 
 type PageView struct {
@@ -20,10 +23,23 @@ type Renderer struct {
 	translationMap map[string]interface{}
 }
 
-func NewRenderer(m map[string]interface{}) *Renderer {
-	return &Renderer{
+func NewRenderer() (*Renderer, error) {
+	translation, err := ioutil.ReadFile("translations/translation.en.yaml")
+	if err != nil {
+		return nil, err
+	}
+
+	m := make(map[string]interface{})
+	err = yaml.Unmarshal(translation, &m)
+	if err != nil {
+		return nil, err
+	}
+
+	r := &Renderer{
 		translationMap: m,
 	}
+
+	return r, nil
 }
 
 func (r *Renderer) RenderTemplate(w http.ResponseWriter, t string, v *PageView) {

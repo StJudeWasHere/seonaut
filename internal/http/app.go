@@ -2,7 +2,6 @@ package http
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 
@@ -10,7 +9,6 @@ import (
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"gopkg.in/yaml.v3"
 )
 
 // HTTPServerConfig stores the configuration for the HTTP server.
@@ -33,13 +31,7 @@ type App struct {
 }
 
 func NewApp(c *HTTPServerConfig, s *Services) *App {
-	translation, err := ioutil.ReadFile("translations/translation.en.yaml")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	m := make(map[string]interface{})
-	err = yaml.Unmarshal(translation, &m)
+	renderer, err := helper.NewRenderer()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -61,7 +53,7 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 	return &App{
 		config:         c,
 		cookie:         cookie,
-		renderer:       helper.NewRenderer(m),
+		renderer:       renderer,
 		userService:    s.UserService,
 		projectService: s.ProjectService,
 		crawlerService: s.CrawlerService,

@@ -11,6 +11,14 @@ import (
 	"github.com/gocolly/colly/v2/queue"
 )
 
+const (
+	// Number of threads a queue will use to crawl a project
+	consumerThreads = 2
+
+	// Max capacity of a queue
+	storageMaxSize = 10000
+)
+
 type Crawler struct {
 	URL             *url.URL
 	MaxPageReports  int

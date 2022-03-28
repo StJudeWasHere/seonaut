@@ -10,9 +10,8 @@ import (
 )
 
 const (
-	consumerThreads = 2
-	storageMaxSize  = 10000
-	MaxPageReports  = 10000
+	// Max number of page reports that will be created
+	MaxPageReports = 10000
 )
 
 // CrawlerConfig stores the configuration for the crawler.
@@ -42,12 +41,9 @@ func NewService(s CrawlerStore, c *CrawlerConfig) *CrawlerService {
 
 func (s *CrawlerService) StartCrawler(p project.Project) int {
 	var totalURLs int
-	var max int
 
 	log.Printf("Crawling %s\n", p.URL)
 	start := time.Now()
-
-	max = MaxPageReports
 
 	u, err := url.Parse(p.URL)
 	if err != nil {
@@ -57,7 +53,7 @@ func (s *CrawlerService) StartCrawler(p project.Project) int {
 
 	c := &Crawler{
 		URL:             u,
-		MaxPageReports:  max,
+		MaxPageReports:  MaxPageReports,
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
 		FollowNofollow:  p.FollowNofollow,
 		UserAgent:       s.config.Agent,

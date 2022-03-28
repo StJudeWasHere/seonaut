@@ -2,7 +2,6 @@ package datastore
 
 import (
 	"fmt"
-	"log"
 	"time"
 
 	"database/sql"
@@ -64,7 +63,6 @@ func NewDataStore(config *DBConfig) (*Datastore, error) {
 	db.SetConnMaxLifetime(connMaxLifeInMinutes * time.Minute)
 
 	if err := db.Ping(); err != nil {
-		log.Printf("Unable to reach database: %v\n", err)
 		return nil, err
 	}
 

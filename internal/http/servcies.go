@@ -23,7 +23,7 @@ type ProjectService interface {
 }
 
 type CrawlerService interface {
-	StartCrawler(project.Project) int
+	StartCrawler(project.Project) (int, error)
 }
 
 type IssueService interface {

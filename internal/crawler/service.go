@@ -38,16 +38,10 @@ func NewService(s Storage, c *Config) *Service {
 	}
 }
 
-func (s *Service) StartCrawler(p project.Project) int {
-	var totalURLs int
-
-	log.Printf("Crawling %s\n", p.URL)
-	start := time.Now()
-
+func (s *Service) StartCrawler(p project.Project) (int, error) {
 	u, err := url.Parse(p.URL)
 	if err != nil {
-		log.Printf("startCrawler: %s %v\n", p.URL, err)
-		return 0
+		return 0, err
 	}
 
 	c := NewCrawler(
@@ -60,17 +54,18 @@ func (s *Service) StartCrawler(p project.Project) int {
 
 	cid := s.store.SaveCrawl(p)
 
+	start := time.Now()
 	pageReport := make(chan PageReport)
 	go c.Crawl(pageReport)
 
+	var totalURLs int
 	for r := range pageReport {
 		totalURLs++
 		s.store.SavePageReport(&r, cid)
 	}
 
 	s.store.SaveEndCrawl(cid, time.Now(), totalURLs)
-	log.Printf("Done crawling %s in %s\n", p.URL, time.Since(start))
-	log.Printf("%d pages crawled.\n", totalURLs)
+	log.Printf("Crawled %d pages at %s in %s\n", totalURLs, p.URL, time.Since(start))
 
 	go func() {
 		log.Printf("Deleting previous crawl data for %s\n", p.URL)
@@ -78,5 +73,5 @@ func (s *Service) StartCrawler(p project.Project) int {
 		log.Printf("Deleted previous crawl done for %s\n", p.URL)
 	}()
 
-	return int(cid)
+	return int(cid), nil
 }

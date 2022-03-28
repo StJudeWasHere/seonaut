@@ -38,7 +38,7 @@ func NewService(s Storage, c *Config) *Service {
 	}
 }
 
-func (s *Service) StartCrawler(p project.Project) (int, error) {
+func (s *Service) StartCrawler(p project.Project) (int64, error) {
 	u, err := url.Parse(p.URL)
 	if err != nil {
 		return 0, err
@@ -73,5 +73,5 @@ func (s *Service) StartCrawler(p project.Project) (int, error) {
 		log.Printf("Deleted previous crawl done for %s\n", p.URL)
 	}()
 
-	return int(cid), nil
+	return cid, nil
 }

@@ -23,7 +23,7 @@ type ProjectService interface {
 }
 
 type CrawlerService interface {
-	StartCrawler(project.Project) (int, error)
+	StartCrawler(project.Project) (int64, error)
 }
 
 type IssueService interface {
@@ -38,7 +38,7 @@ type ReportService interface {
 }
 
 type ReportManager interface {
-	CreateIssues(int) []issue.Issue
+	CreateIssues(int64) []issue.Issue
 }
 
 // Services stores all the services needed by the HTTP server.

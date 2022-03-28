@@ -33,7 +33,7 @@ const (
 	ErrorNotValidHeadings                       // H1-H6 tags have wrong order
 )
 
-type Reporter func(int) []crawler.PageReport
+type Reporter func(int64) []crawler.PageReport
 
 type IssueCallback struct {
 	Callback  Reporter
@@ -46,8 +46,8 @@ type ReportManager struct {
 }
 
 type ReportManagerStore interface {
-	SaveIssues([]Issue, int)
-	SaveEndIssues(int, time.Time, int)
+	SaveIssues([]Issue, int64)
+	SaveEndIssues(int64, time.Time, int)
 }
 
 func NewReportManager(s ReportManagerStore) *ReportManager {
@@ -63,7 +63,7 @@ func (r *ReportManager) AddReporter(c Reporter, t int) {
 }
 
 // CreateIssues uses the Reporters to create and save issues found in a crawl.
-func (r *ReportManager) CreateIssues(cid int) []Issue {
+func (r *ReportManager) CreateIssues(cid int64) []Issue {
 	var issues []Issue
 
 	for _, c := range r.callbacks {

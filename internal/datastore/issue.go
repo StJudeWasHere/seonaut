@@ -54,7 +54,7 @@ func (ds *Datastore) countListQuery(query string, cid int) issue.CountList {
 	return m
 }
 
-func (ds *Datastore) SaveEndIssues(cid int, t time.Time, totalIssues int) {
+func (ds *Datastore) SaveEndIssues(cid int64, t time.Time, totalIssues int) {
 	stmt, _ := ds.db.Prepare("UPDATE crawls SET issues_end = ?, total_issues = ? WHERE id = ?")
 	defer stmt.Close()
 	_, err := stmt.Exec(t, totalIssues, cid)
@@ -63,7 +63,7 @@ func (ds *Datastore) SaveEndIssues(cid int, t time.Time, totalIssues int) {
 	}
 }
 
-func (ds *Datastore) SaveIssues(issues []issue.Issue, cid int) {
+func (ds *Datastore) SaveIssues(issues []issue.Issue, cid int64) {
 	query := `
 		INSERT INTO issues (pagereport_id, crawl_id, issue_type_id)
 		VALUES (?, ?, ?)`

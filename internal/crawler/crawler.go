@@ -35,6 +35,9 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow bool) *C
 	}
 }
 
+// Crawl starts crawling an URL and sends pagereports of the crawled URLs
+// through the pr channel. It will end when there are no more URLs to crawl
+// or the MaxPageReports limit is hit.
 func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
 

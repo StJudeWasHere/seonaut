@@ -12,33 +12,6 @@ const (
 	Warning
 )
 
-const (
-	Error30x = iota + 1
-	Error40x
-	Error50x
-	ErrorDuplicatedTitle
-	ErrorDuplicatedDescription
-	ErrorEmptyTitle
-	ErrorShortTitle
-	ErrorLongTitle
-	ErrorEmptyDescription
-	ErrorShortDescription
-	ErrorLongDescription
-	ErrorLittleContent
-	ErrorImagesWithNoAlt
-	ErrorRedirectChain
-	ErrorNoH1
-	ErrorNoLang
-	ErrorHTTPLinks
-	ErrorHreflangsReturnLink
-	ErrorTooManyLinks
-	ErrorInternalNoFollow
-	ErrorExternalWithoutNoFollow
-	ErrorCanonicalizedToNonCanonical
-	ErrorRedirectLoop
-	ErrorNotValidHeadings
-)
-
 type IssueStore interface {
 	FindIssues(int) map[string]IssueGroup
 	CountByMediaType(int) CountList

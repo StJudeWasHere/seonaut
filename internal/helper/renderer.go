@@ -23,6 +23,7 @@ type Renderer struct {
 	translationMap map[string]interface{}
 }
 
+// NewRenderer will load a translation file and return a new template renderer.
 func NewRenderer() (*Renderer, error) {
 	translation, err := ioutil.ReadFile("translations/translation.en.yaml")
 	if err != nil {
@@ -42,6 +43,7 @@ func NewRenderer() (*Renderer, error) {
 	return r, nil
 }
 
+// Render a template with the specified PageView data.
 func (r *Renderer) RenderTemplate(w http.ResponseWriter, t string, v *PageView) {
 	var templates = template.Must(
 		template.New("").Funcs(template.FuncMap{
@@ -54,6 +56,8 @@ func (r *Renderer) RenderTemplate(w http.ResponseWriter, t string, v *PageView) 
 	}
 }
 
+// Returns a translated string from the translations map.
+// The original string is returned if a translation is not found in the map.
 func (r *Renderer) trans(s string) string {
 	t, ok := r.translationMap[s]
 	if !ok {

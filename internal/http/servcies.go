@@ -41,6 +41,7 @@ type ReportManager interface {
 	CreateIssues(int) []issue.Issue
 }
 
+// Services stores all the services needed by the HTTP server.
 type Services struct {
 	UserService    UserService
 	ProjectService ProjectService

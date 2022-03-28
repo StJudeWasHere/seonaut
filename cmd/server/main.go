@@ -54,6 +54,7 @@ func main() {
 	server.Run()
 }
 
+// Create a new ReportManager with all available issue reporters.
 func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm := issue.NewReportManager(ds)
 

@@ -29,10 +29,13 @@ func NewService(s UserStore) *UserService {
 	}
 }
 
+// FindById returns a by its Id.
 func (s *UserService) FindById(id int) *User {
 	return s.store.FindUserById(id)
 }
 
+// SignUp validates the user email and password and saves a new
+// user in the user storage.
 func (s *UserService) SignUp(email, password string) error {
 	u := s.store.FindUserByEmail(email)
 	if u.Id != 0 {
@@ -58,6 +61,7 @@ func (s *UserService) SignUp(email, password string) error {
 	return nil
 }
 
+// SignIn checks if user credencials are correct to sign in a user.
 func (s *UserService) SignIn(email, password string) (*User, error) {
 	u := s.store.FindUserByEmail(email)
 	if u.Id == 0 {

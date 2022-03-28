@@ -50,13 +50,13 @@ func (s *Service) StartCrawler(p project.Project) int {
 		return 0
 	}
 
-	c := &Crawler{
-		URL:             u,
-		MaxPageReports:  MaxPageReports,
-		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
-		FollowNofollow:  p.FollowNofollow,
-		UserAgent:       s.config.Agent,
-	}
+	c := NewCrawler(
+		u,
+		s.config.Agent,
+		MaxPageReports,
+		p.IgnoreRobotsTxt,
+		p.FollowNofollow,
+	)
 
 	cid := s.store.SaveCrawl(p)
 

@@ -25,6 +25,16 @@ type Crawler struct {
 	UserAgent       string
 }
 
+func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow bool) *Crawler {
+	return &Crawler{
+		URL:             url,
+		MaxPageReports:  max,
+		IgnoreRobotsTxt: irobots,
+		FollowNofollow:  fnofollow,
+		UserAgent:       agent,
+	}
+}
+
 func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
 

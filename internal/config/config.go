@@ -1,6 +1,8 @@
 package config
 
 import (
+	"github.com/stjudewashere/seonaut/internal/datastore"
+
 	"github.com/spf13/viper"
 )
 
@@ -9,24 +11,18 @@ type HTTPServerConfig struct {
 	Port   int    `mapstructure:"port"`
 }
 
-type DBConfig struct {
-	Server string `mapstructure:"server"`
-	Port   int    `mapstructure:"port"`
-	User   string `mapstructure:"user"`
-	Pass   string `mapstructure:"password"`
-	Name   string `mapstructure:"database"`
-}
-
 type CrawlerConfig struct {
 	Agent string `mapstructure:"agent"`
 }
 
+// Config stores the configuration for the application.
 type Config struct {
-	Crawler    CrawlerConfig    `mapstructure:"crawler"`
-	HTTPServer HTTPServerConfig `mapstructure:"server"`
-	DB         DBConfig         `mapstructure:"database"`
+	Crawler    CrawlerConfig       `mapstructure:"crawler"`
+	HTTPServer HTTPServerConfig    `mapstructure:"server"`
+	DB         *datastore.DBConfig `mapstructure:"database"`
 }
 
+// NewConfig loads the configuration from the specified file and path.
 func NewConfig(path, filename string) (*Config, error) {
 	viper.SetConfigName(filename)
 	viper.SetConfigType("toml")

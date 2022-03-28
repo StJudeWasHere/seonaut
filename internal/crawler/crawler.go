@@ -5,8 +5,6 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/stjudewashere/seonaut/internal/report"
-
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
 )
@@ -27,7 +25,7 @@ type Crawler struct {
 	UserAgent       string
 }
 
-func (c *Crawler) Crawl(pr chan<- report.PageReport) {
+func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
 
 	q, _ := queue.New(
@@ -48,7 +46,7 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 			return
 		}
 		url := r.Request.URL
-		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body)
+		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 		pr <- *pageReport
 		responseCounter++
 	}
@@ -59,7 +57,7 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 		}
 
 		url := r.Request.URL
-		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body)
+		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 
 		if strings.Contains(pageReport.Robots, "noindex") {
 			return

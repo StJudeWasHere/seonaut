@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"unicode/utf8"
 
-	"github.com/stjudewashere/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/crawler"
 )
 
 type CSVWriter struct {
@@ -39,7 +39,7 @@ func NewCSVWriter(f io.Writer) *CSVWriter {
 	return &cw
 }
 
-func (cw *CSVWriter) Write(r report.PageReport) {
+func (cw *CSVWriter) Write(r crawler.PageReport) {
 	cw.writer.Write([]string{
 		fmt.Sprintf("%d", r.StatusCode),
 		r.URL,

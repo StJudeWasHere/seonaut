@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/report"
@@ -32,8 +33,8 @@ type IssueService interface {
 
 type ReportService interface {
 	GetPageReport(int, int, string) *report.PageReportView
-	GetPageReporsByIssueType(int, string) []report.PageReport
-	GetSitemapPageReports(int) []report.PageReport
+	GetPageReporsByIssueType(int, string) []crawler.PageReport
+	GetSitemapPageReports(int) []crawler.PageReport
 }
 
 type ReportManager interface {

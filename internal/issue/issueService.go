@@ -3,7 +3,7 @@ package issue
 import (
 	"errors"
 
-	"github.com/stjudewashere/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/crawler"
 )
 
 const (
@@ -17,7 +17,7 @@ type IssueStore interface {
 	CountByMediaType(int) CountList
 	CountByStatusCode(int) CountList
 	GetNumberOfPagesForIssues(int, string) int
-	FindPageReportIssues(int, int, string) []report.PageReport
+	FindPageReportIssues(int, int, string) []crawler.PageReport
 }
 
 type Issue struct {
@@ -53,7 +53,7 @@ type Paginator struct {
 
 type PaginatorView struct {
 	Paginator   Paginator
-	PageReports []report.PageReport
+	PageReports []crawler.PageReport
 }
 
 func NewService(s IssueStore) *IssueService {

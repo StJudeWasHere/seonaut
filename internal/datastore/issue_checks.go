@@ -3,11 +3,11 @@ package datastore
 import (
 	"log"
 
+	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/helper"
-	"github.com/stjudewashere/seonaut/internal/report"
 )
 
-func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int) []crawler.PageReport {
 	uh := helper.Hash(u)
 	query := `
 		SELECT
@@ -20,7 +20,7 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int) []report
 	return ds.pageReportsQuery(query, uh, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -33,7 +33,7 @@ func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) Find40xPageReports(cid int) []report.PageReport {
+func (ds *Datastore) Find40xPageReports(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -45,7 +45,7 @@ func (ds *Datastore) Find40xPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) Find30xPageReports(cid int) []report.PageReport {
+func (ds *Datastore) Find30xPageReports(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -57,7 +57,7 @@ func (ds *Datastore) Find30xPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) Find50xPageReports(cid int) []report.PageReport {
+func (ds *Datastore) Find50xPageReports(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -69,7 +69,7 @@ func (ds *Datastore) Find50xPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithLittleContent(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithLittleContent(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -81,7 +81,7 @@ func (ds *Datastore) FindPageReportsWithLittleContent(cid int) []report.PageRepo
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithShortTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithShortTitle(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -93,7 +93,7 @@ func (ds *Datastore) FindPageReportsWithShortTitle(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithLongTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithLongTitle(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -105,7 +105,7 @@ func (ds *Datastore) FindPageReportsWithLongTitle(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -130,7 +130,7 @@ func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int) []report.PageRe
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithoutH1(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithoutH1(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -143,7 +143,7 @@ func (ds *Datastore) FindPageReportsWithoutH1(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -156,7 +156,7 @@ func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int) []report.PageR
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithShortDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithShortDescription(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -168,7 +168,7 @@ func (ds *Datastore) FindPageReportsWithShortDescription(cid int) []report.PageR
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithLongDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithLongDescription(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -180,7 +180,7 @@ func (ds *Datastore) FindPageReportsWithLongDescription(cid int) []report.PageRe
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -205,7 +205,7 @@ func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int) []report.
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindImagesWithNoAlt(cid int) []report.PageReport {
+func (ds *Datastore) FindImagesWithNoAlt(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -219,7 +219,7 @@ func (ds *Datastore) FindImagesWithNoAlt(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -232,7 +232,7 @@ func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int) []report.PageReport {
+func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -248,7 +248,7 @@ func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindMissingHrelangReturnLinks(cid int) []report.PageReport {
+func (ds *Datastore) FindMissingHrelangReturnLinks(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			distinct pagereports.id,
@@ -264,7 +264,7 @@ func (ds *Datastore) FindMissingHrelangReturnLinks(cid int) []report.PageReport 
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindInLinks(s string, cid int) []report.PageReport {
+func (ds *Datastore) FindInLinks(s string, cid int) []crawler.PageReport {
 	hash := helper.Hash(s)
 	query := `
 		SELECT 
@@ -280,7 +280,7 @@ func (ds *Datastore) FindInLinks(s string, cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, hash, cid)
 }
 
-func (ds *Datastore) FindPageReportIssues(cid, p int, errorType string) []report.PageReport {
+func (ds *Datastore) FindPageReportIssues(cid, p int, errorType string) []crawler.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 
@@ -300,7 +300,7 @@ func (ds *Datastore) FindPageReportIssues(cid, p int, errorType string) []report
 	return ds.pageReportsQuery(query, errorType, cid, offset, max)
 }
 
-func (ds *Datastore) FindRedirectChains(cid int) []report.PageReport {
+func (ds *Datastore) FindRedirectChains(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -313,7 +313,7 @@ func (ds *Datastore) FindRedirectChains(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) TooManyLinks(cid int) []report.PageReport {
+func (ds *Datastore) TooManyLinks(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -334,7 +334,7 @@ func (ds *Datastore) TooManyLinks(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) InternalNoFollowLinks(cid int) []report.PageReport {
+func (ds *Datastore) InternalNoFollowLinks(cid int) []crawler.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports 
@@ -347,7 +347,7 @@ func (ds *Datastore) InternalNoFollowLinks(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindSitemapPageReports(cid int) []report.PageReport {
+func (ds *Datastore) FindSitemapPageReports(cid int) []crawler.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports
@@ -357,7 +357,7 @@ func (ds *Datastore) FindSitemapPageReports(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int) []report.PageReport {
+func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -371,7 +371,7 @@ func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int) []report.PageReport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int) []report.PageReport {
+func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -384,7 +384,7 @@ func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int) []report.PageRepor
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindRedirectLoops(cid int) []report.PageReport {
+func (ds *Datastore) FindRedirectLoops(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -397,7 +397,7 @@ func (ds *Datastore) FindRedirectLoops(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindNotValidHeadingsOrder(cid int) []report.PageReport {
+func (ds *Datastore) FindNotValidHeadingsOrder(cid int) []crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -409,15 +409,15 @@ func (ds *Datastore) FindNotValidHeadingsOrder(cid int) []report.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) []report.PageReport {
-	var pageReports []report.PageReport
+func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) []crawler.PageReport {
+	var pageReports []crawler.PageReport
 	rows, err := ds.db.Query(query, args...)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		p := report.PageReport{}
+		p := crawler.PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
 			log.Println(err)

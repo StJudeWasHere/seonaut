@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/crawler"
 )
 
 const (
@@ -29,7 +29,7 @@ func TestNewPageReport(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport := report.NewPageReport(u, statusCode, &headers, body)
+	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
 
 	if pageReport.URL != testURL {
 		t.Error("NewPageReport URL != testURL")
@@ -67,7 +67,7 @@ func TestNewRedirectPageReport(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := report.NewPageReport(u, statusCode, &headers, body)
+	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
 
 	if pageReport.RedirectURL != redirectURL {
 		t.Errorf("NewPageReport RedirectURL != %s", pageReport.RedirectURL)
@@ -96,7 +96,7 @@ func TestPageReportHTML(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport := report.NewPageReport(u, statusCode, headers, body)
+	pageReport := crawler.NewPageReport(u, statusCode, headers, body)
 
 	if pageReport.Lang != "en" {
 		t.Error("Lang != en")

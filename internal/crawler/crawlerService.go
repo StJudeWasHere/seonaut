@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/project"
-	"github.com/stjudewashere/seonaut/internal/report"
 )
 
 const (
@@ -22,7 +21,7 @@ type CrawlerConfig struct {
 
 type CrawlerStore interface {
 	SaveCrawl(project.Project) int64
-	SavePageReport(*report.PageReport, int64)
+	SavePageReport(*PageReport, int64)
 	SaveEndCrawl(int64, time.Time, int)
 	DeletePreviousCrawl(int)
 }
@@ -61,7 +60,7 @@ func (s *CrawlerService) StartCrawler(p project.Project) int {
 
 	cid := s.store.SaveCrawl(p)
 
-	pageReport := make(chan report.PageReport)
+	pageReport := make(chan PageReport)
 	go c.Crawl(pageReport)
 
 	for r := range pageReport {

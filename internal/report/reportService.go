@@ -1,13 +1,17 @@
 package report
 
+import (
+	"github.com/stjudewashere/seonaut/internal/crawler"
+)
+
 type ReportStore interface {
-	FindPageReportById(int) PageReport
+	FindPageReportById(int) crawler.PageReport
 	FindErrorTypesByPage(int, int) []string
-	FindInLinks(string, int) []PageReport
-	FindPageReportsRedirectingToURL(string, int) []PageReport
-	FindAllPageReportsByCrawlIdAndErrorType(int, string) []PageReport
-	FindAllPageReportsByCrawlId(int) []PageReport
-	FindSitemapPageReports(int) []PageReport
+	FindInLinks(string, int) []crawler.PageReport
+	FindPageReportsRedirectingToURL(string, int) []crawler.PageReport
+	FindAllPageReportsByCrawlIdAndErrorType(int, string) []crawler.PageReport
+	FindAllPageReportsByCrawlId(int) []crawler.PageReport
+	FindSitemapPageReports(int) []crawler.PageReport
 }
 
 type ReportService struct {
@@ -15,10 +19,10 @@ type ReportService struct {
 }
 
 type PageReportView struct {
-	PageReport PageReport
+	PageReport crawler.PageReport
 	ErrorTypes []string
-	InLinks    []PageReport
-	Redirects  []PageReport
+	InLinks    []crawler.PageReport
+	Redirects  []crawler.PageReport
 }
 
 func NewService(store ReportStore) *ReportService {
@@ -43,7 +47,7 @@ func (s *ReportService) GetPageReport(rid, crawlId int, tab string) *PageReportV
 	return v
 }
 
-func (s *ReportService) GetPageReporsByIssueType(crawlId int, eid string) []PageReport {
+func (s *ReportService) GetPageReporsByIssueType(crawlId int, eid string) []crawler.PageReport {
 	if eid != "" {
 		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
 	}
@@ -51,6 +55,6 @@ func (s *ReportService) GetPageReporsByIssueType(crawlId int, eid string) []Page
 	return s.store.FindAllPageReportsByCrawlId(crawlId)
 }
 
-func (s *ReportService) GetSitemapPageReports(crawlId int) []PageReport {
+func (s *ReportService) GetSitemapPageReports(crawlId int) []crawler.PageReport {
 	return s.store.FindSitemapPageReports(crawlId)
 }

@@ -3,11 +3,11 @@ package datastore
 import (
 	"log"
 
+	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/helper"
-	"github.com/stjudewashere/seonaut/internal/report"
 )
 
-func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
+func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 	urlHash := helper.Hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
@@ -194,8 +194,8 @@ func (ds *Datastore) SavePageReport(r *report.PageReport, cid int64) {
 	}
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlId(cid int) []report.PageReport {
-	var pageReports []report.PageReport
+func (ds *Datastore) FindAllPageReportsByCrawlId(cid int) []crawler.PageReport {
+	var pageReports []crawler.PageReport
 	query := `
 		SELECT
 			id,
@@ -224,7 +224,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int) []report.PageReport {
 	}
 
 	for rows.Next() {
-		p := report.PageReport{}
+		p := crawler.PageReport{}
 		err := rows.Scan(&p.Id,
 			&p.URL,
 			&p.RedirectURL,
@@ -254,8 +254,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int) []report.PageReport {
 	return pageReports
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []report.PageReport {
-	var pageReports []report.PageReport
+func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []crawler.PageReport {
+	var pageReports []crawler.PageReport
 	query := `
 		SELECT
 			id,
@@ -291,7 +291,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string)
 	}
 
 	for rows.Next() {
-		p := report.PageReport{}
+		p := crawler.PageReport{}
 		err := rows.Scan(&p.Id,
 			&p.URL,
 			&p.RedirectURL,
@@ -321,7 +321,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string)
 	return pageReports
 }
 
-func (ds *Datastore) FindPageReportById(rid int) report.PageReport {
+func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 	query := `
 		SELECT
 			id,
@@ -346,7 +346,7 @@ func (ds *Datastore) FindPageReportById(rid int) report.PageReport {
 
 	row := ds.db.QueryRow(query, rid)
 
-	p := report.PageReport{}
+	p := crawler.PageReport{}
 	err := row.Scan(&p.Id,
 		&p.URL,
 		&p.RedirectURL,
@@ -375,7 +375,7 @@ func (ds *Datastore) FindPageReportById(rid int) report.PageReport {
 	}
 
 	for lrows.Next() {
-		l := report.Link{}
+		l := crawler.Link{}
 		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
 		if err != nil {
 			log.Println(err)
@@ -391,7 +391,7 @@ func (ds *Datastore) FindPageReportById(rid int) report.PageReport {
 	}
 
 	for lrows.Next() {
-		l := report.Link{}
+		l := crawler.Link{}
 		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
 		if err != nil {
 			log.Println(err)
@@ -407,7 +407,7 @@ func (ds *Datastore) FindPageReportById(rid int) report.PageReport {
 	}
 
 	for hrows.Next() {
-		h := report.Hreflang{}
+		h := crawler.Hreflang{}
 		err = hrows.Scan(&h.URL, &h.Lang)
 		if err != nil {
 			log.Println(err)
@@ -423,7 +423,7 @@ func (ds *Datastore) FindPageReportById(rid int) report.PageReport {
 	}
 
 	for irows.Next() {
-		i := report.Image{}
+		i := crawler.Image{}
 		err = irows.Scan(&i.URL, &i.Alt)
 		if err != nil {
 			log.Println(err)

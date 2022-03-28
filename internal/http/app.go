@@ -10,7 +10,6 @@ import (
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"github.com/microcosm-cc/bluemonday"
 	"gopkg.in/yaml.v3"
 )
 
@@ -51,7 +50,6 @@ type HTTPServerConfig struct {
 type App struct {
 	config         *HTTPServerConfig
 	cookie         *sessions.CookieStore
-	sanitizer      *bluemonday.Policy
 	renderer       *helper.Renderer
 	userService    UserService
 	projectService ProjectService
@@ -90,7 +88,6 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 	return &App{
 		config:         c,
 		cookie:         cookie,
-		sanitizer:      bluemonday.StrictPolicy(),
 		renderer:       helper.NewRenderer(m),
 		userService:    s.UserService,
 		projectService: s.ProjectService,

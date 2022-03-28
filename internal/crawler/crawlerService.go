@@ -7,8 +7,6 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/report"
-
-	"github.com/microcosm-cc/bluemonday"
 )
 
 const (
@@ -42,7 +40,7 @@ func NewService(s CrawlerStore, c *CrawlerConfig) *CrawlerService {
 	}
 }
 
-func (s *CrawlerService) StartCrawler(p project.Project, sanitizer *bluemonday.Policy) int {
+func (s *CrawlerService) StartCrawler(p project.Project) int {
 	var totalURLs int
 	var max int
 
@@ -63,7 +61,6 @@ func (s *CrawlerService) StartCrawler(p project.Project, sanitizer *bluemonday.P
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
 		FollowNofollow:  p.FollowNofollow,
 		UserAgent:       s.config.Agent,
-		sanitizer:       sanitizer,
 	}
 
 	cid := s.store.SaveCrawl(p)

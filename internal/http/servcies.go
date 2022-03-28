@@ -5,8 +5,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
-
-	"github.com/microcosm-cc/bluemonday"
 )
 
 type UserService interface {
@@ -24,7 +22,7 @@ type ProjectService interface {
 }
 
 type CrawlerService interface {
-	StartCrawler(project.Project, *bluemonday.Policy) int
+	StartCrawler(project.Project) int
 }
 
 type IssueService interface {

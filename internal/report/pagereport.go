@@ -64,7 +64,7 @@ type Image struct {
 	Alt string
 }
 
-func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte, sanitizer *bluemonday.Policy) *PageReport {
+func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *PageReport {
 	pageReport := PageReport{
 		URL:           u.String(),
 		ParsedURL:     u,
@@ -72,7 +72,7 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte, sa
 		ContentType:   headers.Get("Content-Type"),
 		Body:          body,
 		Size:          len(body),
-		sanitizer:     sanitizer,
+		sanitizer:     bluemonday.StrictPolicy(),
 		ValidHeadings: true,
 	}
 

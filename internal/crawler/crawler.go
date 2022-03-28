@@ -9,7 +9,6 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
-	"github.com/microcosm-cc/bluemonday"
 )
 
 type Crawler struct {
@@ -18,7 +17,6 @@ type Crawler struct {
 	IgnoreRobotsTxt bool
 	FollowNofollow  bool
 	UserAgent       string
-	sanitizer       *bluemonday.Policy
 }
 
 func (c *Crawler) Crawl(pr chan<- report.PageReport) {
@@ -42,7 +40,7 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 			return
 		}
 		url := r.Request.URL
-		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
+		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 		pr <- *pageReport
 		responseCounter++
 	}
@@ -53,7 +51,7 @@ func (c *Crawler) Crawl(pr chan<- report.PageReport) {
 		}
 
 		url := r.Request.URL
-		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body, c.sanitizer)
+		pageReport := report.NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 
 		if strings.Contains(pageReport.Robots, "noindex") {
 			return

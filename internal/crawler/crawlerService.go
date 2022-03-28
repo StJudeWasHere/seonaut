@@ -17,6 +17,12 @@ const (
 	MaxPageReports  = 10000
 )
 
+// CrawlerConfig stores the configuration for the crawler.
+// It is loaded from the config package.
+type CrawlerConfig struct {
+	Agent string `mapstructure:"agent"`
+}
+
 type CrawlerStore interface {
 	SaveCrawl(project.Project) int64
 	SavePageReport(*report.PageReport, int64)
@@ -25,16 +31,18 @@ type CrawlerStore interface {
 }
 
 type CrawlerService struct {
-	store CrawlerStore
+	store  CrawlerStore
+	config *CrawlerConfig
 }
 
-func NewService(s CrawlerStore) *CrawlerService {
+func NewService(s CrawlerStore, c *CrawlerConfig) *CrawlerService {
 	return &CrawlerService{
-		store: s,
+		store:  s,
+		config: c,
 	}
 }
 
-func (s *CrawlerService) StartCrawler(p project.Project, agent string, sanitizer *bluemonday.Policy) int {
+func (s *CrawlerService) StartCrawler(p project.Project, sanitizer *bluemonday.Policy) int {
 	var totalURLs int
 	var max int
 
@@ -54,7 +62,7 @@ func (s *CrawlerService) StartCrawler(p project.Project, agent string, sanitizer
 		MaxPageReports:  max,
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
 		FollowNofollow:  p.FollowNofollow,
-		UserAgent:       agent,
+		UserAgent:       s.config.Agent,
 		sanitizer:       sanitizer,
 	}
 

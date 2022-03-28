@@ -6,14 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/stjudewashere/seonaut/internal/config"
-	"github.com/stjudewashere/seonaut/internal/crawler"
-	"github.com/stjudewashere/seonaut/internal/datastore"
 	"github.com/stjudewashere/seonaut/internal/helper"
-	"github.com/stjudewashere/seonaut/internal/issue"
-	"github.com/stjudewashere/seonaut/internal/project"
-	"github.com/stjudewashere/seonaut/internal/report"
-	"github.com/stjudewashere/seonaut/internal/user"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -48,41 +41,15 @@ const (
 	ErrorNotValidHeadings
 )
 
-type UserService interface {
-	FindById(id int) *user.User
-	SignUp(email, password string) error
-	SignIn(email, password string) (*user.User, error)
-}
-
-type ProjectService interface {
-	GetProjects(int) []project.Project
-	SaveProject(string, bool, bool, int) error
-	FindProject(id, uid int) (project.Project, error)
-	GetProjectView(id, uid int) (*project.ProjectView, error)
-	GetProjectViews(uid int) []project.ProjectView
-}
-
-type CrawlerService interface {
-	StartCrawler(project.Project, string, *bluemonday.Policy) int
-}
-
-type IssueService interface {
-	GetIssuesCount(int) *issue.IssueCount
-	GetPaginatedReportsByIssue(int, int, string) (issue.PaginatorView, error)
-}
-
-type ReportService interface {
-	GetPageReport(int, int, string) *report.PageReportView
-	GetPageReporsByIssueType(int, string) []report.PageReport
-	GetSitemapPageReports(int) []report.PageReport
-}
-
-type ReportManager interface {
-	CreateIssues(int) []issue.Issue
+// HTTPServerConfig stores the configuration for the HTTP server.
+// It is loaded from the config package.
+type HTTPServerConfig struct {
+	Server string `mapstructure:"host"`
+	Port   int    `mapstructure:"port"`
 }
 
 type App struct {
-	config         *config.Config
+	config         *HTTPServerConfig
 	cookie         *sessions.CookieStore
 	sanitizer      *bluemonday.Policy
 	renderer       *helper.Renderer
@@ -94,7 +61,7 @@ type App struct {
 	reportManager  ReportManager
 }
 
-func NewApp(c *config.Config, ds *datastore.Datastore) *App {
+func NewApp(c *HTTPServerConfig, s *Services) *App {
 	translation, err := ioutil.ReadFile("translations/translation.en.yaml")
 	if err != nil {
 		log.Fatal(err)
@@ -125,12 +92,12 @@ func NewApp(c *config.Config, ds *datastore.Datastore) *App {
 		cookie:         cookie,
 		sanitizer:      bluemonday.StrictPolicy(),
 		renderer:       helper.NewRenderer(m),
-		userService:    user.NewService(ds),
-		projectService: project.NewService(ds),
-		crawlerService: crawler.NewService(ds),
-		issueService:   issue.NewService(ds),
-		reportService:  report.NewService(ds),
-		reportManager:  newReportManager(ds),
+		userService:    s.UserService,
+		projectService: s.ProjectService,
+		crawlerService: s.CrawlerService,
+		issueService:   s.IssueService,
+		reportService:  s.ReportService,
+		reportManager:  s.ReportManager,
 	}
 }
 
@@ -154,40 +121,9 @@ func (app *App) Run() {
 	http.HandleFunc("/signup", app.serveSignup)
 	http.HandleFunc("/signin", app.serveSignin)
 
-	fmt.Printf("Starting server at %s on port %d...\n", app.config.HTTPServer.Server, app.config.HTTPServer.Port)
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.HTTPServer.Server, app.config.HTTPServer.Port), nil)
+	fmt.Printf("Starting server at %s on port %d...\n", app.config.Server, app.config.Port)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.Server, app.config.Port), nil)
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
-	rm := issue.NewReportManager(ds)
-
-	rm.AddReporter(ds.Find30xPageReports, Error30x)
-	rm.AddReporter(ds.Find40xPageReports, Error40x)
-	rm.AddReporter(ds.Find50xPageReports, Error50x)
-	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedTitle)
-	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, ErrorDuplicatedDescription)
-	rm.AddReporter(ds.FindPageReportsWithEmptyTitle, ErrorEmptyTitle)
-	rm.AddReporter(ds.FindPageReportsWithShortTitle, ErrorShortTitle)
-	rm.AddReporter(ds.FindPageReportsWithLongTitle, ErrorLongTitle)
-	rm.AddReporter(ds.FindPageReportsWithEmptyDescription, ErrorEmptyDescription)
-	rm.AddReporter(ds.FindPageReportsWithShortDescription, ErrorShortDescription)
-	rm.AddReporter(ds.FindPageReportsWithLongDescription, ErrorLongDescription)
-	rm.AddReporter(ds.FindPageReportsWithLittleContent, ErrorLittleContent)
-	rm.AddReporter(ds.FindImagesWithNoAlt, ErrorImagesWithNoAlt)
-	rm.AddReporter(ds.FindRedirectChains, ErrorRedirectChain)
-	rm.AddReporter(ds.FindPageReportsWithoutH1, ErrorNoH1)
-	rm.AddReporter(ds.FindPageReportsWithNoLangAttr, ErrorNoLang)
-	rm.AddReporter(ds.FindPageReportsWithHTTPLinks, ErrorHTTPLinks)
-	rm.AddReporter(ds.FindMissingHrelangReturnLinks, ErrorHreflangsReturnLink)
-	rm.AddReporter(ds.TooManyLinks, ErrorTooManyLinks)
-	rm.AddReporter(ds.InternalNoFollowLinks, ErrorInternalNoFollow)
-	rm.AddReporter(ds.FindExternalLinkWitoutNoFollow, ErrorExternalWithoutNoFollow)
-	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorCanonicalizedToNonCanonical)
-	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, ErrorRedirectLoop)
-	rm.AddReporter(ds.FindNotValidHeadingsOrder, ErrorNotValidHeadings)
-
-	return rm
 }

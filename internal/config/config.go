@@ -10,7 +10,7 @@ import (
 
 // Config stores the configuration for the application.
 type Config struct {
-	Crawler    *crawler.CrawlerConfig `mapstructure:"crawler"`
+	Crawler    *crawler.Config        `mapstructure:"crawler"`
 	HTTPServer *http.HTTPServerConfig `mapstructure:"server"`
 	DB         *datastore.DBConfig    `mapstructure:"database"`
 }

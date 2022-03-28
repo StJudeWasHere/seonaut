@@ -15,30 +15,30 @@ const (
 
 // CrawlerConfig stores the configuration for the crawler.
 // It is loaded from the config package.
-type CrawlerConfig struct {
+type Config struct {
 	Agent string `mapstructure:"agent"`
 }
 
-type CrawlerStore interface {
+type Storage interface {
 	SaveCrawl(project.Project) int64
 	SavePageReport(*PageReport, int64)
 	SaveEndCrawl(int64, time.Time, int)
 	DeletePreviousCrawl(int)
 }
 
-type CrawlerService struct {
-	store  CrawlerStore
-	config *CrawlerConfig
+type Service struct {
+	store  Storage
+	config *Config
 }
 
-func NewService(s CrawlerStore, c *CrawlerConfig) *CrawlerService {
-	return &CrawlerService{
+func NewService(s Storage, c *Config) *Service {
+	return &Service{
 		store:  s,
 		config: c,
 	}
 }
 
-func (s *CrawlerService) StartCrawler(p project.Project) int {
+func (s *Service) StartCrawler(p project.Project) int {
 	var totalURLs int
 
 	log.Printf("Crawling %s\n", p.URL)

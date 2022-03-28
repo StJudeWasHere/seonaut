@@ -30,6 +30,8 @@ type App struct {
 	reportManager  ReportManager
 }
 
+// NewApp initializes the template renderer and the session cookie.
+// Returns a new HTTP application server.
 func NewApp(c *HTTPServerConfig, s *Services) *App {
 	renderer, err := helper.NewRenderer()
 	if err != nil {
@@ -63,6 +65,7 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 	}
 }
 
+// Start HTTP server at the server and port specified in the config.
 func (app *App) Run() {
 	// Static
 	fileServer := http.FileServer(http.Dir("./web/static"))

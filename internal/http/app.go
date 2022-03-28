@@ -13,33 +13,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-const (
-	Error30x = iota + 1
-	Error40x
-	Error50x
-	ErrorDuplicatedTitle
-	ErrorDuplicatedDescription
-	ErrorEmptyTitle
-	ErrorShortTitle
-	ErrorLongTitle
-	ErrorEmptyDescription
-	ErrorShortDescription
-	ErrorLongDescription
-	ErrorLittleContent
-	ErrorImagesWithNoAlt
-	ErrorRedirectChain
-	ErrorNoH1
-	ErrorNoLang
-	ErrorHTTPLinks
-	ErrorHreflangsReturnLink
-	ErrorTooManyLinks
-	ErrorInternalNoFollow
-	ErrorExternalWithoutNoFollow
-	ErrorCanonicalizedToNonCanonical
-	ErrorRedirectLoop
-	ErrorNotValidHeadings
-)
-
 // HTTPServerConfig stores the configuration for the HTTP server.
 // It is loaded from the config package.
 type HTTPServerConfig struct {

@@ -10,6 +10,9 @@ import (
 	"github.com/stjudewashere/seonaut/internal/config"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 type Datastore struct {
@@ -47,4 +50,24 @@ func NewDataStore(config config.DBConfig) (*Datastore, error) {
 	}
 
 	return &Datastore{db: db}, nil
+}
+
+func (ds *Datastore) Migrate() error {
+	driver, err := mysql.WithInstance(ds.db, &mysql.Config{})
+	if err != nil {
+		return err
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://migrations",
+		"mysql",
+		driver,
+	)
+	if err != nil {
+		return err
+	}
+
+	m.Up()
+
+	return nil
 }

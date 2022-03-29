@@ -10,7 +10,6 @@ import (
 type Storage interface {
 	FindProjectsByUser(int) []project.Project
 	FindProjectById(id int, uid int) (project.Project, error)
-
 	GetLastCrawl(*project.Project) crawler.Crawl
 }
 
@@ -29,6 +28,8 @@ func NewService(s Storage) *Service {
 	}
 }
 
+// GetProjectView returns a new ProjectView with the specified project
+// and the project's last crawl.
 func (s *Service) GetProjectView(id, uid int) (*ProjectView, error) {
 	v := &ProjectView{}
 
@@ -52,6 +53,8 @@ func (s *Service) GetProjectView(id, uid int) (*ProjectView, error) {
 	return v, nil
 }
 
+// GetProjectViews returns a slice of ProjectViews with all of the user's
+// projects and its last crawls.
 func (s *Service) GetProjectViews(uid int) []ProjectView {
 	projects := s.storage.FindProjectsByUser(uid)
 

@@ -7,8 +7,7 @@ import (
 	"time"
 )
 
-type ProjectStore interface {
-	FindProjectsByUser(int) []Project
+type Storage interface {
 	SaveProject(string, bool, bool, int)
 	FindProjectById(id int, uid int) (Project, error)
 }
@@ -23,18 +22,18 @@ type Project struct {
 }
 
 type ProjectService struct {
-	store ProjectStore
+	storage Storage
 }
 
-func NewService(store ProjectStore) *ProjectService {
+func NewService(s Storage) *ProjectService {
 	return &ProjectService{
-		store: store,
+		storage: s,
 	}
 }
 
+// SaveProject stores a new project for a specific user with all the specified options.
 func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow bool, userId int) error {
-	u = strings.TrimSpace(u)
-	p, err := url.ParseRequestURI(u)
+	p, err := url.ParseRequestURI(strings.TrimSpace(u))
 	if err != nil {
 		return err
 	}
@@ -43,13 +42,15 @@ func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow b
 		return errors.New("Protocol not supported")
 	}
 
-	s.store.SaveProject(u, ignoreRobotsTxt, followNofollow, userId)
+	s.storage.SaveProject(p.String(), ignoreRobotsTxt, followNofollow, userId)
 
 	return nil
 }
 
+// Return a project specified by id and user.
+// It populates the Host field from the project's URL.
 func (s *ProjectService) FindProject(id, uid int) (Project, error) {
-	project, err := s.store.FindProjectById(id, uid)
+	project, err := s.storage.FindProjectById(id, uid)
 	if err != nil {
 		return project, err
 	}

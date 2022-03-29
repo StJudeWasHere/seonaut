@@ -5,6 +5,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/project"
 )
 
@@ -95,7 +96,7 @@ func (ds *Datastore) SaveEndCrawl(cid int64, t time.Time, totalURLs int) {
 	}
 }
 
-func (ds *Datastore) GetLastCrawl(p *project.Project) project.Crawl {
+func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 	query := `
 		SELECT
 			id,
@@ -110,7 +111,7 @@ func (ds *Datastore) GetLastCrawl(p *project.Project) project.Crawl {
 
 	row := ds.db.QueryRow(query, p.Id)
 
-	crawl := project.Crawl{}
+	crawl := crawler.Crawl{}
 	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End, &crawl.TotalURLs, &crawl.TotalIssues, &crawl.IssuesEnd)
 	if err != nil {
 		log.Printf("GetLastCrawl: %v\n", err)

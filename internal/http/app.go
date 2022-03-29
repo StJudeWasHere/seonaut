@@ -19,15 +19,16 @@ type HTTPServerConfig struct {
 }
 
 type App struct {
-	config         *HTTPServerConfig
-	cookie         *sessions.CookieStore
-	renderer       *helper.Renderer
-	userService    UserService
-	projectService ProjectService
-	crawlerService CrawlerService
-	issueService   IssueService
-	reportService  ReportService
-	reportManager  ReportManager
+	config             *HTTPServerConfig
+	cookie             *sessions.CookieStore
+	renderer           *helper.Renderer
+	userService        UserService
+	projectService     ProjectService
+	crawlerService     CrawlerService
+	issueService       IssueService
+	reportService      ReportService
+	reportManager      ReportManager
+	projectViewService ProjectViewService
 }
 
 // NewApp initializes the template renderer and the session cookie.
@@ -53,15 +54,16 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 	}
 
 	return &App{
-		config:         c,
-		cookie:         cookie,
-		renderer:       renderer,
-		userService:    s.UserService,
-		projectService: s.ProjectService,
-		crawlerService: s.CrawlerService,
-		issueService:   s.IssueService,
-		reportService:  s.ReportService,
-		reportManager:  s.ReportManager,
+		config:             c,
+		cookie:             cookie,
+		renderer:           renderer,
+		userService:        s.UserService,
+		projectService:     s.ProjectService,
+		crawlerService:     s.CrawlerService,
+		issueService:       s.IssueService,
+		reportService:      s.ReportService,
+		reportManager:      s.ReportManager,
+		projectViewService: s.ProjectViewService,
 	}
 }
 

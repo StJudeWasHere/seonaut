@@ -6,7 +6,7 @@ import (
 	"strconv"
 
 	"github.com/stjudewashere/seonaut/internal/helper"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
@@ -18,7 +18,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	views := app.projectService.GetProjectViews(user.Id)
+	views := app.projectViewService.GetProjectViews(user.Id)
 
 	var refresh bool
 	for _, v := range views {
@@ -29,7 +29,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 
 	v := &helper.PageView{
 		Data: struct {
-			Projects []project.ProjectView
+			Projects []projectview.ProjectView
 		}{Projects: views},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",

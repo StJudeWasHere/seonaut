@@ -10,6 +10,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/http"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
@@ -38,12 +39,13 @@ func main() {
 	}
 
 	services := &http.Services{
-		UserService:    user.NewService(ds),
-		ProjectService: project.NewService(ds),
-		CrawlerService: crawler.NewService(ds, config.Crawler),
-		IssueService:   issue.NewService(ds),
-		ReportService:  report.NewService(ds),
-		ReportManager:  newReportManager(ds),
+		UserService:        user.NewService(ds),
+		ProjectService:     project.NewService(ds),
+		CrawlerService:     crawler.NewService(ds, config.Crawler),
+		IssueService:       issue.NewService(ds),
+		ReportService:      report.NewService(ds),
+		ReportManager:      newReportManager(ds),
+		ProjectViewService: projectview.NewService(ds),
 	}
 
 	server := http.NewApp(

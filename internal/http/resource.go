@@ -6,14 +6,14 @@ import (
 	"strconv"
 
 	"github.com/stjudewashere/seonaut/internal/helper"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 type ResourcesView struct {
 	PageReportView *report.PageReportView
-	ProjectView    *project.ProjectView
+	ProjectView    *projectview.ProjectView
 	Eid            string
 	Tab            string
 }
@@ -55,7 +55,7 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pv, err := app.projectService.GetProjectView(pid, user.Id)
+	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Printf("serveResourcesView GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)

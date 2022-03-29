@@ -29,7 +29,7 @@ func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pv, err := app.projectService.GetProjectView(pid, user.Id)
+	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -68,7 +68,7 @@ func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pv, err := app.projectService.GetProjectView(pid, user.Id)
+	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 

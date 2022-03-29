@@ -4,6 +4,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
@@ -17,8 +18,11 @@ type UserService interface {
 type ProjectService interface {
 	SaveProject(string, bool, bool, int) error
 	FindProject(id, uid int) (project.Project, error)
-	GetProjectView(id, uid int) (*project.ProjectView, error)
-	GetProjectViews(uid int) []project.ProjectView
+}
+
+type ProjectViewService interface {
+	GetProjectView(id, uid int) (*projectview.ProjectView, error)
+	GetProjectViews(uid int) []projectview.ProjectView
 }
 
 type CrawlerService interface {
@@ -42,10 +46,11 @@ type ReportManager interface {
 
 // Services stores all the services needed by the HTTP server.
 type Services struct {
-	UserService    UserService
-	ProjectService ProjectService
-	CrawlerService CrawlerService
-	IssueService   IssueService
-	ReportService  ReportService
-	ReportManager  ReportManager
+	UserService        UserService
+	ProjectService     ProjectService
+	ProjectViewService ProjectViewService
+	CrawlerService     CrawlerService
+	IssueService       IssueService
+	ReportService      ReportService
+	ReportManager      ReportManager
 }

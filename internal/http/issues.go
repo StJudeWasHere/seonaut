@@ -7,19 +7,19 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/issue"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 type IssuesGroupView struct {
-	ProjectView *project.ProjectView
+	ProjectView *projectview.ProjectView
 	MediaChart  helper.Chart
 	StatusChart helper.Chart
 	IssueCount  *issue.IssueCount
 }
 
 type IssuesView struct {
-	ProjectView   *project.ProjectView
+	ProjectView   *projectview.ProjectView
 	Eid           string
 	PaginatorView issue.PaginatorView
 }
@@ -40,7 +40,7 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pv, err := app.projectService.GetProjectView(pid, user.Id)
+	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Printf("serveIssues GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -93,7 +93,7 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	pv, err := app.projectService.GetProjectView(pid, user.Id)
+	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Printf("serveIssuesView GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)

@@ -39,10 +39,6 @@ func NewService(store ProjectStore) *ProjectService {
 	}
 }
 
-func (s *ProjectService) GetProjects(userId int) []Project {
-	return s.store.FindProjectsByUser(userId)
-}
-
 func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow bool, userId int) error {
 	u = strings.TrimSpace(u)
 	p, err := url.ParseRequestURI(u)
@@ -92,7 +88,7 @@ func (s *ProjectService) GetProjectView(id, uid int) (*ProjectView, error) {
 }
 
 func (s *ProjectService) GetProjectViews(uid int) []ProjectView {
-	projects := s.GetProjects(uid)
+	projects := s.store.FindProjectsByUser(uid)
 
 	var views []ProjectView
 	for _, p := range projects {

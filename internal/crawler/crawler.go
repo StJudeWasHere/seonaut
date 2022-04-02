@@ -47,13 +47,27 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	)
 
 	var responseCounter int
-	cor := colly.NewCollector(
-		colly.UserAgent(c.UserAgent),
-		func(co *colly.Collector) {
-			co.IgnoreRobotsTxt = c.IgnoreRobotsTxt
-		},
-	)
 
+	// Crawl the www and non-www domain
+	allowedDomains := []string{c.URL.Host}
+	if strings.HasPrefix(c.URL.Host, "www.") {
+		allowedDomains = append(allowedDomains, c.URL.Host[4:])
+	} else {
+		allowedDomains = append(allowedDomains, "www."+c.URL.Host)
+	}
+
+	// Links collector
+	co := colly.NewCollector()
+	co.UserAgent = c.UserAgent
+	co.AllowedDomains = allowedDomains
+	co.IgnoreRobotsTxt = c.IgnoreRobotsTxt
+
+	// Resources collector allows any domain
+	cor := colly.NewCollector()
+	cor.UserAgent = c.UserAgent
+	cor.IgnoreRobotsTxt = c.IgnoreRobotsTxt
+
+	// Resources response hlandler
 	handleResourceResponse := func(r *colly.Response) {
 		if responseCounter >= c.MaxPageReports {
 			return
@@ -64,6 +78,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		responseCounter++
 	}
 
+	// Links response handler
 	handleResponse := func(r *colly.Response) {
 		if responseCounter >= c.MaxPageReports {
 			return
@@ -131,58 +146,31 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		}
 	}
 
-	var nonWWWHost string
-	var WWWHost string
-	if strings.HasPrefix(c.URL.Host, "www.") {
-		WWWHost = c.URL.Host
-		nonWWWHost = c.URL.Host[4:]
-	} else {
-		WWWHost = "www." + c.URL.Host
-		nonWWWHost = c.URL.Host
+	// Redirect handler
+	handleRedirect := func(r *http.Request, via []*http.Request) error {
+		for _, v := range via {
+			if v.URL.Path == "/robots.txt" {
+				return nil
+			}
+		}
+
+		return http.ErrUseLastResponse
 	}
 
-	co := colly.NewCollector(
-		colly.AllowedDomains(WWWHost, nonWWWHost),
-		colly.UserAgent(c.UserAgent),
-		func(co *colly.Collector) {
-			co.IgnoreRobotsTxt = c.IgnoreRobotsTxt
-		},
-	)
-
 	co.OnResponse(handleResponse)
-
+	co.SetRedirectHandler(handleRedirect)
 	co.OnError(func(r *colly.Response, err error) {
 		if r.StatusCode > 0 && r.Headers != nil {
 			handleResponse(r)
 		}
 	})
 
-	co.SetRedirectHandler(func(r *http.Request, via []*http.Request) error {
-		for _, v := range via {
-			if v.URL.Path == "/robots.txt" {
-				return nil
-			}
-		}
-
-		return http.ErrUseLastResponse
-	})
-
 	cor.OnResponse(handleResourceResponse)
-
+	cor.SetRedirectHandler(handleRedirect)
 	cor.OnError(func(r *colly.Response, err error) {
 		if r.StatusCode > 0 && r.Headers != nil {
 			handleResourceResponse(r)
 		}
-	})
-
-	cor.SetRedirectHandler(func(r *http.Request, via []*http.Request) error {
-		for _, v := range via {
-			if v.URL.Path == "/robots.txt" {
-				return nil
-			}
-		}
-
-		return http.ErrUseLastResponse
 	})
 
 	if c.URL.Path == "" {

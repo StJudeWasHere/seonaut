@@ -17,7 +17,7 @@
 				{{ if .Crawl.IssuesEnd.Valid }}
 					<div>
 						Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. <br>
-						Crawl duration was {{ .Crawl.TotalTime }}.<br>
+						Crawl duration was {{ total_time .Crawl.Start .Crawl.End.Time }}.<br>
 						{{ .Crawl.TotalURLs }} {{ if eq .Crawl.TotalURLs 1 }}URL{{ else }}URLs{{end }}
 						crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}.
 						<a href="/crawl?pid={{ .Project.Id }}">Crawl now</a>.

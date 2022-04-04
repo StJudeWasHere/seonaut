@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"database/sql"
 	"log"
 	"net/url"
 	"time"
@@ -24,6 +25,17 @@ type Storage interface {
 	SavePageReport(*PageReport, int64)
 	SaveEndCrawl(*Crawl)
 	DeletePreviousCrawl(int)
+}
+
+type Crawl struct {
+	Id          int64
+	ProjectId   int
+	URL         string
+	Start       time.Time
+	End         sql.NullTime
+	TotalIssues int
+	TotalURLs   int
+	IssuesEnd   sql.NullTime
 }
 
 type Service struct {

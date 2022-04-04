@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/stjudewashere/seonaut/internal/user"
 
@@ -47,7 +48,8 @@ func NewRenderer() (*Renderer, error) {
 func (r *Renderer) RenderTemplate(w http.ResponseWriter, t string, v *PageView) {
 	var templates = template.Must(
 		template.New("").Funcs(template.FuncMap{
-			"trans": r.trans,
+			"trans":      r.trans,
+			"total_time": r.totalTime,
 		}).ParseGlob("web/templates/*.html"))
 
 	err := templates.ExecuteTemplate(w, t+".html", v)
@@ -66,4 +68,9 @@ func (r *Renderer) trans(s string) string {
 	}
 
 	return fmt.Sprintf("%v", t)
+}
+
+// Returns the difference between the start time and the end time
+func (r *Renderer) totalTime(start, end time.Time) time.Duration {
+	return end.Sub(start)
 }

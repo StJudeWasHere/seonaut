@@ -26,18 +26,18 @@ type ProjectViewService interface {
 }
 
 type CrawlerService interface {
-	StartCrawler(project.Project) (int64, error)
+	StartCrawler(project.Project) (*crawler.Crawl, error)
 }
 
 type IssueService interface {
-	GetIssuesCount(int) *issue.IssueCount
-	GetPaginatedReportsByIssue(int, int, string) (issue.PaginatorView, error)
+	GetIssuesCount(int64) *issue.IssueCount
+	GetPaginatedReportsByIssue(int64, int, string) (issue.PaginatorView, error)
 }
 
 type ReportService interface {
-	GetPageReport(int, int, string) *report.PageReportView
-	GetPageReporsByIssueType(int, string) []crawler.PageReport
-	GetSitemapPageReports(int) []crawler.PageReport
+	GetPageReport(int, int64, string) *report.PageReportView
+	GetPageReporsByIssueType(int64, string) []crawler.PageReport
+	GetSitemapPageReports(int64) []crawler.PageReport
 }
 
 type ReportManager interface {

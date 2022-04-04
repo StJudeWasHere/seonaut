@@ -68,29 +68,32 @@ func (ds *Datastore) FindProjectById(id int, uid int) (project.Project, error) {
 	return p, nil
 }
 
-func (ds *Datastore) SaveCrawl(p project.Project) int64 {
+func (ds *Datastore) SaveCrawl(p project.Project) (*crawler.Crawl, error) {
 	stmt, _ := ds.db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
 	defer stmt.Close()
 	res, err := stmt.Exec(p.Id)
 
 	if err != nil {
-		log.Printf("saveCrawl\nProject: %+v\nError: %+v\n", p, err)
-		return 0
+		return nil, err
 	}
 
 	cid, err := res.LastInsertId()
 	if err != nil {
-		log.Println(err)
-		return 0
+		return nil, err
 	}
 
-	return cid
+	return &crawler.Crawl{
+		Id:        cid,
+		ProjectId: p.Id,
+		URL:       p.URL,
+		Start:     time.Now(),
+	}, nil
 }
 
-func (ds *Datastore) SaveEndCrawl(cid int64, t time.Time, totalURLs int) {
+func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) {
 	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ?, total_urls= ? WHERE id = ?")
 	defer stmt.Close()
-	_, err := stmt.Exec(t, totalURLs, cid)
+	_, err := stmt.Exec(time.Now(), c.TotalURLs, c.Id)
 	if err != nil {
 		log.Printf("saveEndCrawl: %v\n", err)
 	}

@@ -6,7 +6,7 @@ import (
 )
 
 type Crawl struct {
-	Id          int
+	Id          int64
 	ProjectId   int
 	URL         string
 	Start       time.Time

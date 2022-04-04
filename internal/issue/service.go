@@ -13,11 +13,11 @@ const (
 )
 
 type IssueStore interface {
-	FindIssues(int) map[string]IssueGroup
-	CountByMediaType(int) CountList
-	CountByStatusCode(int) CountList
-	GetNumberOfPagesForIssues(int, string) int
-	FindPageReportIssues(int, int, string) []crawler.PageReport
+	FindIssues(int64) map[string]IssueGroup
+	CountByMediaType(int64) CountList
+	CountByStatusCode(int64) CountList
+	GetNumberOfPagesForIssues(int64, string) int
+	FindPageReportIssues(int64, int, string) []crawler.PageReport
 }
 
 type Issue struct {
@@ -62,7 +62,7 @@ func NewService(s IssueStore) *IssueService {
 	}
 }
 
-func (s *IssueService) GetIssuesCount(crawlID int) *IssueCount {
+func (s *IssueService) GetIssuesCount(crawlID int64) *IssueCount {
 	c := &IssueCount{
 		Groups:      s.store.FindIssues(crawlID),
 		MediaCount:  s.store.CountByMediaType(crawlID),
@@ -83,7 +83,7 @@ func (s *IssueService) GetIssuesCount(crawlID int) *IssueCount {
 	return c
 }
 
-func (s *IssueService) GetPaginatedReportsByIssue(crawlId, currentPage int, issueId string) (PaginatorView, error) {
+func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (PaginatorView, error) {
 	paginator := Paginator{
 		TotalPages: s.store.GetNumberOfPagesForIssues(crawlId, issueId),
 	}

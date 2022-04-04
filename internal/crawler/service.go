@@ -20,9 +20,9 @@ type Config struct {
 }
 
 type Storage interface {
-	SaveCrawl(project.Project) int64
+	SaveCrawl(project.Project) (*Crawl, error)
 	SavePageReport(*PageReport, int64)
-	SaveEndCrawl(int64, time.Time, int)
+	SaveEndCrawl(*Crawl)
 	DeletePreviousCrawl(int)
 }
 
@@ -38,10 +38,11 @@ func NewService(s Storage, c *Config) *Service {
 	}
 }
 
-func (s *Service) StartCrawler(p project.Project) (int64, error) {
+// StartCrawler creates a new crawler and crawls the project's URL
+func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	u, err := url.Parse(p.URL)
 	if err != nil {
-		return 0, err
+		return nil, err
 	}
 
 	c := NewCrawler(
@@ -52,26 +53,25 @@ func (s *Service) StartCrawler(p project.Project) (int64, error) {
 		p.FollowNofollow,
 	)
 
-	cid := s.store.SaveCrawl(p)
+	crawl, err := s.store.SaveCrawl(p)
+	if err != nil {
+		return nil, err
+	}
 
-	start := time.Now()
 	pageReport := make(chan PageReport)
 	go c.Crawl(pageReport)
 
-	var totalURLs int
 	for r := range pageReport {
-		totalURLs++
-		s.store.SavePageReport(&r, cid)
+		crawl.TotalURLs++
+		s.store.SavePageReport(&r, crawl.Id)
 	}
 
-	s.store.SaveEndCrawl(cid, time.Now(), totalURLs)
-	log.Printf("Crawled %d pages at %s in %s\n", totalURLs, p.URL, time.Since(start))
+	s.store.SaveEndCrawl(crawl)
+	log.Printf("Crawled %d pages at %s in %s\n", crawl.TotalURLs, p.URL, time.Since(crawl.Start))
 
 	go func() {
-		log.Printf("Deleting previous crawl data for %s\n", p.URL)
 		s.store.DeletePreviousCrawl(p.Id)
-		log.Printf("Deleted previous crawl done for %s\n", p.URL)
 	}()
 
-	return cid, nil
+	return crawl, nil
 }

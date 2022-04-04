@@ -6,12 +6,12 @@ import (
 
 type ReportStore interface {
 	FindPageReportById(int) crawler.PageReport
-	FindErrorTypesByPage(int, int) []string
-	FindInLinks(string, int) []crawler.PageReport
-	FindPageReportsRedirectingToURL(string, int) []crawler.PageReport
-	FindAllPageReportsByCrawlIdAndErrorType(int, string) []crawler.PageReport
-	FindAllPageReportsByCrawlId(int) []crawler.PageReport
-	FindSitemapPageReports(int) []crawler.PageReport
+	FindErrorTypesByPage(int, int64) []string
+	FindInLinks(string, int64) []crawler.PageReport
+	FindPageReportsRedirectingToURL(string, int64) []crawler.PageReport
+	FindAllPageReportsByCrawlIdAndErrorType(int64, string) []crawler.PageReport
+	FindAllPageReportsByCrawlId(int64) []crawler.PageReport
+	FindSitemapPageReports(int64) []crawler.PageReport
 }
 
 type ReportService struct {
@@ -31,7 +31,7 @@ func NewService(store ReportStore) *ReportService {
 	}
 }
 
-func (s *ReportService) GetPageReport(rid, crawlId int, tab string) *PageReportView {
+func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string) *PageReportView {
 	v := &PageReportView{
 		PageReport: s.store.FindPageReportById(rid),
 		ErrorTypes: s.store.FindErrorTypesByPage(rid, crawlId),
@@ -47,7 +47,7 @@ func (s *ReportService) GetPageReport(rid, crawlId int, tab string) *PageReportV
 	return v
 }
 
-func (s *ReportService) GetPageReporsByIssueType(crawlId int, eid string) []crawler.PageReport {
+func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) []crawler.PageReport {
 	if eid != "" {
 		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
 	}
@@ -55,6 +55,6 @@ func (s *ReportService) GetPageReporsByIssueType(crawlId int, eid string) []craw
 	return s.store.FindAllPageReportsByCrawlId(crawlId)
 }
 
-func (s *ReportService) GetSitemapPageReports(crawlId int) []crawler.PageReport {
+func (s *ReportService) GetSitemapPageReports(crawlId int64) []crawler.PageReport {
 	return s.store.FindSitemapPageReports(crawlId)
 }

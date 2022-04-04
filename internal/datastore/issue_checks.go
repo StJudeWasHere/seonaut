@@ -7,7 +7,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/helper"
 )
 
-func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int) []crawler.PageReport {
+func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64) []crawler.PageReport {
 	uh := helper.Hash(u)
 	query := `
 		SELECT
@@ -264,7 +264,7 @@ func (ds *Datastore) FindMissingHrelangReturnLinks(cid int64) []crawler.PageRepo
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindInLinks(s string, cid int) []crawler.PageReport {
+func (ds *Datastore) FindInLinks(s string, cid int64) []crawler.PageReport {
 	hash := helper.Hash(s)
 	query := `
 		SELECT 
@@ -280,7 +280,7 @@ func (ds *Datastore) FindInLinks(s string, cid int) []crawler.PageReport {
 	return ds.pageReportsQuery(query, hash, cid)
 }
 
-func (ds *Datastore) FindPageReportIssues(cid, p int, errorType string) []crawler.PageReport {
+func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []crawler.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 
@@ -347,7 +347,7 @@ func (ds *Datastore) InternalNoFollowLinks(cid int64) []crawler.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindSitemapPageReports(cid int) []crawler.PageReport {
+func (ds *Datastore) FindSitemapPageReports(cid int64) []crawler.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports

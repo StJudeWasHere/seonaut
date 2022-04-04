@@ -194,7 +194,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 	}
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlId(cid int) []crawler.PageReport {
+func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport {
 	var pageReports []crawler.PageReport
 	query := `
 		SELECT
@@ -254,7 +254,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int) []crawler.PageReport {
 	return pageReports
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int, et string) []crawler.PageReport {
+func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) []crawler.PageReport {
 	var pageReports []crawler.PageReport
 	query := `
 		SELECT

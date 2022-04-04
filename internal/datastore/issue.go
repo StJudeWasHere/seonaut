@@ -9,7 +9,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/issue"
 )
 
-func (ds *Datastore) CountByMediaType(cid int) issue.CountList {
+func (ds *Datastore) CountByMediaType(cid int64) issue.CountList {
 	query := `
 		SELECT media_type, count(*)
 		FROM pagereports
@@ -19,7 +19,7 @@ func (ds *Datastore) CountByMediaType(cid int) issue.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *Datastore) CountByStatusCode(cid int) issue.CountList {
+func (ds *Datastore) CountByStatusCode(cid int64) issue.CountList {
 	query := `
 		SELECT
 			status_code,
@@ -31,7 +31,7 @@ func (ds *Datastore) CountByStatusCode(cid int) issue.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *Datastore) countListQuery(query string, cid int) issue.CountList {
+func (ds *Datastore) countListQuery(query string, cid int64) issue.CountList {
 	m := issue.CountList{}
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -80,7 +80,7 @@ func (ds *Datastore) SaveIssues(issues []issue.Issue, cid int64) {
 	}
 }
 
-func (ds *Datastore) FindIssues(cid int) map[string]issue.IssueGroup {
+func (ds *Datastore) FindIssues(cid int64) map[string]issue.IssueGroup {
 	issues := map[string]issue.IssueGroup{}
 	query := `
 		SELECT
@@ -111,7 +111,7 @@ func (ds *Datastore) FindIssues(cid int) map[string]issue.IssueGroup {
 	return issues
 }
 
-func (ds *Datastore) FindErrorTypesByPage(pid, cid int) []string {
+func (ds *Datastore) FindErrorTypesByPage(pid int, cid int64) []string {
 	var et []string
 	query := `
 		SELECT 
@@ -140,7 +140,7 @@ func (ds *Datastore) FindErrorTypesByPage(pid, cid int) []string {
 	return et
 }
 
-func (ds *Datastore) GetNumberOfPagesForIssues(cid int, errorType string) int {
+func (ds *Datastore) GetNumberOfPagesForIssues(cid int64, errorType string) int {
 	query := `
 		SELECT count(DISTINCT pagereport_id)
 		FROM issues

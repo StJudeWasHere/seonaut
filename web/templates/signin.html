@@ -1,7 +1,12 @@
-{{ template "head" . }}
+{{ template "head_credentials" . }}
 
-<div class="content">
-	<h1 class="title">Sign In</h1>
+
+<div class="content credentials">
+	
+	<div id="header">
+		<span class="logo"><a href="/">SEOnaut</a></span>
+	</div>
+	
 	<form method="POST">
 		<label for="email">Email:</label>
 		<input type="email" name="email" value="{{ .Data.Email }}" autofocus>
@@ -15,7 +20,7 @@
 	{{ end }}
 
 	<p>
-		<a href="/signup">Sign up</a> if you don't have an account yet.
+		New to SEOnaut? <a href="/signup">Sign up</a>
 	</p>
 </div>
 

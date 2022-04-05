@@ -65,24 +65,34 @@ a {
 
 input {
 	font-size: inherit;
-	border: 1px solid var(--primary-color);
+	border: 1px solid #ddd;
 	padding: .5rem;
 	display: block;
 	margin-bottom: 1rem;
-	width: 20rem;
+	width: 25rem;
 	background-color: var(--light-bg-color);
+	border-radius: 5px;
+	line-height: 1.5rem;
 }
+
 input[type="submit"] {
 	background-color: var(--light-bg-color);
 	cursor: pointer;
-	width: auto;
 	margin-left: 0;
+	background-color: #D983AD;
+	color: white;
+	border: none;
+	margin-top: 1.5rem;
+}
+
+input[type="submit"]:hover {
+	background-color: #df97ba;
 }
 
 input[type="checkbox"] {
 	-webkit-appearance: none;
 	background-color: var(--light-bg-color);
-	border: 1px solid var(--primary-color);
+	border: 1px solid #ddd;
 	padding: .5rem;
 	width: 1rem;
 	height: 1rem;
@@ -170,6 +180,11 @@ button {
 }
 
 .content { padding: 0 3rem; }
+
+.credentials {
+	width: 25rem;
+	margin: 0 auto;
+}
 
 .logo {
 	background-color: var(--primary-color);

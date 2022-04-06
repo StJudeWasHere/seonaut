@@ -2,7 +2,6 @@ package crawler
 
 import (
 	"database/sql"
-	"log"
 	"net/url"
 	"time"
 
@@ -23,7 +22,7 @@ type Config struct {
 type Storage interface {
 	SaveCrawl(project.Project) (*Crawl, error)
 	SavePageReport(*PageReport, int64)
-	SaveEndCrawl(*Crawl)
+	SaveEndCrawl(*Crawl) (*Crawl, error)
 	DeletePreviousCrawl(int)
 }
 
@@ -78,8 +77,10 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		s.store.SavePageReport(&r, crawl.Id)
 	}
 
-	s.store.SaveEndCrawl(crawl)
-	log.Printf("Crawled %d pages at %s in %s\n", crawl.TotalURLs, p.URL, time.Since(crawl.Start))
+	crawl, err = s.store.SaveEndCrawl(crawl)
+	if err != nil {
+		return nil, err
+	}
 
 	go func() {
 		s.store.DeletePreviousCrawl(p.Id)

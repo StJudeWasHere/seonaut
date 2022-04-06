@@ -1,6 +1,7 @@
 package datastore
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"time"
@@ -90,13 +91,22 @@ func (ds *Datastore) SaveCrawl(p project.Project) (*crawler.Crawl, error) {
 	}, nil
 }
 
-func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) {
+func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) (*crawler.Crawl, error) {
 	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ?, total_urls= ? WHERE id = ?")
 	defer stmt.Close()
-	_, err := stmt.Exec(time.Now(), c.TotalURLs, c.Id)
+
+	c.End = sql.NullTime{
+		Time:  time.Now(),
+		Valid: true,
+	}
+
+	_, err := stmt.Exec(c.End, c.TotalURLs, c.Id)
 	if err != nil {
 		log.Printf("saveEndCrawl: %v\n", err)
+		return c, err
 	}
+
+	return c, nil
 }
 
 func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {

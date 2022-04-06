@@ -39,6 +39,8 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
+
 		app.reportManager.CreateIssues(crawl.Id)
 	}()
 

@@ -87,12 +87,10 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		url := r.Request.URL
 		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 
-		if strings.Contains(pageReport.Robots, "noindex") {
-			return
+		if !strings.Contains(pageReport.Robots, "noindex") {
+			pr <- *pageReport
+			responseCounter++
 		}
-
-		pr <- *pageReport
-		responseCounter++
 
 		if strings.Contains(pageReport.Robots, "nofollow") && c.FollowNofollow == false {
 			return

@@ -79,14 +79,14 @@ input[type="submit"] {
 	background-color: var(--light-bg-color);
 	cursor: pointer;
 	margin-left: 0;
-	background-color: #D983AD;
+	background-color: #79C691;
 	color: white;
 	border: none;
 	margin-top: 1.5rem;
 }
 
 input[type="submit"]:hover {
-	background-color: #df97ba;
+	background-color: #86cb9c;
 }
 
 input[type="checkbox"] {
@@ -202,7 +202,7 @@ button {
 	text-decoration: none;
 	font-size: 1rem;
 	font-weight: 600;
-	background-color: var(--primary-color);
+	border: none;
 }
 .logo a:hover {
 	text-decoration: none;
@@ -300,10 +300,10 @@ button {
 	border: 1px dotted #222;
 }
 .issues-buttons .button:hover, .project-buttons .button:hover, .button:hover {
-	background-color: #79C691;
+	background-color: #86cb9c;
 	color: white;
 	border: 0;
-		box-shadow: 5px 5px #f0f0f0;
+	box-shadow: 5px 5px #f0f0f0;
 }
 
 .issues-buttons .button:hover, .button:hover {

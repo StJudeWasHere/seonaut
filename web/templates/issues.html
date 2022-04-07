@@ -366,6 +366,23 @@
 		{{ end }}
 	{{ end}}
 
+	{{ with (index .IssueCount.Groups "ERROR_HREFLANG_TO_NON_CANONICAL") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with hreflang tags linking to non canonical pages</h2>
+			<div class="issue-description">
+			<p>
+				Hreflang tags tell searchengines where to find content in specific languages, linking hreflang tags to non canonical pages confuses search engines.
+			</p>
+			<p class="issues-buttons">
+				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HREFLANG_TO_NON_CANONICAL">Download URLs ↓</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HREFLANG_TO_NON_CANONICAL">View URLs →</a>
+			</p>
+		</div>
+		</div>
+		{{ end }}
+	{{ end}}
+
 	{{ with (index .IssueCount.Groups "ERROR_IMAGES_NO_ALT") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
@@ -383,7 +400,6 @@
 		</div>
 		{{ end }}
 	{{ end}}
-
 
 	{{ with (index .IssueCount.Groups "ERROR_NO_LANG" )}}
 		{{ if ne .Count 0 }}

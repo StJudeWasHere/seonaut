@@ -30,3 +30,4 @@ ERROR_EXTERNAL_WITHOUT_NOFOLLOW: External follow links
 ERROR_CANONICALIZED_NON_CANONICAL: Canonicalized to non canonical
 ERROR_REDIRECT_LOOP: Redirect loop
 ERROR_NOT_VALID_HEADINGS: Not valid headings order
+ERROR_HREFLANG_TO_NON_CANONICAL: Hreflang to non canonical page

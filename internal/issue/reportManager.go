@@ -31,6 +31,7 @@ const (
 	ErrorCanonicalizedToNonCanonical            // Page canonicalized to a non canonical page
 	ErrorRedirectLoop                           // Redirect loop
 	ErrorNotValidHeadings                       // H1-H6 tags have wrong order
+	HreflangToNonCanonical                      // Hreflang to non canonical page
 )
 
 type Reporter func(int64) []crawler.PageReport

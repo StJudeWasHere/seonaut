@@ -84,6 +84,7 @@ func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, issue.ErrorCanonicalizedToNonCanonical)
 	rm.AddReporter(ds.FindRedirectLoops, issue.ErrorRedirectLoop)
 	rm.AddReporter(ds.FindNotValidHeadingsOrder, issue.ErrorNotValidHeadings)
+	rm.AddReporter(ds.FindHreflangsToNonCanonical, issue.HreflangToNonCanonical)
 
 	return rm
 }

@@ -409,6 +409,21 @@ func (ds *Datastore) FindNotValidHeadingsOrder(cid int64) []crawler.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
+func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) []crawler.PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		LEFT JOIN hreflangs ON hreflangs.to_hash = pagereports.url_hash AND hreflangs.crawl_id = ?
+		WHERE media_type = "text/html" AND status_code >= 200 AND status_code < 300
+		AND (canonical IS NOT NULL AND canonical != "" AND canonical != url) AND pagereports.crawl_id = ?
+		AND hreflangs.id IS NOT NULL`
+
+	return ds.pageReportsQuery(query, cid, cid)
+}
+
 func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) []crawler.PageReport {
 	var pageReports []crawler.PageReport
 	rows, err := ds.db.Query(query, args...)

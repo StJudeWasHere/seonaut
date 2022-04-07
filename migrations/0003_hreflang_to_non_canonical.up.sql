@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(25, "ERROR_HREFLANG_TO_NON_CANONICAL", 2)

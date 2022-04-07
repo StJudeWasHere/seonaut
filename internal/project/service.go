@@ -8,7 +8,7 @@ import (
 )
 
 type Storage interface {
-	SaveProject(string, bool, bool, int)
+	SaveProject(string, bool, bool, bool, int)
 	FindProjectById(id int, uid int) (Project, error)
 }
 
@@ -18,6 +18,7 @@ type Project struct {
 	Host            string
 	IgnoreRobotsTxt bool
 	FollowNofollow  bool
+	IncludeNoindex  bool
 	Created         time.Time
 }
 
@@ -32,7 +33,7 @@ func NewService(s Storage) *ProjectService {
 }
 
 // SaveProject stores a new project for a specific user with all the specified options.
-func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow bool, userId int) error {
+func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow, includeNoindex bool, userId int) error {
 	p, err := url.ParseRequestURI(strings.TrimSpace(u))
 	if err != nil {
 		return err
@@ -42,7 +43,7 @@ func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow b
 		return errors.New("Protocol not supported")
 	}
 
-	s.storage.SaveProject(p.String(), ignoreRobotsTxt, followNofollow, userId)
+	s.storage.SaveProject(p.String(), ignoreRobotsTxt, followNofollow, includeNoindex, userId)
 
 	return nil
 }

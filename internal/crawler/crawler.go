@@ -22,15 +22,17 @@ type Crawler struct {
 	MaxPageReports  int
 	IgnoreRobotsTxt bool
 	FollowNofollow  bool
+	IncludeNoindex  bool
 	UserAgent       string
 }
 
-func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow bool) *Crawler {
+func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex bool) *Crawler {
 	return &Crawler{
 		URL:             url,
 		MaxPageReports:  max,
 		IgnoreRobotsTxt: irobots,
 		FollowNofollow:  fnofollow,
+		IncludeNoindex:  inoindex,
 		UserAgent:       agent,
 	}
 }
@@ -87,7 +89,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		url := r.Request.URL
 		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 
-		if !strings.Contains(pageReport.Robots, "noindex") {
+		if !strings.Contains(pageReport.Robots, "noindex") || c.IncludeNoindex == true {
 			pr <- *pageReport
 			responseCounter++
 		}

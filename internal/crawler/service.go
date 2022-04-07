@@ -62,6 +62,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		MaxPageReports,
 		p.IgnoreRobotsTxt,
 		p.FollowNofollow,
+		p.IncludeNoindex,
 	)
 
 	crawl, err := s.store.SaveCrawl(p)

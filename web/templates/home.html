@@ -19,8 +19,11 @@
 						Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. <br>
 						Crawl duration was {{ total_time .Crawl.Start .Crawl.End.Time }}.<br>
 						{{ .Crawl.TotalURLs }} {{ if eq .Crawl.TotalURLs 1 }}URL{{ else }}URLs{{end }}
-						crawled{{ if .Project.IgnoreRobotsTxt }} ignoring the robots.txt file{{ end }}.
-						<a href="/crawl?pid={{ .Project.Id }}">Crawl now</a>.
+						crawled. <br>
+						{{ if .Project.IgnoreRobotsTxt }}Ignoring the robots.txt file.<br>{{ end }}
+						{{ if .Project.FollowNofollow }}Following internal nofollow links.<br>{{ end }}
+						{{ if .Project.IncludeNoindex }}Including noindex pages.<br>{{ end }}
+						<a href="/crawl?pid={{ .Project.Id }}">Crawl now</a>
 					</div>
 					<p class="project-buttons">
 						<a class="button" href="/issues?pid={{ .Project.Id }}">View Report →</a>

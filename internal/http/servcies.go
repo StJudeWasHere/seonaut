@@ -16,7 +16,7 @@ type UserService interface {
 }
 
 type ProjectService interface {
-	SaveProject(string, bool, bool, int) error
+	SaveProject(string, bool, bool, bool, int) error
 	FindProject(id, uid int) (project.Project, error)
 }
 

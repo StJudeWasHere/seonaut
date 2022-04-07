@@ -1,4 +1,4 @@
-package test
+package config
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	config, err := config.NewConfig("data", "config")
+	config, err := config.NewConfig("../data", "config")
 	if err != nil {
 		t.Errorf("Error loading config file: %v\n", err)
 	}

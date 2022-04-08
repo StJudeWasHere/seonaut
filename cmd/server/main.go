@@ -85,6 +85,8 @@ func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm.AddReporter(ds.FindRedirectLoops, issue.ErrorRedirectLoop)
 	rm.AddReporter(ds.FindNotValidHeadingsOrder, issue.ErrorNotValidHeadings)
 	rm.AddReporter(ds.FindHreflangsToNonCanonical, issue.HreflangToNonCanonical)
+	rm.AddReporter(ds.InternalNoFollowIndexableLinks, issue.ErrorInternalNoFollowIndexable)
+	rm.AddReporter(ds.NoIndexable, issue.ErrorNoIndexable)
 
 	return rm
 }

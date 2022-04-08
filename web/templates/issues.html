@@ -401,6 +401,24 @@
 		{{ end }}
 	{{ end}}
 
+	{{ with (index .IssueCount.Groups "ERROR_NOFOLLOW_INDEXABLE") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="alert">
+				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal nofollow links to indexable pages
+			</h2>
+			<div class="issue-description">
+			<p>
+				Internal links using the <i>nofollow</i> attribute tell search engines to not crawl that link. For it to work properly the destination URL should use the <i>noindex</i> tag, otherwise search engines still can index the linked URL.</p>
+			<p class="issues-buttons">
+				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NOFOLLOW_INDEXABLE">Download URLs ↓</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NOFOLLOW_INDEXABLE">View URLs →</a>
+			</p>
+		</div>
+		</div>
+		{{ end }}
+	{{ end}}
+
 	{{ with (index .IssueCount.Groups "ERROR_NO_LANG" )}}
 		{{ if ne .Count 0 }}
 		<div class="issues">
@@ -468,8 +486,7 @@
 			<div class="issue-description">
 			<p>
 				Internal links in general should not use the nofollow attribute unless they link to pages you don't want
-				indexed by search engines. Review the internal links and make sure important pages are linked without the
-				nofollow attribute.
+				indexed by search engines. Review the internal links and make sure important pages are linked without the nofollow attribute.
 			</p>
 			<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_INTERNAL_NOFOLLOW">Download URLs ↓</a>
@@ -479,7 +496,7 @@
 		</div>
 		{{ end }}
 	{{ end}}
-	
+
 	{{ with (index .IssueCount.Groups "ERROR_EXTERNAL_WITHOUT_NOFOLLOW") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
@@ -492,6 +509,23 @@
 				<p class="issues-buttons">
 				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">Download URLs ↓</a>
 				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">View URLs →</a>
+				</p>
+			</div>
+		</div>
+		{{ end }}
+	{{ end}}
+
+	{{ with (index .IssueCount.Groups "ERROR_NO_INDEXABLE") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} are non indexable</h2>
+			<div class="issue-description">
+				<p>
+				Pages using the <i>noindex</i> attribute won't be indexed by search engines, this is usually added to non important pages that we don't wan't to appear in search results. It may be worth reviewing them to make sure important pages are not using this attribute.
+				</p>
+				<p class="issues-buttons">
+				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NO_INDEXABLE">Download URLs ↓</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NO_INDEXABLE">View URLs →</a>
 				</p>
 			</div>
 		</div>

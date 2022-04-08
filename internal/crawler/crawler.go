@@ -89,7 +89,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		url := r.Request.URL
 		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 
-		if !strings.Contains(pageReport.Robots, "noindex") || c.IncludeNoindex == true {
+		if pageReport.Noindex == false || c.IncludeNoindex == true {
 			pr <- *pageReport
 			responseCounter++
 		}

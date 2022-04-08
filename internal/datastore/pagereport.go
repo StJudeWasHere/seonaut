@@ -30,6 +30,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 			title,
 			description,
 			robots,
+			noindex,
 			canonical,
 			h1,
 			h2,
@@ -37,7 +38,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 			size,
 			valid_headings
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -61,6 +62,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		r.Title,
 		r.Description,
 		r.Robots,
+		r.Noindex,
 		r.Canonical,
 		r.H1,
 		r.H2,
@@ -209,6 +211,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport
 			title,
 			description,
 			robots,
+			noindex,
 			canonical,
 			h1,
 			h2,
@@ -236,6 +239,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport
 			&p.Title,
 			&p.Description,
 			&p.Robots,
+			&p.Noindex,
 			&p.Canonical,
 			&p.H1,
 			&p.H2,
@@ -269,6 +273,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 			title,
 			description,
 			robots,
+			noindex,
 			canonical,
 			h1,
 			h2,
@@ -303,6 +308,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 			&p.Title,
 			&p.Description,
 			&p.Robots,
+			&p.Noindex,
 			&p.Canonical,
 			&p.H1,
 			&p.H2,
@@ -335,6 +341,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 			title,
 			description,
 			robots,
+			noindex,
 			canonical,
 			h1,
 			h2,
@@ -358,6 +365,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		&p.Title,
 		&p.Description,
 		&p.Robots,
+		&p.Noindex,
 		&p.Canonical,
 		&p.H1,
 		&p.H2,

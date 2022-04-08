@@ -32,6 +32,8 @@ const (
 	ErrorRedirectLoop                           // Redirect loop
 	ErrorNotValidHeadings                       // H1-H6 tags have wrong order
 	HreflangToNonCanonical                      // Hreflang to non canonical page
+	ErrorInternalNoFollowIndexable              // Nofollow links to indexable pages
+	ErrorNoIndexable                            // Page using the noindex attribute
 )
 
 type Reporter func(int64) []crawler.PageReport

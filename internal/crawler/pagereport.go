@@ -29,6 +29,7 @@ type PageReport struct {
 	Title         string
 	Description   string
 	Robots        string
+	Noindex       bool
 	Canonical     string
 	H1            string
 	H2            string
@@ -156,6 +157,7 @@ func (pageReport *PageReport) parse() {
 	robots := htmlquery.Find(doc, "//meta[@name=\"robots\"]/@content")
 	if len(robots) > 0 {
 		pageReport.Robots = htmlquery.SelectAttr(robots[0], "content")
+		pageReport.Noindex = strings.Contains(pageReport.Robots, "noindex")
 	}
 
 	// ---

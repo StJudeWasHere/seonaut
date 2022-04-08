@@ -339,12 +339,39 @@ func (ds *Datastore) InternalNoFollowLinks(cid int64) []crawler.PageReport {
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports 
 		INNER JOIN (
-			SELECT DISTINCT pagereport_id FROM links
-			WHERE nofollow = 1 AND crawl_id = ?
+			SELECT
+				DISTINCT links.pagereport_id
+			FROM links
+			WHERE links.nofollow = 1 AND links.crawl_id = ?
 		) AS b ON b.pagereport_id = pagereports.id
 		WHERE pagereports.crawl_id = ?`
 
 	return ds.pageReportsQuery(query, cid, cid)
+}
+
+func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) []crawler.PageReport {
+	query := `
+		SELECT pagereports.id, pagereports.url, pagereports.title
+		FROM pagereports 
+		INNER JOIN (
+			SELECT
+				DISTINCT links.pagereport_id
+			FROM links
+			INNER JOIN pagereports ON pagereports.url_hash = links.url_hash AND pagereports.crawl_id = links.crawl_id
+			WHERE links.nofollow = 1 AND pagereports.noindex = 0 AND links.crawl_id = ?
+		) AS b ON b.pagereport_id = pagereports.id
+		WHERE pagereports.crawl_id = ?`
+
+	return ds.pageReportsQuery(query, cid, cid)
+}
+
+func (ds *Datastore) NoIndexable(cid int64) []crawler.PageReport {
+	query := `
+		SELECT pagereports.id, pagereports.url, pagereports.title
+		FROM pagereports 
+		WHERE pagereports.noindex = 1 AND pagereports.crawl_id = ?`
+
+	return ds.pageReportsQuery(query, cid)
 }
 
 func (ds *Datastore) FindSitemapPageReports(cid int64) []crawler.PageReport {

@@ -214,4 +214,8 @@ func TestPageReportHTML(t *testing.T) {
 	if pageReport.ValidHeadings == true {
 		t.Error("pageReport.validHeadings == true")
 	}
+
+	if pageReport.Noindex == false {
+		t.Error("pageReport.Noindex == false")
+	}
 }

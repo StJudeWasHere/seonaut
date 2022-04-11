@@ -366,6 +366,23 @@
 		{{ end }}
 	{{ end}}
 
+	{{ with (index .IssueCount.Groups "ERROR_HREFLANG_NO_INDEXABLE") }}
+		{{ if ne .Count 0 }}
+		<div class="issues">
+			<h2 class="alert">
+			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with hreflangs linking to non indexable pages
+			</h2>
+			<div class="issue-description">
+			<p>Hreflangs should link to indexable pages, linking them to pages using the <i>noindex</i> attribute will confuse search engines.</p>
+				<p class="issues-buttons">
+				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HREFLANG_NO_INDEXABLE">Download URLs ↓</a>
+				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HREFLANG_NO_INDEXABLE">View URLs →</a>
+			</p>
+		</div>
+		</div>
+		{{ end }}
+	{{ end}}
+
 	{{ with (index .IssueCount.Groups "ERROR_HREFLANG_TO_NON_CANONICAL") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
@@ -518,7 +535,7 @@
 	{{ with (index .IssueCount.Groups "ERROR_NO_INDEXABLE") }}
 		{{ if ne .Count 0 }}
 		<div class="issues">
-			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} are non indexable</h2>
+			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{ end }} non indexable</h2>
 			<div class="issue-description">
 				<p>
 				Pages using the <i>noindex</i> attribute won't be indexed by search engines, this is usually added to non important pages that we don't wan't to appear in search results. It may be worth reviewing them to make sure important pages are not using this attribute.

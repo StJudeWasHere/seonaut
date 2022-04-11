@@ -34,6 +34,7 @@ const (
 	HreflangToNonCanonical                      // Hreflang to non canonical page
 	ErrorInternalNoFollowIndexable              // Nofollow links to indexable pages
 	ErrorNoIndexable                            // Page using the noindex attribute
+	HreflangNoindexable                         // Hreflang to a non indexable page
 )
 
 type Reporter func(int64) []crawler.PageReport

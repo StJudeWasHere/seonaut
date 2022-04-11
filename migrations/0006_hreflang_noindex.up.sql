@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(28, "ERROR_HREFLANG_NO_INDEXABLE", 3);

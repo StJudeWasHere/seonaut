@@ -374,6 +374,20 @@ func (ds *Datastore) NoIndexable(cid int64) []crawler.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
+func (ds *Datastore) HreflangNoindexable(cid int64) []crawler.PageReport {
+	query := `
+		SELECT pagereports.id, pagereports.url, pagereports.title
+		FROM pagereports
+		WHERE id IN (
+			SELECT DISTINCT hreflangs.pagereport_id
+			FROM hreflangs 
+			INNER JOIN pagereports ON hreflangs.pagereport_id = pagereports.id AND hreflangs.crawl_id = pagereports.crawl_id
+			WHERE hreflangs.crawl_id = ? and pagereports.noindex = 1
+		)`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
 func (ds *Datastore) FindSitemapPageReports(cid int64) []crawler.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title

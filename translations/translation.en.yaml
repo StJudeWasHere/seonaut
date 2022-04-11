@@ -33,3 +33,4 @@ ERROR_NOT_VALID_HEADINGS: Not valid headings order
 ERROR_HREFLANG_TO_NON_CANONICAL: Hreflang to non canonical page
 ERROR_NOFOLLOW_INDEXABLE: Internal nofollow links to indexable pages
 ERROR_NO_INDEXABLE: Non indexable pages
+ERROR_HREFLANG_NO_INDEXABLE: Hreflang to a non indexable page

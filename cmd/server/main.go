@@ -87,6 +87,7 @@ func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm.AddReporter(ds.FindHreflangsToNonCanonical, issue.HreflangToNonCanonical)
 	rm.AddReporter(ds.InternalNoFollowIndexableLinks, issue.ErrorInternalNoFollowIndexable)
 	rm.AddReporter(ds.NoIndexable, issue.ErrorNoIndexable)
+	rm.AddReporter(ds.HreflangNoindexable, issue.HreflangNoindexable)
 
 	return rm
 }

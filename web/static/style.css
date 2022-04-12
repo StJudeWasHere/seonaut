@@ -254,7 +254,6 @@ button {
 }
 .project {
 	padding: 0;
-	margin-bottom: 3rem;
 	font-weight: 300;
 	background-color: white;
 	box-shadow: 5px 5px #f0f0f0;
@@ -262,6 +261,7 @@ button {
 	border-left: 1px solid #f0f0f0;
 	border-radius: 5px;
 	box-sizing: border-box;
+	width: 100%;
 	padding: 3rem;
 }
 .project p {
@@ -310,17 +310,7 @@ button {
 	color: #222;
 	border: 1px solid #222;
 }
-.col {
-		box-sizing: border-box;
-}
-.col:nth-child(odd) {
-	padding-right: 1.5rem;
-}
 
-.col:nth-child(even) {
-	padding-left: 1.5rem;
-
-}
 
 
 .link-out {
@@ -355,9 +345,10 @@ button {
 	margin-bottom: 3rem;
 }
 .col {
-	padding: 1.5rem 3rem;
-	width: 50%;
-	padding:0rem
+	box-sizing: border-box;
+	padding: 0 1.5rem 1.5rem 0;
+	display: flex;
+	flex: 0 0 50%;
 }
 .col h2 {
 	width: 10rem;

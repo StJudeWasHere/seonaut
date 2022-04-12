@@ -1,48 +1,24 @@
 {{ define "charts" }}
 	<div class="content">
-		<div class="flex-container">
-			<div class="col">
-				<div class="flex-container chart-container">
-				<div class="col-s">
+		<div class="flex-container" style="padding: 5rem 0;align-items: center;">
+			<div class="chart-col" style="width: 50%; padding-bottom: 0;">
 				<h2>Media Type</h2>
-					<div class="chart"
-					style="background: conic-gradient({{ .MediaChart.GetChart "#C8AECC" "#EE9FAF" "#D983AD" "#524766" }});">
-					</div>
-				</div>
-				<div>
-					<ul class="chart-list">
-						{{ range .MediaChart }}
-							<li><b>{{ .Value }}</b> {{ .Key }}</li>
-						{{ end }}
-					</ul>
-				</div>
-				</div>
+				<div id="mediachart" style="width:100%;height: 20rem"></div>
 			</div>
 
-			<div class="col">
-				<div class="flex-container chart-container">
-				<div class="col-s">
-					<h2>Status Code</h2>
-					<div class="chart"
-					style="background: conic-gradient({{ .StatusChart.GetChart "#638179" "#B1AC75" "#EBDAA1" "#DF7A62" }});">
-					</div>
-				</div>
-				<div>
-					<ul class="chart-list status-list">
-						{{ range .StatusChart }}
-							<li>
-								<b>{{ .Value }}</b>
-								{{ if eq .Key "Other" }}
-									Other status codes
-								{{ else }}
-									URLs with status {{ .Key }}
-								{{ end }}
-							</li>
-						{{ end }}
-					</ul>
-				</div>
-				</div>
+			<div class="chart-col" style="width: 50%; padding-bottom: 0;">
+				<h2>Status Code</h2>
+				<div id="statuschart" style="width:100%;height: 20rem"></div>
 			</div>
 		</div>
+
+		<div style="padding: 1.5rem 0">
+		<small>
+			Crawled on {{ .ProjectView.Crawl.Start.Format "Jan 02, 2006" }}.
+				<a style="margin-left: 1rem" href="/download?pid={{ .ProjectView.Project.Id }}">↓ Download all crawled URLs</a>
+				<a style="margin-left: 1rem" href="/sitemap?pid={{ .ProjectView.Project.Id }}">↓ Download sitemap.xml</a>
+		</small>
+		</div>
 	</div>
+
 {{ end }}

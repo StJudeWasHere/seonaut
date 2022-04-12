@@ -344,6 +344,19 @@ button {
 	flex-direction: row;
 	margin-bottom: 3rem;
 }
+.chart-col {
+	box-sizing: border-box;
+	width: 50%;
+}
+.chart-col h2 {
+	margin: 0 0 3rem 0;
+	padding: 0;
+}
+.chart-block {
+	background-color: white;
+	margin-bottom: 5rem
+}
+
 .col {
 	box-sizing: border-box;
 	padding-bottom: 3rem;

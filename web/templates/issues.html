@@ -5,16 +5,125 @@
 	<div class="action">
 		<a href="/">Projects</a> / <span class="title">{{ .ProjectView.Project.Host }}</span>
 	</div>
-	<small>Crawled on {{ .ProjectView.Crawl.Start.Format "Jan 02, 2006" }}.</small>
-	<div class="project-buttons action-buttons">
-		<a class="button" href="/download?pid={{ .ProjectView.Project.Id }}">Download all crawled URLs ↓</a>
-		<a class="button" href="/sitemap?pid={{ .ProjectView.Project.Id }}">Download sitemap.xml ↓</a>
-	</div>
 </div>
 
 <div class="chart-block">
 	{{ template "charts" . }}
 </div>
+
+<script type="text/javascript">
+	var mediaChart = echarts.init(document.getElementById('mediachart'));
+	var option = {
+		toolbox: {
+			show: true,
+			top: "bottom",
+			left: 0,
+			feature: {
+				saveAsImage: {
+					show: true,
+					name: "media-type-chart"
+				}
+			}
+		},
+		tooltip: {
+			trigger: 'item'
+		},
+		legend: {
+			top: 'center',
+			type: 'scroll',
+			left: 'left',
+			orient: 'vertical',
+			textStyle: {
+				overflow: 'truncate',
+				width: '120'
+			},
+			data:  [
+				{{ range .MediaChart }}
+					'{{ .Key }}',
+				{{ end }}
+				],
+		},
+		textStyle: {
+			fontFamily: "Fira Code",
+			fontSize: "1rem",
+			fontWeight: 300,
+		},
+		series: [
+			{
+				labelLine: {
+					show: false
+				},
+				label: {
+					show: false,
+					position: 'center'
+				},
+				radius: ['25%', '85%'],
+				name: 'Media type',
+				type: 'pie',
+				data: [
+				{{ range .MediaChart }}
+					{value: {{ .Value }},name: {{ .Key }} },
+				{{ end }}
+				],
+				left: "25%",
+			}
+		]
+	};
+
+	mediaChart.setOption(option);
+
+	var statusChart = echarts.init(document.getElementById('statuschart'));
+	var option = {
+		tooltip: {
+			trigger: 'item'
+		},
+		toolbox: {
+			show: true,
+			top: "bottom",
+			left: 0,
+			feature: {
+				saveAsImage: {
+					show: true,
+					name: "status-code-chart"
+				}
+			}
+		},
+		legend: {
+			top: 'center',
+			left: 'left',
+			orient: 'vertical',
+		},
+
+		textStyle: {
+			fontFamily: "Fira Code",
+			fontSize: "1rem",
+			fontWeight: 300,
+		},
+		series: [
+			{
+				labelLine: {
+					show: false
+				},
+				label: {
+					show: false,
+					position: 'center'
+				},
+				radius: ['25%', '85%'],
+				name: 'Status Code',
+				type: 'pie',
+				data: [
+					{{ range .StatusChart }}
+						{value: {{ .Value }},name: {{ .Key }} },
+					{{ end }}
+				],
+				left: "25%"
+			}
+		]
+	};
+
+	statusChart.setOption(option);
+</script>
+
 <div class="content legend-block">
 <div class="flex">
 	<div class="legend box">

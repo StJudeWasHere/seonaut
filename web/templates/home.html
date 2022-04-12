@@ -14,8 +14,13 @@
 		<div class="project">
 			<h2 class="project-title">{{ .Project.URL }}</h2>
 			{{ if .Crawl.Id }}
+			
 				{{ if .Crawl.IssuesEnd.Valid }}
-					<div>
+					{{ if eq .Crawl.TotalURLs 0 }}
+						<p class="error">The SEOnaut bot could not crawl your site.</p>
+						<a href="/crawl?pid={{ .Project.Id }}">Crawl Now</a>
+					{{ else }}
+						<div>
 						Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}. <br>
 						Crawl duration was {{ total_time .Crawl.Start .Crawl.End.Time }}.<br>
 						{{ .Crawl.TotalURLs }} {{ if eq .Crawl.TotalURLs 1 }}URL{{ else }}URLs{{end }}
@@ -24,10 +29,11 @@
 						{{ if .Project.FollowNofollow }}Following internal nofollow links.<br>{{ end }}
 						{{ if .Project.IncludeNoindex }}Including noindex pages.<br>{{ end }}
 						<a href="/crawl?pid={{ .Project.Id }}">Crawl now</a>
-					</div>
-					<p class="project-buttons">
-						<a class="button" href="/issues?pid={{ .Project.Id }}">View Report →</a>
-					</p>
+						</div>
+						<p class="project-buttons">
+							<a class="button" href="/issues?pid={{ .Project.Id }}">View Report →</a>
+						</p>
+					{{ end }}
 				{{ else }}
 					<p>Now crawling...</p>
 				{{ end }}

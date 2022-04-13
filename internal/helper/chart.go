@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	chartLimit = 5
+	chartLimit = 4
 )
 
 type ChartItem struct {

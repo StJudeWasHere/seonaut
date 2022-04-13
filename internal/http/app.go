@@ -81,6 +81,7 @@ func (app *App) Run() {
 	http.HandleFunc("/crawl", app.requireAuth(app.serveCrawl))
 	http.HandleFunc("/issues", app.requireAuth(app.serveIssues))
 	http.HandleFunc("/issues/view", app.requireAuth(app.serveIssuesView))
+	http.HandleFunc("/dashboard", app.requireAuth(app.serveDashboard))
 	http.HandleFunc("/download", app.requireAuth(app.serveDownloadCSV))
 	http.HandleFunc("/sitemap", app.requireAuth(app.serveSitemap))
 	http.HandleFunc("/resources", app.requireAuth(app.serveResourcesView))

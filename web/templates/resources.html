@@ -5,9 +5,10 @@
 <div class="content">
 	<div class="action">
 		<a href="/">Projects</a> /
-		<a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
+		<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
+		<a href="/issues?pid={{ .ProjectView.Project.Id }}">Issues</a> /
 		<a href="/issues/view?cid={{ .ProjectView.Crawl.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a> /
-		<span class="title">URL Explorer</span>
+		<span class="title">URL</span>
 	</div>
 </div>
 

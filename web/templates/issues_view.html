@@ -4,7 +4,8 @@
 <div class="content">
 	<div class="action">
 		<a href="/">Projects</a> /
-		<a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
+		<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
+		<a href="/issues?pid={{ .ProjectView.Project.Id }}">Issues</a> /
 		<span class="title">{{ trans .Eid }}</span>
 	</div>
 </div>

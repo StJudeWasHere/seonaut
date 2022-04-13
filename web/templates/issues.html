@@ -3,143 +3,15 @@
 {{ with .Data }}
 <div class="content">
 	<div class="action">
-		<a href="/">Projects</a> / <span class="title">{{ .ProjectView.Project.Host }}</span>
+		<a href="/">Projects</a> / <a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> / <span class="title">Issues</span>
 	</div>
 </div>
 
-<div class="chart-block">
-	{{ template "charts" . }}
-</div>
+		<div style="text-align:center; padding: 5rem 0rem;  ">
+				<a class="button" style="background-color: #B70F57; color: white; border: none" href="/download?pid={{ .ProjectView.Project.Id }}">↓ Download all crawled URLs</a>
+				<a class="button" style="background-color: #B70F57; color: white; border: none" href="/sitemap?pid={{ .ProjectView.Project.Id }}">↓ Download sitemap.xml</a>
 
-<script type="text/javascript">
-	var mediaChart = echarts.init(document.getElementById('mediachart'));
-	var option = {
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "media-type-chart"
-				}
-			}
-		},
-		tooltip: {
-			trigger: 'item'
-		},
-		legend: {
-			top: 'center',
-			type: 'scroll',
-			left: 'left',
-			orient: 'vertical',
-			textStyle: {
-				overflow: 'truncate',
-				width: '120'
-			},
-			data:  [
-				{{ range .MediaChart }}
-					'{{ .Key }}',
-				{{ end }}
-				],
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		series: [
-			{
-				labelLine: {
-					show: false
-				},
-				label: {
-					show: false,
-					position: 'center'
-				},
-				radius: ['25%', '85%'],
-				name: 'Media type',
-				type: 'pie',
-				data: [
-				{{ range .MediaChart }}
-					{value: {{ .Value }},name: {{ .Key }} },
-				{{ end }}
-				],
-				left: "25%",
-			}
-		]
-	};
-
-	mediaChart.setOption(option);
-
-	var statusChart = echarts.init(document.getElementById('statuschart'));
-	var option = {
-		tooltip: {
-			trigger: 'item'
-		},
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "status-code-chart"
-				}
-			}
-		},
-		legend: {
-			top: 'center',
-			left: 'left',
-			orient: 'vertical',
-		},
-
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		series: [
-			{
-				labelLine: {
-					show: false
-				},
-				label: {
-					show: false,
-					position: 'center'
-				},
-				radius: ['25%', '85%'],
-				name: 'Status Code',
-				type: 'pie',
-				data: [
-					{{ range .StatusChart }}
-						{value: {{ .Value }},name: {{ .Key }} },
-					{{ end }}
-				],
-				left: "25%"
-			}
-		]
-	};
-
-	statusChart.setOption(option);
-</script>
-
-<div class="content legend-block">
-<div class="flex">
-	<div class="legend box">
-		<b>{{ .IssueCount.Critical }} Critical {{ if eq .IssueCount.Critical 1 }} error {{ else }} errors{{ end }}</b>
-		<p>Critical errors affecting your ranking. Fix them first.</p>
-	</div>
-	<div class="legend box">
-		<b>{{ .IssueCount.Alert }} {{ if eq .IssueCount.Alert 1 }} Alert {{ else }} Alerts {{ end }}</b>
-		<p>Issues that are holding your site back. Fix them next.</p>
-	</div>
-	<div class="legend box">
-		<b>{{ .IssueCount.Warning }} {{ if eq .IssueCount.Warning 1 }} Warning {{ else }} Warnings {{ end }}</b>
-		<p>Issues you may want to keep an eye on.</p>
-	</div>
-</div>
-</div>
+		</div>
 
 <div class="content">
 	{{ $pid := .ProjectView.Project.Id }}

@@ -11,14 +11,5 @@
 				<div id="statuschart" style="width:100%;height: 20rem"></div>
 			</div>
 		</div>
-
-		<div style="padding: 1.5rem 0">
-		<small>
-			Crawled on {{ .ProjectView.Crawl.Start.Format "Jan 02, 2006" }}.
-				<a style="margin-left: 1rem" href="/download?pid={{ .ProjectView.Project.Id }}">↓ Download all crawled URLs</a>
-				<a style="margin-left: 1rem" href="/sitemap?pid={{ .ProjectView.Project.Id }}">↓ Download sitemap.xml</a>
-		</small>
-		</div>
 	</div>
-
 {{ end }}

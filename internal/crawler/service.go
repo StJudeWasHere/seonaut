@@ -24,6 +24,7 @@ type Storage interface {
 	SavePageReport(*PageReport, int64)
 	SaveEndCrawl(*Crawl) (*Crawl, error)
 	DeletePreviousCrawl(int)
+	GetLastCrawls(project.Project) []Crawl
 }
 
 type Crawl struct {
@@ -88,4 +89,8 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	}()
 
 	return crawl, nil
+}
+
+func (s *Service) GetLastCrawls(p project.Project) []Crawl {
+	return s.store.GetLastCrawls(p)
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/projectview"
@@ -16,6 +17,8 @@ type IssuesGroupView struct {
 	MediaChart  helper.Chart
 	StatusChart helper.Chart
 	IssueCount  *issue.IssueCount
+	Crawls      []crawler.Crawl
+	LinksCount  *issue.LinksCount
 }
 
 type IssuesView struct {
@@ -53,6 +56,7 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 		MediaChart:  helper.NewChart(issueCount.MediaCount),
 		StatusChart: helper.NewChart(issueCount.StatusCount),
 		IssueCount:  issueCount,
+		Crawls:      app.crawlerService.GetLastCrawls(pv.Project),
 	}
 
 	v := &helper.PageView{
@@ -62,6 +66,48 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.renderer.RenderTemplate(w, "issues", v)
+}
+
+func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		log.Printf("serveIssues pid: %v\n", err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
+	if err != nil {
+		log.Printf("serveIssues GetProjectView: %v\n", err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+	}
+
+	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)
+
+	ig := IssuesGroupView{
+		ProjectView: pv,
+		MediaChart:  helper.NewChart(issueCount.MediaCount),
+		StatusChart: helper.NewChart(issueCount.StatusCount),
+		IssueCount:  issueCount,
+		Crawls:      app.crawlerService.GetLastCrawls(pv.Project),
+		LinksCount:  app.issueService.GetLinksCount(pv.Crawl.Id),
+	}
+
+	v := &helper.PageView{
+		Data:      ig,
+		User:      *user,
+		PageTitle: "ISSUES_VIEW",
+	}
+
+	app.renderer.RenderTemplate(w, "dashboard", v)
 }
 
 func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {

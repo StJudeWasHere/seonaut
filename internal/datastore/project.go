@@ -133,6 +133,37 @@ func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 	return crawl
 }
 
+func (ds *Datastore) GetLastCrawls(p project.Project) []crawler.Crawl {
+	query := `
+		SELECT
+			id,
+			start,
+			end,
+			total_urls,
+			total_issues,
+			issues_end
+		FROM crawls
+		WHERE project_id = ?
+		ORDER BY start ASC LIMIT 5`
+
+	crawls := []crawler.Crawl{}
+	rows, err := ds.db.Query(query, p.Id)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		crawl := crawler.Crawl{}
+		err := rows.Scan(&crawl.Id, &crawl.Start, &crawl.End, &crawl.TotalURLs, &crawl.TotalIssues, &crawl.IssuesEnd)
+		if err != nil {
+			log.Printf("GetLastCrawl: %v\n", err)
+		}
+		crawls = append(crawls, crawl)
+	}
+
+	return crawls
+}
+
 func (ds *Datastore) FindPreviousCrawlId(pid int) int {
 	query := `
 		SELECT

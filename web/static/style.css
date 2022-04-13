@@ -168,8 +168,6 @@ button {
 	background-color: var(--secondary-color);
 	font-size: .8rem;
 	padding: 3rem 0;
-	margin-top: 3rem;
-	border-top: 1px solid var(--light-bg-color);
 }
 
 #footer a {
@@ -311,8 +309,6 @@ button {
 	border: 1px solid #222;
 }
 
-
-
 .link-out {
 	border-bottom: none;
 }
@@ -356,6 +352,11 @@ button {
 	background-color: white;
 	margin-bottom: 5rem
 }
+.crawl-chart-container {
+	background: -webkit-linear-gradient(to right, #F7E497, #fbf8e0);
+	background: linear-gradient(to right, #F7E497, #fbf8e0);
+	padding: 6rem 0;
+}
 
 .col {
 	box-sizing: border-box;
@@ -388,7 +389,7 @@ button {
 }
 a.button {
 	border: 1px dotted var(--primary-color);
-	padding: .5rem 1rem;
+	padding: .5rem 1.5rem;
 }
 a.button:hover {
 	background-color: white;
@@ -499,6 +500,10 @@ span.alert {
 	box-shadow: 5px 5px #f0f0f0;
 	border-top: 1px solid #f0f0f0;
 	border-left: 1px solid #f0f0f0;
+}
+
+.report-block {
+	margin-bottom: 5rem;
 }
 
 .center {

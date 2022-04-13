@@ -18,6 +18,8 @@ type IssueStore interface {
 	CountByStatusCode(int64) CountList
 	GetNumberOfPagesForIssues(int64, string) int
 	FindPageReportIssues(int64, int, string) []crawler.PageReport
+	CountByFollowLinks(int64) CountList
+	CountByFollowExternalLinks(int64) CountList
 }
 
 type Issue struct {
@@ -54,6 +56,11 @@ type Paginator struct {
 type PaginatorView struct {
 	Paginator   Paginator
 	PageReports []crawler.PageReport
+}
+
+type LinksCount struct {
+	Internal CountList
+	External CountList
 }
 
 func NewService(s IssueStore) *IssueService {
@@ -106,4 +113,13 @@ func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int
 	}
 
 	return paginatorView, nil
+}
+
+func (s *IssueService) GetLinksCount(crawlId int64) *LinksCount {
+	l := &LinksCount{
+		Internal: s.store.CountByFollowLinks(crawlId),
+		External: s.store.CountByFollowExternalLinks(crawlId),
+	}
+
+	return l
 }

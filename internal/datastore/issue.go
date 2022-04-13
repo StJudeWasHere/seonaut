@@ -31,6 +31,32 @@ func (ds *Datastore) CountByStatusCode(cid int64) issue.CountList {
 	return ds.countListQuery(query, cid)
 }
 
+func (ds *Datastore) CountByFollowLinks(cid int64) issue.CountList {
+	query := `
+		SELECT
+			IF(nofollow, "nofollow", "follow"),
+			count(*)
+		FROM links
+		WHERE crawl_id = ?
+		GROUP BY nofollow
+		ORDER BY nofollow ASC`
+
+	return ds.countListQuery(query, cid)
+}
+
+func (ds *Datastore) CountByFollowExternalLinks(cid int64) issue.CountList {
+	query := `
+		SELECT
+			IF(nofollow, "nofollow", "follow"),
+			count(*)
+		FROM external_links
+		WHERE crawl_id = ?
+		GROUP BY nofollow
+		ORDER BY nofollow ASC`
+
+	return ds.countListQuery(query, cid)
+}
+
 func (ds *Datastore) countListQuery(query string, cid int64) issue.CountList {
 	m := issue.CountList{}
 	rows, err := ds.db.Query(query, cid)

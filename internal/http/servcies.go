@@ -27,11 +27,13 @@ type ProjectViewService interface {
 
 type CrawlerService interface {
 	StartCrawler(project.Project) (*crawler.Crawl, error)
+	GetLastCrawls(p project.Project) []crawler.Crawl
 }
 
 type IssueService interface {
 	GetIssuesCount(int64) *issue.IssueCount
 	GetPaginatedReportsByIssue(int64, int, string) (issue.PaginatorView, error)
+	GetLinksCount(int64) *issue.LinksCount
 }
 
 type ReportService interface {

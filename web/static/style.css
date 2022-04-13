@@ -253,14 +253,12 @@ button {
 .project {
 	padding: 0;
 	font-weight: 300;
-	background-color: white;
-	box-shadow: 5px 5px #f0f0f0;
-	border-top: 1px solid #f0f0f0;
-	border-left: 1px solid #f0f0f0;
-	border-radius: 5px;
+	background-color: var(--main-bg-color);
+	border-radius: 10px;
 	box-sizing: border-box;
 	width: 100%;
 	padding: 3rem;
+	margin: 2.5rem 0;
 }
 .project p {
 	margin-bottom: 0;
@@ -270,7 +268,7 @@ button {
 }
 .project-title {
 	font-size: 1.2rem;
-	margin: 0 0 .2rem 0;
+	margin: 0;
 	font-weight: 400;
 }
 .project-title a {
@@ -279,6 +277,7 @@ button {
 
 .project-buttons {
 	margin-top: 3rem;
+	box-sizing: border-box;
 }
 .issues-buttons {
 	margin-top: 0;
@@ -289,6 +288,9 @@ button {
 	border: 0;
 	box-shadow: 5px 5px transparent;
 	border-radius: 5px;
+	box-sizing: border-box;
+	line-height: 1rem;
+	font-size:1rem;
 }
 
 .issues-buttons .button, .button {

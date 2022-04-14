@@ -19,7 +19,7 @@ type IssueStore interface {
 	FindPageReportIssues(int64, int, string) []crawler.PageReport
 	CountByFollowLinks(int64) CountList
 	CountByFollowExternalLinks(int64) CountList
-	FindIssuesByPriority(int64, int) map[string]IssueGroup
+	FindIssuesByPriority(int64, int) []IssueGroup
 }
 
 type Issue struct {
@@ -38,15 +38,14 @@ type IssueGroup struct {
 }
 
 type IssueCount struct {
-	Groups         map[string]IssueGroup
 	Critical       int
 	Alert          int
 	Warning        int
 	MediaCount     CountList
 	StatusCount    CountList
-	CriticalIssues map[string]IssueGroup
-	AlertIssues    map[string]IssueGroup
-	WarningIssues  map[string]IssueGroup
+	CriticalIssues []IssueGroup
+	AlertIssues    []IssueGroup
+	WarningIssues  []IssueGroup
 }
 
 type Paginator struct {

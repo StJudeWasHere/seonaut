@@ -106,16 +106,17 @@ func (ds *Datastore) SaveIssues(issues []issue.Issue, cid int64) {
 	}
 }
 
-func (ds *Datastore) FindIssuesByPriority(cid int64, p int) map[string]issue.IssueGroup {
-	issues := map[string]issue.IssueGroup{}
+func (ds *Datastore) FindIssuesByPriority(cid int64, p int) []issue.IssueGroup {
+	issues := []issue.IssueGroup{}
 	query := `
 		SELECT
 			issue_types.type,
 			issue_types.priority,
-			count(DISTINCT issues.pagereport_id)
+			count(DISTINCT issues.pagereport_id) AS c
 		FROM issues
 		INNER JOIN  issue_types ON issue_types.id = issues.issue_type_id
-		WHERE crawl_id = ? AND issue_types.priority = ? GROUP BY issue_type_id`
+		WHERE crawl_id = ? AND issue_types.priority = ? GROUP BY issue_type_id
+		ORDER BY c DESC`
 
 	rows, err := ds.db.Query(query, cid, p)
 	if err != nil {
@@ -131,7 +132,7 @@ func (ds *Datastore) FindIssuesByPriority(cid int64, p int) map[string]issue.Iss
 			continue
 		}
 
-		issues[ig.ErrorType] = ig
+		issues = append(issues, ig)
 	}
 
 	return issues

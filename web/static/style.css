@@ -361,16 +361,30 @@ button {
 .pagereport-errors {
 	margin-bottom: 0;
 }
-.issues {
-	margin-bottom: 3rem;
-	font-weight: 300;
+.issue-panel {
 	background-color: white;
-	border-radius: 5px;
-	box-shadow: 5px 5px #f0f0f0;
-	box-sizing: border-box;
+	padding-top: 3rem;
+	overflow: auto;
 }
-.issue-description {
-	padding: 0 2.5rem .5rem 2.5rem;
+.issues-empty {
+	margin-left: 3rem;
+}
+.issue-container {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	align-items: stretch;
+}
+.issue-col:nth-child(1) {
+	width:70%;
+}
+.issue-links {
+	text-align: left;
+	padding-left: 3rem;
+}
+.issue-links a {
+	color: #B70F57;
+	border: none;
 }
 .flex-container {
 	display: flex;
@@ -466,23 +480,59 @@ a.button {
 	text-align: right;
 }
 
+.issues {
+	margin-bottom: 1.5rem;
+	font-weight: 300;
+	background-color: var(--main-bg-color);
+	background-color: white;
+	border-radius: 10px;
+	box-sizing: border-box;
+	padding: 1.5rem;
+	margin-left: 1rem;
+}
+.issue-description {
+	padding: 0 2.5rem .5rem 2.5rem;
+}
+
 .issues svg {
 	vertical-align: baseline;
 	transform: translateY(2px);
 }
 
 .issues h2 {
-	border-top-left-radius: 5px;
-	border-top-right-radius: 5px;
-	padding: .5rem 0 .5rem .5rem;
+	margin: 0;
 	line-height: 1.6rem;
 }
-
-.issues h2.error {
-	background-color: #fecdc7;
-	border-left: 2rem solid #FD7B6A;
+.issues p {
+	margin: 0;
+	margin-bottom: 1.5rem;
+}
+.issues.error h2 {
+	display: inline-block;
+	margin-bottom:1.5rem;
+	border-bottom: 1px solid #FD7B6A;
+}
+.issues.alert h2 {
+	display: inline-block;
+	margin-bottom: 1.5rem;
+	border-bottom: 1px solid #F7E497;
 }
 
+.issues.notice h2 {
+	display: inline-block;
+	margin-bottom: 1.5rem;
+	border-bottom: 1px solid #2C7D91;
+}
+
+.critical-issues {
+	margin-bottom: 3rem;
+}
+.alert-issues {
+	margin-bottom: 3rem;
+}
+.notice-issues {
+	margin-bottom: 3rem;
+}
 .issues h2.alert {
 	background-color: #faf1ca;
 	border-left: 2rem solid #F7E497;
@@ -740,6 +790,16 @@ p.error {
 		margin-left: 1rem;
 		font-weight: 400;
 	}
+
+.section-title {
+	display: flex;
+	align-items: center;
+	margin-bottom: 3rem;
+}
+
+.section-title h1 {
+	margin-left: 1rem;
+}
 
 /** PRINT **/
 

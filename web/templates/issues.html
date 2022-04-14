@@ -7,523 +7,101 @@
 	</div>
 </div>
 
-<div class="content">
-	{{ $pid := .ProjectView.Project.Id }}
+<div class="issue-panel">
+	<div class="content">
 
-	{{/* Status code issues */}}
+		{{ $pid := .ProjectView.Project.Id }}
 
-	{{ with (index .IssueCount.Groups "ERROR_50x") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-		<h2 class="error">
-			{{ .Count }} {{ if eq .Count 1 }}URL is{{ else }}URLs are{{end }} throwing 50x type errors
-		</h2>
-		<div class="issue-description">
-			<p>
-				This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't
-				load properly and show an error page instead, scaring your users and annoying search engines.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_50x">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_50x">View URLs →</a>
-			</p>
+		<div class="critical-issues">
+			<div class="section-title">
+				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+				<h1>Critical Issues</h1>
+			</div>
+			{{ if .IssueCount.CriticalIssues }}
+			{{ range .IssueCount.CriticalIssues }}
+			<div class="issues error">
+				<div>
+					<h2>{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} {{ trans .ErrorType }}</h2>
+				</div>
+				<div class="issue-container">
+					<div class="issue-col">
+						<p>{{ trans (print .ErrorType "_DESC") }}</p>
+					</div>
+				
+					<div class="issue-col">
+						<div class="issue-links">
+							<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">↓ Download URLs</a><br>
+							<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">→ View URLs</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			{{ end }}
+			{{ else }}
+				<p class="issues-empty">No issues where detected.</p>
+			{{ end }}
 		</div>
-		</div>
-		{{ end }}
-	{{ end }}
 
-	{{ with (index .IssueCount.Groups "ERROR_40x") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-		<h2 class="error">
-			{{ .Count }} {{ if eq .Count 1 }}URL is{{ else }}URLs are{{end }} missing
-		</h2>
-		<div class="issue-description">
-		<p>This pages are missing and your both your users and search engines are getting lost.</p>
-		<p class="issues-buttons">
-			<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_40x">Download URLs ↓</a>
-			<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_40x">View URLs →</a>
-		</p>
+		<div class="alert-issues">
+			<div class="section-title">
+				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+				<h1>Alerts</h1>
+			</div>
+			{{ if .IssueCount.AlertIssues }}
+			{{ range .IssueCount.AlertIssues }}
+			<div class="issues alert">
+				<div>
+					<h2>{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} {{ trans .ErrorType }}</h2>
+				</div>
+				<div class="issue-container">
+					<div class="issue-col">
+						<p>{{ trans (print .ErrorType "_DESC") }}</p>
+					</div>
+					<div class="issue-col">
+						<div class="issue-links">
+							<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">↓ Download URLs</a><br>
+							<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">→ View URLs</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			{{ end }}
+			{{ else }}
+				<p class="issues-empty">No issues where detected.</p>
+			{{ end }}
 		</div>
+
+		<div class="notice-issues">
+			<div class="section-title">
+				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+				<h1>Notices</h1>
+			</div>
+
+			{{ if .IssueCount.WarningIssues }}
+			{{ range .IssueCount.WarningIssues }}
+			<div class="issues notice">
+				<div>
+					<h2>{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} {{ trans .ErrorType }}</h2>
+				</div>
+				<div class="issue-container">
+					<div class="issue-col">
+						<p>{{ trans (print .ErrorType "_DESC") }}</p>
+					</div>
+					<div class="issue-col">
+						<div class="issue-links">
+							<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">↓ Download URLs</a><br>
+							<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">→ View URLs</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			{{ end }}
+			{{ else }}
+				<p class="issues-empty">No issues where detected.</p>
+			{{ end }}
+		</div>
+
 	</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_30x") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-		<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}URL is{{ else }}URLs are{{end }} redirecting somewhere else</h2>
-		<div class="issue-description">
-		<p>
-			URLs causing redirects are sending users and search engines to a different page, this can waste the search
-			engine's crawl budget and create redirect chains.
-		</p>
-		<p class="issues-buttons">
-			<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_30x">Download URLs ↓</a>
-			<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_30x">View URLs →</a>
-		</p>
-		</div>
-	</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_REDIRECT_CHAIN") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} are part of a redirect chain</h2>
-			<div class="issue-description">
-			<p>
-				Redirect chains are URLs that redirect to other URLs that also redirect somewhere else, creating a
-				chain of redirects.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_REDIRECT_CHAIN">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_REDIRECT_CHAIN">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_REDIRECT_LOOP") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="error">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} are part of a redirect loop</h2>
-			<div class="issue-description">
-			<p>
-				Redirect loops are a couple of URLs that redirect to each other creating a never ending loop of redirects.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_REDIRECT_LOOP">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_REDIRECT_LOOP">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{/* Title issues */}}
-
-	{{ with (index .IssueCount.Groups "ERROR_DUPLICATED_TITLE") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">
-				{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} duplicate title tags
-			</h2>
-			<div class="issue-description">
-			<p>The title tag is considered one of the most important elements for on-page SEO.<br>
-			If multiple pages have the same title, they will compete for a given search query confusing search engines.</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_DUPLICATED_TITLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_DUPLICATED_TITLE">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_EMPTY_TITLE") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with empty or missing title</h2>
-			<div class="issue-description">
-			<p>The page title is one of the most important elements for search engines.</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_EMPTY_TITLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_EMPTY_TITLE">View URLs →</a>
-			</p>
-		</div>
-	</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_LONG_TITLE") }}
-		{{ if ne .Count 0 }}
-			<div class="issues">
-				<h2 class="alert">
-				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long title</h2>
-				<div class="issue-description">
-				<p>
-					Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend
-					to get fewer clicks.
-				</p>
-				<p class="issues-buttons">
-					<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_LONG_TITLE">Download URLs ↓</a>
-					<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_LONG_TITLE">View URLs →</a>
-				</p>
-			</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_SHORT_TITLE") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page has{{ else }}pages have{{end }} short title</h2>
-			<div class="issue-description">
-			<p>This pages have titles that are too short. Search engines will be happier if you provide longer titles.</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_SHORT_TITLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_SHORT_TITLE">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{/* Description issues */}}
-
-	{{ with (index .IssueCount.Groups "ERROR_DUPLICATED_DESCRIPTION") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with duplicate description tags</h2>
-			<div class="issue-description">
-			<p>It is recomended to have unique descriptions for each page so search engines can understand better your page.</p>
-				<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_DUPLICATED_DESCRIPTION">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_DUPLICATED_DESCRIPTION">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_LONG_DESCRIPTION") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with long description</h2>
-			<div class="issue-description">
-			<p>
-				Description tags are not a ranking factor for search engines, but having good quality descriptions will
-				get more accurate information in the search results. Long descriptions will often get truncated, making
-				them not so sexy for users.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_LONG_DESCRIPTION">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_LONG_DESCRIPTION">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_SHORT_DESCRIPTION") }}
-		{{ if ne .Count 0 }}
-			<div class="issues">
-				<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{end }} with short description</h2>
-				<div class="issue-description">
-				<p>
-					Page description is not a ranking factor for search engines, but they often use it to show snippets on
-					search results.
-				</p>
-				<p class="issues-buttons">
-					<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_SHORT_DESCRIPTION">Download URLs ↓</a>
-					<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_SHORT_DESCRIPTION">View URLs →</a>
-				</p>
-			</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_EMPTY_DESCRIPTION") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">
-				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with empty or missing description
-			</h2>
-			<div class="issue-description">
-			<p>
-				Page description is not a ranking factor for search engines, but they often use it to show snippets on
-				search results.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_EMPTY_DESCRIPTION">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_EMPTY_DESCRIPTION">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_CANONICALIZED_NON_CANONICAL") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">
-				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} canonicalized to non canonical
-			</h2>
-			<div class="issue-description">
-			<p>
-				Pages canonicalized to a non canonical URL. Canonicalized pages should point to a canonical page, replace the canonical 
-				link URL in this pages so they point to a canonical one.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_CANONICALIZED_NON_CANONICAL">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_CANONICALIZED_NON_CANONICAL">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{/* Other issues */}}
-
-	{{ with (index .IssueCount.Groups "ERROR_HTTP_LINKS" )}}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">
-				{{ .Count }} {{ if eq .Count 1 }}page links{{ else }}pages link{{ end }} from HTTPS to HTTP
-			</h2>
-			<div class="issue-description">
-			<p>
-				Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those
-				without HTTPS, it also makes your users happier.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HTTP_LINKS">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HTTP_LINKS">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_NO_H1" )}}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no H1 heading title</h2>
-			<div class="issue-description">
-			<p>
-				The H1 tag describes the main topic of the page, without it both your users and search engine will find it
-				harder to figure what the page is talking about.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NO_H1">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NO_H1">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_NOT_VALID_HEADINGS" )}}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with not valid headings order</h2>
-			<div class="issue-description">
-			<p>
-				The heading tags in this pages doesn't follow the correct order. Change the H tags so they start with H1 and follow
-				the correct order.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NOT_VALID_HEADINGS">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NOT_VALID_HEADINGS">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_HREFLANG_RETURN") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing hreflangs without its corresponding
-			return link
-			</h2>
-			<div class="issue-description">
-			<p>When referencing a page with hreflang, that page must reference back with a hreflang tag too.</p>
-				<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HREFLANG_RETURN">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HREFLANG_RETURN">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_HREFLANG_NO_INDEXABLE") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">
-			{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with hreflangs linking to non indexable pages
-			</h2>
-			<div class="issue-description">
-			<p>Hreflangs should link to indexable pages, linking them to pages using the <i>noindex</i> attribute will confuse search engines.</p>
-				<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HREFLANG_NO_INDEXABLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HREFLANG_NO_INDEXABLE">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_HREFLANG_TO_NON_CANONICAL") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with hreflang tags linking to non canonical pages</h2>
-			<div class="issue-description">
-			<p>
-				Hreflang tags tell searchengines where to find content in specific languages, linking hreflang tags to non canonical pages confuses search engines.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_HREFLANG_TO_NON_CANONICAL">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_HREFLANG_TO_NON_CANONICAL">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_IMAGES_NO_ALT") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} containing images with no alt attribute</h2>
-			<div class="issue-description">
-			<p>
-				The image alt attribute improves your site's accessibility, it also helps search engines understand better
-				your images.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_IMAGES_NO_ALT">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_IMAGES_NO_ALT">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_NOFOLLOW_INDEXABLE") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="alert">
-				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal nofollow links to indexable pages
-			</h2>
-			<div class="issue-description">
-			<p>
-				Internal links using the <i>nofollow</i> attribute tell search engines to not crawl that link. For it to work properly the destination URL should use the <i>noindex</i> tag, otherwise search engines still can index the linked URL.</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NOFOLLOW_INDEXABLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NOFOLLOW_INDEXABLE">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_NO_LANG" )}}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="notice">
-				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with no language attribute</h2>
-				<div class="issue-description">
-				<p>
-				The language attribute is particularly usefull for screen readers and it's recommended to use it. Some
-				search engines use it to show the appropiate page to the users depending on their language, but it does not
-				affect your search engine ranking.
-				</p>
-				<p class="issues-buttons">
-					<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NO_LANG">Download URLs ↓</a>
-					<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NO_LANG">View URLs →</a>
-				</p>
-			</div>
-		</div>
-		{{ end }}
-	{{ end }}
-
-	{{ with (index .IssueCount.Groups "ERROR_LITTLE_CONTENT") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with little content</h2>
-			<div class="issue-description">
-			<p>
-				Pages with little content are not really useful for users or search engines, consider adding more content
-				to your pages.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_LITTLE_CONTENT">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_LITTLE_CONTENT">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_TOO_MANY_LINKS") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with too many links</h2>
-			<div class="issue-description">
-			<p>
-				The SEO link juice is divided between all the links in the page, the more links in a page the less amount
-				of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the
-				nofollow attribute.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_TOO_MANY_LINKS">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_TOO_MANY_LINKS">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-	
-	{{ with (index .IssueCount.Groups "ERROR_INTERNAL_NOFOLLOW") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="notice">
-				{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with internal links using the nofollow
-				attribute
-			</h2>
-			<div class="issue-description">
-			<p>
-				Internal links in general should not use the nofollow attribute unless they link to pages you don't want
-				indexed by search engines. Review the internal links and make sure important pages are linked without the nofollow attribute.
-			</p>
-			<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_INTERNAL_NOFOLLOW">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_INTERNAL_NOFOLLOW">View URLs →</a>
-			</p>
-		</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_EXTERNAL_WITHOUT_NOFOLLOW") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page{{ else }}pages{{ end }} with external follow links</h2>
-			<div class="issue-description">
-				<p>
-				Follow links will pass SEO authority to external sites. You may want to keep an eye on it to avoid link
-				spam in comments and user generated content.
-				</p>
-				<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_EXTERNAL_WITHOUT_NOFOLLOW">View URLs →</a>
-				</p>
-			</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
-	{{ with (index .IssueCount.Groups "ERROR_NO_INDEXABLE") }}
-		{{ if ne .Count 0 }}
-		<div class="issues">
-			<h2 class="notice">{{ .Count }} {{ if eq .Count 1 }}page is{{ else }}pages are{{ end }} non indexable</h2>
-			<div class="issue-description">
-				<p>
-				Pages using the <i>noindex</i> attribute won't be indexed by search engines, this is usually added to non important pages that we don't wan't to appear in search results. It may be worth reviewing them to make sure important pages are not using this attribute.
-				</p>
-				<p class="issues-buttons">
-				<a class="button" href="/download?pid={{ $pid }}&eid=ERROR_NO_INDEXABLE">Download URLs ↓</a>
-				<a class="button" href="/issues/view?pid={{ $pid }}&eid=ERROR_NO_INDEXABLE">View URLs →</a>
-				</p>
-			</div>
-		</div>
-		{{ end }}
-	{{ end}}
-
 </div>
 {{ end}}
 

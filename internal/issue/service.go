@@ -13,13 +13,13 @@ const (
 )
 
 type IssueStore interface {
-	FindIssues(int64) map[string]IssueGroup
 	CountByMediaType(int64) CountList
 	CountByStatusCode(int64) CountList
 	GetNumberOfPagesForIssues(int64, string) int
 	FindPageReportIssues(int64, int, string) []crawler.PageReport
 	CountByFollowLinks(int64) CountList
 	CountByFollowExternalLinks(int64) CountList
+	FindIssuesByPriority(int64, int) map[string]IssueGroup
 }
 
 type Issue struct {
@@ -38,12 +38,15 @@ type IssueGroup struct {
 }
 
 type IssueCount struct {
-	Groups      map[string]IssueGroup
-	Critical    int
-	Alert       int
-	Warning     int
-	MediaCount  CountList
-	StatusCount CountList
+	Groups         map[string]IssueGroup
+	Critical       int
+	Alert          int
+	Warning        int
+	MediaCount     CountList
+	StatusCount    CountList
+	CriticalIssues map[string]IssueGroup
+	AlertIssues    map[string]IssueGroup
+	WarningIssues  map[string]IssueGroup
 }
 
 type Paginator struct {
@@ -71,20 +74,23 @@ func NewService(s IssueStore) *IssueService {
 
 func (s *IssueService) GetIssuesCount(crawlID int64) *IssueCount {
 	c := &IssueCount{
-		Groups:      s.store.FindIssues(crawlID),
-		MediaCount:  s.store.CountByMediaType(crawlID),
-		StatusCount: s.store.CountByStatusCode(crawlID),
+		MediaCount:     s.store.CountByMediaType(crawlID),
+		StatusCount:    s.store.CountByStatusCode(crawlID),
+		CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
+		AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
+		WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
 	}
 
-	for _, v := range c.Groups {
-		switch v.Priority {
-		case Critical:
-			c.Critical += v.Count
-		case Alert:
-			c.Alert += v.Count
-		case Warning:
-			c.Warning += v.Count
-		}
+	for _, v := range c.CriticalIssues {
+		c.Critical += v.Count
+	}
+
+	for _, v := range c.AlertIssues {
+		c.Alert += v.Count
+	}
+
+	for _, v := range c.WarningIssues {
+		c.Warning += v.Count
 	}
 
 	return c

@@ -89,4 +89,4 @@ ERROR_NO_INDEXABLE: Non indexable pages
 ERROR_NO_INDEXABLE_DESC: Pages using the noindex attribute won't be indexed by search engines, this is usually added to non important pages that we don't wan't to appear in search results. It may be worth reviewing them to make sure important pages are not using this attribute.
 
 ERROR_HREFLANG_NO_INDEXABLE: Hreflang to a non indexable page
-ERROR_HREFLANG_NO_INDEXABLE_DESC: Hreflangs should link to indexable pages, linking them to pages using the <i>noindex</i> attribute will confuse search engines.
+ERROR_HREFLANG_NO_INDEXABLE_DESC: Hreflangs should link to indexable pages, linking them to pages using the noindex attribute will confuse search engines.

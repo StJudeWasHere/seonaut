@@ -4,76 +4,67 @@
 	<span class="title">Projects</span>
 </div>
 
-<div style="background-color: white; overflow: auto">
+<div class="project-container">
 	<div class="content">
 
-		<div class="project" style="background-color: #F7E497; padding: 1.5rem;display: flex;">
-			<a href="/new-project" style="border: none; text-align:center; width: 25%; background-color: rgba(256,256,256,.3); padding: 1.5rem 1.5rem; border-radius: 15px; margin-right: 3rem">
-			<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg>
-			<p>
-				<span style="font-size: 1rem; border: none">Add Project</span>
-			</p>
+		<div class="project project-add">
+			<a href="/new-project" class="project-add-button">
+				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg>
+				<p>Add Project</p>
 			</a>
-			<div style="font-weight: 300">
+			<div>
 				<h2>Welcome to SEOnaut</h2>
 				{{ $projects := len .Data.Projects }}
 				{{ if eq $projects 0 }}
 					You don't have any project yet, start now by adding one!
 				{{ else if eq $projects 1}}
-					You have currently one project.
+					You currently have one project.
 				{{ else }}
-					You have currently {{ $projects }} projects.
+					You currently have {{ $projects }} projects.
 				{{ end }}
-				
-				
 			</div>
 		</div>
-		
+
 	{{ range .Data.Projects }}
-	<div>
-		<div class="project" style="display: flex;">
-			<div class="col" style="display: block; margin:0;padding:0;box-sizing: border-box;">
-				<div style="display: flex; align-items: center;">
-<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-			<h2 class="project-title" style="margin-left: 1rem; vertical-align: baseline">{{ .Project.URL }}</h2>
-		</div>
-			{{ if .Crawl.Id }}
-				{{ if .Crawl.IssuesEnd.Valid }}
+
+		<div class="project">
+			<div class="col">
+				<div class="project-title">
+					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+					<h2>{{ .Project.URL }}</h2>
+				</div>
+			
+				{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
 					{{ if eq .Crawl.TotalURLs 0 }}
 						<p class="error">The SEOnaut bot could not crawl your site.</p>
 					{{ else }}
-
-						<p class="project-buttons" style="display: flex">
-							<a class="button" style="margin-right:1rem;box-sizing: border-box;background-color: #B70F57; color: white; border: none;" href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
-							<a class="button" style="box-sizing: border-box;background-color: #B70F57; color: white; border: none" href="/issues?pid={{ .Project.Id }}">View Issues</a>
+						<p class="project-buttons">
+							<a class="button" href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
+							<a class="button" href="/issues?pid={{ .Project.Id }}">View Issues</a>
 						</p>
 					{{ end }}
 				{{ end }}
-			{{ end }}
+			</div>
+
+			<div class="col">
+				{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
+					<a class="project-link" href="/download?pid={{ .Project.Id }}">↓ Download crawled URLs</a><br>
+					<a class="project-link" href="/sitemap?pid={{ .Project.Id }}">↓ Download sitemap.xml</a>
+				{{ end }}
+
+				{{ if (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid)) }}
+					<a class="project-crawl" href="/crawl?pid={{ .Project.Id }}">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg>
+						<span>Crawl now</span>
+					</a>
+				{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
+					<p class="project-crawl">Crawling...</p>
+				{{ end }}
+			</div>
 		</div>
-		<div class="col" style="display: block; margin: 0;padding:0; position:relative">
-
-			{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
-				<a style="color: #B70F57; border: none" href="/download?pid={{ .Project.Id }}">↓ Download crawled URLs</a>
-				<br>
-				<a style="color: #B70F57; border: none" href="/sitemap?pid={{ .Project.Id }}">↓ Download sitemap.xml</a>
-			{{ end }}
-
-			{{ if (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid)) }}
-									<a style="display: flex; position:absolute; bottom: 0;left:0;border: 0" href="/crawl?pid={{ .Project.Id }}"> <svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg> <span style="margin-left: 1rem;">Crawl now</span></a>
-									
-			{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
-				<p style="display: flex; position:absolute; bottom: 0;left:0;border: 0; margin: 0">Crawling...</p>
-					{{ end }}
-
-
-		</div>
-		</div>
-	</div>
 	{{ end }}
-	
 
-</div>
+	</div>
 </div>
 
 {{ template "footer" . }}

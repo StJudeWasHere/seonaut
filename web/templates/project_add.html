@@ -1,37 +1,73 @@
 {{ template "head" . }}
 
 <div class="content">
-	<h1 class="title">Add Project</h1>
 	<div class="action">
-		<a href="/" style="font-size: 1rem">&larr; Back</a>
+		<a href="/">Projects</a> / <span class="title">Add</span>
 	</div>
 </div>
 
-<div class="content">
-	<form method="POST">
-		<label for="url">URL:</label>
-		<input type="url" name="url" autofocus>
-		{{ if .Data.Error }}
-			<p class="error">The URL is not valid.</p>
-		{{ end }}
-		<p>
-			<input type="checkbox" value="1" name="ignore_robotstxt">
-			<label class="checkbox" for="ignore_robotstxt">Ignore robots.txt</label>
-			<br><small>If checked the crawler will bypass any restriction you have set in your robots file. </small>
-		</p>
-		<p>
-			<input type="checkbox" value="1" name="follow_nofollow">
-			<label class="checkbox" for="follow_nofollow">Follow <i>nofollow</i> internal links</label>
-			<br><small>If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag. </small>
-		</p>
-		<p>
-			<input type="checkbox" value="1" name="include_noindex">
-			<label class="checkbox" for="include_noindex">Include <i>noindex</i> pages in the report</label>
-			<br><small>If checked the pages with the <i>noindex</i> attribute will also be included in the report. </small>
-		</p>
+<div class="project-add-container">
+	<div class="content">
+		<div class="project-form-container">
 
-		<input type="submit" value="Add Project">
-	</form>
+			<form method="POST" >
+				<div class="flex-container">
+
+					<div class="project-add-col">
+						<div class="project-title bottom-margin">
+							<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+							<h2>Add Project</h2>
+						</div>
+
+						<label for="url">URL:</label>
+						<input type="url" name="url" autofocus>
+						<small>Full project URL including <i>http://</i> or <i>https://</i></small>
+						{{ if .Data.Error }}
+							<p class="error">The URL is not valid.</p>
+						{{ end }}
+
+						<input type="submit" value="Add Project">
+					</div>
+
+					<div class="project-add-col">
+						<p >
+							<div class="toggle-container">
+								<label class="toggle" >
+									<input type="checkbox" value="1" name="ignore_robotstxt">
+									<span class="slider"></span>
+								</label>
+								<span class="label" >Ignore robots.txt</span>
+							</div>
+							<small class="toggle-help">If checked the crawler will bypass any restriction you have set in your robots file. </small>
+						</p>
+
+						<p>
+							<div class="toggle-container">
+								<label class="toggle" >
+									<input type="checkbox" value="1" name="follow_nofollow">
+									<span class="slider"></span>
+								</label>
+								<span class="label">Follow <i>nofollow</i> internal links</span>
+							</div>
+							<small class="toggle-help">If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag. </small>
+						</p>
+
+						<p>
+							<div class="toggle-container">
+								<label class="toggle" >
+									<input type="checkbox" value="1" name="include_noindex">
+									<span class="slider"></span>
+								</label>
+								<span class="label">Include <i>noindex</i> pages in the report</span>
+							</div>
+							<small class="toggle-help">If checked the pages with the <i>noindex</i> attribute will also be included in the report. </small>
+						</p>
+
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
 </div>
 
 {{ template "footer" . }}

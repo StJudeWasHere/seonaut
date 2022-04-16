@@ -102,7 +102,7 @@ func (app *App) requireAuth(f func(w http.ResponseWriter, r *http.Request)) http
 			isAuthenticated := session.Values["authenticated"].(bool)
 			if isAuthenticated {
 				session, _ := app.cookie.Get(r, "SESSION_ID")
-				session.Options.MaxAge = 60 * 15
+				session.Options.MaxAge = 60 * 60 * 48
 				session.Save(r, w)
 				uid := session.Values["uid"].(int)
 				user := app.userService.FindById(uid)

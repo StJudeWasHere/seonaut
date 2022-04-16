@@ -10,8 +10,13 @@
 	</div>
 </div>
 
+<div class="issue-panel">
 <div class="content">
-	<p class="list-header">URLs</p>
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>URLs</h1>
+	</div>
+	
 	{{ if .PaginatorView.PageReports }}
 		<ul class="url-list">
 		{{ $pid := .ProjectView.Project.Id }}
@@ -21,7 +26,8 @@
 				<div>
 					{{ if .Title }}{{ .Title }}<br />{{ end }}
 					<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
-				<div>
+				</div>
+				<div><a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">→ View details</a></div>
 			</li>
 		{{ end }}
 	</ul>
@@ -30,14 +36,14 @@
 				<div class="prev">
 				{{ if .PaginatorView.Paginator.PreviousPage }}
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.PreviousPage }}">
-						← previous page
+						← Previous page
 					</a>
 				{{ end }}
 				</div>
 				<div class="next">
 				{{ if .PaginatorView.Paginator.NextPage }}
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.NextPage }}">
-						next page →
+						Next page →
 					</a>
 				{{ end }}
 				</div>
@@ -46,6 +52,7 @@
 	{{ else }}
 		<p><b>Everything is ok</b></p>
 	{{ end }}
+</div>
 </div>
 {{ end }}
 

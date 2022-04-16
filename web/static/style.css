@@ -206,23 +206,37 @@ button {
 .url-list li {
 	background-color: white;
 	margin-bottom: 0rem;
-	padding: 1rem 1rem;
-	border-top: 1px solid #f0f0f0; ;
-	border-left: 1px solid #f0f0f0; ;
-	box-shadow: 5px 5px #f0f0f0;
-	border-radius: 5px;
+	padding: 1.5rem 1rem;
+	display: flex;
+	align-items: center;
 }
-.url-list li:nth-child(even) {
+.url-list li:nth-child(odd) {
 	background-color: #f7fbfc;
 }
 .url-list li.url {
 	padding: 0.5rem 1rem;
 	word-wrap: break-word;
 }
+.url-list div:nth-child(1) {
+	width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+	max-width: 100ch;
+	white-space: nowrap;
+}
+.url-list div:nth-child(2) {
+	text-align: right;
+	width: 30%;
+	align-items:center;
+}
+.url-list div:nth-child(2) a {
+	color: #B70F57;
+}
 .url-list a {
 	color: var(--primary-color);
 	text-decoration: none;
 	font-weight: 300;
+	border: 0;
 }
 .url-list .description {
 	font-size: .8rem;

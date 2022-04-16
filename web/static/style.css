@@ -381,6 +381,7 @@ button {
 	margin-bottom: 0;
 }
 .issue-panel {
+	min-height: 100%;
 	background-color: white;
 	padding-top: 3rem;
 	overflow: auto;

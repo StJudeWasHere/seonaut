@@ -22,7 +22,7 @@ ERROR_REDIRECT_CHAIN_DESC: Redirect chains are URLs that redirect to other URLs 
 ERROR_REDIRECT_LOOP: Redirect loop
 ERROR_REDIRECT_LOOP_DESC: Redirect loops are a couple of URLs that redirect to each other creating a never ending loop of redirects.
 
-ERROR_DUPLICATED_TITLE: Duplicate Title
+ERROR_DUPLICATED_TITLE: Duplicate title
 ERROR_DUPLICATED_TITLE_DESC: The title tag is considered one of the most important elements for on-page SEO. If multiple pages have the same title, they will compete for a given search query confusing search engines.
 
 ERROR_LONG_TITLE: Long title
@@ -64,7 +64,7 @@ ERROR_HTTP_LINKS_DESC: Links from secure HTTPS pages to unsecured HTTP ones. Hav
 ERROR_HREFLANG_RETURN: Missing hreflang
 ERROR_HREFLANG_RETURN_DESC: When referencing a page with hreflang, that page must reference back with a hreflang tag too.
 
-ERROR_TOO_MANY_LINKS: Too Many Links
+ERROR_TOO_MANY_LINKS: Too many Links
 ERROR_TOO_MANY_LINKS_DESC: The SEO link juice is divided between all the links in the page, the more links in a page the less amount of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the nofollow attribute.
 
 ERROR_INTERNAL_NOFOLLOW: Internal nofollow links

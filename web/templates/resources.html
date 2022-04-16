@@ -7,121 +7,171 @@
 		<a href="/">Projects</a> /
 		<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
 		<a href="/issues?pid={{ .ProjectView.Project.Id }}">Issues</a> /
-		<a href="/issues/view?cid={{ .ProjectView.Crawl.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a> /
+		<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a> /
 		<span class="title">URL</span>
 	</div>
 </div>
 
+<div class="issue-panel">
 <div class="content">
-	<div class="box">
-	<h2 class="pagereport-title list-header">
-		{{ .PageReportView.PageReport.URL }} <a href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="link-out">↗</a>
-	</h2>
+	<div style="padding: 1.5rem; font-weight:300; border-radius: 10px; margin-bottom: 3rem; background:linear-gradient(to right, #F7E497, #fbf8e0)">
 
-	<div class="tabs">
-		<ul>
-			<li><a class="button{{ if eq .Tab "details" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=details">Details</a></li>
 
-			<li><a class="button{{ if eq .Tab "inlinks" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks">Inlinks</a></li>
+		<div style="display:flex;align-items:stretch;">
 
-			<li><a class="button {{ if eq .Tab "internal" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal">Internal links</a></li>
 
-			<li><a class="button {{ if eq .Tab "external"}} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external">External links</a></li>
+			<div style="display:flex; flex-direction:column; width: 75%">
+					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12.02 0c6.614.011 11.98 5.383 11.98 12 0 6.623-5.376 12-12 12-6.623 0-12-5.377-12-12 0-6.617 5.367-11.989 11.981-12h.039zm3.694 16h-7.427c.639 4.266 2.242 7 3.713 7 1.472 0 3.075-2.734 3.714-7m6.535 0h-5.523c-.426 2.985-1.321 5.402-2.485 6.771 3.669-.76 6.671-3.35 8.008-6.771m-14.974 0h-5.524c1.338 3.421 4.34 6.011 8.009 6.771-1.164-1.369-2.059-3.786-2.485-6.771m-.123-7h-5.736c-.331 1.166-.741 3.389 0 6h5.736c-.188-1.814-.215-3.925 0-6m8.691 0h-7.685c-.195 1.8-.225 3.927 0 6h7.685c.196-1.811.224-3.93 0-6m6.742 0h-5.736c.062.592.308 3.019 0 6h5.736c.741-2.612.331-4.835 0-6m-12.825-7.771c-3.669.76-6.671 3.35-8.009 6.771h5.524c.426-2.985 1.321-5.403 2.485-6.771m5.954 6.771c-.639-4.266-2.242-7-3.714-7-1.471 0-3.074 2.734-3.713 7h7.427zm-1.473-6.771c1.164 1.368 2.059 3.786 2.485 6.771h5.523c-1.337-3.421-4.339-6.011-8.008-6.771"/></svg>
 
-			<li><a class="button {{ if eq .Tab "redirections" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections">Redirections</a></li>
+				<div style="flex:auto;display:flex;align-items:center;">
+<div style="margin-top: -2rem">
+				{{ if .PageReportView.PageReport.Title }}
+				<p style="font-weight:400">{{ .PageReportView.PageReport.Title }} </p>
+				{{ end }}
+				<p><small>{{ .PageReportView.PageReport.URL }} <a style="color: #B70F57" href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="link-out" >↗</a></small></p>
+				<p>
+				</div>
+				</div>
+			</div>
+			
+				<div style="width: 25%; padding: 1.5rem; margin-left: 3rem; background-color: rgba(256,256,256,.3);">
+			<ul style="list-style:none; padding-left: 0">
+				<li><a style="color: #B70F57; border: none" class="{{ if eq .Tab "details" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=details">→ Details</a></li>
 
-			<li><a class="button {{ if eq .Tab "images" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=images">Images</a></li>
+				<li><a style="color: #B70F57; border: none" class="{{ if eq .Tab "inlinks" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks">→ Inlinks</a></li>
 
-			<li><a class="button {{ if eq .Tab "scripts" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=scripts">Scripts</a></li>
+				<li><a style="color: #B70F57; border: none" class=" {{ if eq .Tab "internal" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal">→ Internal links</a></li>
 
-			<li><a class="button{{ if eq .Tab "styles" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=styles">Styles</a></li>
-		</ul>
+				<li><a style="color: #B70F57; border: none" class=" {{ if eq .Tab "external"}} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external">→ External links</a></li>
+
+				<li><a style="color: #B70F57; border: none" class=" {{ if eq .Tab "redirections" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections">→ Redirections</a></li>
+
+				<li><a style="color: #B70F57; border: none" class=" {{ if eq .Tab "images" }} active{{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=images">→ Images</a></li>
+
+				<li><a style="color: #B70F57; border: none" class=" {{ if eq .Tab "scripts" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=scripts">→ Scripts</a></li>
+
+				<li><a style="color: #B70F57; border: none" class="{{ if eq .Tab "styles" }} active {{ end }}" href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=styles">→ Styles</a></li>
+			</ul>
+
+				</div>
+			
+			
+		</div>
 	</div>
-</div>
+
 	{{ $cid := .ProjectView.Crawl.Id }}
 	{{ $pid := .ProjectView.Project.Id }}
 	{{ $eid := .Eid }}
 	
 	{{ if eq .Tab "details" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>Details</h1>
+	</div>
+	
 	<div class="report-block">
 		<div class="page-details">
 			{{ with .PageReportView.PageReport }}
-			<div class="report-box">
-				<div><b>Status Code:</b> <small>{{ .StatusCode }}</small><br></div>
-				<div><b>Content Type:</b> <small>{{ .ContentType }}</small><br></div>
-
-				{{ if .Size }}
-					<div><b>Size:</b> <small>{{ .SizeInKB }}KB</small><br></div>
-				{{ end }}
-
-				{{ if .Robots }}
-					<div><b>Robots:</b> <small>{{ .Robots }}</small><br></div>
-				{{ end }}
-
-				{{ if .RedirectURL }}
-					<div><b>Redirect URL:</b> <small>{{ .RedirectURL }}</small><br></div>
-				{{ end }}
-
-				{{ if .Refresh }}
-					<div><b>Refresh:</b> <small>{{ .Refresh }}</small><br></div>
-				{{ end }}
-
-				{{ if .Canonical }}
-					<div><b>Canonical:</b> <small>{{ .Canonical }}</small><br></div>
-				{{ end }}
-
-				{{ if .Lang }}
-					<div><b>Language:</b> <small>{{ .Lang }}</small><br></div>
-				{{ end }}
-
-				{{ if .Hreflangs }}
-					<div>
-						<b>Hreflang:</b>
-							<ul>
-							{{ range .Hreflangs }}
-								<li>
-									{{ if .Lang }}{{ .Lang }}:{{ end }}
-									<span class="url">{{ .URL }}</span>
-								</li>
-							{{ end }}
-							</ul>
-						</div>
-				{{ end }}
-			</div>
-
-			{{ if or .Title .Description .H1 .H2 }}
-				<div class="report-box">
-					{{ if .Title }}
-					<div><b>Title:</b> <small>{{ .Title }}</small><br></div>
-					{{ end }}
-
-					{{ if .Description }}
-						<div><b>Description:</b> <small>{{ .Description }}</small><br></div>
-					{{ end }}
-
-					{{ if .H1 }}
-						<div><b>H1:</b> <small>{{ .H1 }}</small><br></div>
-					{{ end }}
-
-					{{ if .H2 }}
-						<div><b>H2:</b> <small>{{ .H2 }}</small><br></div>
-					{{ end }}
-
-					{{ if .Words }}
-						<div><b>Words:</b> <small>{{ .Words }}</small><br></div>
-					{{ end }}
-				{{ end }}
+			<div class="report-box" >
+				
+				<div class="url-detail">
+					<div>Status Code:</div>
+					<div><small>{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}</small></div>
 				</div>
+
+				<div class="url-detail">
+					<div>Content Type:</div>
+					<div><small>{{ if .ContentType }}{{ .ContentType }}{{ else }}-{{ end }}</small></div>
+				</div>
+
+				<div class="url-detail">
+					<div>Size:</div><div> <small>
+						{{ if .Size }}{{ .SizeInKB }}KB{{ else }} - {{ end }}</small><br></div>
+				</div>
+
+				<div class="url-detail">
+					<div>Robots: </div><div><small>
+						{{ if .Robots }}{{ .Robots }}{{ else }} - {{ end }}</small><br></div>
+				</div>
+
+				
+				<div class="url-detail">
+					<div>Redirect URL:</div>
+					<div><small>{{ if .RedirectURL }}{{ .RedirectURL }}{{ else }} - {{ end }}</small></div>
+				</div>
+
+				<div class="url-detail">
+					<div>Refresh: </div>
+					<div><small>{{ if .Refresh }}{{ .Refresh }}{{ else }} - {{ end }}</small></div>
+				</div>
+
+				<div class="url-detail">
+					<div>Canonical:</div>
+					<div><small>{{ if .Canonical }}{{ .Canonical }}{{ else }} - {{ end }}</small></div>
+				</div>
+
+				<div class="url-detail">
+					<div>Language:</div>
+					<div><small>{{ if .Lang }}{{ .Lang }}{{ else }} - {{ end }}</small></div>
+				</div>
+
+				<div class="url-detail">
+					<div>Hreflang:</div>
+					<div>
+						{{ if .Hreflangs }}
+						<table class="url-detail-table">
+							<tr>
+								<th>Language</th>
+								<th>URL</th>
+							</tr>
+							{{ range .Hreflangs }}
+							<tr><td>{{ if .Lang }}{{ .Lang }}{{ end }}</td><td><span class="url">{{ .URL }}</span></td></tr>
+							{{ end }}
+						</table>
+						{{ end }}
+					</div>
+				</div>
+
+				<div class="url-detail">
+					<div>Title:</div>
+					<div><small>{{ if .Title }}{{ .Title }}{{ else }} - {{ end }}</small></div>
+				</div>
+
+				<div class="url-detail">
+					<div>Description:</div>
+					<div><small>{{ if .Description }}{{ .Description }}{{ else }} - {{ end }}</small></div>
+					</div>
+
+					<div class="url-detail">
+						<div>H1:</div>
+						<div><small>{{ if .H1 }}{{ .H1 }}{{ else }}-{{ end }}</small></div>
+					</div>
+
+					<div class="url-detail">
+						<div>H2:</div>
+						<div><small>{{ if .H2 }}{{ .H2 }}{{ else }} - {{ end }}</small></div>
+					</div>
+
+					<div class="url-detail">
+						<div>Words:</div>
+						<div><small>{{ if .Words }}{{ .Words }}{{ else }} - {{ end }}</small></div>
+					</div>
+			</div>
 			{{ end }}
 
 			<div class="report-box">
+				<div class="section-title">
+					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+					<h1>Issues in this URL</h1>
+				</div>
 				{{ if .PageReportView.ErrorTypes }}
-				<b>Issues in this URL:</b>
 				<ul class="pagereport-errors">
 				{{ range .PageReportView.ErrorTypes }}
 						<li><a href="/issues/view?pid={{ $pid }}&eid={{ . }}">{{ trans . }}</a></li>
 				{{ end }}
 				</ul>
+				{{ else }}
+				<p>No issues where found in this URL.</p>
 				{{ end }}
 			</div>
 		</div>
@@ -129,121 +179,162 @@
 	{{ end }}
 
 	{{ if eq .Tab "inlinks" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>Links to this URL</h1>
+	</div>
+	
 		<div class="report-block">
 			{{ if .PageReportView.InLinks }}
 			<ul class="url-list">
 				{{ range .PageReportView.InLinks }}
 					<li>
+						<div>
 						{{ if .Title }}{{ .Title }}<br/>{{ end }}
-						<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+						</div>
+						<div><a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">→ View details</a></div>
 					</li>
 				{{ end }}
 			</ul>
 			{{ else }}
-				<p class="center"><small>There are no links to this page.</small></p>
+				<p ><small>There are no links to this page.</small></p>
 			{{ end }}
 		</div>
 	{{ end }}
 
 	{{ if eq .Tab "redirections" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>Redirecting to this URL</h1>
+	</div>
 		<div class="report-block">
 			{{ if .PageReportView.Redirects }}
 				<ul class="url-list">
 					{{ range .PageReportView.Redirects }}
 						<li>
+							<div>
 							{{ if .Title }}{{ .Title }}<br/>{{ end }}
-							<a href="/resources?cid={{ $cid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+							<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+							</div>
+							<div><a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">→ View details</a></div>
 						</li>
 					{{ end }}
 				</ul>
 			{{ else }}
-				<p class="center"><small>There are no redirects to this page.</small></p>
+				<p ><small>There are no redirects to this page.</small></p>
 			{{ end }}
 		</div>
 	{{ end }}
 
 	{{ if eq .Tab "internal" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>Internal links</h1>
+	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.Links }}
 				<ul class="url-list">
 					{{ range .PageReportView.PageReport.Links }}
 						<li>
+							<div>
 							{{ if .Text }}{{ .Text }}<br/>{{ end }}
 							<span class="url">{{ .URL }}</span>
 							{{ if .NoFollow }}<br><span class="alert"><small>nofollow</small></span>{{ end }}
+						</div>
 						</li>
 					{{ end }}
 				</ul>
 			{{ else }}
-				<p class="center"><small>There are no internal links in this page.</small></p>
+				<p ><small>There are no internal links in this page.</small></p>
 			{{ end }}
 		</div>
 	{{ end }}
 
 	{{ if eq .Tab "external" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>External links</h1>
+	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.ExternalLinks }}
 			<ul class="url-list">
 				{{ range .PageReportView.PageReport.ExternalLinks }}
 					<li>
+						<div>
 						{{ if .Text }}{{ .Text }} <br> {{ end }}
 						<span class="url">{{ .URL }}</span>
 						{{ if not .NoFollow }}<br><span class="alert"><small>follow</small></span>{{ end }}
+						</div>
 					</li>
 				{{ end }}
 			</ul>
 			{{ else }}
-				<p class="center"><small>There are no external links in this page.</small></p>
+				<p ><small>There are no external links in this page.</small></p>
 			{{ end }}
 		</div>
 	{{ end }}
 
 	{{ if eq .Tab "images" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>Images</h1>
+	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.Images }}
 			<ul class="url-list">
 				{{ range .PageReportView.PageReport.Images }}
 					<li>
+						<div>
 						{{ if .Alt}}{{ .Alt }}<br>{{ end }}
 						<span class="url">{{ .URL }}</span>
 						{{ if not .Alt}}<br><span class="alert">Missing or empty alt attribute</span>{{ end }}
+						</div>
 					</li>
 				{{ end }}
 			</ul>
 			{{ else }}
-				<p class="center"><small>There are no images in this page.</small></p>
+				<p ><small>There are no images in this page.</small></p>
 			{{ end }}
 		</div>
 	{{ end }}
 
 	{{ if eq .Tab "scripts" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>Scripts</h1>
+	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.Scripts }}
 			<ul class="url-list">
 				{{ range .PageReportView.PageReport.Scripts }}
-					<li class="url">{{ . }}</li>
+					<li><div><span class="url">{{ . }}</span></div></li>
 				{{ end }}
 			</ul>
 			{{ else }}
-				<p class="center"><small>There are no scripts in this page.</small></p>
+				<p ><small>There are no scripts in this page.</small></p>
 			{{ end }}
 		</div>
 	{{ end }}
 	
 	{{ if eq .Tab "styles" }}
+	<div class="section-title">
+		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+		<h1>Styles</h1>
+	</div>
 		<div class="report-block">
 		{{ if .PageReportView.PageReport.Styles }}
 			<ul class="url-list">
 				{{ range .PageReportView.PageReport.Styles }}
-				<li class="url">{{ . }}</li>
+					<li><div><span class="url">{{ . }}</span></div></li>
 				{{ end }}
 			</ul>
 		{{ else }}
-			<p class="center"><small>There are no styles in this page.</small></p>
+			<p ><small>There are no styles in this page.</small></p>
 		{{ end }}
 		</div>
 	{{ end }}
-
+</div>
 </div>
 {{ end }}
 {{ template "footer" . }}

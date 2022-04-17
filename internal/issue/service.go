@@ -97,7 +97,8 @@ func (s *IssueService) GetIssuesCount(crawlID int64) *IssueCount {
 
 func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (PaginatorView, error) {
 	paginator := Paginator{
-		TotalPages: s.store.GetNumberOfPagesForIssues(crawlId, issueId),
+		TotalPages:  s.store.GetNumberOfPagesForIssues(crawlId, issueId),
+		CurrentPage: currentPage,
 	}
 
 	if currentPage < 1 || currentPage > paginator.TotalPages {

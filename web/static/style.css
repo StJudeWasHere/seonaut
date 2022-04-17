@@ -373,12 +373,19 @@ button {
 
 .link-out {
 	border-bottom: none;
+	color: white;
 }
 .pagereport-title {
 	margin-bottom: 3rem;
 }
 .pagereport-errors {
 	margin-bottom: 0;
+	list-style: none;
+	padding: 0;
+}
+.pagereport-errors a {
+	color: #B70F57;
+	border: 0;
 }
 .issue-panel {
 	min-height: 100%;
@@ -525,9 +532,9 @@ a.button {
 .url-header .col1 {
 	width: 75%;
 }
-.url-header .col-icon {
-	width: 2rem;
-	margin-right: 1.5rem;
+.url-header p {
+	margin: 0;
+	font-weight:400;
 }
 .url-header .url-button {
 	text-align: center;
@@ -537,11 +544,13 @@ a.button {
 	color: white;
 	border:0;
 	font-weight: 300
+	
 }
 .url-header .url-button a {
 	display: inline-block;
 	color: white;
 	border: 0;
+	padding: 1rem;
 }
 
 .url-header svg {
@@ -555,11 +564,19 @@ summary {
 	border-radius: 5px;
 	list-style: none;
 }
+.details-container {
+	background-color: rgba(256,256,256,.3);
+	width: 25%;
+	padding: 0 1.5rem;
+	border-radius: 15px;
+}
 details {
+	position:relative;
 	padding: 0;
 	margin: 0;
 }
 details ul {
+	position:absolute;
 	background-color: white;
 	box-shadow: 2px 2px 3px rgba(0,0,0,.2);
 	width: 100%;
@@ -685,7 +702,6 @@ a.active {
 	margin-bottom: 3rem;
 	margin-top: .5rem
 }
-
 .box {
 	border-radius: 5px;
 	box-shadow: 5px 5px #f0f0f0;

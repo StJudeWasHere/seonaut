@@ -17,20 +17,13 @@
 	<div class="url-header">
 
 		<div class="col1">
-			<div style="display:flex; margin-right: 1.5rem">
-				<div>
-											<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12.02 0c6.614.011 11.98 5.383 11.98 12 0 6.623-5.376 12-12 12-6.623 0-12-5.377-12-12 0-6.617 5.367-11.989 11.981-12h.039zm3.694 16h-7.427c.639 4.266 2.242 7 3.713 7 1.472 0 3.075-2.734 3.714-7m6.535 0h-5.523c-.426 2.985-1.321 5.402-2.485 6.771 3.669-.76 6.671-3.35 8.008-6.771m-14.974 0h-5.524c1.338 3.421 4.34 6.011 8.009 6.771-1.164-1.369-2.059-3.786-2.485-6.771m-.123-7h-5.736c-.331 1.166-.741 3.389 0 6h5.736c-.188-1.814-.215-3.925 0-6m8.691 0h-7.685c-.195 1.8-.225 3.927 0 6h7.685c.196-1.811.224-3.93 0-6m6.742 0h-5.736c.062.592.308 3.019 0 6h5.736c.741-2.612.331-4.835 0-6m-12.825-7.771c-3.669.76-6.671 3.35-8.009 6.771h5.524c.426-2.985 1.321-5.403 2.485-6.771m5.954 6.771c-.639-4.266-2.242-7-3.714-7-1.471 0-3.074 2.734-3.713 7h7.427zm-1.473-6.771c1.164 1.368 2.059 3.786 2.485 6.771h5.523c-1.337-3.421-4.339-6.011-8.008-6.771"/></svg>
-										</div>
-											<div style="margin-left: 1.5rem">
 				{{ if .PageReportView.PageReport.Title }}
-				<p style="font-weight:400; margin: 0 0 1.5rem 0">{{ .PageReportView.PageReport.Title }} </p>
+				<p>{{ .PageReportView.PageReport.Title }} </p>
 				{{ end }}
-				<p style="margin: 0"><small>{{ .PageReportView.PageReport.URL }} <a style="color: white" href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="link-out" >↗</a></small></p>
-				</div>
-			</div>
+				<p><small>{{ .PageReportView.PageReport.URL }} <a href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="link-out" >↗</a></small></p>
 		</div>
-		<div style="background-color: rgba(256,256,256,.3); width: 25%; padding: 0 1.5rem;border-radius: 15px">
-			<details style="position:relative">
+		<div class="details-container">
+			<details>
 				<summary>
 				{{ if eq .Tab "details" }} Details {{ end }}
 				{{ if eq .Tab "inlinks" }} Inlinks {{ end }}
@@ -41,7 +34,7 @@
 				{{ if eq .Tab "scripts" }} Scripts {{ end }}
 				{{ if eq .Tab "styles" }} Styles {{ end }}
 				</summary>
-				<ul style="position:absolute">
+				<ul>
 			<li><a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=details">→ Details</a></li>
 
 			<li><a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks">→ Inlinks</a></li>
@@ -60,20 +53,13 @@
 		</ul>
 		</details>
 		</div>
-		
 	</div>
-	
-	
+
 	{{ $cid := .ProjectView.Crawl.Id }}
 	{{ $pid := .ProjectView.Project.Id }}
 	{{ $eid := .Eid }}
-	
+
 	{{ if eq .Tab "details" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Details</h1>
-	</div>
-	
 	<div class="report-block">
 		<div class="page-details">
 			{{ $errorTypes := .PageReportView.ErrorTypes }}
@@ -170,7 +156,7 @@
 							{{ if $errorTypes }}
 							<ul class="pagereport-errors">
 							{{ range $errorTypes }}
-									<li><a href="/issues/view?pid={{ $pid }}&eid={{ . }}">{{ trans . }}</a></li>
+									<li><a href="/issues/view?pid={{ $pid }}&eid={{ . }}">→ {{ trans . }}</a></li>
 							{{ end }}
 							</ul>
 							{{ else }}
@@ -180,17 +166,12 @@
 					</div>
 			</div>
 			{{ end }}
-
 		</div>
 	</div>
 	{{ end }}
 
 	{{ if eq .Tab "inlinks" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Links to this URL</h1>
-	</div>
-	
+
 		<div class="report-block">
 			{{ if .PageReportView.InLinks }}
 			<ul class="url-list">
@@ -211,10 +192,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "redirections" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Redirecting to this URL</h1>
-	</div>
 		<div class="report-block">
 			{{ if .PageReportView.Redirects }}
 				<ul class="url-list">
@@ -235,10 +212,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "internal" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Internal links</h1>
-	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.Links }}
 				<ul class="url-list">
@@ -259,10 +232,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "external" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>External links</h1>
-	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.ExternalLinks }}
 			<ul class="url-list">
@@ -283,10 +252,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "images" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Images</h1>
-	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.Images }}
 			<ul class="url-list">
@@ -307,10 +272,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "scripts" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Scripts</h1>
-	</div>
 		<div class="report-block">
 			{{ if .PageReportView.PageReport.Scripts }}
 			<ul class="url-list">
@@ -325,10 +286,6 @@
 	{{ end }}
 	
 	{{ if eq .Tab "styles" }}
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Styles</h1>
-	</div>
 		<div class="report-block">
 		{{ if .PageReportView.PageReport.Styles }}
 			<ul class="url-list">

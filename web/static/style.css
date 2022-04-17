@@ -531,6 +531,7 @@ a.button {
 }
 .url-header .col1 {
 	width: 75%;
+	margin-right: 1.5rem;
 }
 .url-header p {
 	margin: 0;

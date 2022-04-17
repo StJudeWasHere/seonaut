@@ -211,12 +211,12 @@ button {
 .url-list li {
 	background-color: white;
 	margin-bottom: 0rem;
-	padding: 1.5rem 1rem;
+	padding: 1.5rem 1.5rem;
 	display: flex;
 	align-items: center;
 }
 .url-list li:nth-child(odd) {
-	background-color: #f7fbfc;
+	background-color: #f5f8f9;
 }
 .url-list li.url {
 	padding: 0.5rem 1rem;
@@ -491,13 +491,49 @@ a.button {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	background: linear-gradient(to right, #2C7D91, #80b1bd);
+	color: white;
+	border-radius: 10px;
+	padding: 1.5rem;
+	margin-bottom: 3rem;
+	display: flex;
+	align-items: center
 }
 
-.pagination .prev, .next {
+.pagination .prev , .pagination .next  {
 	width: 50%;
 }
-.next {
+.pagination .next {
 	text-align: right;
+}
+.pagination .prev a, .pagination .next a {
+	font-size: .8rem;
+	border: 0;
+	font-weight: 300;
+	color: white;
+}
+
+.url-header {
+	background: linear-gradient(to right, #2C7D91, #80b1bd);
+	color: white;
+	border-radius: 10px;
+	padding: 1.5rem;
+	margin-bottom: 3rem;
+	display: flex;
+	align-items: center
+}
+.url-header div {
+	width: 75%;
+}
+.url-header a {
+	text-align: center;
+	width: 25%;
+	background-color: rgba(256,256,256, .3);
+	border-radius: 15px;
+	padding:1.5rem;
+	color: white;
+	border:0;
+	font-weight: 300
 }
 
 .issues {
@@ -821,7 +857,7 @@ p.error {
 	padding: 1.5rem;
 }
 .url-detail:nth-child(odd) {
-	background-color: #f7fbfc;
+	background-color: #f5f8f9;
 }
 .url-detail div:nth-child(1) {
 	width: 25%;

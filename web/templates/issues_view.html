@@ -12,11 +12,11 @@
 
 <div class="issue-panel">
 <div class="content">
-	<div class="section-title">
-		<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-		<h1>Page {{ .PaginatorView.Paginator.CurrentPage }} of {{ .PaginatorView.Paginator.TotalPages }}</h1>
+	<div class="url-header">
+		<div><h2>{{ trans .Eid }}</h2></div>
+		<a href="/download?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">↓ Download URLs</a><br>
 	</div>
-	
+
 	{{ if .PaginatorView.PageReports }}
 		<ul class="url-list">
 		{{ $pid := .ProjectView.Project.Id }}
@@ -36,14 +36,15 @@
 				<div class="prev">
 				{{ if .PaginatorView.Paginator.PreviousPage }}
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.PreviousPage }}">
-						← Previous page
+						← prev
 					</a>
 				{{ end }}
 				</div>
+				<div><small>{{ .PaginatorView.Paginator.CurrentPage }}/{{ .PaginatorView.Paginator.TotalPages }}</small></div>
 				<div class="next">
 				{{ if .PaginatorView.Paginator.NextPage }}
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.NextPage }}">
-						Next page →
+						next →
 					</a>
 				{{ end }}
 				</div>

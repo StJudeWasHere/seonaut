@@ -13,8 +13,10 @@
 <div class="issue-panel">
 <div class="content">
 	<div class="url-header">
-		<div><h2>{{ trans .Eid }}</h2></div>
-		<a href="/download?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">↓ Download URLs</a><br>
+		<div class="col1" style="margin-left: 1.5rem"><h2>{{ trans .Eid }}</h2></div>
+		<div class="url-button">
+		<a  style="padding: 1rem" href="/download?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">↓ Download URLs</a>
+	</div>
 	</div>
 
 	{{ if .PaginatorView.PageReports }}

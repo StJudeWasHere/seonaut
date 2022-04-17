@@ -522,20 +522,59 @@ a.button {
 	display: flex;
 	align-items: center
 }
-.url-header div {
+.url-header .col1 {
 	width: 75%;
 }
-.url-header a {
+.url-header .col-icon {
+	width: 2rem;
+	margin-right: 1.5rem;
+}
+.url-header .url-button {
 	text-align: center;
 	width: 25%;
 	background-color: rgba(256,256,256, .3);
 	border-radius: 15px;
-	padding:1.5rem;
 	color: white;
 	border:0;
 	font-weight: 300
 }
+.url-header .url-button a {
+	display: inline-block;
+	color: white;
+	border: 0;
+}
 
+.url-header svg {
+	fill: white;
+}
+
+
+summary {
+	padding: 1rem;
+	cursor: pointer;
+	border-radius: 5px;
+	list-style: none;
+}
+details {
+	padding: 0;
+	margin: 0;
+}
+details ul {
+	background-color: white;
+	box-shadow: 2px 2px 3px rgba(0,0,0,.2);
+	width: 100%;
+	margin: 0 0 0 -1.5rem;
+	border-radius: 15px;
+	padding: 1.5rem;
+	list-style: none;
+}
+details ul li {
+	padding: .2rem 0;
+}
+details ul a {
+	color: #B70F57;
+	border: 0;
+}
 .issues {
 	margin-bottom: 1.5rem;
 	font-weight: 300;
@@ -655,7 +694,7 @@ a.active {
 }
 
 .report-box {
-	padding: 1.5rem 3rem;
+
 }
 
 .report-block {

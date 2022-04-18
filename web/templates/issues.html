@@ -9,14 +9,15 @@
 
 <div class="issue-panel">
 	<div class="content">
-
+		
 		{{ $pid := .ProjectView.Project.Id }}
 
 		<div class="critical-issues">
-			<div class="section-title">
-				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-				<h1>Critical Issues</h1>
+			<div class="issues-header">
+				<h2>Critical Issues</h2>
+				<p><small>Critical errors affecting your ranking. Fix them first.</small></p>
 			</div>
+			
 			{{ if .IssueCount.CriticalIssues }}
 			{{ range .IssueCount.CriticalIssues }}
 			<div class="issues error">
@@ -43,10 +44,12 @@
 		</div>
 
 		<div class="alert-issues">
-			<div class="section-title">
-				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-				<h1>Alerts</h1>
+
+			<div class="issues-header">
+				<h2>Alerts</h2>
+				<p><small>Issues that are holding your site back. Fix them next.</small></p>
 			</div>
+
 			{{ if .IssueCount.AlertIssues }}
 			{{ range .IssueCount.AlertIssues }}
 			<div class="issues alert">
@@ -72,9 +75,10 @@
 		</div>
 
 		<div class="notice-issues">
-			<div class="section-title">
-				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-				<h1>Notices</h1>
+
+			<div class="issues-header">
+				<h2>Warnings</h2>
+				<p><small>Issues you may want to keep an eye on.</small></p>
 			</div>
 
 			{{ if .IssueCount.WarningIssues }}

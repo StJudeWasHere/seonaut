@@ -532,6 +532,10 @@ a.button {
 .url-header .col1 {
 	width: 75%;
 	margin-right: 1.5rem;
+	display: block;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
 }
 .url-header p {
 	margin: 0;
@@ -926,14 +930,17 @@ p.error {
 	font-size:.8rem;
 }
 .url-detail-table th {
-	font-weight: 400;
+	font-weight: 600;
 	text-align: left;
 }
 .url-detail-table tr td {
 	font-weight: 300;
 	padding: .5rem 0;
+	display: inline-block;
 }
-
+.url-detail-table tr td:nth-child(2) {
+	width: 75%;
+}
 .url-detail-table tr td:nth-child(1) {
 	width: 25%;
 }

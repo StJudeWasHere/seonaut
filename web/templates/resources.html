@@ -18,9 +18,9 @@
 
 		<div class="col1">
 				{{ if .PageReportView.PageReport.Title }}
-				<p>{{ .PageReportView.PageReport.Title }} </p>
+				{{ .PageReportView.PageReport.Title }} <br>
 				{{ end }}
-				<p><small>{{ .PageReportView.PageReport.URL }} <a href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="link-out" >↗</a></small></p>
+				 <a href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="url link-out" >{{ .PageReportView.PageReport.URL }} ↗</a></small>
 		</div>
 		<div class="details-container">
 			<details>
@@ -117,7 +117,7 @@
 								<th>URL</th>
 							</tr>
 							{{ range .Hreflangs }}
-							<tr><td>{{ if .Lang }}{{ .Lang }}{{ end }}</td><td><span class="url">{{ .URL }}</span></td></tr>
+							<tr><td>{{ if .Lang }}{{ .Lang }}{{ end }}</td><td>{{ .URL }}</td></tr>
 							{{ end }}
 						</table>
 						{{ else }}

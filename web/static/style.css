@@ -47,7 +47,7 @@ body {
 	line-height: 1.6rem;
 	font-size: 1rem;
 	padding: 0;
-	background-color: var(--main-bg-color);
+	background-color: white;
 	margin:0;
 	text-rendering: optimizeLegibility;
 }
@@ -124,11 +124,13 @@ button {
 }
 /** CLASSES **/
 
+.content { padding: 0 3rem; }
 
 .action {
-	margin-bottom: 5rem;
+	padding-bottom: 5rem ;
 	line-height: 3rem;
 	font-size: 1.4rem;
+	background-color: var(--main-bg-color);
 }
 .action a {
 	font-weight: 300;
@@ -141,7 +143,8 @@ button {
 
 
 #header {
-	margin: 3rem 0 5rem 0;
+	padding: 3rem 0 5rem 0;
+	background-color: var(--main-bg-color);
 }
 
 #main {
@@ -160,7 +163,6 @@ button {
 	margin-right: 1.5rem;
 }
 
-.content { padding: 0 3rem; }
 
 .credentials {
 	width: 25rem;
@@ -436,7 +438,6 @@ button {
 }
 .chart-block {
 	background-color: white;
-	margin-bottom: 5rem
 }
 .crawl-chart-container {
 	background: -webkit-linear-gradient(to right, #F7E497, #fbf8e0);
@@ -745,6 +746,10 @@ a.active {
 
 /** CHARTS **/
 
+.secondary-container {
+	overflow: auto;
+background-color: var(--main-bg-color);
+}
 .light-chart-container {
 	background-color: white;
 	padding: 5rem 0;
@@ -806,7 +811,9 @@ a.active {
 .status-list li:nth-child(4) {border-left: 1rem solid #DF7A62;}
 
 .legend-block {
-	margin-bottom: 6rem;
+	padding-bottom: 5rem;
+	padding-top: 5rem;
+	background-color: var(--main-bg-color);;
 }
 
 .legend p {

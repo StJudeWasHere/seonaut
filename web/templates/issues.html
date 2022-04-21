@@ -1,10 +1,8 @@
 {{ template "head" . }}
 
 {{ with .Data }}
-<div class="content">
-	<div class="action">
-		<a href="/">Projects</a> / <a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> / <span class="title">Issues</span>
-	</div>
+<div class="content action">
+	<a href="/">Projects</a> / <a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> / <span class="title">Issues</span>
 </div>
 
 <div class="issue-panel">

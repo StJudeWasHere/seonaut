@@ -109,15 +109,16 @@
 					<div>Hreflang:</div>
 					<div>
 						{{ if .Hreflangs }}
-						<table class="url-detail-table">
-							<tr>
-								<th>Language</th>
-								<th>URL</th>
-							</tr>
-							{{ range .Hreflangs }}
-							<tr><td>{{ if .Lang }}{{ .Lang }}{{ end }}</td><td>{{ .URL }}</td></tr>
-							{{ end }}
-						</table>
+						<div class="hreflang-list">
+							<span>Language</span>
+							<span>URL</span>
+						</div>
+						{{ range .Hreflangs }}
+							<div class="hreflang-list">
+								<span>{{ if .Lang }}{{ .Lang }}{{ end }}</span>
+								<span>{{ .URL }}</span>
+							</div>
+						{{ end }}
 						{{ else }}
 							-
 						{{ end }}

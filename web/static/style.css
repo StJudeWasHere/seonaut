@@ -226,8 +226,8 @@ button {
 }
 .url-list div:nth-child(1) {
 	width: 75%;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	max-width: 100ch;
 	white-space: nowrap;
 }
@@ -929,19 +929,62 @@ p.error {
 	background-color: #f5f8f9;
 }
 .url-detail div:nth-child(1) {
-	width: 25%;
+	width: 15%;
 	font-weight: 400;
 }
 .url-detail div:nth-child(2) {
 	width: 75%;
 }
+
+.url-detail div:nth-child(1).hreflang-list {
+	width: 100%;
+}
+.url-detail div:nth-child(2).hreflang-list {
+	width: 100%;
+}
+.hreflang-list {
+	margin: 0;
+	padding: 0;
+	font-weight: 300;
+	font-size: .8rem;
+	display: block;
+	box-sizing: border-box;
+	width: 100%;
+	display: flex;
+}
+.hreflang-list span {
+	display: inline-block;
+	margin: 0;
+	padding:0;
+	box-sizing: border-box;
+}
+.hreflang-list span:nth-child(1) {
+	width: 25%;
+}
+.hreflang-list span:nth-child(2) {
+	width: 75%;
+	max-width: 	75%;
+	white-space: nowrap;
+	overflow:hidden;
+	text-overflow: ellipsis;
+}
 .url-detail-table {
 	font-size:.8rem;
+	max-width: 100%;
+	width:100%;
 }
-.url-detail-table th {
+.url-detail-table tr th {
 	font-weight: 600;
 	text-align: left;
 }
+.url-detail-table tr th:nth-child(1) {
+	width: auto;
+	background:red;
+}
+.url-detail-table tr th:nth-child(2) {
+	width: 75% !important;
+}
+
 .url-detail-table tr td {
 	font-weight: 300;
 	padding: .5rem 0;
@@ -949,9 +992,18 @@ p.error {
 }
 .url-detail-table tr td:nth-child(2) {
 	width: 75%;
+	margin:0;
+}
+.url-detail .url-detail-table div:nth-child(1) {
+	white-space: nowrap;
+	max-width:100%;
+	overflow:hidden;
+	text-overflow: ellipsis;
+	width: 100%;
 }
 .url-detail-table tr td:nth-child(1) {
 	width: 25%;
+	background: green;
 }
 
 /** PRINT **/

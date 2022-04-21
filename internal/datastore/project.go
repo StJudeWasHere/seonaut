@@ -144,7 +144,7 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 			issues_end
 		FROM crawls
 		WHERE project_id = ?
-		ORDER BY start ASC LIMIT ?`
+		ORDER BY start DESC LIMIT ?`
 
 	crawls := []crawler.Crawl{}
 	rows, err := ds.db.Query(query, p.Id, limit)
@@ -158,7 +158,7 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 		if err != nil {
 			log.Printf("GetLastCrawl: %v\n", err)
 		}
-		crawls = append(crawls, crawl)
+		crawls = append([]crawler.Crawl{crawl}, crawls...)
 	}
 
 	return crawls

@@ -11,6 +11,9 @@ import (
 const (
 	// Max number of page reports that will be created
 	MaxPageReports = 10000
+
+	// Max number returned by GetLastCrawls
+	LastCrawlsLimit = 5
 )
 
 // CrawlerConfig stores the configuration for the crawler.
@@ -24,7 +27,7 @@ type Storage interface {
 	SavePageReport(*PageReport, int64)
 	SaveEndCrawl(*Crawl) (*Crawl, error)
 	DeletePreviousCrawl(int)
-	GetLastCrawls(project.Project) []Crawl
+	GetLastCrawls(project.Project, int) []Crawl
 }
 
 type Crawl struct {
@@ -92,5 +95,11 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 }
 
 func (s *Service) GetLastCrawls(p project.Project) []Crawl {
-	return s.store.GetLastCrawls(p)
+	crawls := s.store.GetLastCrawls(p, LastCrawlsLimit)
+
+	for len(crawls) < LastCrawlsLimit {
+		crawls = append(crawls, Crawl{Start: time.Now()})
+	}
+
+	return crawls
 }

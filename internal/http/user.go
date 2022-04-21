@@ -9,8 +9,16 @@ import (
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
-	var e bool
 	var email string
+
+	pageData := &struct {
+		Email string
+		Error bool
+	}{}
+
+	pageView := &helper.PageView{
+		PageTitle: "SIGNUP_VIEW",
+		Data:      pageData}
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
@@ -24,23 +32,32 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 		email = r.FormValue("email")
 		password := r.FormValue("password")
 
+		pageData.Email = email
+
 		err = app.userService.SignUp(email, password)
-		if err == nil {
+		if err != nil {
+			log.Printf("serveSignup SignUp: %v\n", err)
+			pageData.Error = true
+			app.renderer.RenderTemplate(w, "signup", pageView)
+			return
+		}
+
+		u, err := app.userService.SignIn(email, password)
+		if err != nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 
-		log.Printf("serveSignup SignUp: %v\n", err)
-		e = true
+		session, _ := app.cookie.Get(r, "SESSION_ID")
+		session.Values["authenticated"] = true
+		session.Values["uid"] = u.Id
+		session.Save(r, w)
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
-	app.renderer.RenderTemplate(w, "signup", &helper.PageView{
-		PageTitle: "SIGNUP_VIEW",
-		Data: struct {
-			Email string
-			Error bool
-		}{Error: e, Email: email},
-	})
+	app.renderer.RenderTemplate(w, "signup", pageView)
 }
 
 func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {

@@ -47,7 +47,7 @@
 			</div>
 
 			<div class="col">
-				{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
+				{{ if (and (and .Crawl.Id .Crawl.IssuesEnd.Valid) (gt .Crawl.TotalURLs 0)) }}
 					<a class="project-link" href="/download?pid={{ .Project.Id }}">↓ Download crawled URLs</a><br>
 					<a class="project-link" href="/sitemap?pid={{ .Project.Id }}">↓ Download sitemap.xml</a>
 				{{ end }}

@@ -104,7 +104,7 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 	v := &helper.PageView{
 		Data:      ig,
 		User:      *user,
-		PageTitle: "ISSUES_VIEW",
+		PageTitle: "PROJECT_DASHBOARD",
 	}
 
 	app.renderer.RenderTemplate(w, "dashboard", v)

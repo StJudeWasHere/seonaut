@@ -7,7 +7,7 @@ import (
 )
 
 func (ds *Datastore) UserSignup(user, password string) {
-	query := `INSERT INTO users (email, password) VALUES (?, ?)`
+	query := `INSERT INTO users (email, password, created) VALUES (?, ?, NOW())`
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
 

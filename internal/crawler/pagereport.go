@@ -235,6 +235,10 @@ func (pageReport *PageReport) parse() {
 	images := htmlquery.Find(doc, "//img")
 	for _, n := range images {
 		s := htmlquery.SelectAttr(n, "src")
+		if s == "" {
+			continue
+		}
+
 		url, err := pageReport.absoluteURL(s)
 		if err != nil {
 			continue

@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -139,7 +140,15 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 			)
 
 			for _, v := range resources {
-				qr.AddURL(v)
+				visited, err := co.HasVisited(v)
+				if err != nil {
+					log.Printf("crawler: collector has visited: %v\n", err)
+					continue
+				}
+
+				if visited == false {
+					qr.AddURL(v)
+				}
 			}
 
 			qr.Run(cor)

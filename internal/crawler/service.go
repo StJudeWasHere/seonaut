@@ -31,14 +31,17 @@ type Storage interface {
 }
 
 type Crawl struct {
-	Id          int64
-	ProjectId   int
-	URL         string
-	Start       time.Time
-	End         sql.NullTime
-	TotalIssues int
-	TotalURLs   int
-	IssuesEnd   sql.NullTime
+	Id             int64
+	ProjectId      int
+	URL            string
+	Start          time.Time
+	End            sql.NullTime
+	TotalIssues    int
+	TotalURLs      int
+	IssuesEnd      sql.NullTime
+	CriticalIssues int
+	WarningIssues  int
+	NoticeIssues   int
 }
 
 type Service struct {

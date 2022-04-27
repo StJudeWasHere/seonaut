@@ -20,6 +20,7 @@ type IssueStore interface {
 	CountByFollowLinks(int64) CountList
 	CountByFollowExternalLinks(int64) CountList
 	FindIssuesByPriority(int64, int) []IssueGroup
+	SaveIssuesCount(int64, int, int, int)
 }
 
 type Issue struct {
@@ -93,6 +94,28 @@ func (s *IssueService) GetIssuesCount(crawlID int64) *IssueCount {
 	}
 
 	return c
+}
+
+func (s *IssueService) SaveCrawlIssuesCount(crawlID int64) {
+	criticalIssues := s.store.FindIssuesByPriority(crawlID, Critical)
+	alertIssues := s.store.FindIssuesByPriority(crawlID, Alert)
+	warningIssues := s.store.FindIssuesByPriority(crawlID, Warning)
+
+	var critical, alert, warning int
+
+	for _, v := range criticalIssues {
+		critical += v.Count
+	}
+
+	for _, v := range alertIssues {
+		alert += v.Count
+	}
+
+	for _, v := range warningIssues {
+		warning += v.Count
+	}
+
+	s.store.SaveIssuesCount(crawlID, critical, alert, warning)
 }
 
 func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (PaginatorView, error) {

@@ -141,7 +141,10 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 			end,
 			total_urls,
 			total_issues,
-			issues_end
+			issues_end,
+			critical_issues,
+			warning_issues,
+			notice_issues
 		FROM crawls
 		WHERE project_id = ?
 		ORDER BY start DESC LIMIT ?`
@@ -154,7 +157,17 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 
 	for rows.Next() {
 		crawl := crawler.Crawl{}
-		err := rows.Scan(&crawl.Id, &crawl.Start, &crawl.End, &crawl.TotalURLs, &crawl.TotalIssues, &crawl.IssuesEnd)
+		err := rows.Scan(
+			&crawl.Id,
+			&crawl.Start,
+			&crawl.End,
+			&crawl.TotalURLs,
+			&crawl.TotalIssues,
+			&crawl.IssuesEnd,
+			&crawl.CriticalIssues,
+			&crawl.WarningIssues,
+			&crawl.NoticeIssues,
+		)
 		if err != nil {
 			log.Printf("GetLastCrawl: %v\n", err)
 		}
@@ -162,6 +175,20 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 	}
 
 	return crawls
+}
+
+func (ds *Datastore) SaveIssuesCount(crawlId int64, critical, warning, notice int) {
+	query := `UPDATE
+		crawls
+		SET critical_issues = ?, warning_issues = ?, notice_issues = ?
+		WHERE id = ?`
+
+	stmt, _ := ds.db.Prepare(query)
+	defer stmt.Close()
+	_, err := stmt.Exec(critical, warning, notice, crawlId)
+	if err != nil {
+		log.Printf("SaveIssuesCount: %v\n", err)
+	}
 }
 
 func (ds *Datastore) FindPreviousCrawlId(pid int) int {

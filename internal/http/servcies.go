@@ -34,6 +34,7 @@ type IssueService interface {
 	GetIssuesCount(int64) *issue.IssueCount
 	GetPaginatedReportsByIssue(int64, int, string) (issue.PaginatorView, error)
 	GetLinksCount(int64) *issue.LinksCount
+	SaveCrawlIssuesCount(int64)
 }
 
 type ReportService interface {

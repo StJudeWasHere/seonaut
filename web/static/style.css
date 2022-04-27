@@ -448,6 +448,14 @@ button {
 	width: 100%;
 	height: 20rem;
 }
+.issues-timeline-container {
+	width: 100%;
+	padding: 6rem 0;
+}
+.issues-timeline-chart {
+	width: 100%;
+	height: 30rem;
+}
 .bottom-margin {
 	margin: 0 0 3rem 0;
 }

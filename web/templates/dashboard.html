@@ -12,10 +12,12 @@
 	</div>
 </div>
 
-<div class="chart-block">
-	{{ template "charts" . }}
+<div class="issues-timeline-container">
+	<div class="content">
+			<h2 class="bottom-margin">Issues history</h2>
+			<div id="issues-timeline" class="issues-timeline-chart"></div>
+	</div>
 </div>
-
 
 <div class="content legend-block">
 <div class="flex">
@@ -40,6 +42,10 @@
 			<a href="/issues?pid={{ .ProjectView.Project.Id }}" class="button">View Issues</a>
 		</div>
 	</div>
+
+<div class="chart-block">
+	{{ template "charts" . }}
+</div>
 
 <div class="light-chart-container">
 	<div class="content">
@@ -105,6 +111,164 @@
 
 <script type="text/javascript">
 	
+	var issuesTimelineChart = echarts.init(document.getElementById('issues-timeline'));
+	option = {
+	  color: ['#FD7B6A', '#F7E497', '#2C7D91'],
+		textStyle: {
+			fontFamily: "Fira Code",
+			fontSize: "1rem",
+			fontWeight: 300,
+		},
+		tooltip: {
+			trigger: 'axis',
+			axisPointer: {
+				type: 'none'
+			}
+		},
+	legend: {
+		top: 'top',
+		left: 'left',
+		orient: 'horizontal',
+		itemGap: 50,
+	},
+	toolbox: {
+		show: true,
+		left: 'left',
+		top: 'bottom',
+		feature: {
+			saveAsImage: {
+				show: true,
+				name: "issues-timeline"
+			}
+		}
+	},
+	grid: {
+		left: 0,
+		right: 0,
+		backgroundColor: 'transparent',
+		borderWidth: 0,
+		show: true,
+	},
+	xAxis: [
+		{
+			type: 'category',
+			boundaryGap: false,
+			data: [
+			{{ range .Crawls }}
+			'{{ .Start.Format "Jan 02" }}',
+			{{ end }}
+			]
+		}
+	],
+	yAxis: [
+		{
+			show: false,
+			type: 'value',
+			splitLine: {
+				lineStyle: {
+					width: 0,
+				}
+			}
+		}
+	],
+	series: [
+		{
+			name: 'Critical',
+			type: 'line',
+			stack: 'Total',
+			smooth: true,
+			lineStyle: {
+				width: 0
+			},
+			showSymbol: false,
+			areaStyle: {
+				opacity: 0.8,
+				color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+					{
+						offset: 0,
+						color: '#FD7B6A'
+					},
+					{
+						offset: 1,
+						color: '#ffa899'
+					}
+				])
+			},
+			emphasis: {
+				focus: 'series'
+			},
+			data: [
+			{{ range .Crawls }}
+				{{ .CriticalIssues }},
+			{{ end }}
+			]
+		},
+		{
+			name: 'Warning',
+			type: 'line',
+			stack: 'Total',
+			smooth: true,
+			lineStyle: {
+				width: 0
+			},
+			showSymbol: false,
+			areaStyle: {
+				opacity: 0.8,
+				color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+					{
+						offset: 0,
+						color: '#F7E497'
+					},
+					{
+						offset: 1,
+						color: '#fbf8e0'
+					}
+				])
+			},
+			emphasis: {
+				focus: 'series'
+			},
+			data: [
+			{{ range .Crawls }}
+				{{ .WarningIssues }},
+			{{ end }}
+			]
+		},
+		{
+			name: 'Notice',
+			type: 'line',
+			stack: 'Total',
+			smooth: true,
+			lineStyle: {
+				width: 0
+			},
+			showSymbol: false,
+			areaStyle: {
+				opacity: 0.8,
+				color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+					{
+						offset: 0,
+						color: '#2C7D91'
+					},
+					{
+						offset: 1,
+						color: '#80b1bd'
+					}
+				])
+			},
+			emphasis: {
+				focus: 'series'
+			},
+			data: [
+				{{ range .Crawls }}
+					{{ .NoticeIssues }},
+				{{ end }}
+			]
+		},
+	  ]
+	};
+	issuesTimelineChart.setOption(option);
+
 	var crawlChart = echarts.init(document.getElementById('crawl-chart'));
 	option = {
 		color: ["#2C7D91", "#FD7B6A"],
@@ -129,7 +293,10 @@
 			left: 'left',
 			top: 'bottom',
 			feature: {
-				saveAsImage: { show: true }
+				saveAsImage: {
+					show: true,
+					name: "crawls-timeline"
+				}
 			}
 		},
 		grid: {

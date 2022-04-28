@@ -267,6 +267,42 @@ func (pageReport *PageReport) parse() {
 	}
 
 	// ---
+	// Extract image sources from picture elements.
+	// The image's alt text is used in the sources.
+	// ex.
+	// <picture>
+	//     <source srcset="/img/pic-wide.png" media="(min-width: 800px)">
+	//     <source srcset="/img/pic-medium.png" media="(min-width: 600px)">
+	//     <img src="/img/pic-narrow.png" alt="picture alt">
+	// </picture>
+	// ---
+	pictures := htmlquery.Find(doc, "//picture")
+	for _, n := range pictures {
+		images := htmlquery.Find(n, "//img")
+		if len(images) == 0 {
+			continue
+		}
+
+		alt := htmlquery.SelectAttr(images[0], "alt")
+		sources := htmlquery.Find(n, "//source")
+		for _, s := range sources {
+			imageSet := parseSrcSet(htmlquery.SelectAttr(s, "srcset"))
+			for _, is := range imageSet {
+				url, err := pageReport.absoluteURL(is)
+				if err != nil {
+					continue
+				}
+
+				i := Image{
+					URL: url.String(),
+					Alt: alt,
+				}
+				pageReport.Images = append(pageReport.Images, i)
+			}
+		}
+	}
+
+	// ---
 	// Extract scripts to crawl the src url
 	// ex. <script src="/js/app.js"></script>
 	// ---

@@ -187,8 +187,8 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("Hreglangs[0].URL != fr")
 	}
 
-	if len(pageReport.Images) != 2 {
-		t.Error("Images != 2")
+	if len(pageReport.Images) != 4 {
+		t.Error("Images != 4")
 	}
 
 	if pageReport.Images[0].URL != "https://example.com/img/logo.png" {

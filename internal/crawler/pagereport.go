@@ -229,8 +229,8 @@ func (pageReport *PageReport) parse() {
 	}
 
 	// ---
-	// Extract images to check alt text and crawl src url
-	// ex. <img src="logo.jpg">
+	// Extract images to check alt text and crawl src and srcset urls
+	// ex. <img src="logo.jpg" srcset="/files/16870/new-york-skyline-wide.jpg 3724w">
 	// ---
 	images := htmlquery.Find(doc, "//img")
 	for _, n := range images {
@@ -244,12 +244,26 @@ func (pageReport *PageReport) parse() {
 			continue
 		}
 
+		alt := htmlquery.SelectAttr(n, "alt")
 		i := Image{
 			URL: url.String(),
-			Alt: htmlquery.SelectAttr(n, "alt"),
+			Alt: alt,
 		}
-
 		pageReport.Images = append(pageReport.Images, i)
+
+		imageSet := parseSrcSet(htmlquery.SelectAttr(n, "srcset"))
+		for _, s := range imageSet {
+			url, err := pageReport.absoluteURL(s)
+			if err != nil {
+				continue
+			}
+
+			i := Image{
+				URL: url.String(),
+				Alt: alt,
+			}
+			pageReport.Images = append(pageReport.Images, i)
+		}
 	}
 
 	// ---
@@ -440,4 +454,24 @@ func headingOrderIsValid(n *html.Node) bool {
 	correct := output(n)
 
 	return correct
+}
+
+// Parse srcset attribute and return the URLs
+// ex. srcset="/img/image-wide.jpg 3724w,
+//             /img/image-4by3.jpg 1961w,
+//             /img/image-tall.jpg 1060w"
+func parseSrcSet(srcset string) []string {
+	var imageURLs []string
+
+	if srcset == "" {
+		return imageURLs
+	}
+
+	imageSet := strings.Split(srcset, ",")
+	for _, s := range imageSet {
+		i := strings.Split(s, " ")
+		imageURLs = append(imageURLs, strings.TrimSpace(i[0]))
+	}
+
+	return imageURLs
 }

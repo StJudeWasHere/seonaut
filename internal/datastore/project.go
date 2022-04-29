@@ -92,7 +92,7 @@ func (ds *Datastore) SaveCrawl(p project.Project) (*crawler.Crawl, error) {
 }
 
 func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) (*crawler.Crawl, error) {
-	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ?, total_urls= ? WHERE id = ?")
+	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ?, total_urls= ?, blocked_by_robotstxt=?, noindex=? WHERE id = ?")
 	defer stmt.Close()
 
 	c.End = sql.NullTime{
@@ -100,7 +100,7 @@ func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) (*crawler.Crawl, error) {
 		Valid: true,
 	}
 
-	_, err := stmt.Exec(c.End, c.TotalURLs, c.Id)
+	_, err := stmt.Exec(c.End, c.TotalURLs, c.BlockedByRobotstxt, c.Noindex, c.Id)
 	if err != nil {
 		log.Printf("saveEndCrawl: %v\n", err)
 		return c, err
@@ -144,7 +144,9 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 			issues_end,
 			critical_issues,
 			warning_issues,
-			notice_issues
+			notice_issues,
+			blocked_by_robotstxt,
+			noindex
 		FROM crawls
 		WHERE project_id = ?
 		ORDER BY start DESC LIMIT ?`
@@ -167,6 +169,8 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 			&crawl.CriticalIssues,
 			&crawl.WarningIssues,
 			&crawl.NoticeIssues,
+			&crawl.BlockedByRobotstxt,
+			&crawl.Noindex,
 		)
 		if err != nil {
 			log.Printf("GetLastCrawl: %v\n", err)
@@ -217,7 +221,7 @@ func (ds *Datastore) DeletePreviousCrawl(pid int) {
 		query := fmt.Sprintf("DELETE FROM %s WHERE crawl_id = ? ORDER BY id DESC LIMIT 1000", table)
 		_, err := ds.db.Exec(query, previousCrawl)
 		if err != nil {
-			log.Printf("DeletePreviousCeawl: pid %d table %s %v\n", pid, table, err)
+			log.Printf("DeletePreviousCrawl: pid %d table %s %v\n", pid, table, err)
 			return
 		}
 
@@ -242,4 +246,5 @@ func (ds *Datastore) DeletePreviousCrawl(pid int) {
 	deleteFunc(previousCrawl, "scripts")
 	deleteFunc(previousCrawl, "styles")
 	deleteFunc(previousCrawl, "pagereports")
+	deleteFunc(previousCrawl, "urls_not_reported")
 }

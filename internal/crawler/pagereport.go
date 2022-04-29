@@ -45,6 +45,7 @@ type PageReport struct {
 	sanitizer          *bluemonday.Policy
 	ValidHeadings      bool
 	BlockedByRobotstxt bool
+	Crawled            bool
 }
 
 type Link struct {

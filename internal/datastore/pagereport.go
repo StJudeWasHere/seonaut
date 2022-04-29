@@ -7,6 +7,35 @@ import (
 	"github.com/stjudewashere/seonaut/internal/helper"
 )
 
+func (ds *Datastore) SaveNotCrawled(r *crawler.PageReport, cid int64) {
+	query := `
+		INSERT INTO urls_not_reported (
+			crawl_id,
+			url,
+			blocked,
+			noindex
+		) VALUES (?, ?, ?, ?)`
+
+	stmt, err := ds.db.Prepare(query)
+	if err != nil {
+		log.Printf("saveNotCrawled: %v\n", err)
+		return
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(
+		cid,
+		r.URL,
+		r.BlockedByRobotstxt,
+		r.Noindex,
+	)
+
+	if err != nil {
+		log.Printf("Error in SaveNotCrawled\nCID: %v\n Report: %+v\nError: %+v\n", cid, r, err)
+		return
+	}
+}
+
 func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 	urlHash := helper.Hash(r.URL)
 	var redirectHash string

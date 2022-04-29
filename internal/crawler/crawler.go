@@ -29,7 +29,9 @@ type Crawler struct {
 	UserAgent       string
 
 	robotsMap map[string]*robotstxt.RobotsData
-	lock      *sync.RWMutex
+	rlock     *sync.RWMutex
+
+	storage *URLStorage
 }
 
 func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex bool) *Crawler {
@@ -42,7 +44,9 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		UserAgent:       agent,
 
 		robotsMap: make(map[string]*robotstxt.RobotsData),
-		lock:      &sync.RWMutex{},
+		rlock:     &sync.RWMutex{},
+
+		storage: NewURLStorage(),
 	}
 }
 
@@ -86,6 +90,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		url := r.Request.URL
 		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
 		pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(url)
+		pageReport.Crawled = true
 
 		pr <- *pageReport
 		responseCounter++
@@ -97,37 +102,68 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 			return
 		}
 
-		url := r.Request.URL
-		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
-		pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(url)
+		u := r.Request.URL
+		pageReport := NewPageReport(u, r.StatusCode, r.Headers, r.Body)
+		pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(u)
 
 		if pageReport.Noindex == false || c.IncludeNoindex == true {
-			pr <- *pageReport
+			pageReport.Crawled = true
 			responseCounter++
 		}
+
+		pr <- *pageReport
 
 		if strings.Contains(pageReport.Robots, "nofollow") && c.FollowNofollow == false {
 			return
 		}
+
+		var toVisit []*url.URL
 
 		for _, l := range pageReport.Links {
 			if l.NoFollow && c.FollowNofollow == false {
 				continue
 			}
 
-			q.AddURL(r.Request.AbsoluteURL(l.URL))
+			toVisit = append(toVisit, l.ParsedURL)
 		}
 
 		if pageReport.RedirectURL != "" {
-			q.AddURL(r.Request.AbsoluteURL(pageReport.RedirectURL))
+			parsed, err := url.Parse(pageReport.RedirectURL)
+			if err == nil {
+				toVisit = append(toVisit, parsed)
+			}
 		}
 
 		for _, l := range pageReport.Hreflangs {
-			q.AddURL(r.Request.AbsoluteURL(l.URL))
+			parsed, err := url.Parse(l.URL)
+			if err != nil {
+				continue
+			}
+			toVisit = append(toVisit, parsed)
 		}
 
 		if pageReport.Canonical != "" {
-			q.AddURL(r.Request.AbsoluteURL(pageReport.Canonical))
+			parsed, err := url.Parse(pageReport.Canonical)
+			if err == nil {
+				toVisit = append(toVisit, parsed)
+			}
+		}
+
+		for _, t := range toVisit {
+			if c.IgnoreRobotsTxt == false && c.isBlockedByRobotstxt(t) && !c.storage.Seen(t.String()) {
+				c.storage.Add(t.String())
+
+				p := &PageReport{
+					URL:                t.String(),
+					ParsedURL:          t,
+					Crawled:            false,
+					BlockedByRobotstxt: true,
+				}
+
+				pr <- *p
+			}
+
+			q.AddURL(r.Request.AbsoluteURL(t.String()))
 		}
 
 		var resources []string
@@ -152,14 +188,29 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 			for _, v := range resources {
 				visited, err := co.HasVisited(v)
-				if err != nil {
-					log.Printf("crawler: collector has visited: %v\n", err)
+				if err != nil || visited == true {
 					continue
 				}
 
-				if visited == false {
-					qr.AddURL(v)
+				t, err := url.Parse(v)
+				if err != nil {
+					continue
 				}
+
+				if c.IgnoreRobotsTxt == false && c.isBlockedByRobotstxt(t) && !c.storage.Seen(t.String()) {
+					c.storage.Add(t.String())
+
+					p := &PageReport{
+						URL:                t.String(),
+						ParsedURL:          t,
+						Crawled:            false,
+						BlockedByRobotstxt: true,
+					}
+
+					pr <- *p
+				}
+
+				qr.AddURL(v)
 			}
 
 			qr.Run(cor)
@@ -204,16 +255,16 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 }
 
 func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
-	c.lock.RLock()
+	c.rlock.RLock()
 	robot, ok := c.robotsMap[u.Host]
-	c.lock.RUnlock()
+	c.rlock.RUnlock()
 
 	if !ok {
 		resp, err := http.Get(u.Scheme + "://" + u.Host + "/robots.txt")
 		if err != nil {
-			c.lock.Lock()
+			c.rlock.Lock()
 			c.robotsMap[u.Host] = nil
-			c.lock.Unlock()
+			c.rlock.Unlock()
 
 			return true
 		}
@@ -224,9 +275,9 @@ func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
 			log.Println(err)
 		}
 
-		c.lock.Lock()
+		c.rlock.Lock()
 		c.robotsMap[u.Host] = robot
-		c.lock.Unlock()
+		c.rlock.Unlock()
 	}
 
 	if robot == nil {

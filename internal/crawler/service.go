@@ -25,23 +25,26 @@ type Config struct {
 type Storage interface {
 	SaveCrawl(project.Project) (*Crawl, error)
 	SavePageReport(*PageReport, int64)
+	SaveNotCrawled(*PageReport, int64)
 	SaveEndCrawl(*Crawl) (*Crawl, error)
 	DeletePreviousCrawl(int)
 	GetLastCrawls(project.Project, int) []Crawl
 }
 
 type Crawl struct {
-	Id             int64
-	ProjectId      int
-	URL            string
-	Start          time.Time
-	End            sql.NullTime
-	TotalIssues    int
-	TotalURLs      int
-	IssuesEnd      sql.NullTime
-	CriticalIssues int
-	WarningIssues  int
-	NoticeIssues   int
+	Id                 int64
+	ProjectId          int
+	URL                string
+	Start              time.Time
+	End                sql.NullTime
+	TotalIssues        int
+	TotalURLs          int
+	IssuesEnd          sql.NullTime
+	CriticalIssues     int
+	WarningIssues      int
+	NoticeIssues       int
+	BlockedByRobotstxt int
+	Noindex            int
 }
 
 type Service struct {
@@ -81,8 +84,19 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	go c.Crawl(pageReport)
 
 	for r := range pageReport {
-		crawl.TotalURLs++
-		s.store.SavePageReport(&r, crawl.Id)
+		if r.BlockedByRobotstxt {
+			crawl.BlockedByRobotstxt++
+		} else if r.Noindex {
+			crawl.Noindex++
+		} else {
+			crawl.TotalURLs++
+		}
+
+		if r.Crawled {
+			s.store.SavePageReport(&r, crawl.Id)
+		} else {
+			s.store.SaveNotCrawled(&r, crawl.Id)
+		}
 	}
 
 	crawl, err = s.store.SaveEndCrawl(crawl)

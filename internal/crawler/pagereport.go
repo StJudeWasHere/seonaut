@@ -371,44 +371,18 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 		return &url.URL{}, err
 	}
 
-	if u.Scheme != "" && u.Scheme != "http" && u.Scheme != "https" {
+	a := p.ParsedURL.ResolveReference(u)
+	a.Fragment = ""
+
+	if a.Path == "" {
+		a.Path = "/"
+	}
+
+	if a.Scheme != "http" && a.Scheme != "https" {
 		return &url.URL{}, errors.New("Protocol not supported")
 	}
 
-	if u.Scheme != "" {
-		if u.Path == "" {
-			u.Path = "/"
-		}
-		return u, nil
-	}
-
-	if u.Scheme == "" {
-		u.Scheme = p.ParsedURL.Scheme
-	}
-
-	if u.Host == "" {
-		u.Host = p.ParsedURL.Host
-	}
-
-	u.Fragment = ""
-
-	if u.Path != "" && !strings.HasPrefix(u.Path, "/") {
-		basePath := p.ParsedURL.Path
-		if !strings.HasSuffix(basePath, "/") {
-			basePath = basePath + "/"
-		}
-		u.Path = basePath + u.Path
-	}
-
-	if u.Path == "" {
-		basePath := p.ParsedURL.Path
-		if basePath == "" {
-			basePath = "/"
-		}
-		u.Path = basePath
-	}
-
-	return u, nil
+	return a, nil
 }
 
 func (p PageReport) SizeInKB() string {

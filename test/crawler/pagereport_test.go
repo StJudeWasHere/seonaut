@@ -12,7 +12,7 @@ import (
 )
 
 const (
-	testURL = "https://example.com/test-page"
+	testURL = "https://example.com/test-page/"
 )
 
 func TestNewPageReport(t *testing.T) {
@@ -119,7 +119,8 @@ func TestPageReportHTML(t *testing.T) {
 			t.Error("pageReport.Links[0].URL != https://example.com/link1")
 		}
 		if pageReport.Links[1].URL != "https://example.com/test-page/link2" {
-			t.Error("pageReport.Links[1].URL != https://example.com/test-page/link2")
+			t.Error(pageReport.URL)
+			t.Errorf("%s != https://example.com/test-page/link2", pageReport.Links[1].URL)
 		}
 		if pageReport.Links[0].Text != "link1" {
 			t.Error("pageReport.Links[0].Text != link1")
@@ -135,11 +136,11 @@ func TestPageReportHTML(t *testing.T) {
 		}
 
 		if pageReport.Links[4].URL != "https://example.com/" {
-			t.Error("pageReport.Links[4].URL != \"https://example.com/\"")
+			t.Errorf("%s != \"https://example.com/\"", pageReport.Links[4].URL)
 		}
 
-		if pageReport.Links[5].URL != "https://example.com/test-page" {
-			t.Error("pageReport.Links[5].URL != \"https://example.com/test-page\"")
+		if pageReport.Links[5].URL != "https://example.com/test-page/" {
+			t.Errorf("%s != \"https://example.com/test-page\"", pageReport.Links[5].URL)
 		}
 	}
 

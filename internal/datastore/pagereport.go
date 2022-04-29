@@ -36,9 +36,10 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 			h2,
 			words,
 			size,
-			valid_headings
+			valid_headings,
+			robotstxt_blocked
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -69,6 +70,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		r.Words,
 		len(r.Body),
 		r.ValidHeadings,
+		r.BlockedByRobotstxt,
 	)
 
 	if err != nil {
@@ -217,7 +219,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport
 			h2,
 			words,
 			size,
-			valid_headings
+			valid_headings,
+			robotstxt_blocked
 		FROM pagereports
 		WHERE crawl_id = ?`
 
@@ -246,6 +249,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport
 			&p.Words,
 			&p.Size,
 			&p.ValidHeadings,
+			&p.BlockedByRobotstxt,
 		)
 		if err != nil {
 			log.Println(err)
@@ -279,7 +283,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 			h2,
 			words,
 			size,
-			valid_headings
+			valid_headings,
+			robotstxt_blocked
 		FROM pagereports
 		WHERE crawl_id = ?
 		AND id IN (
@@ -315,6 +320,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 			&p.Words,
 			&p.Size,
 			&p.ValidHeadings,
+			&p.BlockedByRobotstxt,
 		)
 		if err != nil {
 			log.Println(err)
@@ -347,7 +353,8 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 			h2,
 			words,
 			size,
-			valid_headings
+			valid_headings,
+			robotstxt_blocked
 		FROM pagereports
 		WHERE id = ?`
 
@@ -372,6 +379,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		&p.Words,
 		&p.Size,
 		&p.ValidHeadings,
+		&p.BlockedByRobotstxt,
 	)
 	if err != nil {
 		log.Println(err)

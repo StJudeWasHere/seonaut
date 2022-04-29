@@ -63,7 +63,12 @@
 			{{ $errorTypes := .PageReportView.ErrorTypes }}
 			{{ with .PageReportView.PageReport }}
 			<div class="report-box" >
-				
+
+				<div class="url-detail">
+					<div>Blocked:</div>
+					<div><small>{{ if .BlockedByRobotstxt }}Blocked{{ else }}Not blocked{{ end }} by robots.txt</small></div>
+				</div>
+
 				<div class="url-detail">
 					<div>Status Code:</div>
 					<div><small>{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}</small></div>

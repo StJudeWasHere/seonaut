@@ -17,33 +17,34 @@ import (
 )
 
 type PageReport struct {
-	Id            int
-	URL           string
-	ParsedURL     *url.URL
-	RedirectURL   string
-	Refresh       string
-	StatusCode    int
-	ContentType   string
-	MediaType     string
-	Lang          string
-	Title         string
-	Description   string
-	Robots        string
-	Noindex       bool
-	Canonical     string
-	H1            string
-	H2            string
-	Links         []Link
-	ExternalLinks []Link
-	Words         int
-	Hreflangs     []Hreflang
-	Body          []byte
-	Size          int
-	Images        []Image
-	Scripts       []string
-	Styles        []string
-	sanitizer     *bluemonday.Policy
-	ValidHeadings bool
+	Id                 int
+	URL                string
+	ParsedURL          *url.URL
+	RedirectURL        string
+	Refresh            string
+	StatusCode         int
+	ContentType        string
+	MediaType          string
+	Lang               string
+	Title              string
+	Description        string
+	Robots             string
+	Noindex            bool
+	Canonical          string
+	H1                 string
+	H2                 string
+	Links              []Link
+	ExternalLinks      []Link
+	Words              int
+	Hreflangs          []Hreflang
+	Body               []byte
+	Size               int
+	Images             []Image
+	Scripts            []string
+	Styles             []string
+	sanitizer          *bluemonday.Policy
+	ValidHeadings      bool
+	BlockedByRobotstxt bool
 }
 
 type Link struct {

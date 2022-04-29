@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"github.com/temoto/robotstxt"
 )
 
 const (
@@ -25,6 +27,9 @@ type Crawler struct {
 	FollowNofollow  bool
 	IncludeNoindex  bool
 	UserAgent       string
+
+	robotsMap map[string]*robotstxt.RobotsData
+	lock      *sync.RWMutex
 }
 
 func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex bool) *Crawler {
@@ -35,6 +40,9 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		FollowNofollow:  fnofollow,
 		IncludeNoindex:  inoindex,
 		UserAgent:       agent,
+
+		robotsMap: make(map[string]*robotstxt.RobotsData),
+		lock:      &sync.RWMutex{},
 	}
 }
 
@@ -77,6 +85,8 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		}
 		url := r.Request.URL
 		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
+		pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(url)
+
 		pr <- *pageReport
 		responseCounter++
 	}
@@ -89,6 +99,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 		url := r.Request.URL
 		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
+		pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(url)
 
 		if pageReport.Noindex == false || c.IncludeNoindex == true {
 			pr <- *pageReport
@@ -190,4 +201,42 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 	q.AddURL(us)
 	q.Run(co)
+}
+
+func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
+	c.lock.RLock()
+	robot, ok := c.robotsMap[u.Host]
+	c.lock.RUnlock()
+
+	if !ok {
+		resp, err := http.Get(u.Scheme + "://" + u.Host + "/robots.txt")
+		if err != nil {
+			c.lock.Lock()
+			c.robotsMap[u.Host] = nil
+			c.lock.Unlock()
+
+			return true
+		}
+		defer resp.Body.Close()
+
+		robot, err = robotstxt.FromResponse(resp)
+		if err != nil {
+			log.Println(err)
+		}
+
+		c.lock.Lock()
+		c.robotsMap[u.Host] = robot
+		c.lock.Unlock()
+	}
+
+	if robot == nil {
+		return true
+	}
+
+	path := u.EscapedPath()
+	if u.RawQuery != "" {
+		path += "?" + u.Query().Encode()
+	}
+
+	return !robot.TestAgent(path, c.UserAgent)
 }

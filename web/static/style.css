@@ -271,7 +271,7 @@ button {
 }
 .project-container {
 	background-color: white;
-	overflow: auto;
+	overflow: hidden;
 	min-height: 100%;
 }
 .project {
@@ -394,7 +394,7 @@ button {
 	min-height: 100%;
 	background-color: white;
 	padding-top: 3rem;
-	overflow: auto;
+	overflow: hidden;
 }
 .issues-empty {
 	margin: 3rem 1.5rem;
@@ -755,8 +755,8 @@ a.active {
 /** CHARTS **/
 
 .secondary-container {
-	overflow: auto;
-background-color: var(--main-bg-color);
+	overflow: hidden;
+	background-color: var(--main-bg-color);
 }
 .light-chart-container {
 	background-color: white;

@@ -254,6 +254,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	q.Run(co)
 }
 
+// Check if URL is blocked by robots.txt
 func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
 	c.rlock.RLock()
 	robot, ok := c.robotsMap[u.Host]

@@ -111,6 +111,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	return crawl, nil
 }
 
+// Get a slice with 'LastCrawlsLimit' number of the crawls
 func (s *Service) GetLastCrawls(p project.Project) []Crawl {
 	crawls := s.store.GetLastCrawls(p, LastCrawlsLimit)
 

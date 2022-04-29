@@ -346,6 +346,7 @@ func (pageReport *PageReport) parse() {
 	pageReport.ValidHeadings = headingOrderIsValid(body[0])
 }
 
+// Build a new link from a node element
 func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	href := htmlquery.SelectAttr(n, "href")
 	u, err := p.absoluteURL(href)
@@ -367,6 +368,7 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 	return l, nil
 }
 
+// Return an absolute URL removing the URL fragment
 func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 	u, err := url.Parse(strings.TrimSpace(s))
 	if err != nil {
@@ -394,6 +396,7 @@ func (p PageReport) SizeInKB() string {
 	return fmt.Sprintf("%.2f", float64(v)+float64(r)/float64(1<<10))
 }
 
+// Count number of words in an HTML node
 func countWords(n *html.Node) int {
 	var output func(*bytes.Buffer, *html.Node)
 	output = func(buf *bytes.Buffer, n *html.Node) {
@@ -425,6 +428,7 @@ func countWords(n *html.Node) int {
 	return len(strings.Fields(t))
 }
 
+// Check if the H headings order is valid
 func headingOrderIsValid(n *html.Node) bool {
 	headings := [6]string{"h1", "h2", "h3", "h4", "h5", "h6"}
 	current := 0

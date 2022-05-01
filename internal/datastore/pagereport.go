@@ -7,35 +7,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/helper"
 )
 
-func (ds *Datastore) SaveNotCrawled(r *crawler.PageReport, cid int64) {
-	query := `
-		INSERT INTO urls_not_reported (
-			crawl_id,
-			url,
-			blocked,
-			noindex
-		) VALUES (?, ?, ?, ?)`
-
-	stmt, err := ds.db.Prepare(query)
-	if err != nil {
-		log.Printf("saveNotCrawled: %v\n", err)
-		return
-	}
-	defer stmt.Close()
-
-	_, err = stmt.Exec(
-		cid,
-		r.URL,
-		r.BlockedByRobotstxt,
-		r.Noindex,
-	)
-
-	if err != nil {
-		log.Printf("Error in SaveNotCrawled\nCID: %v\n Report: %+v\nError: %+v\n", cid, r, err)
-		return
-	}
-}
-
 func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 	urlHash := helper.Hash(r.URL)
 	var redirectHash string
@@ -66,9 +37,10 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 			words,
 			size,
 			valid_headings,
-			robotstxt_blocked
+			robotstxt_blocked,
+			crawled
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -100,6 +72,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		len(r.Body),
 		r.ValidHeadings,
 		r.BlockedByRobotstxt,
+		r.Crawled,
 	)
 
 	if err != nil {
@@ -249,7 +222,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport
 			words,
 			size,
 			valid_headings,
-			robotstxt_blocked
+			robotstxt_blocked,
+			crawled
 		FROM pagereports
 		WHERE crawl_id = ?`
 
@@ -279,6 +253,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport
 			&p.Size,
 			&p.ValidHeadings,
 			&p.BlockedByRobotstxt,
+			&p.Crawled,
 		)
 		if err != nil {
 			log.Println(err)
@@ -313,7 +288,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 			words,
 			size,
 			valid_headings,
-			robotstxt_blocked
+			robotstxt_blocked,
+			crawled
 		FROM pagereports
 		WHERE crawl_id = ?
 		AND id IN (
@@ -350,6 +326,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 			&p.Size,
 			&p.ValidHeadings,
 			&p.BlockedByRobotstxt,
+			&p.Crawled,
 		)
 		if err != nil {
 			log.Println(err)
@@ -383,7 +360,8 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 			words,
 			size,
 			valid_headings,
-			robotstxt_blocked
+			robotstxt_blocked,
+			crawled
 		FROM pagereports
 		WHERE id = ?`
 
@@ -409,6 +387,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		&p.Size,
 		&p.ValidHeadings,
 		&p.BlockedByRobotstxt,
+		&p.Crawled,
 	)
 	if err != nil {
 		log.Println(err)

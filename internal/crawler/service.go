@@ -25,7 +25,6 @@ type Config struct {
 type Storage interface {
 	SaveCrawl(project.Project) (*Crawl, error)
 	SavePageReport(*PageReport, int64)
-	SaveNotCrawled(*PageReport, int64)
 	SaveEndCrawl(*Crawl) (*Crawl, error)
 	DeletePreviousCrawl(int)
 	GetLastCrawls(project.Project, int) []Crawl
@@ -92,11 +91,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 			crawl.TotalURLs++
 		}
 
-		if r.Crawled {
-			s.store.SavePageReport(&r, crawl.Id)
-		} else {
-			s.store.SaveNotCrawled(&r, crawl.Id)
-		}
+		s.store.SavePageReport(&r, crawl.Id)
 	}
 
 	crawl, err = s.store.SaveEndCrawl(crawl)

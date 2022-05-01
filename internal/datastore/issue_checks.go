@@ -15,7 +15,7 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64) []craw
 			url,
 			title
 		FROM pagereports
-		WHERE redirect_hash = ? AND crawl_id = ?`
+		WHERE redirect_hash = ? AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, uh, cid)
 }
@@ -28,7 +28,7 @@ func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int64) []crawler.PageRepo
 			title
 		FROM pagereports
 		WHERE (title = "" OR title IS NULL) AND media_type = "text/html"
-		AND status_code >=200 AND status_code < 300 AND crawl_id = ?`
+		AND status_code >=200 AND status_code < 300 AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -40,7 +40,7 @@ func (ds *Datastore) Find40xPageReports(cid int64) []crawler.PageReport {
 			url,
 			title
 		FROM pagereports
-		WHERE status_code >= 400 AND status_code < 500 AND crawl_id = ?`
+		WHERE status_code >= 400 AND status_code < 500 AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -52,7 +52,7 @@ func (ds *Datastore) Find30xPageReports(cid int64) []crawler.PageReport {
 			url,
 			title
 		FROM pagereports
-		WHERE status_code >= 300 AND status_code < 400 AND crawl_id = ?`
+		WHERE status_code >= 300 AND status_code < 400 AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -64,7 +64,7 @@ func (ds *Datastore) Find50xPageReports(cid int64) []crawler.PageReport {
 			url,
 			title
 		FROM pagereports
-		WHERE status_code >= 500 AND crawl_id = ?`
+		WHERE status_code >= 500 AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -76,7 +76,7 @@ func (ds *Datastore) FindPageReportsWithLittleContent(cid int64) []crawler.PageR
 			url,
 			title
 		FROM pagereports
-		WHERE words < 200 AND status_code >= 200 AND status_code < 300 AND media_type = "text/html" AND crawl_id = ?`
+		WHERE words < 200 AND status_code >= 200 AND status_code < 300 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -88,7 +88,7 @@ func (ds *Datastore) FindPageReportsWithShortTitle(cid int64) []crawler.PageRepo
 			url,
 			title
 		FROM pagereports
-		WHERE length(title) > 0 AND length(title) < 20 AND media_type = "text/html" AND crawl_id = ?`
+		WHERE length(title) > 0 AND length(title) < 20 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -100,7 +100,7 @@ func (ds *Datastore) FindPageReportsWithLongTitle(cid int64) []crawler.PageRepor
 			url,
 			title
 		FROM pagereports
-		WHERE length(title) > 60 AND media_type = "text/html" AND crawl_id = ?`
+		WHERE length(title) > 60 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -119,13 +119,13 @@ func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int64) []crawler.Pag
 				count(*) AS c
 			FROM pagereports
 			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200
-			AND status_code < 300 AND (canonical = "" OR canonical = url)
+			AND status_code < 300 AND (canonical = "" OR canonical = url) AND crawled = 1
 			GROUP BY title, lang
 			HAVING c > 1
 		) d 
 		ON d.title = y.title AND d.lang = y.lang
 		WHERE media_type = "text/html" AND length(y.title) > 0 AND crawl_id = ?
-		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url)`
+		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url) AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }
@@ -138,7 +138,7 @@ func (ds *Datastore) FindPageReportsWithoutH1(cid int64) []crawler.PageReport {
 			title
 		FROM pagereports
 		WHERE (h1 = "" OR h1 IS NULL) AND media_type = "text/html"
-		AND status_code >= 200 AND status_code < 300 AND crawl_id = ?`
+		AND status_code >= 200 AND status_code < 300 AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -151,7 +151,7 @@ func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int64) []crawler.Pa
 			title
 		FROM pagereports
 		WHERE (description = "" OR description IS NULL) AND media_type = "text/html"
-		AND status_code >= 200 AND status_code < 300 AND crawl_id = ?`
+		AND status_code >= 200 AND status_code < 300 AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -163,7 +163,7 @@ func (ds *Datastore) FindPageReportsWithShortDescription(cid int64) []crawler.Pa
 			url,
 			title
 		FROM pagereports
-		WHERE length(description) > 0 AND length(description) < 80 AND media_type = "text/html" AND crawl_id = ?`
+		WHERE length(description) > 0 AND length(description) < 80 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -175,7 +175,7 @@ func (ds *Datastore) FindPageReportsWithLongDescription(cid int64) []crawler.Pag
 			url,
 			title
 		FROM pagereports
-		WHERE length(description) > 160 AND media_type = "text/html" AND crawl_id = ?`
+		WHERE length(description) > 160 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -194,13 +194,13 @@ func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int) []crawler
 				count(*) AS c
 			FROM pagereports
 			WHERE crawl_id = ? AND media_type = "text/html" AND status_code >= 200
-			AND status_code < 300 AND (canonical = "" OR canonical = url)
+			AND status_code < 300 AND (canonical = "" OR canonical = url) AND crawled = 1
 			GROUP BY description, lang
 			HAVING c > 1
 		) d 
 		ON d.description = y.description AND d.lang = y.lang
 		WHERE y.media_type = "text/html" AND length(y.description) > 0 AND y.crawl_id = ?
-		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url`
+		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }
@@ -213,7 +213,7 @@ func (ds *Datastore) FindImagesWithNoAlt(cid int64) []crawler.PageReport {
 			pagereports.title
 		FROM pagereports
 		LEFT JOIN images ON images.pagereport_id = pagereports.id
-		WHERE images.alt = "" AND pagereports.crawl_id = ?
+		WHERE images.alt = "" AND pagereports.crawl_id = ? AND pagereports.crawled = 1
 		GROUP BY pagereports.id`
 
 	return ds.pageReportsQuery(query, cid)
@@ -227,7 +227,7 @@ func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int64) []crawler.PageRepo
 			pagereports.title
 		FROM pagereports
 		WHERE (pagereports.lang = "" OR pagereports.lang = null) and media_type = "text/html"
-		AND pagereports.crawl_id = ?`
+		AND pagereports.crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -240,7 +240,7 @@ func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int64) []crawler.PageRepor
 			pagereports.title
 		FROM pagereports
 		LEFT JOIN links ON links.pagereport_id = pagereports.id
-		WHERE pagereports.scheme = "https" AND links.scheme = "http"
+		WHERE pagereports.scheme = "https" AND links.scheme = "http" AND crawled = 1
 		AND pagereports.crawl_id = ?
 		GROUP BY links.pagereport_id
 		HAVING count(links.pagereport_id) > 1`
@@ -259,7 +259,7 @@ func (ds *Datastore) FindMissingHrelangReturnLinks(cid int64) []crawler.PageRepo
 		LEFT JOIN pagereports ON hreflangs.pagereport_id = pagereports.id
 		WHERE  hreflangs.crawl_id = ? AND hreflangs.to_lang != "x-default"
 		AND pagereports.status_code < 300 AND b.id IS NULL
-		AND (pagereports.canonical = "" OR pagereports.canonical = pagereports.URL)`
+		AND (pagereports.canonical = "" OR pagereports.canonical = pagereports.URL) AND pagereports.crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -273,7 +273,7 @@ func (ds *Datastore) FindInLinks(s string, cid int64) []crawler.PageReport {
 			pagereports.Title
 		FROM links
 		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
-		WHERE links.url_hash = ? AND pagereports.crawl_id = ?
+		WHERE links.url_hash = ? AND pagereports.crawl_id = ? AND pagereports.crawled = 1
 		GROUP BY pagereports.id
 		LIMIT 25`
 
@@ -295,7 +295,7 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 			FROM issues
 			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
 			WHERE issue_types.type = ? and crawl_id  = ?
-		) ORDER BY url ASC LIMIT ?, ?`
+		) AND crawled = 1 ORDER BY url ASC LIMIT ?, ?`
 
 	return ds.pageReportsQuery(query, errorType, cid, offset, max)
 }
@@ -308,7 +308,8 @@ func (ds *Datastore) FindRedirectChains(cid int64) []crawler.PageReport {
 			a.title
 		FROM pagereports AS a
 		LEFT JOIN pagereports AS b ON a.redirect_hash = b.url_hash
-		WHERE a.redirect_hash != "" AND b.redirect_hash  != "" AND a.crawl_id = ? AND b.crawl_id = ?`
+		WHERE a.redirect_hash != "" AND b.redirect_hash  != "" AND a.crawl_id = ? AND b.crawl_id = ?
+		AND a.crawled = 1 AND b.crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }
@@ -328,7 +329,7 @@ func (ds *Datastore) TooManyLinks(cid int64) []crawler.PageReport {
 				WHERE crawl_id = ?
 				GROUP BY pagereport_id
 		) AS b ON pagereports.id = b.pagereport_id
-		WHERE pagereports.crawl_id = ? and l > 100
+		WHERE pagereports.crawl_id = ? and l > 100 AND crawled = 1
 	`
 
 	return ds.pageReportsQuery(query, cid, cid)
@@ -344,7 +345,7 @@ func (ds *Datastore) InternalNoFollowLinks(cid int64) []crawler.PageReport {
 			FROM links
 			WHERE links.nofollow = 1 AND links.crawl_id = ?
 		) AS b ON b.pagereport_id = pagereports.id
-		WHERE pagereports.crawl_id = ?`
+		WHERE pagereports.crawl_id = ? AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }
@@ -358,9 +359,9 @@ func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) []crawler.PageRep
 				DISTINCT links.pagereport_id
 			FROM links
 			INNER JOIN pagereports ON pagereports.url_hash = links.url_hash AND pagereports.crawl_id = links.crawl_id
-			WHERE links.nofollow = 1 AND pagereports.noindex = 0 AND links.crawl_id = ?
+			WHERE links.nofollow = 1 AND pagereports.noindex = 0 AND links.crawl_id = ? AND pagereports.crawled = 1
 		) AS b ON b.pagereport_id = pagereports.id
-		WHERE pagereports.crawl_id = ?`
+		WHERE pagereports.crawl_id = ? AND pagereports.crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }
@@ -382,8 +383,8 @@ func (ds *Datastore) HreflangNoindexable(cid int64) []crawler.PageReport {
 			SELECT DISTINCT hreflangs.pagereport_id
 			FROM hreflangs 
 			INNER JOIN pagereports ON hreflangs.pagereport_id = pagereports.id AND hreflangs.crawl_id = pagereports.crawl_id
-			WHERE hreflangs.crawl_id = ? and pagereports.noindex = 1
-		)`
+			WHERE hreflangs.crawl_id = ? and pagereports.noindex = 1 AND pagereports.crawled = 1
+		) AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -393,7 +394,8 @@ func (ds *Datastore) FindSitemapPageReports(cid int64) []crawler.PageReport {
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports
 		WHERE media_type = "text/html" AND status_code >= 200 AND status_code < 300
-		AND (canonical IS NULL OR canonical = "" OR canonical = url) AND pagereports.crawl_id = ?`
+		AND (canonical IS NULL OR canonical = "" OR canonical = url) AND pagereports.crawl_id = ?
+		AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -406,7 +408,7 @@ func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int64) []crawler.PageRep
 			pagereports.title
 		FROM pagereports
 		INNER JOIN external_links ON pagereports.id = external_links.pagereport_id
-		WHERE external_links.nofollow = 0 AND pagereports.crawl_id = ?
+		WHERE external_links.nofollow = 0 AND pagereports.crawl_id = ? AND pagereports.crawled = 1
 		GROUP BY pagereports.id`
 
 	return ds.pageReportsQuery(query, cid)
@@ -420,7 +422,8 @@ func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int64) []crawler.PageRe
 			a.title
 		FROM pagereports AS a
 		INNER JOIN pagereports AS b ON a.url = b.canonical
-		WHERE a.crawl_id = ? AND b.crawl_id = ? AND a.canonical != "" AND a.canonical != a.url`
+		WHERE a.crawl_id = ? AND b.crawl_id = ? AND a.canonical != "" AND a.canonical != a.url
+		AND a.crawled = 1 AND b.crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }
@@ -433,7 +436,8 @@ func (ds *Datastore) FindRedirectLoops(cid int64) []crawler.PageReport {
 			a.title
 		FROM pagereports AS a
 		INNER JOIN pagereports AS b ON a.redirect_hash = b.url_hash AND b.redirect_hash = a.url_hash
-		WHERE a.crawl_id = ? AND b.crawl_id = ?`
+		WHERE a.crawl_id = ? AND b.crawl_id = ?
+		AND a.crawled = 1 AND b.crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }
@@ -445,7 +449,7 @@ func (ds *Datastore) FindNotValidHeadingsOrder(cid int64) []crawler.PageReport {
 			url,
 			title
 		FROM pagereports
-		WHERE crawl_id = ? AND valid_headings = 0`
+		WHERE crawl_id = ? AND valid_headings = 0 AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -460,7 +464,7 @@ func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) []crawler.PageReport
 		LEFT JOIN hreflangs ON hreflangs.to_hash = pagereports.url_hash AND hreflangs.crawl_id = ?
 		WHERE media_type = "text/html" AND status_code >= 200 AND status_code < 300
 		AND (canonical IS NOT NULL AND canonical != "" AND canonical != url) AND pagereports.crawl_id = ?
-		AND hreflangs.id IS NOT NULL`
+		AND hreflangs.id IS NOT NULL AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }

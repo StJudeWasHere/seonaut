@@ -246,5 +246,4 @@ func (ds *Datastore) DeletePreviousCrawl(pid int) {
 	deleteFunc(previousCrawl, "scripts")
 	deleteFunc(previousCrawl, "styles")
 	deleteFunc(previousCrawl, "pagereports")
-	deleteFunc(previousCrawl, "urls_not_reported")
 }

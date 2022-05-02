@@ -13,7 +13,7 @@ func (ds *Datastore) CountByMediaType(cid int64) issue.CountList {
 	query := `
 		SELECT media_type, count(*)
 		FROM pagereports
-		WHERE crawl_id = ?
+		WHERE crawl_id = ? AND crawled = 1
 		GROUP BY media_type`
 
 	return ds.countListQuery(query, cid)
@@ -25,7 +25,7 @@ func (ds *Datastore) CountByStatusCode(cid int64) issue.CountList {
 			status_code,
 			count(*)
 		FROM pagereports
-		WHERE crawl_id = ?
+		WHERE crawl_id = ? AND crawled = 1
 		GROUP BY status_code`
 
 	return ds.countListQuery(query, cid)

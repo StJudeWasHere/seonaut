@@ -172,7 +172,7 @@ func (ds *Datastore) GetNumberOfPagesForIssues(cid int64, errorType string) int 
 		SELECT count(DISTINCT pagereport_id)
 		FROM issues
 		INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
-		WHERE issue_types.type = ? and crawl_id  = ?`
+		WHERE issue_types.type = ? AND crawl_id  = ?`
 
 	row := ds.db.QueryRow(query, errorType, cid)
 	var c int

@@ -294,8 +294,8 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 			SELECT DISTINCT pagereport_id
 			FROM issues
 			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
-			WHERE issue_types.type = ? and crawl_id  = ?
-		) AND crawled = 1 ORDER BY url ASC LIMIT ?, ?`
+			WHERE issue_types.type = ? AND crawl_id = ?
+		) ORDER BY url ASC LIMIT ?, ?`
 
 	return ds.pageReportsQuery(query, errorType, cid, offset, max)
 }
@@ -467,6 +467,18 @@ func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) []crawler.PageReport
 		AND hreflangs.id IS NOT NULL AND crawled = 1`
 
 	return ds.pageReportsQuery(query, cid, cid)
+}
+
+func (ds *Datastore) FindBlockedByRobotstxt(cid int64) []crawler.PageReport {
+	query := `
+		SELECT
+			id,
+			url,
+			title
+		FROM pagereports
+		WHERE crawl_id = ? AND robotstxt_blocked = 1 AND crawled = 0`
+
+	return ds.pageReportsQuery(query, cid)
 }
 
 func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) []crawler.PageReport {

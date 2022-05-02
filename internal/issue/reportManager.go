@@ -35,6 +35,7 @@ const (
 	ErrorInternalNoFollowIndexable              // Nofollow links to indexable pages
 	ErrorNoIndexable                            // Page using the noindex attribute
 	HreflangNoindexable                         // Hreflang to a non indexable page
+	ErrorBlocked                                // Blocked by robots.txt
 )
 
 type Reporter func(int64) []crawler.PageReport

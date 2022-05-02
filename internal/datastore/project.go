@@ -29,7 +29,8 @@ func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 	query := `
 		SELECT id, url, ignore_robotstxt, follow_nofollow, include_noindex, created
 		FROM projects
-		WHERE user_id = ?`
+		WHERE user_id = ?
+		ORDER BY url ASC`
 
 	rows, err := ds.db.Query(query, uid)
 	if err != nil {

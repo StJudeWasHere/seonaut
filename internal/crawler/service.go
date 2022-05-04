@@ -44,6 +44,8 @@ type Crawl struct {
 	NoticeIssues       int
 	BlockedByRobotstxt int
 	Noindex            int
+	SitemapExists      bool
+	RobotstxtExists    bool
 }
 
 type Service struct {
@@ -75,6 +77,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	)
 
 	crawl, err := s.store.SaveCrawl(p)
+
 	if err != nil {
 		return nil, err
 	}
@@ -93,6 +96,9 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 
 		s.store.SavePageReport(&r, crawl.Id)
 	}
+
+	crawl.RobotstxtExists = c.RobotstxtExists()
+	crawl.SitemapExists = c.SitemapExists()
 
 	crawl, err = s.store.SaveEndCrawl(crawl)
 	if err != nil {

@@ -32,6 +32,9 @@ type Crawler struct {
 	rlock     *sync.RWMutex
 
 	storage *URLStorage
+
+	sitemapExists   bool
+	robotstxtExists bool
 }
 
 func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex bool) *Crawler {
@@ -55,6 +58,9 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 // or the MaxPageReports limit is hit.
 func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
+
+	c.checkSitemapExists(c.URL)
+	c.getRobotsMap(c.URL)
 
 	q, _ := queue.New(
 		consumerThreads,
@@ -256,6 +262,21 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 // Check if URL is blocked by robots.txt
 func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
+	robot := c.getRobotsMap(u)
+	if robot == nil {
+		return true
+	}
+
+	path := u.EscapedPath()
+	if u.RawQuery != "" {
+		path += "?" + u.Query().Encode()
+	}
+
+	return !robot.TestAgent(path, c.UserAgent)
+}
+
+// Returns a RobotsData checking if it has already been created and stored in the robotsMap
+func (c *Crawler) getRobotsMap(u *url.URL) *robotstxt.RobotsData {
 	c.rlock.RLock()
 	robot, ok := c.robotsMap[u.Host]
 	c.rlock.RUnlock()
@@ -267,13 +288,17 @@ func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
 			c.robotsMap[u.Host] = nil
 			c.rlock.Unlock()
 
-			return true
+			return nil
 		}
 		defer resp.Body.Close()
 
+		if u.Host == c.URL.Host && resp.StatusCode >= 200 && resp.StatusCode < 300 {
+			c.robotstxtExists = true
+		}
+
 		robot, err = robotstxt.FromResponse(resp)
 		if err != nil {
-			log.Println(err)
+			log.Printf("getRobotsMap: %v\n", err)
 		}
 
 		c.rlock.Lock()
@@ -281,14 +306,36 @@ func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
 		c.rlock.Unlock()
 	}
 
-	if robot == nil {
-		return true
+	return robot
+}
+
+// Check if a sitemap.xml exists checking the default location /sitemap.xml
+// and checking for sitemaps in the robots.txt
+func (c *Crawler) checkSitemapExists(u *url.URL) {
+	resp, err := http.Get(u.Scheme + "://" + u.Host + "/sitemap.xml")
+	if err != nil {
+		log.Printf("SitemapExists: %v\n", err)
+		return
 	}
 
-	path := u.EscapedPath()
-	if u.RawQuery != "" {
-		path += "?" + u.Query().Encode()
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		c.sitemapExists = true
+		return
 	}
 
-	return !robot.TestAgent(path, c.UserAgent)
+	robot := c.getRobotsMap(u)
+	if robot != nil && len(robot.Sitemaps) > 0 {
+		c.sitemapExists = true
+		return
+	}
+}
+
+// Returns true if the sitemap.xml file exists
+func (c *Crawler) SitemapExists() bool {
+	return c.sitemapExists
+}
+
+// Returns true if the robots.txt file exists
+func (c *Crawler) RobotstxtExists() bool {
+	return c.robotstxtExists
 }

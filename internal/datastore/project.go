@@ -93,7 +93,19 @@ func (ds *Datastore) SaveCrawl(p project.Project) (*crawler.Crawl, error) {
 }
 
 func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) (*crawler.Crawl, error) {
-	stmt, _ := ds.db.Prepare("UPDATE crawls SET end = ?, total_urls= ?, blocked_by_robotstxt=?, noindex=? WHERE id = ?")
+	query := `
+		UPDATE
+			crawls
+		SET
+			end = ?,
+			total_urls = ?,
+			blocked_by_robotstxt = ?,
+			noindex = ?,
+			robotstxt_exists = ?,
+			sitemap_exists = ?
+		WHERE id = ?
+	`
+	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
 
 	c.End = sql.NullTime{
@@ -101,7 +113,15 @@ func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) (*crawler.Crawl, error) {
 		Valid: true,
 	}
 
-	_, err := stmt.Exec(c.End, c.TotalURLs, c.BlockedByRobotstxt, c.Noindex, c.Id)
+	_, err := stmt.Exec(
+		c.End,
+		c.TotalURLs,
+		c.BlockedByRobotstxt,
+		c.Noindex,
+		c.RobotstxtExists,
+		c.SitemapExists,
+		c.Id,
+	)
 	if err != nil {
 		log.Printf("saveEndCrawl: %v\n", err)
 		return c, err
@@ -118,7 +138,9 @@ func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 			end,
 			total_urls,
 			total_issues,
-			issues_end
+			issues_end,
+			robotstxt_exists,
+			sitemap_exists
 		FROM crawls
 		WHERE project_id = ?
 		ORDER BY start DESC LIMIT 1`
@@ -126,7 +148,16 @@ func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 	row := ds.db.QueryRow(query, p.Id)
 
 	crawl := crawler.Crawl{}
-	err := row.Scan(&crawl.Id, &crawl.Start, &crawl.End, &crawl.TotalURLs, &crawl.TotalIssues, &crawl.IssuesEnd)
+	err := row.Scan(
+		&crawl.Id,
+		&crawl.Start,
+		&crawl.End,
+		&crawl.TotalURLs,
+		&crawl.TotalIssues,
+		&crawl.IssuesEnd,
+		&crawl.RobotstxtExists,
+		&crawl.SitemapExists,
+	)
 	if err != nil {
 		log.Printf("GetLastCrawl: %v\n", err)
 	}

@@ -74,6 +74,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		p.IgnoreRobotsTxt,
 		p.FollowNofollow,
 		p.IncludeNoindex,
+		p.CrawlSitemap,
 	)
 
 	crawl, err := s.store.SaveCrawl(p)

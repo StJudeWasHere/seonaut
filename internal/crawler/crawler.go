@@ -9,6 +9,7 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
+	"github.com/oxffaa/gopher-parse-sitemap"
 	"github.com/temoto/robotstxt"
 )
 
@@ -27,6 +28,7 @@ type Crawler struct {
 	FollowNofollow  bool
 	IncludeNoindex  bool
 	UserAgent       string
+	CrawlSitemap    bool
 
 	robotsMap map[string]*robotstxt.RobotsData
 	rlock     *sync.RWMutex
@@ -35,9 +37,11 @@ type Crawler struct {
 
 	sitemapExists   bool
 	robotstxtExists bool
+
+	sitemapsMap []string
 }
 
-func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex bool) *Crawler {
+func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex, crawlSitemap bool) *Crawler {
 	return &Crawler{
 		URL:             url,
 		MaxPageReports:  max,
@@ -45,6 +49,7 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		FollowNofollow:  fnofollow,
 		IncludeNoindex:  inoindex,
 		UserAgent:       agent,
+		CrawlSitemap:    crawlSitemap,
 
 		robotsMap: make(map[string]*robotstxt.RobotsData),
 		rlock:     &sync.RWMutex{},
@@ -254,9 +259,31 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		c.URL.Path = "/"
 	}
 
-	us := c.URL.String()
+	if c.CrawlSitemap {
+		go func() {
+			for _, s := range c.sitemapsMap {
+				if responseCounter >= c.MaxPageReports {
+					break
+				}
 
-	q.AddURL(us)
+				sitemap.ParseFromSite(s, func(e sitemap.Entry) error {
+					l, err := url.Parse(e.GetLocation())
+					if err != nil {
+						return err
+					}
+
+					if l.Path == "/" {
+						l.Path = "/"
+					}
+
+					q.AddURL(l.String())
+					return nil
+				})
+			}
+		}()
+	}
+
+	q.AddURL(c.URL.String())
 	q.Run(co)
 }
 
@@ -312,20 +339,24 @@ func (c *Crawler) getRobotsMap(u *url.URL) *robotstxt.RobotsData {
 // Check if a sitemap.xml exists checking the default location /sitemap.xml
 // and checking for sitemaps in the robots.txt
 func (c *Crawler) checkSitemapExists(u *url.URL) {
-	resp, err := http.Get(u.Scheme + "://" + u.Host + "/sitemap.xml")
+	sitamapURL := u.Scheme + "://" + u.Host + "/sitemap.xml"
+	resp, err := http.Get(sitamapURL)
 	if err != nil {
 		log.Printf("SitemapExists: %v\n", err)
 		return
 	}
+	defer resp.Body.Close()
 
 	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
 		c.sitemapExists = true
+		c.sitemapsMap = append(c.sitemapsMap, sitamapURL)
 		return
 	}
 
 	robot := c.getRobotsMap(u)
 	if robot != nil && len(robot.Sitemaps) > 0 {
 		c.sitemapExists = true
+		c.sitemapsMap = append(c.sitemapsMap, robot.Sitemaps...)
 		return
 	}
 }

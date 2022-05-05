@@ -74,7 +74,12 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			includeNoindex = false
 		}
 
-		err = app.projectService.SaveProject(url, ignoreRobotsTxt, followNofollow, includeNoindex, user.Id)
+		crawlSitemap, err := strconv.ParseBool(r.FormValue("crawl_sitemap"))
+		if err != nil {
+			crawlSitemap = false
+		}
+
+		err = app.projectService.SaveProject(url, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, user.Id)
 
 		if err == nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)

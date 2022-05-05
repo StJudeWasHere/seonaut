@@ -1,0 +1,1 @@
+ALTER TABLE `projects` DROP COLUMN `crawl_sitemap`;

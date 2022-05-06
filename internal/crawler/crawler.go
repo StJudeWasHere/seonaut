@@ -9,7 +9,6 @@ import (
 
 	"github.com/gocolly/colly/v2"
 	"github.com/gocolly/colly/v2/queue"
-	"github.com/oxffaa/gopher-parse-sitemap"
 	"github.com/temoto/robotstxt"
 )
 
@@ -33,7 +32,8 @@ type Crawler struct {
 	robotsMap map[string]*robotstxt.RobotsData
 	rlock     *sync.RWMutex
 
-	storage *URLStorage
+	storage        *URLStorage
+	sitemapChecker *SitemapChecker
 
 	sitemapExists   bool
 	robotstxtExists bool
@@ -54,7 +54,8 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		robotsMap: make(map[string]*robotstxt.RobotsData),
 		rlock:     &sync.RWMutex{},
 
-		storage: NewURLStorage(),
+		storage:        NewURLStorage(),
+		sitemapChecker: NewSitemapChecker(),
 	}
 }
 
@@ -64,8 +65,9 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
 
-	c.checkSitemapExists(c.URL)
-	c.getRobotsMap(c.URL)
+	robot := c.getRobotsMap(c.URL)
+	c.sitemapsMap = append(robot.Sitemaps, c.URL.Scheme+"://"+c.URL.Host+"/sitemap.xml")
+	c.sitemapExists = c.sitemapChecker.SitemapExists(c.sitemapsMap)
 
 	q, _ := queue.New(
 		consumerThreads,
@@ -259,27 +261,24 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		c.URL.Path = "/"
 	}
 
-	if c.CrawlSitemap {
+	if c.CrawlSitemap && c.sitemapExists {
 		go func() {
-			for _, s := range c.sitemapsMap {
+			c.sitemapChecker.ParseSitemaps(c.sitemapsMap, func(u string) {
 				if responseCounter >= c.MaxPageReports {
-					break
+					return
 				}
 
-				sitemap.ParseFromSite(s, func(e sitemap.Entry) error {
-					l, err := url.Parse(e.GetLocation())
-					if err != nil {
-						return err
-					}
+				l, err := url.Parse(u)
+				if err != nil {
+					return
+				}
 
-					if l.Path == "/" {
-						l.Path = "/"
-					}
+				if l.Path == "/" {
+					l.Path = "/"
+				}
 
-					q.AddURL(l.String())
-					return nil
-				})
-			}
+				q.AddURL(l.String())
+			})
 		}()
 	}
 
@@ -334,31 +333,6 @@ func (c *Crawler) getRobotsMap(u *url.URL) *robotstxt.RobotsData {
 	}
 
 	return robot
-}
-
-// Check if a sitemap.xml exists checking the default location /sitemap.xml
-// and checking for sitemaps in the robots.txt
-func (c *Crawler) checkSitemapExists(u *url.URL) {
-	sitamapURL := u.Scheme + "://" + u.Host + "/sitemap.xml"
-	resp, err := http.Get(sitamapURL)
-	if err != nil {
-		log.Printf("SitemapExists: %v\n", err)
-		return
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		c.sitemapExists = true
-		c.sitemapsMap = append(c.sitemapsMap, sitamapURL)
-		return
-	}
-
-	robot := c.getRobotsMap(u)
-	if robot != nil && len(robot.Sitemaps) > 0 {
-		c.sitemapExists = true
-		c.sitemapsMap = append(c.sitemapsMap, robot.Sitemaps...)
-		return
-	}
 }
 
 // Returns true if the sitemap.xml file exists

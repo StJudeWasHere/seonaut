@@ -29,16 +29,14 @@ type Crawler struct {
 	UserAgent       string
 	CrawlSitemap    bool
 
-	robotsMap map[string]*robotstxt.RobotsData
-	rlock     *sync.RWMutex
-
-	storage        *URLStorage
-	sitemapChecker *SitemapChecker
-
+	robotsMap       map[string]*robotstxt.RobotsData
+	rlock           *sync.RWMutex
+	storage         *URLStorage
+	sitemapChecker  *SitemapChecker
 	sitemapExists   bool
 	robotstxtExists bool
-
-	sitemapsMap []string
+	plock           *sync.RWMutex
+	sitemapsMap     []string
 }
 
 func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex, crawlSitemap bool) *Crawler {
@@ -51,11 +49,11 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		UserAgent:       agent,
 		CrawlSitemap:    crawlSitemap,
 
-		robotsMap: make(map[string]*robotstxt.RobotsData),
-		rlock:     &sync.RWMutex{},
-
+		robotsMap:      make(map[string]*robotstxt.RobotsData),
+		rlock:          &sync.RWMutex{},
 		storage:        NewURLStorage(),
 		sitemapChecker: NewSitemapChecker(),
+		plock:          &sync.RWMutex{},
 	}
 }
 
@@ -97,7 +95,11 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 	// Resources response hlandler
 	handleResourceResponse := func(r *colly.Response) {
-		if responseCounter >= c.MaxPageReports {
+		c.plock.RLock()
+		rc := responseCounter
+		c.plock.RUnlock()
+
+		if rc >= c.MaxPageReports {
 			return
 		}
 		url := r.Request.URL
@@ -106,12 +108,18 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		pageReport.Crawled = true
 
 		pr <- *pageReport
+		c.plock.Lock()
 		responseCounter++
+		c.plock.Unlock()
 	}
 
 	// Links response handler
 	handleResponse := func(r *colly.Response) {
-		if responseCounter >= c.MaxPageReports {
+		c.plock.RLock()
+		rc := responseCounter
+		c.plock.RUnlock()
+
+		if rc >= c.MaxPageReports {
 			return
 		}
 
@@ -121,7 +129,9 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 		if pageReport.Noindex == false || c.IncludeNoindex == true {
 			pageReport.Crawled = true
+			c.plock.Lock()
 			responseCounter++
+			c.plock.Unlock()
 		}
 
 		pr <- *pageReport
@@ -264,7 +274,11 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	if c.CrawlSitemap && c.sitemapExists {
 		go func() {
 			c.sitemapChecker.ParseSitemaps(c.sitemapsMap, func(u string) {
-				if responseCounter >= c.MaxPageReports {
+				c.plock.RLock()
+				rc := responseCounter
+				c.plock.RUnlock()
+
+				if rc >= c.MaxPageReports {
 					return
 				}
 

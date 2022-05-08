@@ -15,6 +15,8 @@ func NewURLStorage() *URLStorage {
 		lock: &sync.RWMutex{},
 	}
 }
+
+// Returns true if a URL string has already been added
 func (s *URLStorage) Seen(u string) bool {
 	s.lock.RLock()
 	_, ok := s.seen[u]
@@ -23,6 +25,7 @@ func (s *URLStorage) Seen(u string) bool {
 	return ok
 }
 
+// Adds an URL string to the slice
 func (s *URLStorage) Add(u string) {
 	s.lock.Lock()
 	s.seen[u] = true

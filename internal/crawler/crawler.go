@@ -64,7 +64,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
 
 	robot := c.getRobotsMap(c.URL)
-	c.sitemapsMap = append(robot.Sitemaps, c.URL.Scheme+"://"+c.URL.Host+"/sitemap.xml")
+	c.sitemapsMap = c.removeDuplicates(append(robot.Sitemaps, c.URL.Scheme+"://"+c.URL.Host+"/sitemap.xml"))
 	c.sitemapExists = c.sitemapChecker.SitemapExists(c.sitemapsMap)
 
 	q, _ := queue.New(
@@ -357,4 +357,19 @@ func (c *Crawler) SitemapExists() bool {
 // Returns true if the robots.txt file exists
 func (c *Crawler) RobotstxtExists() bool {
 	return c.robotstxtExists
+}
+
+// Remove duplicate strings from slice
+func (c *Crawler) removeDuplicates(m []string) []string {
+	s := make(map[string]bool)
+	var unique []string
+
+	for _, str := range m {
+		if _, ok := s[str]; !ok {
+			s[str] = true
+			unique = append(unique, str)
+		}
+	}
+
+	return unique
 }

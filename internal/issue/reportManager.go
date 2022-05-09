@@ -36,6 +36,7 @@ const (
 	ErrorNoIndexable                            // Page using the noindex attribute
 	HreflangNoindexable                         // Hreflang to a non indexable page
 	ErrorBlocked                                // Blocked by robots.txt
+	ErrorOrphan                                 // Orphan pages
 )
 
 type Reporter func(int64) []crawler.PageReport

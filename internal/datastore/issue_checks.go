@@ -481,6 +481,19 @@ func (ds *Datastore) FindBlockedByRobotstxt(cid int64) []crawler.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
+func (ds *Datastore) FindOrphanPages(cid int64) []crawler.PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		LEFT JOIN links ON pagereports.url_hash = links.url_hash and pagereports.crawl_id = links.crawl_id
+		WHERE pagereports.media_type = "text/html" AND links.url IS NULL AND pagereports.crawl_id = ?`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
 func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) []crawler.PageReport {
 	var pageReports []crawler.PageReport
 	rows, err := ds.db.Query(query, args...)

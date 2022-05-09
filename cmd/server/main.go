@@ -89,6 +89,7 @@ func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm.AddReporter(ds.NoIndexable, issue.ErrorNoIndexable)
 	rm.AddReporter(ds.HreflangNoindexable, issue.HreflangNoindexable)
 	rm.AddReporter(ds.FindBlockedByRobotstxt, issue.ErrorBlocked)
+	rm.AddReporter(ds.FindOrphanPages, issue.ErrorOrphan)
 
 	return rm
 }

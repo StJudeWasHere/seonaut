@@ -94,3 +94,6 @@ ERROR_HREFLANG_NO_INDEXABLE_DESC: Hreflangs should link to indexable pages, link
 
 ERROR_BLOCKED: Blocked by robots.txt
 ERROR_BLOCKED_DESC: Pages blocked by robots.txt won't be crawled by search engines. Keep an eye on this list to make sure important pages are not being blocked.
+
+ERROR_ORPHAN: Orphan pages
+ERROR_ORPHAN_DESC: Pages that are not linked anywhere in your site, this means no visitors can access to it and may lead to lead to crawl wastage.

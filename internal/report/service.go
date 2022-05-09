@@ -31,6 +31,8 @@ func NewService(store ReportStore) *ReportService {
 	}
 }
 
+// Returns a PageReportView by PageReport Id and Crawl Id
+// it also loads the data specified in the tab paramater
 func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string) *PageReportView {
 	v := &PageReportView{
 		PageReport: s.store.FindPageReportById(rid),
@@ -47,6 +49,7 @@ func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string) *PageR
 	return v
 }
 
+// Return slice of PageReports by error type
 func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) []crawler.PageReport {
 	if eid != "" {
 		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
@@ -55,6 +58,7 @@ func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) []cr
 	return s.store.FindAllPageReportsByCrawlId(crawlId)
 }
 
+// Returns a slice of crawlable PageReports that can be included in a sitemap
 func (s *ReportService) GetSitemapPageReports(crawlId int64) []crawler.PageReport {
 	return s.store.FindSitemapPageReports(crawlId)
 }

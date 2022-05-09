@@ -389,6 +389,7 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 	return a, nil
 }
 
+// Converts size KB and returns a string
 func (p PageReport) SizeInKB() string {
 	v := p.Size / (1 << 10)
 	r := p.Size % (1 << 10)

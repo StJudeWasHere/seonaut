@@ -93,7 +93,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	cor.UserAgent = c.UserAgent
 	cor.IgnoreRobotsTxt = c.IgnoreRobotsTxt
 
-	// Resources response hlandler
+	// Resources response handler
 	handleResourceResponse := func(r *colly.Response) {
 		c.plock.RLock()
 		rc := responseCounter

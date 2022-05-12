@@ -119,6 +119,13 @@ func (pageReport *PageReport) parse() {
 		pageReport.Lang = htmlquery.SelectAttr(lang[0], "lang")
 	}
 
+	if pageReport.Lang == "" {
+		languages := strings.Split(pageReport.Headers.Get("Content-Language"), ",")
+		if len(languages) > 0 {
+			pageReport.Lang = strings.TrimSpace(languages[0])
+		}
+	}
+
 	// ---
 	// The title element in the head section defines the page title
 	// ex. <title>Test Page Title</title>

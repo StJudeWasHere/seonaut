@@ -244,3 +244,24 @@ func TestNoindex(t *testing.T) {
 		t.Error("Noindex == false")
 	}
 }
+
+func TestContentLanguage(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	body := []byte("<html>")
+	statusCode := 200
+	contentLanguage := "en-us"
+	headers := http.Header{
+		"Content-Language": []string{contentLanguage},
+		"Content-Type":     []string{"text/html"},
+	}
+
+	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+
+	if pageReport.Lang != contentLanguage {
+		t.Errorf("ContentLanguage: %s != %s", pageReport.Lang, contentLanguage)
+	}
+}

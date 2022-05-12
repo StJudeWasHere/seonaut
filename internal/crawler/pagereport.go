@@ -30,6 +30,7 @@ type PageReport struct {
 	Description        string
 	Robots             string
 	Noindex            bool
+	Nofollow           bool
 	Canonical          string
 	H1                 string
 	H2                 string
@@ -38,6 +39,7 @@ type PageReport struct {
 	Words              int
 	Hreflangs          []Hreflang
 	Body               []byte
+	Headers            *http.Header
 	Size               int
 	Images             []Image
 	Scripts            []string
@@ -74,6 +76,7 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *P
 		StatusCode:    status,
 		ContentType:   headers.Get("Content-Type"),
 		Body:          body,
+		Headers:       headers,
 		Size:          len(body),
 		sanitizer:     bluemonday.StrictPolicy(),
 		ValidHeadings: true,
@@ -160,6 +163,17 @@ func (pageReport *PageReport) parse() {
 	if len(robots) > 0 {
 		pageReport.Robots = htmlquery.SelectAttr(robots[0], "content")
 		pageReport.Noindex = strings.Contains(pageReport.Robots, "noindex")
+		pageReport.Nofollow = strings.Contains(pageReport.Robots, "nofollow")
+	}
+
+	// Check robots noindex and nofollow in the HTTP header
+	robotsTag := pageReport.Headers.Get("X-Robots-Tag")
+	if strings.Contains(robotsTag, "noindex") {
+		pageReport.Noindex = true
+	}
+
+	if strings.Contains(robotsTag, "nofollow") {
+		pageReport.Nofollow = true
 	}
 
 	// ---

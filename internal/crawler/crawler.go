@@ -136,7 +136,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 		pr <- *pageReport
 
-		if strings.Contains(pageReport.Robots, "nofollow") && c.FollowNofollow == false {
+		if pageReport.Nofollow == true && c.FollowNofollow == false {
 			return
 		}
 

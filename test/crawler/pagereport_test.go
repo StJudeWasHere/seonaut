@@ -220,3 +220,27 @@ func TestPageReportHTML(t *testing.T) {
 		t.Error("pageReport.Noindex == false")
 	}
 }
+
+func TestNoindex(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	body := []byte("<html>")
+	statusCode := 200
+	headers := http.Header{
+		"X-Robots-Tag": []string{"noindex, nofollow"},
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+
+	if pageReport.Nofollow == false {
+		t.Error("Nofollow == false")
+	}
+
+	if pageReport.Noindex == false {
+		t.Error("Noindex == false")
+	}
+}

@@ -265,3 +265,41 @@ func TestContentLanguage(t *testing.T) {
 		t.Errorf("ContentLanguage: %s != %s", pageReport.Lang, contentLanguage)
 	}
 }
+
+func TestHreflangHeaders(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	linkHeader := `
+		<https://example.com/file.pdf>; rel="alternate"; hreflang="en",
+		<https://de-ch.example.com/file.pdf>; rel="alternate"; hreflang="de-ch",
+		<https://de.example.com/file.pdf>; rel="alternate"; hreflang="de"
+	`
+
+	body := []byte("<html>")
+	statusCode := 200
+	headers := http.Header{
+		"Link":         []string{linkHeader},
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+
+	if len(pageReport.Hreflangs) != 3 {
+		t.Errorf("HreflangHeader: %d != 3", len(pageReport.Hreflangs))
+	}
+
+	if pageReport.Hreflangs[0].URL != "https://example.com/file.pdf" || pageReport.Hreflangs[0].Lang != "en" {
+		t.Errorf("HreflangHeader: Hreflangs[0]: %v ", pageReport.Hreflangs[0])
+	}
+
+	if pageReport.Hreflangs[1].URL != "https://de-ch.example.com/file.pdf" || pageReport.Hreflangs[1].Lang != "de-ch" {
+		t.Errorf("HreflangHeader: Hreflangs[1]: %v ", pageReport.Hreflangs[1])
+	}
+
+	if pageReport.Hreflangs[2].URL != "https://de.example.com/file.pdf" || pageReport.Hreflangs[2].Lang != "de" {
+		t.Errorf("HreflangHeader: Hreflangs[2]: %v ", pageReport.Hreflangs[2])
+	}
+}

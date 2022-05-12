@@ -251,6 +251,8 @@ func (pageReport *PageReport) parse() {
 		}
 	}
 
+	pageReport.parseHreflangsFromHeader()
+
 	// ---
 	// Extract images to check alt text and crawl src and srcset urls
 	// ex. <img src="logo.jpg" srcset="/files/16870/new-york-skyline-wide.jpg 3724w">
@@ -411,11 +413,43 @@ func (p *PageReport) absoluteURL(s string) (*url.URL, error) {
 }
 
 // Converts size KB and returns a string
-func (p PageReport) SizeInKB() string {
+func (p *PageReport) SizeInKB() string {
 	v := p.Size / (1 << 10)
 	r := p.Size % (1 << 10)
 
 	return fmt.Sprintf("%.2f", float64(v)+float64(r)/float64(1<<10))
+}
+
+// Parse hreflang links from the HTTP header
+func (p *PageReport) parseHreflangsFromHeader() {
+	linkHeaderElements := strings.Split(p.Headers.Get("Link"), ",")
+	for _, lh := range linkHeaderElements {
+		attr := strings.Split(lh, ";")
+		if len(attr) > 1 {
+			url := strings.TrimSpace(attr[0])
+			isAlternate := false
+			lang := ""
+			for _, a := range attr[1:] {
+				a = strings.TrimSpace(a)
+				if strings.Contains(a, `rel="alternate"`) {
+					isAlternate = true
+				}
+
+				if strings.HasPrefix(a, "hreflang=") {
+					lang = strings.Trim(a[9:], "\"")
+				}
+			}
+
+			if isAlternate == true && lang != "" {
+				h := Hreflang{
+					URL:  url[1 : len(url)-1],
+					Lang: lang,
+				}
+
+				p.Hreflangs = append(p.Hreflangs, h)
+			}
+		}
+	}
 }
 
 // Count number of words in an HTML node

@@ -22,7 +22,7 @@ require (
 	github.com/turk/go-sitemap v0.0.0-20210912154218-82ad01095e30
 	go.uber.org/atomic v1.9.0 // indirect
 	golang.org/x/crypto v0.0.0-20220427172511-eb4f295cb31f
-	golang.org/x/net v0.0.0-20220425223048-2871e0cb64e4
+	golang.org/x/net v0.0.0-20220513224357-95641704303c
 	golang.org/x/sys v0.0.0-20220502124256-b6088ccd6cba // indirect
 	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 )

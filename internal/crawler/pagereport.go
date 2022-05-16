@@ -14,6 +14,7 @@ import (
 	"github.com/antchfx/htmlquery"
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/net/html"
+	"golang.org/x/net/html/charset"
 )
 
 type PageReport struct {
@@ -96,7 +97,7 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *P
 		return &pageReport
 	}
 
-	if mediaType == "text/html" {
+	if pageReport.isHTML() {
 		pageReport.parse()
 	}
 
@@ -104,7 +105,14 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *P
 }
 
 func (pageReport *PageReport) parse() {
-	doc, err := htmlquery.Parse(bytes.NewReader(pageReport.Body))
+	contentType := pageReport.ContentType
+	utf8Body, err := charset.NewReader(bytes.NewReader(pageReport.Body), contentType)
+	if err != nil {
+		fmt.Errorf("charset error %s: %w", contentType, err)
+		return
+	}
+
+	doc, err := htmlquery.Parse(utf8Body)
 	if err != nil {
 		log.Printf("parse: %v\n", err)
 		return
@@ -450,6 +458,18 @@ func (p *PageReport) parseHreflangsFromHeader() {
 			}
 		}
 	}
+}
+
+// Returns true if ContentType is a valid HTML type
+func (p *PageReport) isHTML() bool {
+	validTypes := []string{"text/html", "application/xhtml+xml", "application/vnd.wap.xhtml+xml"}
+	for _, t := range validTypes {
+		if strings.Contains(p.ContentType, t) {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Count number of words in an HTML node

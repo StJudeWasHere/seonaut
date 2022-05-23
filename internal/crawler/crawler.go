@@ -1,7 +1,6 @@
 package crawler
 
 import (
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -63,8 +62,13 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 func (c *Crawler) Crawl(pr chan<- PageReport) {
 	defer close(pr)
 
-	robot := c.getRobotsMap(c.URL)
-	c.sitemapsMap = c.removeDuplicates(append(robot.Sitemaps, c.URL.Scheme+"://"+c.URL.Host+"/sitemap.xml"))
+	c.sitemapsMap = append(c.sitemapsMap, c.URL.Scheme+"://"+c.URL.Host+"/sitemap.xml")
+
+	robot, err := c.getRobotsMap(c.URL)
+	if err == nil && robot != nil {
+		c.sitemapsMap = c.removeDuplicates(append(c.sitemapsMap, robot.Sitemaps...))
+	}
+
 	c.sitemapExists = c.sitemapChecker.SitemapExists(c.sitemapsMap)
 
 	q, _ := queue.New(
@@ -302,8 +306,8 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 // Check if URL is blocked by robots.txt
 func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
-	robot := c.getRobotsMap(u)
-	if robot == nil {
+	robot, err := c.getRobotsMap(u)
+	if err != nil || robot == nil {
 		return true
 	}
 
@@ -316,7 +320,7 @@ func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
 }
 
 // Returns a RobotsData checking if it has already been created and stored in the robotsMap
-func (c *Crawler) getRobotsMap(u *url.URL) *robotstxt.RobotsData {
+func (c *Crawler) getRobotsMap(u *url.URL) (*robotstxt.RobotsData, error) {
 	c.rlock.RLock()
 	robot, ok := c.robotsMap[u.Host]
 	c.rlock.RUnlock()
@@ -328,7 +332,7 @@ func (c *Crawler) getRobotsMap(u *url.URL) *robotstxt.RobotsData {
 			c.robotsMap[u.Host] = nil
 			c.rlock.Unlock()
 
-			return nil
+			return nil, err
 		}
 		defer resp.Body.Close()
 
@@ -338,7 +342,11 @@ func (c *Crawler) getRobotsMap(u *url.URL) *robotstxt.RobotsData {
 
 		robot, err = robotstxt.FromResponse(resp)
 		if err != nil {
-			log.Printf("getRobotsMap: %v\n", err)
+			c.rlock.Lock()
+			c.robotsMap[u.Host] = nil
+			c.rlock.Unlock()
+
+			return nil, err
 		}
 
 		c.rlock.Lock()
@@ -346,7 +354,7 @@ func (c *Crawler) getRobotsMap(u *url.URL) *robotstxt.RobotsData {
 		c.rlock.Unlock()
 	}
 
-	return robot
+	return robot, nil
 }
 
 // Returns true if the sitemap.xml file exists

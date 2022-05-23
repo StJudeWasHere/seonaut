@@ -303,3 +303,29 @@ func TestHreflangHeaders(t *testing.T) {
 		t.Errorf("HreflangHeader: Hreflangs[2]: %v ", pageReport.Hreflangs[2])
 	}
 }
+
+func TestCanonicalHeaders(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	linkHeader := `
+		<https://example.com/canonical>; rel="canonical",
+		<https://de-ch.example.com/file.pdf>; rel="alternate"; hreflang="de-ch",
+		<https://de.example.com/file.pdf>; rel="alternate"; hreflang="de"
+	`
+
+	body := []byte("<html>")
+	statusCode := 200
+	headers := http.Header{
+		"Link":         []string{linkHeader},
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+
+	if pageReport.Canonical != "https://example.com/canonical" {
+		t.Errorf("Canonical headers: %s != https://example.com/canonical", pageReport.Canonical)
+	}
+}

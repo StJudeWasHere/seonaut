@@ -239,6 +239,10 @@ func (pageReport *PageReport) parse() {
 		}
 	}
 
+	if pageReport.Canonical == "" {
+		pageReport.parseCanonicalFromHeader()
+	}
+
 	// ---
 	// Extract hreflang urls so we can send them to the crawler
 	// ex. <link rel="alternate" href="http://example.com" hreflang="am" />
@@ -456,6 +460,20 @@ func (p *PageReport) parseHreflangsFromHeader() {
 
 				p.Hreflangs = append(p.Hreflangs, h)
 			}
+		}
+	}
+}
+
+// Parse hreflang links from the HTTP header
+func (p *PageReport) parseCanonicalFromHeader() {
+	linkHeaderElements := strings.Split(p.Headers.Get("Link"), ",")
+	for _, lh := range linkHeaderElements {
+		attr := strings.Split(lh, ";")
+		if len(attr) == 2 && strings.Contains(attr[1], `rel="canonical"`) {
+			url := strings.TrimSpace(attr[0])
+			p.Canonical = url[1 : len(url)-1]
+
+			return
 		}
 	}
 }

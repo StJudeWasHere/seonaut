@@ -17,7 +17,7 @@ Edit the _config_ file if you need to customize the settings, then browse to ```
 
 ## Contributing
 
-Your contributions are more than welcome! Fork this repo, create a new branch for each feature or improvement and send a pull request.
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## License
 

@@ -108,7 +108,7 @@ func (pageReport *PageReport) parse() {
 	contentType := pageReport.ContentType
 	utf8Body, err := charset.NewReader(bytes.NewReader(pageReport.Body), contentType)
 	if err != nil {
-		fmt.Errorf("charset error %s: %w", contentType, err)
+		log.Printf("charset error %s: %v", contentType, err)
 		return
 	}
 

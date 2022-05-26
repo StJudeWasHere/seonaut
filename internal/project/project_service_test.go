@@ -1,4 +1,4 @@
-package user
+package project_test
 
 import (
 	"errors"

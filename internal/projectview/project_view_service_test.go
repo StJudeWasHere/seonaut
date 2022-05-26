@@ -1,4 +1,4 @@
-package projectview
+package projectview_test
 
 import (
 	"errors"

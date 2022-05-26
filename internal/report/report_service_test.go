@@ -1,4 +1,4 @@
-package report
+package report_test
 
 import (
 	"testing"

@@ -26,5 +26,5 @@ jobs:
       run: go build -race ./cmd/server/main.go
 
     - name: Test
-      run: go test -parallel 1 -short ./test/...
+      run: go test -parallel 1 -short ./internal/...
 

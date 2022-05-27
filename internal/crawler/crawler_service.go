@@ -42,8 +42,8 @@ type Crawl struct {
 	CriticalIssues     int
 	WarningIssues      int
 	NoticeIssues       int
-	BlockedByRobotstxt int
-	Noindex            int
+	BlockedByRobotstxt int // URLs blocked by robots.txt
+	Noindex            int // URLS with noindex attribute
 	SitemapExists      bool
 	RobotstxtExists    bool
 }

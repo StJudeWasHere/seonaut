@@ -3,9 +3,9 @@ package helper
 import (
 	"fmt"
 	"html/template"
+	"io"
 	"io/ioutil"
 	"log"
-	"net/http"
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/user"
@@ -20,13 +20,19 @@ type PageView struct {
 	Refresh   bool
 }
 
+type RendererConfig struct {
+	TemplatesFolder  string
+	TranslationsFile string
+}
+
 type Renderer struct {
 	translationMap map[string]interface{}
+	config         *RendererConfig
 }
 
 // NewRenderer will load a translation file and return a new template renderer.
-func NewRenderer() (*Renderer, error) {
-	translation, err := ioutil.ReadFile("translations/translation.en.yaml")
+func NewRenderer(config *RendererConfig) (*Renderer, error) {
+	translation, err := ioutil.ReadFile(config.TranslationsFile)
 	if err != nil {
 		return nil, err
 	}
@@ -39,18 +45,19 @@ func NewRenderer() (*Renderer, error) {
 
 	r := &Renderer{
 		translationMap: m,
+		config:         config,
 	}
 
 	return r, nil
 }
 
 // Render a template with the specified PageView data.
-func (r *Renderer) RenderTemplate(w http.ResponseWriter, t string, v *PageView) {
+func (r *Renderer) RenderTemplate(w io.Writer, t string, v *PageView) {
 	var templates = template.Must(
 		template.New("").Funcs(template.FuncMap{
 			"trans":      r.trans,
 			"total_time": r.totalTime,
-		}).ParseGlob("web/templates/*.html"))
+		}).ParseGlob(r.config.TemplatesFolder + "/*.html"))
 
 	err := templates.ExecuteTemplate(w, t+".html", v)
 	if err != nil {

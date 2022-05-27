@@ -34,7 +34,10 @@ type App struct {
 // NewApp initializes the template renderer and the session cookie.
 // Returns a new HTTP application server.
 func NewApp(c *HTTPServerConfig, s *Services) *App {
-	renderer, err := helper.NewRenderer()
+	renderer, err := helper.NewRenderer(&helper.RendererConfig{
+		TemplatesFolder:  "web/templates",
+		TranslationsFile: "translations/translation.en.yaml",
+	})
 	if err != nil {
 		log.Fatal(err)
 	}

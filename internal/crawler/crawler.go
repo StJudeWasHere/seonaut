@@ -3,20 +3,15 @@ package crawler
 import (
 	"net/http"
 	"net/url"
-	"strings"
 	"sync"
 
 	"github.com/gocolly/colly/v2"
-	"github.com/gocolly/colly/v2/queue"
 	"github.com/temoto/robotstxt"
 )
 
 const (
 	// Number of threads a queue will use to crawl a project
 	consumerThreads = 2
-
-	// Max capacity of a queue
-	storageMaxSize = 10000
 )
 
 type Crawler struct {
@@ -36,6 +31,10 @@ type Crawler struct {
 	robotstxtExists bool
 	plock           *sync.RWMutex
 	sitemapsMap     []string
+	responseCounter int
+
+	que *que
+	pr  chan<- PageReport
 }
 
 func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex, crawlSitemap bool) *Crawler {
@@ -48,201 +47,24 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		UserAgent:       agent,
 		CrawlSitemap:    crawlSitemap,
 
+		sitemapsMap:    []string{url.Scheme + "://" + url.Host + "/sitemap.xml"},
 		robotsMap:      make(map[string]*robotstxt.RobotsData),
 		rlock:          &sync.RWMutex{},
 		storage:        NewURLStorage(),
 		sitemapChecker: NewSitemapChecker(),
 		plock:          &sync.RWMutex{},
+
+		que: NewQueue(),
 	}
 }
 
-// Crawl starts crawling an URL and sends pagereports of the crawled URLs
-// through the pr channel. It will end when there are no more URLs to crawl
-// or the MaxPageReports limit is hit.
-func (c *Crawler) Crawl(pr chan<- PageReport) {
-	defer close(pr)
-
-	c.sitemapsMap = append(c.sitemapsMap, c.URL.Scheme+"://"+c.URL.Host+"/sitemap.xml")
-
-	robot, err := c.getRobotsMap(c.URL)
-	if err == nil && robot != nil {
-		c.sitemapsMap = c.removeDuplicates(append(c.sitemapsMap, robot.Sitemaps...))
-	}
-
-	c.sitemapExists = c.sitemapChecker.SitemapExists(c.sitemapsMap)
-
-	q, _ := queue.New(
-		consumerThreads,
-		&queue.InMemoryQueueStorage{MaxSize: storageMaxSize},
+// Gets an URL and handles the response with the responseHandler method
+func (c *Crawler) get(u string) {
+	co := colly.NewCollector(
+		colly.Async(false),
 	)
-
-	var responseCounter int
-
-	// Crawl the www and non-www domain
-	allowedDomains := []string{c.URL.Host}
-	if strings.HasPrefix(c.URL.Host, "www.") {
-		allowedDomains = append(allowedDomains, c.URL.Host[4:])
-	} else {
-		allowedDomains = append(allowedDomains, "www."+c.URL.Host)
-	}
-
-	// Links collector
-	co := colly.NewCollector()
 	co.UserAgent = c.UserAgent
-	co.AllowedDomains = allowedDomains
 	co.IgnoreRobotsTxt = c.IgnoreRobotsTxt
-
-	// Resources collector allows any domain
-	cor := colly.NewCollector()
-	cor.UserAgent = c.UserAgent
-	cor.IgnoreRobotsTxt = c.IgnoreRobotsTxt
-
-	// Resources response handler
-	handleResourceResponse := func(r *colly.Response) {
-		c.plock.RLock()
-		rc := responseCounter
-		c.plock.RUnlock()
-
-		if rc >= c.MaxPageReports {
-			return
-		}
-		url := r.Request.URL
-		pageReport := NewPageReport(url, r.StatusCode, r.Headers, r.Body)
-		pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(url)
-		pageReport.Crawled = true
-
-		pr <- *pageReport
-		c.plock.Lock()
-		responseCounter++
-		c.plock.Unlock()
-	}
-
-	// Links response handler
-	handleResponse := func(r *colly.Response) {
-		c.plock.RLock()
-		rc := responseCounter
-		c.plock.RUnlock()
-
-		if rc >= c.MaxPageReports {
-			return
-		}
-
-		u := r.Request.URL
-		pageReport := NewPageReport(u, r.StatusCode, r.Headers, r.Body)
-		pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(u)
-
-		if pageReport.Noindex == false || c.IncludeNoindex == true {
-			pageReport.Crawled = true
-			c.plock.Lock()
-			responseCounter++
-			c.plock.Unlock()
-		}
-
-		pr <- *pageReport
-
-		if pageReport.Nofollow == true && c.FollowNofollow == false {
-			return
-		}
-
-		var toVisit []*url.URL
-
-		for _, l := range pageReport.Links {
-			if l.NoFollow && c.FollowNofollow == false {
-				continue
-			}
-
-			toVisit = append(toVisit, l.ParsedURL)
-		}
-
-		if pageReport.RedirectURL != "" {
-			parsed, err := url.Parse(pageReport.RedirectURL)
-			if err == nil {
-				toVisit = append(toVisit, parsed)
-			}
-		}
-
-		for _, l := range pageReport.Hreflangs {
-			parsed, err := url.Parse(l.URL)
-			if err != nil {
-				continue
-			}
-			toVisit = append(toVisit, parsed)
-		}
-
-		if pageReport.Canonical != "" {
-			parsed, err := url.Parse(pageReport.Canonical)
-			if err == nil {
-				toVisit = append(toVisit, parsed)
-			}
-		}
-
-		for _, t := range toVisit {
-			if c.IgnoreRobotsTxt == false && c.isBlockedByRobotstxt(t) && !c.storage.Seen(t.String()) {
-				c.storage.Add(t.String())
-
-				p := &PageReport{
-					URL:                t.String(),
-					ParsedURL:          t,
-					Crawled:            false,
-					BlockedByRobotstxt: true,
-				}
-
-				pr <- *p
-			}
-
-			q.AddURL(r.Request.AbsoluteURL(t.String()))
-		}
-
-		var resources []string
-
-		for _, l := range pageReport.Scripts {
-			resources = append(resources, r.Request.AbsoluteURL(l))
-		}
-
-		for _, l := range pageReport.Styles {
-			resources = append(resources, r.Request.AbsoluteURL(l))
-		}
-
-		for _, l := range pageReport.Images {
-			resources = append(resources, r.Request.AbsoluteURL(l.URL))
-		}
-
-		if len(resources) > 0 {
-			qr, _ := queue.New(
-				consumerThreads,
-				&queue.InMemoryQueueStorage{MaxSize: storageMaxSize},
-			)
-
-			for _, v := range resources {
-				visited, err := co.HasVisited(v)
-				if err != nil || visited == true {
-					continue
-				}
-
-				t, err := url.Parse(v)
-				if err != nil {
-					continue
-				}
-
-				if c.IgnoreRobotsTxt == false && c.isBlockedByRobotstxt(t) && !c.storage.Seen(t.String()) {
-					c.storage.Add(t.String())
-
-					p := &PageReport{
-						URL:                t.String(),
-						ParsedURL:          t,
-						Crawled:            false,
-						BlockedByRobotstxt: true,
-					}
-
-					pr <- *p
-				}
-
-				qr.AddURL(v)
-			}
-
-			qr.Run(cor)
-		}
-	}
 
 	// Redirect handler
 	handleRedirect := func(r *http.Request, via []*http.Request) error {
@@ -255,21 +77,33 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 		return http.ErrUseLastResponse
 	}
 
-	co.OnResponse(handleResponse)
+	co.OnResponse(c.responseHandler)
 	co.SetRedirectHandler(handleRedirect)
 	co.OnError(func(r *colly.Response, err error) {
 		if r.StatusCode > 0 && r.Headers != nil {
-			handleResponse(r)
+			c.responseHandler(r)
+			return
 		}
 	})
 
-	cor.OnResponse(handleResourceResponse)
-	cor.SetRedirectHandler(handleRedirect)
-	cor.OnError(func(r *colly.Response, err error) {
-		if r.StatusCode > 0 && r.Headers != nil {
-			handleResourceResponse(r)
-		}
-	})
+	co.Visit(u)
+	co.Wait()
+}
+
+// Crawl starts crawling an URL and sends pagereports of the crawled URLs
+// through the pr channel. It will end when there are no more URLs to crawl
+// or the MaxPageReports limit is hit.
+func (c *Crawler) Crawl(pr chan<- PageReport) {
+	defer close(pr)
+
+	c.pr = pr
+
+	robot, err := c.getRobotsMap(c.URL)
+	if err == nil && robot != nil {
+		c.sitemapsMap = c.removeDuplicates(append(c.sitemapsMap, robot.Sitemaps...))
+	}
+
+	c.sitemapExists = c.sitemapChecker.SitemapExists(c.sitemapsMap)
 
 	if c.URL.Path == "" {
 		c.URL.Path = "/"
@@ -278,11 +112,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	if c.CrawlSitemap && c.sitemapExists {
 		go func() {
 			c.sitemapChecker.ParseSitemaps(c.sitemapsMap, func(u string) {
-				c.plock.RLock()
-				rc := responseCounter
-				c.plock.RUnlock()
-
-				if rc >= c.MaxPageReports {
+				if c.isLimitHit() {
 					return
 				}
 
@@ -295,13 +125,31 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 					l.Path = "/"
 				}
 
-				q.AddURL(l.String())
+				c.que.Push(l.String())
 			})
 		}()
 	}
 
-	q.AddURL(c.URL.String())
-	q.Run(co)
+	c.que.Push(c.URL.String())
+	c.storage.Add(c.URL.String())
+
+	wg := new(sync.WaitGroup)
+	wg.Add(consumerThreads)
+
+	for i := 0; i < consumerThreads; i++ {
+		go func(w *sync.WaitGroup, n int) {
+			for {
+				url, ok := c.que.Poll()
+				if !ok {
+					break
+				}
+				c.get(url.(string))
+			}
+			w.Done()
+		}(wg, i)
+	}
+
+	wg.Wait()
 }
 
 // Check if URL is blocked by robots.txt
@@ -380,4 +228,114 @@ func (c *Crawler) removeDuplicates(m []string) []string {
 	}
 
 	return unique
+}
+
+// Returns true if the page report limit has been hit
+func (c *Crawler) isLimitHit() bool {
+	c.plock.RLock()
+	defer c.plock.RUnlock()
+
+	return c.responseCounter >= c.MaxPageReports
+}
+
+// Handles the HTTP response
+func (c *Crawler) responseHandler(r *colly.Response) {
+	defer c.que.Ack(r.Request.AbsoluteURL(r.Request.URL.String()))
+
+	if c.isLimitHit() {
+		return
+	}
+
+	u := r.Request.URL
+	pageReport := NewPageReport(u, r.StatusCode, r.Headers, r.Body)
+	pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(u)
+
+	if pageReport.Noindex == false || c.IncludeNoindex == true {
+		pageReport.Crawled = true
+		c.plock.Lock()
+		c.responseCounter++
+		c.plock.Unlock()
+	}
+
+	c.pr <- *pageReport
+
+	if pageReport.Nofollow == true && c.FollowNofollow == false {
+		return
+	}
+
+	var toVisit []*url.URL
+
+	for _, l := range pageReport.Links {
+		if l.NoFollow && c.FollowNofollow == false {
+			continue
+		}
+
+		toVisit = append(toVisit, l.ParsedURL)
+	}
+
+	if pageReport.RedirectURL != "" {
+		parsed, err := url.Parse(pageReport.RedirectURL)
+		if err == nil {
+			toVisit = append(toVisit, parsed)
+		}
+	}
+
+	for _, l := range pageReport.Hreflangs {
+		parsed, err := url.Parse(l.URL)
+		if err != nil {
+			continue
+		}
+		toVisit = append(toVisit, parsed)
+	}
+
+	if pageReport.Canonical != "" {
+		parsed, err := url.Parse(pageReport.Canonical)
+		if err == nil {
+			toVisit = append(toVisit, parsed)
+		}
+	}
+
+	var resources []string
+
+	for _, l := range pageReport.Scripts {
+		resources = append(resources, r.Request.AbsoluteURL(l))
+	}
+
+	for _, l := range pageReport.Styles {
+		resources = append(resources, r.Request.AbsoluteURL(l))
+	}
+
+	for _, l := range pageReport.Images {
+		resources = append(resources, r.Request.AbsoluteURL(l.URL))
+	}
+
+	for _, v := range resources {
+		t, err := url.Parse(v)
+		if err != nil {
+			continue
+		}
+		toVisit = append(toVisit, t)
+	}
+
+	for _, t := range toVisit {
+		if c.storage.Seen(r.Request.AbsoluteURL(t.String())) {
+			continue
+		}
+
+		if c.IgnoreRobotsTxt == false && c.isBlockedByRobotstxt(t) {
+			p := &PageReport{
+				URL:                t.String(),
+				ParsedURL:          t,
+				Crawled:            false,
+				BlockedByRobotstxt: true,
+			}
+
+			c.pr <- *p
+		}
+
+		if c.IgnoreRobotsTxt == true || c.isBlockedByRobotstxt(t) == false {
+			c.que.Push(r.Request.AbsoluteURL(t.String()))
+		}
+		c.storage.Add(r.Request.AbsoluteURL(t.String()))
+	}
 }

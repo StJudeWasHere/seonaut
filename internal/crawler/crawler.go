@@ -3,10 +3,12 @@ package crawler
 import (
 	"io"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 const (
@@ -14,7 +16,11 @@ const (
 	// The default value for MaxBodySize is 10MB (10 * 1024 * 1024 bytes).
 	maxBodySize = 10 * 1024 * 1024
 
-	// Number of threads a queue will use to crawl a project
+	// Random delay in milliseconds.
+	// A random delay up to this value is introduced before new HTTP requests.
+	randomDelay = 1500
+
+	// Number of threads a queue will use to crawl a project.
 	consumerThreads = 2
 )
 
@@ -114,6 +120,9 @@ func (c *Crawler) consumer(w *sync.WaitGroup) {
 		if !ok {
 			break
 		}
+
+		time.Sleep(time.Duration(rand.Intn(randomDelay)) * time.Millisecond)
+
 		r, err := c.client.Get(url.(string))
 		if err != nil {
 			continue

@@ -26,7 +26,7 @@ func NewClient(ua string) *Client {
 
 // Gets an URL and handles the response with the responseHandler method
 func (c *Client) Get(u string) (*http.Response, error) {
-	req, err := http.NewRequest("GET", u, nil)
+	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
 		return &http.Response{}, err
 	}

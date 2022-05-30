@@ -1,15 +1,19 @@
 package crawler
 
 import (
+	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
-
-	"github.com/gocolly/colly/v2"
-	"github.com/temoto/robotstxt"
 )
 
 const (
+	// MaxBodySize is the limit of the retrieved response body in bytes.
+	// The default value for MaxBodySize is 10MB (10 * 1024 * 1024 bytes).
+	maxBodySize = 10 * 1024 * 1024
+
 	// Number of threads a queue will use to crawl a project
 	consumerThreads = 2
 )
@@ -23,21 +27,27 @@ type Crawler struct {
 	UserAgent       string
 	CrawlSitemap    bool
 
-	robotsMap       map[string]*robotstxt.RobotsData
-	rlock           *sync.RWMutex
 	storage         *URLStorage
 	sitemapChecker  *SitemapChecker
 	sitemapExists   bool
 	robotstxtExists bool
 	plock           *sync.RWMutex
-	sitemapsMap     []string
 	responseCounter int
+	robotsChecker   *RobotsChecker
 
-	que *que
-	pr  chan<- PageReport
+	que            *que
+	pr             chan<- PageReport
+	client         *Client
+	allowedDomains []string
 }
 
 func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex, crawlSitemap bool) *Crawler {
+	mainDomain := strings.TrimPrefix(url.Host, "www.")
+
+	if url.Path == "" {
+		url.Path = "/"
+	}
+
 	return &Crawler{
 		URL:             url,
 		MaxPageReports:  max,
@@ -47,47 +57,15 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		UserAgent:       agent,
 		CrawlSitemap:    crawlSitemap,
 
-		sitemapsMap:    []string{url.Scheme + "://" + url.Host + "/sitemap.xml"},
-		robotsMap:      make(map[string]*robotstxt.RobotsData),
-		rlock:          &sync.RWMutex{},
 		storage:        NewURLStorage(),
 		sitemapChecker: NewSitemapChecker(),
 		plock:          &sync.RWMutex{},
+		robotsChecker:  NewRobotsChecker(agent),
 
-		que: NewQueue(),
+		que:            NewQueue(),
+		client:         NewClient(agent),
+		allowedDomains: []string{mainDomain, "www." + mainDomain},
 	}
-}
-
-// Gets an URL and handles the response with the responseHandler method
-func (c *Crawler) get(u string) {
-	co := colly.NewCollector(
-		colly.Async(false),
-	)
-	co.UserAgent = c.UserAgent
-	co.IgnoreRobotsTxt = c.IgnoreRobotsTxt
-
-	// Redirect handler
-	handleRedirect := func(r *http.Request, via []*http.Request) error {
-		for _, v := range via {
-			if v.URL.Path == "/robots.txt" {
-				return nil
-			}
-		}
-
-		return http.ErrUseLastResponse
-	}
-
-	co.OnResponse(c.responseHandler)
-	co.SetRedirectHandler(handleRedirect)
-	co.OnError(func(r *colly.Response, err error) {
-		if r.StatusCode > 0 && r.Headers != nil {
-			c.responseHandler(r)
-			return
-		}
-	})
-
-	co.Visit(u)
-	co.Wait()
 }
 
 // Crawl starts crawling an URL and sends pagereports of the crawled URLs
@@ -98,111 +76,25 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 
 	c.pr = pr
 
-	robot, err := c.getRobotsMap(c.URL)
-	if err == nil && robot != nil {
-		c.sitemapsMap = c.removeDuplicates(append(c.sitemapsMap, robot.Sitemaps...))
-	}
-
-	c.sitemapExists = c.sitemapChecker.SitemapExists(c.sitemapsMap)
-
-	if c.URL.Path == "" {
-		c.URL.Path = "/"
-	}
-
-	if c.CrawlSitemap && c.sitemapExists {
-		go func() {
-			c.sitemapChecker.ParseSitemaps(c.sitemapsMap, func(u string) {
-				if c.isLimitHit() {
-					return
-				}
-
-				l, err := url.Parse(u)
-				if err != nil {
-					return
-				}
-
-				if l.Path == "/" {
-					l.Path = "/"
-				}
-
-				c.que.Push(l.String())
-			})
-		}()
-	}
-
 	c.que.Push(c.URL.String())
 	c.storage.Add(c.URL.String())
+
+	sitemaps := c.getSitemaps()
+	c.robotstxtExists = c.robotsChecker.Exists(c.URL)
+	c.sitemapExists = c.sitemapChecker.SitemapExists(sitemaps)
+
+	if c.CrawlSitemap && c.sitemapExists {
+		go c.sitemapChecker.ParseSitemaps(sitemaps, c.loadSitemapURLs)
+	}
 
 	wg := new(sync.WaitGroup)
 	wg.Add(consumerThreads)
 
 	for i := 0; i < consumerThreads; i++ {
-		go func(w *sync.WaitGroup, n int) {
-			for {
-				url, ok := c.que.Poll()
-				if !ok {
-					break
-				}
-				c.get(url.(string))
-			}
-			w.Done()
-		}(wg, i)
+		go c.consumer(wg)
 	}
 
 	wg.Wait()
-}
-
-// Check if URL is blocked by robots.txt
-func (c *Crawler) isBlockedByRobotstxt(u *url.URL) bool {
-	robot, err := c.getRobotsMap(u)
-	if err != nil || robot == nil {
-		return true
-	}
-
-	path := u.EscapedPath()
-	if u.RawQuery != "" {
-		path += "?" + u.Query().Encode()
-	}
-
-	return !robot.TestAgent(path, c.UserAgent)
-}
-
-// Returns a RobotsData checking if it has already been created and stored in the robotsMap
-func (c *Crawler) getRobotsMap(u *url.URL) (*robotstxt.RobotsData, error) {
-	c.rlock.RLock()
-	robot, ok := c.robotsMap[u.Host]
-	c.rlock.RUnlock()
-
-	if !ok {
-		resp, err := http.Get(u.Scheme + "://" + u.Host + "/robots.txt")
-		if err != nil {
-			c.rlock.Lock()
-			c.robotsMap[u.Host] = nil
-			c.rlock.Unlock()
-
-			return nil, err
-		}
-		defer resp.Body.Close()
-
-		if u.Host == c.URL.Host && resp.StatusCode >= 200 && resp.StatusCode < 300 {
-			c.robotstxtExists = true
-		}
-
-		robot, err = robotstxt.FromResponse(resp)
-		if err != nil {
-			c.rlock.Lock()
-			c.robotsMap[u.Host] = nil
-			c.rlock.Unlock()
-
-			return nil, err
-		}
-
-		c.rlock.Lock()
-		c.robotsMap[u.Host] = robot
-		c.rlock.Unlock()
-	}
-
-	return robot, nil
 }
 
 // Returns true if the sitemap.xml file exists
@@ -215,19 +107,20 @@ func (c *Crawler) RobotstxtExists() bool {
 	return c.robotstxtExists
 }
 
-// Remove duplicate strings from slice
-func (c *Crawler) removeDuplicates(m []string) []string {
-	s := make(map[string]bool)
-	var unique []string
-
-	for _, str := range m {
-		if _, ok := s[str]; !ok {
-			s[str] = true
-			unique = append(unique, str)
+// Consumer URLs from the queue
+func (c *Crawler) consumer(w *sync.WaitGroup) {
+	for {
+		url, ok := c.que.Poll()
+		if !ok {
+			break
 		}
+		r, err := c.client.Get(url.(string))
+		if err != nil {
+			continue
+		}
+		c.responseHandler(r)
 	}
-
-	return unique
+	w.Done()
 }
 
 // Returns true if the page report limit has been hit
@@ -238,23 +131,78 @@ func (c *Crawler) isLimitHit() bool {
 	return c.responseCounter >= c.MaxPageReports
 }
 
+// Increases the counter of crawled URLs
+func (c *Crawler) increaseCrawledCounter() {
+	c.plock.Lock()
+	defer c.plock.Unlock()
+
+	c.responseCounter++
+}
+
+// Returns true if the crawler is allowed to crawl the domain
+func (c *Crawler) domainIsAllowed(s string) bool {
+	for _, v := range c.allowedDomains {
+		if v == s {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Returns a list of sitemaps
+func (c *Crawler) getSitemaps() []string {
+	sm := c.robotsChecker.GetSitemaps(c.URL)
+	if len(sm) > 0 {
+		return sm
+	}
+
+	return []string{c.URL.Scheme + "://" + c.URL.Host + "/sitemap.xml"}
+}
+
+// Callback to load sitemap URLs into the queue
+func (c *Crawler) loadSitemapURLs(u string) {
+	if c.isLimitHit() {
+		return
+	}
+
+	l, err := url.Parse(u)
+	if err != nil {
+		return
+	}
+
+	if l.Path == "/" {
+		l.Path = "/"
+	}
+
+	c.que.Push(l.String())
+}
+
 // Handles the HTTP response
-func (c *Crawler) responseHandler(r *colly.Response) {
-	defer c.que.Ack(r.Request.AbsoluteURL(r.Request.URL.String()))
+func (c *Crawler) responseHandler(r *http.Response) {
+	defer func() {
+		c.que.Ack(r.Request.URL.String())
+		r.Body.Close()
+	}()
 
 	if c.isLimitHit() {
 		return
 	}
 
-	u := r.Request.URL
-	pageReport := NewPageReport(u, r.StatusCode, r.Headers, r.Body)
-	pageReport.BlockedByRobotstxt = c.isBlockedByRobotstxt(u)
+	var bodyReader io.Reader = r.Body
+	bodyReader = io.LimitReader(bodyReader, int64(maxBodySize))
+
+	b, err := ioutil.ReadAll(bodyReader)
+	if err != nil {
+		return
+	}
+
+	pageReport := NewPageReport(r.Request.URL, r.StatusCode, &r.Header, b)
+	pageReport.BlockedByRobotstxt = c.robotsChecker.IsBlocked(r.Request.URL)
 
 	if pageReport.Noindex == false || c.IncludeNoindex == true {
 		pageReport.Crawled = true
-		c.plock.Lock()
-		c.responseCounter++
-		c.plock.Unlock()
+		c.increaseCrawledCounter()
 	}
 
 	c.pr <- *pageReport
@@ -263,50 +211,84 @@ func (c *Crawler) responseHandler(r *colly.Response) {
 		return
 	}
 
-	var toVisit []*url.URL
+	for _, t := range c.getCrawlableURLs(pageReport) {
+		if c.storage.Seen(t.String()) {
+			continue
+		}
 
-	for _, l := range pageReport.Links {
+		c.storage.Add(t.String())
+
+		if c.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(&t) {
+			p := &PageReport{
+				URL:                t.String(),
+				ParsedURL:          &t,
+				Crawled:            false,
+				BlockedByRobotstxt: true,
+			}
+
+			c.pr <- *p
+
+			continue
+		}
+
+		c.que.Push(t.String())
+	}
+}
+
+// Returns all the crawlable URLs found in the document except the external URLs
+func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
+	var urls []url.URL
+	var resources []string
+
+	for _, l := range p.Links {
 		if l.NoFollow && c.FollowNofollow == false {
 			continue
 		}
 
-		toVisit = append(toVisit, l.ParsedURL)
-	}
-
-	if pageReport.RedirectURL != "" {
-		parsed, err := url.Parse(pageReport.RedirectURL)
-		if err == nil {
-			toVisit = append(toVisit, parsed)
+		if !c.domainIsAllowed(l.ParsedURL.Host) {
+			continue
 		}
+
+		urls = append(urls, *l.ParsedURL)
 	}
 
-	for _, l := range pageReport.Hreflangs {
+	for _, l := range p.Hreflangs {
 		parsed, err := url.Parse(l.URL)
 		if err != nil {
 			continue
 		}
-		toVisit = append(toVisit, parsed)
+
+		if !c.domainIsAllowed(parsed.Host) {
+			continue
+		}
+
+		urls = append(urls, *parsed)
 	}
 
-	if pageReport.Canonical != "" {
-		parsed, err := url.Parse(pageReport.Canonical)
-		if err == nil {
-			toVisit = append(toVisit, parsed)
+	if p.RedirectURL != "" {
+		parsed, err := url.Parse(p.RedirectURL)
+		if err == nil && c.domainIsAllowed(parsed.Host) {
+			urls = append(urls, *parsed)
 		}
 	}
 
-	var resources []string
-
-	for _, l := range pageReport.Scripts {
-		resources = append(resources, r.Request.AbsoluteURL(l))
+	if p.Canonical != "" {
+		parsed, err := url.Parse(p.Canonical)
+		if err == nil && c.domainIsAllowed(parsed.Host) {
+			urls = append(urls, *parsed)
+		}
 	}
 
-	for _, l := range pageReport.Styles {
-		resources = append(resources, r.Request.AbsoluteURL(l))
+	for _, l := range p.Scripts {
+		resources = append(resources, l)
 	}
 
-	for _, l := range pageReport.Images {
-		resources = append(resources, r.Request.AbsoluteURL(l.URL))
+	for _, l := range p.Styles {
+		resources = append(resources, l)
+	}
+
+	for _, l := range p.Images {
+		resources = append(resources, l.URL)
 	}
 
 	for _, v := range resources {
@@ -314,28 +296,8 @@ func (c *Crawler) responseHandler(r *colly.Response) {
 		if err != nil {
 			continue
 		}
-		toVisit = append(toVisit, t)
+		urls = append(urls, *t)
 	}
 
-	for _, t := range toVisit {
-		if c.storage.Seen(r.Request.AbsoluteURL(t.String())) {
-			continue
-		}
-
-		if c.IgnoreRobotsTxt == false && c.isBlockedByRobotstxt(t) {
-			p := &PageReport{
-				URL:                t.String(),
-				ParsedURL:          t,
-				Crawled:            false,
-				BlockedByRobotstxt: true,
-			}
-
-			c.pr <- *p
-		}
-
-		if c.IgnoreRobotsTxt == true || c.isBlockedByRobotstxt(t) == false {
-			c.que.Push(r.Request.AbsoluteURL(t.String()))
-		}
-		c.storage.Add(r.Request.AbsoluteURL(t.String()))
-	}
+	return urls
 }

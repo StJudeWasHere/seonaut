@@ -3,12 +3,9 @@ module github.com/stjudewashere/seonaut
 go 1.16
 
 require (
-	github.com/PuerkitoBio/goquery v1.8.0 // indirect
 	github.com/antchfx/htmlquery v1.2.5
-	github.com/antchfx/xmlquery v1.3.11 // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
 	github.com/go-sql-driver/mysql v1.6.0
-	github.com/gocolly/colly/v2 v2.1.0
 	github.com/golang-migrate/migrate/v4 v4.15.2
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/sessions v1.2.1

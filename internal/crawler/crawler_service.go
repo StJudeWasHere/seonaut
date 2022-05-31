@@ -82,7 +82,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		return nil, err
 	}
 
-	pageReport := make(chan PageReport)
+	pageReport := make(chan *PageReport)
 	c := NewCrawler(u, options)
 
 	go c.Crawl(pageReport)
@@ -96,7 +96,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 			crawl.TotalURLs++
 		}
 
-		s.store.SavePageReport(&r, crawl.Id)
+		s.store.SavePageReport(r, crawl.Id)
 	}
 
 	crawl.RobotstxtExists = c.RobotstxtExists()

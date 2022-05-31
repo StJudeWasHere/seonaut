@@ -47,7 +47,7 @@ type Crawler struct {
 	robotsChecker   *RobotsChecker
 
 	que            *que
-	pr             chan<- PageReport
+	pr             chan<- *PageReport
 	client         *Client
 	allowedDomains []string
 }
@@ -77,7 +77,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 // Crawl starts crawling an URL and sends pagereports of the crawled URLs
 // through the pr channel. It will end when there are no more URLs to crawl
 // or the MaxPageReports limit is hit.
-func (c *Crawler) Crawl(pr chan<- PageReport) {
+func (c *Crawler) Crawl(pr chan<- *PageReport) {
 	defer close(pr)
 
 	c.pr = pr
@@ -116,6 +116,10 @@ func (c *Crawler) RobotstxtExists() bool {
 // Consumer URLs from the queue
 func (c *Crawler) consumer(w *sync.WaitGroup) {
 	for {
+		if c.isLimitHit() {
+			break
+		}
+
 		url, ok := c.que.Poll()
 		if !ok {
 			break
@@ -129,6 +133,7 @@ func (c *Crawler) consumer(w *sync.WaitGroup) {
 			continue
 		}
 		c.responseHandler(r)
+		c.que.Ack(url.(string))
 	}
 	w.Done()
 }
@@ -189,15 +194,17 @@ func (c *Crawler) loadSitemapURLs(u string) {
 		l.Path = "/"
 	}
 
+	if c.storage.Seen(l.String()) {
+		return
+	}
+
+	c.storage.Add(l.String())
 	c.que.Push(l.String())
 }
 
 // Handles the HTTP response
 func (c *Crawler) responseHandler(r *http.Response) {
-	defer func() {
-		c.que.Ack(r.Request.URL.String())
-		r.Body.Close()
-	}()
+	defer r.Body.Close()
 
 	if c.isLimitHit() {
 		return
@@ -219,9 +226,8 @@ func (c *Crawler) responseHandler(r *http.Response) {
 		c.increaseCrawledCounter()
 	}
 
-	c.pr <- *pageReport
-
 	if pageReport.Nofollow == true && c.Options.FollowNofollow == false {
+		c.pr <- pageReport
 		return
 	}
 
@@ -232,26 +238,28 @@ func (c *Crawler) responseHandler(r *http.Response) {
 
 		c.storage.Add(t.String())
 
-		if c.Options.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(&t) {
-			p := &PageReport{
+		if c.Options.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(t) {
+			c.pr <- &PageReport{
 				URL:                t.String(),
-				ParsedURL:          &t,
+				ParsedURL:          t,
 				Crawled:            false,
 				BlockedByRobotstxt: true,
 			}
 
-			c.pr <- *p
-
 			continue
+
 		}
 
 		c.que.Push(t.String())
+
 	}
+
+	c.pr <- pageReport
 }
 
 // Returns all the crawlable URLs found in the HTML document
-func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
-	var urls []url.URL
+func (c *Crawler) getCrawlableURLs(p *PageReport) []*url.URL {
+	var urls []*url.URL
 	var resources []string
 
 	for _, l := range p.Links {
@@ -263,7 +271,7 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
 			continue
 		}
 
-		urls = append(urls, *l.ParsedURL)
+		urls = append(urls, l.ParsedURL)
 	}
 
 	for _, l := range p.ExternalLinks {
@@ -275,7 +283,7 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
 			continue
 		}
 
-		urls = append(urls, *l.ParsedURL)
+		urls = append(urls, l.ParsedURL)
 	}
 
 	for _, l := range p.Hreflangs {
@@ -288,20 +296,20 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
 			continue
 		}
 
-		urls = append(urls, *parsed)
+		urls = append(urls, parsed)
 	}
 
 	if p.RedirectURL != "" {
 		parsed, err := url.Parse(p.RedirectURL)
 		if err == nil && c.domainIsAllowed(parsed.Host) {
-			urls = append(urls, *parsed)
+			urls = append(urls, parsed)
 		}
 	}
 
 	if p.Canonical != "" {
 		parsed, err := url.Parse(p.Canonical)
 		if err == nil && c.domainIsAllowed(parsed.Host) {
-			urls = append(urls, *parsed)
+			urls = append(urls, parsed)
 		}
 	}
 
@@ -322,7 +330,7 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
 		if err != nil {
 			continue
 		}
-		urls = append(urls, *t)
+		urls = append(urls, t)
 	}
 
 	return urls

@@ -125,6 +125,7 @@ func (c *Crawler) consumer(w *sync.WaitGroup) {
 
 		r, err := c.client.Get(url.(string))
 		if err != nil {
+			c.que.Ack(url.(string))
 			continue
 		}
 		c.responseHandler(r)

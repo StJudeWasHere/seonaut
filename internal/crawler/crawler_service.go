@@ -67,24 +67,24 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		return nil, err
 	}
 
-	c := NewCrawler(
-		u,
-		s.config.Agent,
-		MaxPageReports,
-		p.IgnoreRobotsTxt,
-		p.FollowNofollow,
-		p.IncludeNoindex,
-		p.CrawlSitemap,
-		p.AllowSubdomains,
-	)
+	options := &Options{
+		MaxPageReports:  MaxPageReports,
+		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
+		FollowNofollow:  p.FollowNofollow,
+		IncludeNoindex:  p.IncludeNoindex,
+		UserAgent:       s.config.Agent,
+		CrawlSitemap:    p.CrawlSitemap,
+		AllowSubdomains: p.AllowSubdomains,
+	}
 
 	crawl, err := s.store.SaveCrawl(p)
-
 	if err != nil {
 		return nil, err
 	}
 
 	pageReport := make(chan PageReport)
+	c := NewCrawler(u, options)
+
 	go c.Crawl(pageReport)
 
 	for r := range pageReport {

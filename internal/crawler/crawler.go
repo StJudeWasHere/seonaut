@@ -24,8 +24,7 @@ const (
 	consumerThreads = 2
 )
 
-type Crawler struct {
-	URL             *url.URL
+type Options struct {
 	MaxPageReports  int
 	IgnoreRobotsTxt bool
 	FollowNofollow  bool
@@ -33,6 +32,11 @@ type Crawler struct {
 	UserAgent       string
 	CrawlSitemap    bool
 	AllowSubdomains bool
+}
+
+type Crawler struct {
+	URL     *url.URL
+	Options *Options
 
 	storage         *URLStorage
 	sitemapChecker  *SitemapChecker
@@ -48,7 +52,7 @@ type Crawler struct {
 	allowedDomains []string
 }
 
-func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex, crawlSitemap, allowSubdomains bool) *Crawler {
+func NewCrawler(url *url.URL, options *Options) *Crawler {
 	mainDomain := strings.TrimPrefix(url.Host, "www.")
 
 	if url.Path == "" {
@@ -56,22 +60,16 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 	}
 
 	return &Crawler{
-		URL:             url,
-		MaxPageReports:  max,
-		IgnoreRobotsTxt: irobots,
-		FollowNofollow:  fnofollow,
-		IncludeNoindex:  inoindex,
-		UserAgent:       agent,
-		CrawlSitemap:    crawlSitemap,
-		AllowSubdomains: allowSubdomains,
+		URL:     url,
+		Options: options,
 
 		storage:        NewURLStorage(),
 		sitemapChecker: NewSitemapChecker(),
 		plock:          &sync.RWMutex{},
-		robotsChecker:  NewRobotsChecker(agent),
+		robotsChecker:  NewRobotsChecker(options.UserAgent),
 
 		que:            NewQueue(),
-		client:         NewClient(agent),
+		client:         NewClient(options.UserAgent),
 		allowedDomains: []string{mainDomain, "www." + mainDomain},
 	}
 }
@@ -91,7 +89,7 @@ func (c *Crawler) Crawl(pr chan<- PageReport) {
 	c.robotstxtExists = c.robotsChecker.Exists(c.URL)
 	c.sitemapExists = c.sitemapChecker.SitemapExists(sitemaps)
 
-	if c.CrawlSitemap && c.sitemapExists {
+	if c.Options.CrawlSitemap && c.sitemapExists {
 		go c.sitemapChecker.ParseSitemaps(sitemaps, c.loadSitemapURLs)
 	}
 
@@ -139,7 +137,7 @@ func (c *Crawler) isLimitHit() bool {
 	c.plock.RLock()
 	defer c.plock.RUnlock()
 
-	return c.responseCounter >= c.MaxPageReports
+	return c.responseCounter >= c.Options.MaxPageReports
 }
 
 // Increases the counter of crawled URLs
@@ -158,7 +156,7 @@ func (c *Crawler) domainIsAllowed(s string) bool {
 		}
 	}
 
-	if c.AllowSubdomains {
+	if c.Options.AllowSubdomains {
 		return strings.HasSuffix(s, c.URL.Host)
 	}
 
@@ -215,14 +213,14 @@ func (c *Crawler) responseHandler(r *http.Response) {
 	pageReport := NewPageReport(r.Request.URL, r.StatusCode, &r.Header, b)
 	pageReport.BlockedByRobotstxt = c.robotsChecker.IsBlocked(r.Request.URL)
 
-	if pageReport.Noindex == false || c.IncludeNoindex == true {
+	if pageReport.Noindex == false || c.Options.IncludeNoindex == true {
 		pageReport.Crawled = true
 		c.increaseCrawledCounter()
 	}
 
 	c.pr <- *pageReport
 
-	if pageReport.Nofollow == true && c.FollowNofollow == false {
+	if pageReport.Nofollow == true && c.Options.FollowNofollow == false {
 		return
 	}
 
@@ -233,7 +231,7 @@ func (c *Crawler) responseHandler(r *http.Response) {
 
 		c.storage.Add(t.String())
 
-		if c.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(&t) {
+		if c.Options.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(&t) {
 			p := &PageReport{
 				URL:                t.String(),
 				ParsedURL:          &t,
@@ -256,7 +254,7 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
 	var resources []string
 
 	for _, l := range p.Links {
-		if l.NoFollow && c.FollowNofollow == false {
+		if l.NoFollow && c.Options.FollowNofollow == false {
 			continue
 		}
 
@@ -268,7 +266,7 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
 	}
 
 	for _, l := range p.ExternalLinks {
-		if l.NoFollow && c.FollowNofollow == false {
+		if l.NoFollow && c.Options.FollowNofollow == false {
 			continue
 		}
 

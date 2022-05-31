@@ -79,7 +79,12 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			crawlSitemap = false
 		}
 
-		err = app.projectService.SaveProject(url, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, user.Id)
+		allowSubdomains, err := strconv.ParseBool(r.FormValue("allow_subdomains"))
+		if err != nil {
+			allowSubdomains = false
+		}
+
+		err = app.projectService.SaveProject(url, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, allowSubdomains, user.Id)
 
 		if err == nil {
 			http.Redirect(w, r, "/", http.StatusSeeOther)

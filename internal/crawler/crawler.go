@@ -32,6 +32,7 @@ type Crawler struct {
 	IncludeNoindex  bool
 	UserAgent       string
 	CrawlSitemap    bool
+	AllowSubdomains bool
 
 	storage         *URLStorage
 	sitemapChecker  *SitemapChecker
@@ -47,7 +48,7 @@ type Crawler struct {
 	allowedDomains []string
 }
 
-func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex, crawlSitemap bool) *Crawler {
+func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoindex, crawlSitemap, allowSubdomains bool) *Crawler {
 	mainDomain := strings.TrimPrefix(url.Host, "www.")
 
 	if url.Path == "" {
@@ -62,6 +63,7 @@ func NewCrawler(url *url.URL, agent string, max int, irobots, fnofollow, inoinde
 		IncludeNoindex:  inoindex,
 		UserAgent:       agent,
 		CrawlSitemap:    crawlSitemap,
+		AllowSubdomains: allowSubdomains,
 
 		storage:        NewURLStorage(),
 		sitemapChecker: NewSitemapChecker(),
@@ -156,6 +158,10 @@ func (c *Crawler) domainIsAllowed(s string) bool {
 		}
 	}
 
+	if c.AllowSubdomains {
+		return strings.HasSuffix(s, c.URL.Host)
+	}
+
 	return false
 }
 
@@ -244,12 +250,24 @@ func (c *Crawler) responseHandler(r *http.Response) {
 	}
 }
 
-// Returns all the crawlable URLs found in the document except the external URLs
+// Returns all the crawlable URLs found in the HTML document
 func (c *Crawler) getCrawlableURLs(p *PageReport) []url.URL {
 	var urls []url.URL
 	var resources []string
 
 	for _, l := range p.Links {
+		if l.NoFollow && c.FollowNofollow == false {
+			continue
+		}
+
+		if !c.domainIsAllowed(l.ParsedURL.Host) {
+			continue
+		}
+
+		urls = append(urls, *l.ParsedURL)
+	}
+
+	for _, l := range p.ExternalLinks {
 		if l.NoFollow && c.FollowNofollow == false {
 			continue
 		}

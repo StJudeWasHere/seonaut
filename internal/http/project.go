@@ -3,9 +3,12 @@ package http
 import (
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
+	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
@@ -47,8 +50,6 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var e bool
-
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
@@ -57,7 +58,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		url := r.FormValue("url")
+		u := r.FormValue("url")
 
 		ignoreRobotsTxt, err := strconv.ParseBool(r.FormValue("ignore_robotstxt"))
 		if err != nil {
@@ -84,21 +85,47 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			allowSubdomains = false
 		}
 
-		err = app.projectService.SaveProject(url, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, allowSubdomains, user.Id)
+		parsedURL, err := url.ParseRequestURI(strings.TrimSpace(u))
+		if err != nil {
+			v := &helper.PageView{
+				User:      *user,
+				PageTitle: "ADD_PROJECT",
+				Data:      struct{ Error bool }{Error: true},
+			}
 
-		if err == nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			app.renderer.RenderTemplate(w, "project_add", v)
 			return
 		}
 
-		e = true
+		project := &project.Project{
+			URL:             parsedURL.String(),
+			IgnoreRobotsTxt: ignoreRobotsTxt,
+			FollowNofollow:  followNofollow,
+			IncludeNoindex:  includeNoindex,
+			CrawlSitemap:    crawlSitemap,
+			AllowSubdomains: allowSubdomains,
+		}
 
+		err = app.projectService.SaveProject(project, user.Id)
+		if err != nil {
+			v := &helper.PageView{
+				User:      *user,
+				PageTitle: "ADD_PROJECT",
+				Data:      struct{ Error bool }{Error: true},
+			}
+
+			app.renderer.RenderTemplate(w, "project_add", v)
+			return
+		}
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
 	v := &helper.PageView{
 		User:      *user,
 		PageTitle: "ADD_PROJECT",
-		Data:      struct{ Error bool }{Error: e},
+		Data:      struct{ Error bool }{Error: false},
 	}
 
 	app.renderer.RenderTemplate(w, "project_add", v)

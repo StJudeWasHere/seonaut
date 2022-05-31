@@ -3,12 +3,11 @@ package project
 import (
 	"errors"
 	"net/url"
-	"strings"
 	"time"
 )
 
 type Storage interface {
-	SaveProject(string, bool, bool, bool, bool, bool, int)
+	SaveProject(*Project, int)
 	FindProjectById(id int, uid int) (Project, error)
 }
 
@@ -34,18 +33,18 @@ func NewService(s Storage) *ProjectService {
 	}
 }
 
-// SaveProject stores a new project for a specific user with all the specified options.
-func (s *ProjectService) SaveProject(u string, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, allowSubdomains bool, userId int) error {
-	p, err := url.ParseRequestURI(strings.TrimSpace(u))
+// SaveProject stores a new project
+func (s *ProjectService) SaveProject(project *Project, userId int) error {
+	parsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		return err
 	}
 
-	if p.Scheme != "http" && p.Scheme != "https" {
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
 		return errors.New("Protocol not supported")
 	}
 
-	s.storage.SaveProject(p.String(), ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, allowSubdomains, userId)
+	s.storage.SaveProject(project, userId)
 
 	return nil
 }

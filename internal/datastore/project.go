@@ -10,7 +10,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/project"
 )
 
-func (ds *Datastore) SaveProject(s string, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, allowSubdomains bool, uid int) {
+func (ds *Datastore) SaveProject(project *project.Project, uid int) {
 	query := `
 		INSERT INTO projects (
 			url,
@@ -26,7 +26,15 @@ func (ds *Datastore) SaveProject(s string, ignoreRobotsTxt, followNofollow, incl
 
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
-	_, err := stmt.Exec(s, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, allowSubdomains, uid)
+	_, err := stmt.Exec(
+		project.URL,
+		project.IgnoreRobotsTxt,
+		project.FollowNofollow,
+		project.IncludeNoindex,
+		project.CrawlSitemap,
+		project.AllowSubdomains,
+		uid,
+	)
 	if err != nil {
 		log.Printf("saveProject: %v\n", err)
 	}

@@ -17,7 +17,7 @@ const (
 
 type storage struct{}
 
-func (s *storage) SaveProject(url string, ignoreRobotsTxt, followNofollow, includeNoindex, crawlSitemap, allowSubdomains bool, userId int) {
+func (s *storage) SaveProject(project *project.Project, userId int) {
 }
 
 func (s *storage) FindProjectById(id, uid int) (project.Project, error) {
@@ -56,19 +56,19 @@ func TestFindProjectById(t *testing.T) {
 
 func TestSaveProject(t *testing.T) {
 	// Valid URL
-	err := service.SaveProject(projectURL, true, true, true, true, true, guid)
+	err := service.SaveProject(&project.Project{URL: projectURL}, guid)
 	if err != nil {
 		t.Error("TestSaveProject: should not return error")
 	}
 
 	// Not valid URL
-	err = service.SaveProject("....", true, true, true, true, true, guid)
+	err = service.SaveProject(&project.Project{URL: "...."}, guid)
 	if err == nil {
 		t.Error("TestSaveProject: invalid URL should return error")
 	}
 
 	// Not supported scheme
-	err = service.SaveProject("ftp://example.org", true, true, true, true, true, guid)
+	err = service.SaveProject(&project.Project{URL: "ftp://example.org"}, guid)
 	if err == nil {
 		t.Error("TestSaveProject: not supported scheme should return error")
 	}

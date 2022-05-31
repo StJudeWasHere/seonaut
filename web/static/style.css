@@ -420,6 +420,9 @@ button {
 .flex-container {
 	display: flex;
 	flex-direction: row;
+}
+.charts-container {
+	padding: 5rem 0;
 	align-items: center;
 }
 .flex {

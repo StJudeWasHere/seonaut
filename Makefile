@@ -1,7 +1,7 @@
 .PHONY: run test vet linux clean docker
 
 run:
-	go run cmd/server/main.go -c config.local 
+	go run -race cmd/server/main.go -c config.local 
 
 test:
 	go test ./internal/...

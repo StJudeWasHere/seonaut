@@ -7,6 +7,7 @@ SIGNUP_VIEW: Sign Up
 SIGNIN_VIEW: Sign In
 UPGRADE: Upgrade your account
 PROJECT_DASHBOARD: Project Dashboard
+CRAWL_LIVE: Crawling Project
 
 ERROR_50x: Status 50x
 ERROR_50x_DESC: This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't load properly and show an error page instead, scaring your users and annoying search engines.

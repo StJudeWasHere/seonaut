@@ -1,0 +1,79 @@
+{{ template "head" . }}
+
+<div class="content action">
+	<a href="/">Projects</a> / <span class="title">Live Crawling</span>
+</div>
+
+<div class="project-add-container">
+	<div class="content">
+		<div class="live-crawling-header">
+			<h2>Live Crawling</h2>
+			<p><small>{{ .Data.Project.URL }}</small></p>
+		</div>
+
+		<div id="crawl-start-msg">Connecting to the server, please wait...</div>
+		<div id="urls">
+		</div>
+	</div>
+</div>
+
+<template id="tmpl">
+	<div class="url-block">
+		<span class="status-code"></span>
+		<span class="url"></span>
+	</div>
+</template>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		if (!window["WebSocket"]) {
+			console.log("Websockets not supported")
+			return
+		}
+		
+		container = document.getElementById("urls")
+		crawlStartMsg = document.getElementById("crawl-start-msg")
+		stmpl = document.getElementById("tmpl")
+
+		conn = new WebSocket({{ if .Data.Secure }}"wss://" {{ else }}"ws://"{{ end }}+ document.location.host + "/crawl-ws?pid={{ .Data.Project.Id }}")
+
+		conn.onclose = function (evt) {
+			conn = null
+		}
+
+		conn.onmessage = function (evt) {
+			if (crawlStartMsg.style.display != "none") {
+				crawlStartMsg.style.display ="none"
+			}
+
+			let msg = JSON.parse(evt.data);
+			let data = msg.Data
+
+			if (msg.Name == "PageReport") {
+				t = tmpl.content.cloneNode(true)
+				t.querySelector(".status-code").textContent = data.StatusCode
+
+				if (data.StatusCode >= 300) {
+					t.querySelector(".url-block").classList.add("ko")
+				}
+
+				t.querySelector(".url").textContent = data.URL
+				container.prepend(t)
+			} else if (msg.Name == "IssuesInit") {
+				var el = document.createElement("div");
+				el.classList.add("url-block")
+				el.classList.add("message")
+				el.innerHTML = "Crawl completed. Creating the crawl report, please wait..";
+				container.prepend(el)
+			} else if (msg.Name == "CrawlEnd") {
+				window.location = "/dashboard?pid={{ .Data.Project.Id }}"
+			}
+
+			if (container.childElementCount > 15) {
+				container.removeChild(container.lastElementChild)
+			}
+		}
+	});
+</script>
+
+{{ template "footer" . }}

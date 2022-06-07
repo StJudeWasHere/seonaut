@@ -11,6 +11,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
+	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
@@ -38,14 +39,17 @@ func main() {
 		log.Fatalf("Error running migrations: %v\n", err)
 	}
 
+	broker := pubsub.NewBroker()
+
 	services := &http.Services{
 		UserService:        user.NewService(ds),
 		ProjectService:     project.NewService(ds),
-		CrawlerService:     crawler.NewService(ds, config.Crawler),
+		CrawlerService:     crawler.NewService(ds, broker, config.Crawler),
 		IssueService:       issue.NewService(ds),
 		ReportService:      report.NewService(ds),
 		ReportManager:      newReportManager(ds),
 		ProjectViewService: projectview.NewService(ds),
+		PubSubBroker:       broker,
 	}
 
 	server := http.NewApp(

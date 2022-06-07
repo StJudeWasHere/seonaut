@@ -16,6 +16,7 @@ import (
 type HTTPServerConfig struct {
 	Server string `mapstructure:"host"`
 	Port   int    `mapstructure:"port"`
+	URL    string `mapstructure:"url"`
 }
 
 type App struct {
@@ -29,6 +30,7 @@ type App struct {
 	reportService      ReportService
 	reportManager      ReportManager
 	projectViewService ProjectViewService
+	pubsubBroker       PubSubBroker
 }
 
 // NewApp initializes the template renderer and the session cookie.
@@ -67,6 +69,7 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 		reportService:      s.ReportService,
 		reportManager:      s.ReportManager,
 		projectViewService: s.ProjectViewService,
+		pubsubBroker:       s.PubSubBroker,
 	}
 }
 
@@ -82,6 +85,8 @@ func (app *App) Run() {
 	http.HandleFunc("/", app.requireAuth(app.serveHome))
 	http.HandleFunc("/new-project", app.requireAuth(app.serveProjectAdd))
 	http.HandleFunc("/crawl", app.requireAuth(app.serveCrawl))
+	http.HandleFunc("/crawl-live", app.requireAuth(app.serveCrawlLive))
+	http.HandleFunc("/crawl-ws", app.requireAuth(app.serveCrawlWs))
 	http.HandleFunc("/issues", app.requireAuth(app.serveIssues))
 	http.HandleFunc("/issues/view", app.requireAuth(app.serveIssuesView))
 	http.HandleFunc("/dashboard", app.requireAuth(app.serveDashboard))

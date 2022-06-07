@@ -1,13 +1,30 @@
 package http
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"strconv"
+	"sync"
+	"time"
 
+	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/user"
+
+	"github.com/gorilla/websocket"
 )
 
+const (
+	writeWait  = 10 * time.Second
+	pongWait   = 60 * time.Second
+	pingPeriod = (pongWait * 9) / 10
+)
+
+// Start crawling a project
 func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
@@ -41,10 +58,159 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
 
+		app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
+
 		app.reportManager.CreateIssues(crawl.Id)
 		app.issueService.SaveCrawlIssuesCount(crawl.Id)
 
+		app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd"})
 	}()
 
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+}
+
+// Start crawling a project
+func (app *App) serveCrawlLive(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if pv.Crawl.IssuesEnd.Valid {
+		http.Redirect(w, r, "/dashboard?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+		return
+	}
+
+	configURL, err := url.Parse(app.config.URL)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	v := &helper.PageView{
+		Data: struct {
+			Project project.Project
+			Secure  bool
+		}{
+			Project: pv.Project,
+			Secure:  configURL.Scheme == "https",
+		},
+		User:      *user,
+		PageTitle: "CRAWL_LIVE",
+	}
+
+	app.renderer.RenderTemplate(w, "crawl_live", v)
+}
+
+// Handle the crawler's websocket connection
+func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	p, err := app.projectService.FindProject(pid, user.Id)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
+
+	// Upgrade connection
+	upgrader := websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin: func(r *http.Request) bool {
+			origin := r.Header.Get("Origin")
+			return origin == app.config.URL
+		},
+	}
+
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer conn.Close()
+
+	conn.SetReadDeadline(time.Now().Add(pongWait))
+	conn.SetPongHandler(func(string) error { conn.SetReadDeadline(time.Now().Add(pongWait)); return nil })
+
+	connLock := &sync.RWMutex{}
+
+	subscriber := app.pubsubBroker.NewSubscriber(fmt.Sprintf("crawl-%d", p.Id), func(i *pubsub.Message) error {
+		pubsubMessage := i
+		wsMessage := struct {
+			Name string
+			Data interface{}
+		}{
+			Name: pubsubMessage.Name,
+		}
+
+		if pubsubMessage.Name == "PageReport" {
+			pagereport := pubsubMessage.Data.(*crawler.PageReport)
+			wsMessage.Data = struct {
+				StatusCode int
+				URL        string
+			}{
+				StatusCode: pagereport.StatusCode,
+				URL:        pagereport.URL,
+			}
+		}
+
+		connLock.Lock()
+		conn.SetWriteDeadline(time.Now().Add(writeWait))
+		err := conn.WriteJSON(wsMessage)
+		connLock.Unlock()
+
+		return err
+	})
+	defer app.pubsubBroker.Unsubscribe(subscriber)
+
+	go func() {
+		ticker := time.NewTicker(pingPeriod)
+		defer ticker.Stop()
+
+		for {
+			select {
+			case <-ticker.C:
+				connLock.Lock()
+				conn.SetWriteDeadline(time.Now().Add(writeWait))
+				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+					return
+				}
+				connLock.Unlock()
+			}
+		}
+	}()
+
+	for {
+		_, _, err := conn.ReadMessage()
+		if err != nil {
+			conn.Close()
+			break
+		}
+	}
 }

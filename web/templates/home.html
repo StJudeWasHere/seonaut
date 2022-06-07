@@ -58,7 +58,7 @@
 						<span>Crawl now</span>
 					</a>
 				{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
-					<p class="project-crawl">Crawling...</p>
+					<p class="project-crawl"><a href="/crawl-live?pid={{ .Project.Id }}">Crawling...</a></p>
 				{{ end }}
 			</div>
 		</div>

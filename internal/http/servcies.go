@@ -5,6 +5,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
+	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
@@ -47,6 +48,12 @@ type ReportManager interface {
 	CreateIssues(int64) []issue.Issue
 }
 
+type PubSubBroker interface {
+	NewSubscriber(topic string, c func(*pubsub.Message) error) *pubsub.Subscriber
+	Publish(topic string, m *pubsub.Message)
+	Unsubscribe(s *pubsub.Subscriber)
+}
+
 // Services stores all the services needed by the HTTP server.
 type Services struct {
 	UserService        UserService
@@ -56,4 +63,5 @@ type Services struct {
 	IssueService       IssueService
 	ReportService      ReportService
 	ReportManager      ReportManager
+	PubSubBroker       PubSubBroker
 }

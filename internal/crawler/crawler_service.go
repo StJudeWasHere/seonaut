@@ -2,10 +2,12 @@ package crawler
 
 import (
 	"database/sql"
+	"fmt"
 	"net/url"
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/pubsub"
 )
 
 const (
@@ -50,12 +52,14 @@ type Crawl struct {
 
 type Service struct {
 	store  Storage
+	broker *pubsub.Broker
 	config *Config
 }
 
-func NewService(s Storage, c *Config) *Service {
+func NewService(s Storage, broker *pubsub.Broker, c *Config) *Service {
 	return &Service{
 		store:  s,
+		broker: broker,
 		config: c,
 	}
 }
@@ -97,6 +101,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		}
 
 		s.store.SavePageReport(r, crawl.Id)
+		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "PageReport", Data: r})
 	}
 
 	crawl.RobotstxtExists = c.RobotstxtExists()

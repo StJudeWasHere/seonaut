@@ -432,6 +432,7 @@ button {
 .chart-col {
 	box-sizing: border-box;
 	width: 50%;
+	padding-bottom: 0;
 }
 .chart-col h2 {
 	margin: 0 0 3rem 0;
@@ -1103,6 +1104,37 @@ p.error {
 	}
 	input {
 		width: auto;
+	}
+
+	.flex {
+		display: block;
+	}
+	.legend {
+		width: auto;
+		margin-bottom: 1rem;
+	}
+	.legend:nth-child(1) {
+		margin-right: 0;
+	}
+	.legend:nth-child(3) {
+		margin-left: 0;
+	}
+	.chart-col {
+		width: auto;
+	}
+	.crawler-container {
+		padding: 1rem;
+	}
+	.crawler-layout {
+		display: block;
+	}
+	.crawler-col {
+		width: auto;
+	}
+	.crawler-item {
+		margin-bottom: 1rem;
+		height: auto;
+		padding .5rem 0;
 	}
 }
 

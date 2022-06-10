@@ -86,138 +86,81 @@ func TestPageReportHTML(t *testing.T) {
 
 	contentType := "text/html"
 	statusCode := 200
-
+	headers := &http.Header{
+		"Content-Type": []string{contentType},
+	}
 	body, err := ioutil.ReadFile("./testdata/test.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	headers := &http.Header{
-		"Content-Type": []string{contentType},
-	}
-
 	pageReport := crawler.NewPageReport(u, statusCode, headers, body)
 
-	if pageReport.Lang != "en" {
-		t.Error("Lang != en")
+	itable := []struct {
+		want int
+		got  int
+	}{
+		{want: 6, got: len(pageReport.Links)},
+		{want: 1, got: len(pageReport.ExternalLinks)},
+		{want: 10, got: pageReport.Words},
+		{want: 1, got: len(pageReport.Hreflangs)},
+		{want: 7, got: len(pageReport.Images)},
+		{want: 1, got: len(pageReport.Scripts)},
+		{want: 1, got: len(pageReport.Styles)},
 	}
 
-	if pageReport.Title != "Test Page Title" {
-		t.Error("Title != Test Page Title")
+	stable := []struct {
+		want string
+		got  string
+	}{
+		{want: "https://example.com/fr", got: pageReport.Hreflangs[0].URL},
+		{want: "fr", got: pageReport.Hreflangs[0].Lang},
+		{want: "https://example.com/js/app.js", got: pageReport.Scripts[0]},
+		{want: "https://example.com/css/style.css", got: pageReport.Styles[0]},
+		{want: "en", got: pageReport.Lang},
+		{want: "Test Page Title", got: pageReport.Title},
+		{want: "Test Page Description", got: pageReport.Description},
+		{want: "https://example.com/link1", got: pageReport.Links[0].URL},
+		{want: "https://example.com/test-page/link2", got: pageReport.Links[1].URL},
+		{want: "link1", got: pageReport.Links[0].Text},
+		{want: "nofollow", got: pageReport.Links[0].Rel},
+		{want: "", got: pageReport.Links[3].Text},
+		{want: "https://example.com/", got: pageReport.Links[4].URL},
+		{want: "https://example.com/test-page/", got: pageReport.Links[5].URL},
+		{want: "0;URL='/'", got: pageReport.Refresh},
+		{want: "https://example.com/", got: pageReport.RedirectURL},
+		{want: "noindex, nofollow", got: pageReport.Robots},
+		{want: "https://example.com/canonical/", got: pageReport.Canonical},
+		{want: "H1 Title", got: pageReport.H1},
+		{want: "H2 Title", got: pageReport.H2},
+		{want: "https://example.com/img/logo.png", got: pageReport.Images[0].URL},
 	}
 
-	if pageReport.Description != "Test Page Description" {
-		t.Error("Description != Test Page Description")
+	btable := []struct {
+		want bool
+		got  bool
+	}{
+		{want: false, got: pageReport.Links[0].External},
+		{want: false, got: pageReport.ValidHeadings},
+		{want: true, got: pageReport.Noindex},
 	}
 
-	if len(pageReport.Links) != 6 {
-		t.Error("len(Links) != 6")
-	}
-
-	if len(pageReport.Links) > 0 {
-		if pageReport.Links[0].URL != "https://example.com/link1" {
-			t.Error("pageReport.Links[0].URL != https://example.com/link1")
+	for _, v := range itable {
+		if v.want != v.got {
+			t.Errorf("want: %d got: %d", v.want, v.got)
 		}
-		if pageReport.Links[1].URL != "https://example.com/test-page/link2" {
-			t.Error(pageReport.URL)
-			t.Errorf("%s != https://example.com/test-page/link2", pageReport.Links[1].URL)
-		}
-		if pageReport.Links[0].Text != "link1" {
-			t.Error("pageReport.Links[0].Text != link1")
-		}
-		if pageReport.Links[0].Rel != "nofollow" {
-			t.Error("pageReport.Links[0].Rel != nofollow")
-		}
-		if pageReport.Links[0].External != false {
-			t.Error("pageReport.Links[0].External != false")
-		}
-		if pageReport.Links[3].Text != "" {
-			t.Error("pageReport.Links[3].Text != \"\"")
-		}
+	}
 
-		if pageReport.Links[4].URL != "https://example.com/" {
-			t.Errorf("%s != \"https://example.com/\"", pageReport.Links[4].URL)
-		}
-
-		if pageReport.Links[5].URL != "https://example.com/test-page/" {
-			t.Errorf("%s != \"https://example.com/test-page\"", pageReport.Links[5].URL)
+	for _, v := range stable {
+		if v.got != v.want {
+			t.Errorf("want: %s got: %s", v.want, v.got)
 		}
 	}
 
-	if len(pageReport.ExternalLinks) != 1 {
-		t.Error("len(pageReport.ExternalLinks) != 1")
-	}
-
-	if pageReport.Refresh != "0;URL='/'" {
-		t.Errorf("Refresh != \"0;URL='%s'\"", pageReport.Refresh)
-	}
-
-	if pageReport.RedirectURL != "https://example.com/" {
-		t.Error("RedirectURL != https://example.com/")
-	}
-
-	if pageReport.Robots != "noindex, nofollow" {
-		t.Error("Robots != noindex, nofollow")
-	}
-
-	if pageReport.Canonical != "https://example.com/canonical/" {
-		t.Error("Canonical != https://example.com/canonical/")
-	}
-
-	if pageReport.H1 != "H1 Title" {
-		t.Error("H1 != H1 Title")
-	}
-
-	if pageReport.H2 != "H2 Title" {
-		t.Error("H2 != H2 Title")
-	}
-
-	if pageReport.Words != 10 {
-		t.Error("Words != 10")
-	}
-
-	if len(pageReport.Hreflangs) != 1 {
-		t.Error("Hreflang != 1")
-	}
-
-	if len(pageReport.Hreflangs) == 1 && pageReport.Hreflangs[0].URL != "https://example.com/fr" {
-		t.Error("Hreglangs[0].URL != https://example.com/fr")
-	}
-
-	if len(pageReport.Hreflangs) == 1 && pageReport.Hreflangs[0].Lang != "fr" {
-		t.Error("Hreglangs[0].URL != fr")
-	}
-
-	if len(pageReport.Images) != 7 {
-		t.Error("Images != 7")
-	}
-
-	if pageReport.Images[0].URL != "https://example.com/img/logo.png" {
-		t.Error("pageReport.Images[0].URL != https://example.com/img/logo.png")
-	}
-
-	if len(pageReport.Scripts) != 1 {
-		t.Error("Scripts != 1")
-	}
-
-	if len(pageReport.Scripts) == 1 && pageReport.Scripts[0] != "https://example.com/js/app.js" {
-		t.Error("Scripts[0] != https://example.com/js/app.js")
-	}
-
-	if len(pageReport.Styles) != 1 {
-		t.Error("Styles != 1")
-	}
-
-	if len(pageReport.Styles) == 1 && pageReport.Styles[0] != "https://example.com/css/style.css" {
-		t.Error("Styles[0] != https://example.com/css/style.css")
-	}
-
-	if pageReport.ValidHeadings == true {
-		t.Error("pageReport.validHeadings == true")
-	}
-
-	if pageReport.Noindex == false {
-		t.Error("pageReport.Noindex == false")
+	for _, v := range btable {
+		if v.got != v.want {
+			t.Errorf("want: %v got: %v", v.want, v.got)
+		}
 	}
 }
 

@@ -1061,6 +1061,37 @@ p.error {
 	display: flex;
 }
 
+/** MOBILE **/
+
+@media only screen and (max-width:800px) {
+	.project, .project .col {
+		display: block;
+		width: 100%;
+		padding: .5rem;
+	}
+	.project .col:first-child{
+		margin-bottom: 1.5rem;
+	}
+	.project-crawl {
+		margin-top: 1.5rem;
+		display: flex;
+		position: relative;
+		left: 0;
+	}
+	.project-add-button {
+		width: auto;
+		padding: .5rem;
+		margin-right: 0;
+		display: flex;
+		text-align:center;
+		align-items: center;
+	}
+	.project-add-button p {
+		margin-left: 1rem;
+		margin-top: 0;
+	}
+}
+
 /** PRINT **/
 
 @media print

@@ -1091,7 +1091,6 @@ p.error {
 		margin-left: 1rem;
 		margin-top: 0;
 	}
-
 	.flex-container {
 		display: block;
 	}
@@ -1105,7 +1104,6 @@ p.error {
 	input {
 		width: auto;
 	}
-
 	.flex {
 		display: block;
 	}
@@ -1136,7 +1134,6 @@ p.error {
 		height: auto;
 		padding .5rem 0;
 	}
-
 	.issue-container {
 		display: block;
 	}
@@ -1145,6 +1142,46 @@ p.error {
 	}
 	.issue-links {
 		padding-left: 0;
+	}
+	.url-header {
+		display: block;
+	}
+	.url-header .col1,
+	.url-header .url-button,
+	.url-header .details-container {
+		width: auto;
+		text-overflow: none;
+		white-space: normal;
+	}
+	.url-header .col1 h2 {
+		line-height: 1.5rem;
+	}
+	.url-header .url-button,
+	.url-header .details-container {
+		margin-top: 1rem;
+	}
+	.url-list li {
+		display: block;
+	}
+	.url-list li.url {
+		padding: 0.5rem 1rem;
+		word-wrap: break-word;
+	}
+	.url-list div:nth-child(1) {
+		width: 100%;
+	}
+	.url-list div:nth-child(2) {
+		text-align: left;
+		width: 100%;
+	}
+	url-detail {
+		display:block;
+	}
+	.url-detail div:nth-child(1) {
+		width: 100%;
+	}
+	.url-detail div:nth-child(2) {
+		width: 100%;
 	}
 }
 

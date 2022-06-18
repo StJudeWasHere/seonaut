@@ -7,10 +7,10 @@ WORKDIR /app
 RUN CGO_ENABLED=0 GOOS=linux go build -o seonaut cmd/server/main.go
 
 FROM alpine:latest AS production
-COPY --from=builder /app .
+COPY --from=builder /app /app/
 
-ENV WAIT_VERSION 2.7.2
-ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /wait
-RUN chmod +x /wait
+ENV WAIT_VERSION 2.9.0
+ADD https://github.com/ufoscout/docker-compose-wait/releases/download/$WAIT_VERSION/wait /bin/wait
+RUN chmod +x /bin/wait
 
-CMD ["./seonaut"]
+WORKDIR /app

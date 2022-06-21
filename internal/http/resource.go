@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/projectview"
@@ -73,7 +74,7 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	v := &helper.PageView{
 		Data:      rv,
 		User:      *user,
-		PageTitle: "RESOURCES_VIEW",
+		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab),
 	}
 
 	app.renderer.RenderTemplate(w, "resources", v)

@@ -389,7 +389,7 @@ button {
 	border: 0;
 }
 .issue-panel {
-	min-height: 100%;
+	min-height: 30rem;
 	background-color: white;
 	padding-top: 3rem;
 	overflow: hidden;

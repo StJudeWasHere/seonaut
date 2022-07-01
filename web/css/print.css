@@ -1,0 +1,6 @@
+@media print
+{
+	* {-webkit-print-color-adjust:exact;}
+	body, .chart:after {background-color: var(--secondary-color);}
+	.button {display: none;}
+}

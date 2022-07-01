@@ -1,0 +1,121 @@
+html, body {
+	height: 100%;
+}
+
+body {
+	font-display: fallback;
+	font-family: var(--main-fontfamily);
+	line-height: 1.6rem;
+	font-size: 1rem;
+	padding: 0;
+	background-color: var(--secondary-color);
+	margin:0;
+	text-rendering: optimizeLegibility;
+}
+
+hr {
+	border: none;
+	border-top: 1px solid var(--border-color);
+	margin: 3rem 0;
+}
+
+ul {
+	margin: 0;
+}
+
+a {
+	border-bottom: 1px dotted var(--primary-color);
+	color: var(--primary-color);
+	text-decoration: none;
+}
+
+input {
+	font-size: inherit;
+	border: 1px solid var(--border-color);
+	padding: .5rem;
+	display: block;
+	margin-bottom: 1rem;
+	width: 25rem;
+	background-color: var(--light-bg-color);
+	border-radius: 5px;
+	line-height: 1.5rem;
+}
+
+input[type="submit"] {
+	cursor: pointer;
+	margin-left: 0;
+	color: var(--secondary-color);
+	border: none;
+	margin-top: 1.5rem;
+	background-color: var(--highlight-color);
+	width: auto;
+	padding: .5rem 1.5rem;
+}
+
+input[type="submit"]:hover {
+	background-color: var(--secondary-highlight-color);
+}
+
+label {
+	display: block;
+}
+
+label.checkbox {
+	display: inline-block;
+	margin-left: .5rem;
+}
+
+small {
+	font-weight: 300;
+	font-size: .8rem;
+}
+
+form {
+	margin-bottom: 3rem;
+}
+
+h2 {
+	margin-bottom: .5rem;
+	font-size: 1.2rem;
+	font-weight: normal;
+	line-height: 1.2rem;
+}
+
+button {
+	cursor: pointer;
+	font-size: inherit;
+	padding: .5rem 1rem;
+}
+
+summary {
+	padding: 1rem;
+	cursor: pointer;
+	border-radius: 5px;
+	list-style: none;
+}
+
+details {
+	position:relative;
+	padding: 0;
+	margin: 0;
+}
+
+details ul {
+	position:absolute;
+	background-color: var(--secondary-color);
+	box-shadow: 2px 2px 3px var(--dark-opacity-color);
+	width: 100%;
+	margin: 0 0 0 -1.5rem;
+	border-radius: 15px;
+	padding: 1.5rem;
+	list-style: none;
+}
+
+details ul li {
+	padding: .2rem 0;
+}
+
+details ul a {
+	color: var(--highlight-color);
+	border: 0;
+}

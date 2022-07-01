@@ -1,4 +1,4 @@
-.PHONY: run test vet linux clean docker
+.PHONY: run test vet linux clean docker watch front
 
 run:
 	go run -race cmd/server/main.go -c config.local 
@@ -17,3 +17,21 @@ clean:
 
 docker:
 	docker-compose up -d --build
+
+watch:
+	esbuild ./web/css/style.css \
+		--bundle \
+		--outdir=./web/static \
+		--public-path=/resources \
+		--loader:.woff=file \
+		--loader:.woff2=file \
+		--watch
+
+front:
+	esbuild ./web/css/style.css \
+		--bundle \
+		--minify \
+		--outdir=./web/static \
+		--public-path=/resources \
+		--loader:.woff=file \
+		--loader:.woff2=file

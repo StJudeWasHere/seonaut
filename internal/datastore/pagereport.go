@@ -501,3 +501,36 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 
 	return p
 }
+
+func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *crawler.PageReport {
+	prStream := make(chan *crawler.PageReport)
+
+	go func() {
+		defer close(prStream)
+
+		query := `
+			SELECT pagereports.id, pagereports.url, pagereports.title
+			FROM pagereports
+			WHERE media_type = "text/html" AND status_code >= 200 AND status_code < 300
+			AND (canonical IS NULL OR canonical = "" OR canonical = url) AND pagereports.crawl_id = ?
+			AND crawled = 1`
+
+		rows, err := ds.db.Query(query, cid)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			p := &crawler.PageReport{}
+			err := rows.Scan(&p.Id, &p.URL, &p.Title)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			prStream <- p
+		}
+	}()
+
+	return prStream
+}

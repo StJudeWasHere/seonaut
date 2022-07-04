@@ -389,17 +389,6 @@ func (ds *Datastore) HreflangNoindexable(cid int64) []crawler.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindSitemapPageReports(cid int64) []crawler.PageReport {
-	query := `
-		SELECT pagereports.id, pagereports.url, pagereports.title
-		FROM pagereports
-		WHERE media_type = "text/html" AND status_code >= 200 AND status_code < 300
-		AND (canonical IS NULL OR canonical = "" OR canonical = url) AND pagereports.crawl_id = ?
-		AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
 func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int64) []crawler.PageReport {
 	query := `
 		SELECT

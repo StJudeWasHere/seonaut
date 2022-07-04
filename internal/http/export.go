@@ -80,8 +80,9 @@ func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 		fmt.Sprint("attachment; filename=\""+pv.Project.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
-	p := app.reportService.GetSitemapPageReports(pv.Crawl.Id)
-	for _, v := range p {
+	prStream := app.reportService.GetSitemapPageReports(pv.Crawl.Id)
+
+	for v := range prStream {
 		s.Add(v.URL, "")
 	}
 

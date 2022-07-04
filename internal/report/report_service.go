@@ -11,7 +11,7 @@ type ReportStore interface {
 	FindPageReportsRedirectingToURL(string, int64) []crawler.PageReport
 	FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *crawler.PageReport
 	FindAllPageReportsByCrawlId(int64) <-chan *crawler.PageReport
-	FindSitemapPageReports(int64) []crawler.PageReport
+	FindSitemapPageReports(int64) <-chan *crawler.PageReport
 }
 
 type ReportService struct {
@@ -49,7 +49,7 @@ func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string) *PageR
 	return v
 }
 
-// Return slice of PageReports by error type
+// Return channel of PageReports by error type
 func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *crawler.PageReport {
 	if eid != "" {
 		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
@@ -58,7 +58,7 @@ func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-ch
 	return s.store.FindAllPageReportsByCrawlId(crawlId)
 }
 
-// Returns a slice of crawlable PageReports that can be included in a sitemap
-func (s *ReportService) GetSitemapPageReports(crawlId int64) []crawler.PageReport {
+// Returns a channel of crawlable PageReports that can be included in a sitemap
+func (s *ReportService) GetSitemapPageReports(crawlId int64) <-chan *crawler.PageReport {
 	return s.store.FindSitemapPageReports(crawlId)
 }

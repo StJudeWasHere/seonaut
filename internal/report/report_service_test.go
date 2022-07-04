@@ -55,23 +55,31 @@ func (s *storage) FindAllPageReportsByCrawlId(id int64) <-chan *crawler.PageRepo
 	return prStream
 }
 
-func (s *storage) FindSitemapPageReports(id int64) []crawler.PageReport {
-	r := []crawler.PageReport{}
+func (s *storage) FindSitemapPageReports(id int64) <-chan *crawler.PageReport {
+	prStream := make(chan *crawler.PageReport)
 
-	if id == crawlId {
-		r = append(r, crawler.PageReport{})
-		return r
-	}
+	go func() {
+		defer close(prStream)
+		if id == crawlId {
+			prStream <- &crawler.PageReport{}
+		}
+	}()
 
-	return r
+	return prStream
 }
 
 var service = report.NewService(&storage{})
 
 func TestGetSitemapPageReports(t *testing.T) {
-	p := service.GetSitemapPageReports(crawlId)
-	if len(p) != 1 {
-		t.Errorf("GetSitemapPageReports: %d != 1", len(p))
+	prStream := service.GetSitemapPageReports(crawlId)
+	l := 0
+
+	for range prStream {
+		l++
+	}
+
+	if l != 1 {
+		t.Errorf("GetSitemapPageReports: %d != 1", l)
 	}
 }
 

@@ -9,8 +9,8 @@ type ReportStore interface {
 	FindErrorTypesByPage(int, int64) []string
 	FindInLinks(string, int64) []crawler.PageReport
 	FindPageReportsRedirectingToURL(string, int64) []crawler.PageReport
-	FindAllPageReportsByCrawlIdAndErrorType(int64, string) []crawler.PageReport
-	FindAllPageReportsByCrawlId(int64) []crawler.PageReport
+	FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *crawler.PageReport
+	FindAllPageReportsByCrawlId(int64) <-chan *crawler.PageReport
 	FindSitemapPageReports(int64) []crawler.PageReport
 }
 
@@ -50,7 +50,7 @@ func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string) *PageR
 }
 
 // Return slice of PageReports by error type
-func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) []crawler.PageReport {
+func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *crawler.PageReport {
 	if eid != "" {
 		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
 	}

@@ -39,7 +39,7 @@ func NewCSVWriter(f io.Writer) *CSVWriter {
 	return &cw
 }
 
-func (cw *CSVWriter) Write(r crawler.PageReport) {
+func (cw *CSVWriter) Write(r *crawler.PageReport) {
 	cw.writer.Write([]string{
 		fmt.Sprintf("%d", r.StatusCode),
 		r.URL,

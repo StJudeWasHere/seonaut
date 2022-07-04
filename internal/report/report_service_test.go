@@ -33,15 +33,26 @@ func (s *storage) FindPageReportsRedirectingToURL(u string, id int64) []crawler.
 	return []crawler.PageReport{crawler.PageReport{Id: reportId}}
 }
 
-func (s *storage) FindAllPageReportsByCrawlIdAndErrorType(id int64, e string) []crawler.PageReport {
-	return []crawler.PageReport{crawler.PageReport{}}
+func (s *storage) FindAllPageReportsByCrawlIdAndErrorType(id int64, e string) <-chan *crawler.PageReport {
+	prStream := make(chan *crawler.PageReport)
+	go func() {
+		defer close(prStream)
+		prStream <- &crawler.PageReport{}
+	}()
+
+	return prStream
 }
 
-func (s *storage) FindAllPageReportsByCrawlId(id int64) []crawler.PageReport {
-	return []crawler.PageReport{
-		crawler.PageReport{},
-		crawler.PageReport{},
-	}
+func (s *storage) FindAllPageReportsByCrawlId(id int64) <-chan *crawler.PageReport {
+	prStream := make(chan *crawler.PageReport)
+
+	go func() {
+		defer close(prStream)
+		prStream <- &crawler.PageReport{}
+		prStream <- &crawler.PageReport{}
+	}()
+
+	return prStream
 }
 
 func (s *storage) FindSitemapPageReports(id int64) []crawler.PageReport {
@@ -65,14 +76,24 @@ func TestGetSitemapPageReports(t *testing.T) {
 }
 
 func TestGetPageReporsByIssueType(t *testing.T) {
-	p := service.GetPageReporsByIssueType(crawlId, "")
-	if len(p) != 2 {
-		t.Errorf("GetPageReporsByIssueType: %d != 2", len(p))
+	prStream := service.GetPageReporsByIssueType(crawlId, "")
+	l := 0
+	for range prStream {
+		l++
+	}
+
+	if l != 2 {
+		t.Errorf("GetPageReporsByIssueType: %d != 2", l)
 	}
 
 	pe := service.GetPageReporsByIssueType(crawlId, errorType)
-	if len(pe) != 1 {
-		t.Errorf("GetPageReporsByIssueType: %d != 1", len(pe))
+	l = 0
+	for range pe {
+		l++
+	}
+
+	if l != 1 {
+		t.Errorf("GetPageReporsByIssueType: %d != 1", l)
 	}
 }
 

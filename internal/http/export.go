@@ -42,12 +42,12 @@ func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
 		fileName = fileName + "-" + eid
 	}
 
-	pageReports := app.reportService.GetPageReporsByIssueType(pv.Crawl.Id, eid)
-
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
 	cw := encoding.NewCSVWriter(w)
-	for _, p := range pageReports {
+	prStream := app.reportService.GetPageReporsByIssueType(pv.Crawl.Id, eid)
+
+	for p := range prStream {
 		cw.Write(p)
 	}
 }

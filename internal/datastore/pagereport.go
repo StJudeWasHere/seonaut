@@ -200,143 +200,153 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 	}
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) []crawler.PageReport {
-	var pageReports []crawler.PageReport
-	query := `
-		SELECT
-			id,
-			url,
-			redirect_url,
-			refresh,
-			status_code,
-			content_type,
-			media_type,
-			lang,
-			title,
-			description,
-			robots,
-			noindex,
-			canonical,
-			h1,
-			h2,
-			words,
-			size,
-			valid_headings,
-			robotstxt_blocked,
-			crawled
-		FROM pagereports
-		WHERE crawl_id = ?`
+func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *crawler.PageReport {
+	prStream := make(chan *crawler.PageReport)
 
-	rows, err := ds.db.Query(query, cid)
-	if err != nil {
-		log.Println(err)
-	}
+	go func() {
+		defer close(prStream)
 
-	for rows.Next() {
-		p := crawler.PageReport{}
-		err := rows.Scan(&p.Id,
-			&p.URL,
-			&p.RedirectURL,
-			&p.Refresh,
-			&p.StatusCode,
-			&p.ContentType,
-			&p.MediaType,
-			&p.Lang,
-			&p.Title,
-			&p.Description,
-			&p.Robots,
-			&p.Noindex,
-			&p.Canonical,
-			&p.H1,
-			&p.H2,
-			&p.Words,
-			&p.Size,
-			&p.ValidHeadings,
-			&p.BlockedByRobotstxt,
-			&p.Crawled,
-		)
+		query := `
+			SELECT
+				id,
+				url,
+				redirect_url,
+				refresh,
+				status_code,
+				content_type,
+				media_type,
+				lang,
+				title,
+				description,
+				robots,
+				noindex,
+				canonical,
+				h1,
+				h2,
+				words,
+				size,
+				valid_headings,
+				robotstxt_blocked,
+				crawled
+			FROM pagereports
+			WHERE crawl_id = ?`
+
+		rows, err := ds.db.Query(query, cid)
 		if err != nil {
 			log.Println(err)
-			continue
 		}
 
-		pageReports = append(pageReports, p)
-	}
+		for rows.Next() {
+			p := &crawler.PageReport{}
+			err := rows.Scan(&p.Id,
+				&p.URL,
+				&p.RedirectURL,
+				&p.Refresh,
+				&p.StatusCode,
+				&p.ContentType,
+				&p.MediaType,
+				&p.Lang,
+				&p.Title,
+				&p.Description,
+				&p.Robots,
+				&p.Noindex,
+				&p.Canonical,
+				&p.H1,
+				&p.H2,
+				&p.Words,
+				&p.Size,
+				&p.ValidHeadings,
+				&p.BlockedByRobotstxt,
+				&p.Crawled,
+			)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
 
-	return pageReports
+			prStream <- p
+		}
+	}()
+
+	return prStream
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) []crawler.PageReport {
-	var pageReports []crawler.PageReport
-	query := `
-		SELECT
-			id,
-			url,
-			redirect_url,
-			refresh,
-			status_code,
-			content_type,
-			media_type,
-			lang,
-			title,
-			description,
-			robots,
-			noindex,
-			canonical,
-			h1,
-			h2,
-			words,
-			size,
-			valid_headings,
-			robotstxt_blocked,
-			crawled
-		FROM pagereports
-		WHERE crawl_id = ?
-		AND id IN (
+func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) <-chan *crawler.PageReport {
+	prStream := make(chan *crawler.PageReport)
+
+	go func() {
+		defer close(prStream)
+
+		query := `
 			SELECT
-				pagereport_id 
-			FROM issues
-			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
-			WHERE issue_types.type = ? AND crawl_id = ?
-		)`
+				id,
+				url,
+				redirect_url,
+				refresh,
+				status_code,
+				content_type,
+				media_type,
+				lang,
+				title,
+				description,
+				robots,
+				noindex,
+				canonical,
+				h1,
+				h2,
+				words,
+				size,
+				valid_headings,
+				robotstxt_blocked,
+				crawled
+			FROM pagereports
+			WHERE crawl_id = ?
+			AND id IN (
+				SELECT
+					pagereport_id
+				FROM issues
+				INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
+				WHERE issue_types.type = ? AND crawl_id = ?
+			)`
 
-	rows, err := ds.db.Query(query, cid, et, cid)
-	if err != nil {
-		log.Println(err)
-	}
-
-	for rows.Next() {
-		p := crawler.PageReport{}
-		err := rows.Scan(&p.Id,
-			&p.URL,
-			&p.RedirectURL,
-			&p.Refresh,
-			&p.StatusCode,
-			&p.ContentType,
-			&p.MediaType,
-			&p.Lang,
-			&p.Title,
-			&p.Description,
-			&p.Robots,
-			&p.Noindex,
-			&p.Canonical,
-			&p.H1,
-			&p.H2,
-			&p.Words,
-			&p.Size,
-			&p.ValidHeadings,
-			&p.BlockedByRobotstxt,
-			&p.Crawled,
-		)
+		rows, err := ds.db.Query(query, cid, et, cid)
 		if err != nil {
 			log.Println(err)
-			continue
 		}
 
-		pageReports = append(pageReports, p)
-	}
+		for rows.Next() {
+			p := &crawler.PageReport{}
+			err := rows.Scan(&p.Id,
+				&p.URL,
+				&p.RedirectURL,
+				&p.Refresh,
+				&p.StatusCode,
+				&p.ContentType,
+				&p.MediaType,
+				&p.Lang,
+				&p.Title,
+				&p.Description,
+				&p.Robots,
+				&p.Noindex,
+				&p.Canonical,
+				&p.H1,
+				&p.H2,
+				&p.Words,
+				&p.Size,
+				&p.ValidHeadings,
+				&p.BlockedByRobotstxt,
+				&p.Crawled,
+			)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
 
-	return pageReports
+			prStream <- p
+		}
+	}()
+
+	return prStream
 }
 
 func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {

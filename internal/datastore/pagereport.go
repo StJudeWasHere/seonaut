@@ -181,6 +181,24 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		}
 	}
 
+	if len(r.Audios) > 0 {
+		sqlString := "INSERT INTO audios (pagereport_id, url, crawl_id) values "
+
+		v := []interface{}{}
+		for _, i := range r.Audios {
+			sqlString += "(?, ?, ?),"
+			v = append(v, lid, i, cid)
+		}
+		sqlString = sqlString[0 : len(sqlString)-1]
+		stmt, _ = ds.db.Prepare(sqlString)
+		defer stmt.Close()
+
+		_, err := stmt.Exec(v...)
+		if err != nil {
+			log.Printf("savePageReport\nCID: %v\n Audios: %+v\nError: %+v\n", cid, v, err)
+		}
+	}
+
 	if len(r.Scripts) > 0 {
 		sqlString := "INSERT INTO scripts (pagereport_id, url, crawl_id) values "
 		v := []interface{}{}
@@ -499,6 +517,22 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		}
 
 		p.Iframes = append(p.Iframes, url)
+	}
+
+	arows, err := ds.db.Query("SELECT url FROM audios WHERE pagereport_id = ?", rid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for arows.Next() {
+		var url string
+		err = arows.Scan(&url)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		p.Audios = append(p.Audios, url)
 	}
 
 	scrows, err := ds.db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", rid)

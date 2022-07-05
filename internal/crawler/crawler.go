@@ -329,6 +329,10 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []*url.URL {
 		resources = append(resources, l)
 	}
 
+	for _, l := range p.Audios {
+		resources = append(resources, l)
+	}
+
 	for _, v := range resources {
 		t, err := url.Parse(v)
 		if err != nil {

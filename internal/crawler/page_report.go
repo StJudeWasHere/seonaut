@@ -46,6 +46,7 @@ type PageReport struct {
 	Scripts            []string
 	Styles             []string
 	Iframes            []string
+	Audios             []string
 	sanitizer          *bluemonday.Policy
 	ValidHeadings      bool
 	BlockedByRobotstxt bool
@@ -357,6 +358,36 @@ func (pageReport *PageReport) parse() {
 				}
 				pageReport.Images = append(pageReport.Images, i)
 			}
+		}
+	}
+
+	// ---
+	// Extract URLs from audio elements.
+	// ex.
+	// <audio src="audio_file.ogg" controls>
+	// <source src="audio_file.wav" type="audio/wav">
+	// </audio>
+	// ---
+	audios := htmlquery.Find(doc, "//audio")
+	for _, n := range audios {
+
+		src := htmlquery.SelectAttr(n, "src")
+		if strings.TrimSpace(src) != "" {
+			url, err := pageReport.absoluteURL(src)
+			if err == nil {
+				pageReport.Audios = append(pageReport.Audios, url.String())
+			}
+		}
+
+		sources := htmlquery.Find(n, "//source")
+		for _, s := range sources {
+			src := htmlquery.SelectAttr(s, "src")
+			url, err := pageReport.absoluteURL(src)
+			if err != nil {
+				continue
+			}
+
+			pageReport.Audios = append(pageReport.Audios, url.String())
 		}
 	}
 

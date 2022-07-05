@@ -163,6 +163,24 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		}
 	}
 
+	if len(r.Iframes) > 0 {
+		sqlString := "INSERT INTO iframes (pagereport_id, url, crawl_id) values "
+
+		v := []interface{}{}
+		for _, i := range r.Iframes {
+			sqlString += "(?, ?, ?),"
+			v = append(v, lid, i, cid)
+		}
+		sqlString = sqlString[0 : len(sqlString)-1]
+		stmt, _ = ds.db.Prepare(sqlString)
+		defer stmt.Close()
+
+		_, err := stmt.Exec(v...)
+		if err != nil {
+			log.Printf("savePageReport\nCID: %v\n Iframes: %+v\nError: %+v\n", cid, v, err)
+		}
+	}
+
 	if len(r.Scripts) > 0 {
 		sqlString := "INSERT INTO scripts (pagereport_id, url, crawl_id) values "
 		v := []interface{}{}
@@ -465,6 +483,22 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		}
 
 		p.Images = append(p.Images, i)
+	}
+
+	ifrows, err := ds.db.Query("SELECT url FROM iframes WHERE pagereport_id = ?", rid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for ifrows.Next() {
+		var url string
+		err = ifrows.Scan(&url)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		p.Iframes = append(p.Iframes, url)
 	}
 
 	scrows, err := ds.db.Query("SELECT url FROM scripts WHERE pagereport_id = ?", rid)

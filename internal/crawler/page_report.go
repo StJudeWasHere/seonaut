@@ -45,6 +45,7 @@ type PageReport struct {
 	Images             []Image
 	Scripts            []string
 	Styles             []string
+	Iframes            []string
 	sanitizer          *bluemonday.Policy
 	ValidHeadings      bool
 	BlockedByRobotstxt bool
@@ -301,6 +302,26 @@ func (pageReport *PageReport) parse() {
 			}
 			pageReport.Images = append(pageReport.Images, i)
 		}
+	}
+
+	// ---
+	// Extract iframe URLs
+	// ex.
+	// <iframe height="500" width="500" src="http://example.com"></iframe>
+	// ---
+	iframes := htmlquery.Find(doc, "//iframe")
+	for _, n := range iframes {
+		s := htmlquery.SelectAttr(n, "src")
+		if s == "" {
+			continue
+		}
+
+		u, err := pageReport.absoluteURL(s)
+		if err != nil {
+			continue
+		}
+
+		pageReport.Iframes = append(pageReport.Iframes, u.String())
 	}
 
 	// ---

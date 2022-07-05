@@ -135,7 +135,7 @@ func TestPageReportHTML(t *testing.T) {
 		{want: "H1 Title", got: pageReport.H1},
 		{want: "H2 Title", got: pageReport.H2},
 		{want: "https://example.com/img/logo.png", got: pageReport.Images[0].URL},
-		{want: "http://example.com", got: pageReport.Iframes[0]},
+		{want: "http://example.com/", got: pageReport.Iframes[0]},
 	}
 
 	btable := []struct {

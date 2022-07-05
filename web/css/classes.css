@@ -190,6 +190,13 @@
 	margin: 0;
 	font-weight: 400;
 	margin-left: 1rem;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	flex: 1;
+}
+.col .project-title h2 {
+	text-align: left;
 }
 
 .project-title a {

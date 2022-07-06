@@ -327,5 +327,8 @@ func (ds *Datastore) DeletePreviousCrawl(pid int) {
 	deleteFunc(previousCrawl, "images")
 	deleteFunc(previousCrawl, "scripts")
 	deleteFunc(previousCrawl, "styles")
+	deleteFunc(previousCrawl, "iframes")
+	deleteFunc(previousCrawl, "audios")
+	deleteFunc(previousCrawl, "videos")
 	deleteFunc(previousCrawl, "pagereports")
 }

@@ -299,6 +299,19 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []*url.URL {
 		urls = append(urls, parsed)
 	}
 
+	for _, l := range p.Iframes {
+		parsed, err := url.Parse(l)
+		if err != nil {
+			continue
+		}
+
+		if !c.domainIsAllowed(parsed.Host) {
+			continue
+		}
+
+		urls = append(urls, parsed)
+	}
+
 	if p.RedirectURL != "" {
 		parsed, err := url.Parse(p.RedirectURL)
 		if err == nil && c.domainIsAllowed(parsed.Host) {
@@ -323,10 +336,6 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []*url.URL {
 
 	for _, l := range p.Images {
 		resources = append(resources, l.URL)
-	}
-
-	for _, l := range p.Iframes {
-		resources = append(resources, l)
 	}
 
 	for _, l := range p.Audios {

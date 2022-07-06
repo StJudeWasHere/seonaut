@@ -673,3 +673,66 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 
 	return pageReports
 }
+
+func (ds *Datastore) FindInLinks(s string, cid int64) []crawler.PageReport {
+	hash := helper.Hash(s)
+	query := `
+		SELECT 
+			pagereports.id,
+			pagereports.url,
+			pagereports.Title
+		FROM links
+		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
+		WHERE links.url_hash = ? AND pagereports.crawl_id = ? AND pagereports.crawled = 1
+		GROUP BY pagereports.id
+		LIMIT 25`
+
+	var pageReports []crawler.PageReport
+	rows, err := ds.db.Query(query, hash, cid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		p := crawler.PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
+func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64) []crawler.PageReport {
+	uh := helper.Hash(u)
+	query := `
+		SELECT
+			id,
+			url,
+			title
+		FROM pagereports
+		WHERE redirect_hash = ? AND crawl_id = ? AND crawled = 1`
+
+	var pageReports []crawler.PageReport
+	rows, err := ds.db.Query(query, uh, cid)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		p := crawler.PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}

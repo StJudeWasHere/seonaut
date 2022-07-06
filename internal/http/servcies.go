@@ -45,7 +45,7 @@ type ReportService interface {
 }
 
 type ReportManager interface {
-	CreateIssues(int64) []issue.Issue
+	CreateIssues(int64)
 }
 
 type PubSubBroker interface {

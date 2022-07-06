@@ -25,6 +25,7 @@ type IssueStore interface {
 
 type Issue struct {
 	PageReportId int
+	CrawlId      int64
 	ErrorType    int
 }
 

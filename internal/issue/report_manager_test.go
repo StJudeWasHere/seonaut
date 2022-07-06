@@ -16,7 +16,9 @@ const (
 
 type storage struct{}
 
-func (s *storage) SaveIssues(issues []issue.Issue, crawlId int64)      {}
+func (s *storage) SaveIssues(c <-chan *issue.Issue) {
+	<-c
+}
 func (s *storage) SaveEndIssues(crawlId int64, t time.Time, total int) {}
 
 var service = issue.NewReportManager(&storage{})
@@ -26,20 +28,22 @@ func TestCreateIssues(t *testing.T) {
 		crawler.PageReport{Id: pageReportId},
 	}
 
-	service.AddReporter(func(crawlId int64) []crawler.PageReport {
-		return pageReports
+	total := 0
+
+	service.AddReporter(func(crawlId int64) <-chan *crawler.PageReport {
+		prStream := make(chan *crawler.PageReport)
+		go func() {
+			defer close(prStream)
+			for _, v := range pageReports {
+				prStream <- &v
+				total++
+			}
+		}()
+		return prStream
 	}, errorId)
 
-	issues := service.CreateIssues(crawlId)
-	if len(issues) != 1 {
-		t.Errorf("CreateIsssues: %d != 1", len(issues))
-	}
-
-	if issues[0].PageReportId != pageReportId {
-		t.Errorf("pageReport id: %d != %d", issues[0].PageReportId, pageReportId)
-	}
-
-	if issues[0].ErrorType != errorId {
-		t.Errorf("errorType id: %d != %d", issues[0].ErrorType, errorId)
+	service.CreateIssues(crawlId)
+	if total != 1 {
+		t.Errorf("CreateIsssues: %d != 1", total)
 	}
 }

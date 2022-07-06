@@ -39,7 +39,7 @@ const (
 	ErrorOrphan                                 // Orphan pages
 )
 
-type Reporter func(int64) []crawler.PageReport
+type Reporter func(int64) <-chan *crawler.PageReport
 
 type IssueCallback struct {
 	Callback  Reporter
@@ -52,7 +52,7 @@ type ReportManager struct {
 }
 
 type ReportManagerStore interface {
-	SaveIssues([]Issue, int64)
+	SaveIssues(<-chan *Issue)
 	SaveEndIssues(int64, time.Time, int)
 }
 
@@ -69,22 +69,26 @@ func (r *ReportManager) AddReporter(c Reporter, t int) {
 }
 
 // CreateIssues uses the Reporters to create and save issues found in a crawl.
-func (r *ReportManager) CreateIssues(cid int64) []Issue {
-	var issues []Issue
+func (r *ReportManager) CreateIssues(cid int64) {
+	issueCount := 0
+	iStream := make(chan *Issue)
+	defer close(iStream)
+
+	go r.store.SaveIssues(iStream)
 
 	for _, c := range r.callbacks {
-		for _, p := range c.Callback(cid) {
-			i := Issue{
+		for p := range c.Callback(cid) {
+			i := &Issue{
 				PageReportId: p.Id,
+				CrawlId:      cid,
 				ErrorType:    c.ErrorType,
 			}
 
-			issues = append(issues, i)
+			iStream <- i
+
+			issueCount++
 		}
 	}
 
-	r.store.SaveIssues(issues, cid)
-	r.store.SaveEndIssues(cid, time.Now(), len(issues))
-
-	return issues
+	r.store.SaveEndIssues(cid, time.Now(), issueCount)
 }

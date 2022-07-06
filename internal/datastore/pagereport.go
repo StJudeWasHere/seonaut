@@ -636,3 +636,40 @@ func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *crawler.PageRepor
 
 	return prStream
 }
+
+func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []crawler.PageReport {
+	max := paginationMax
+	offset := max * (p - 1)
+
+	query := `
+		SELECT
+			id,
+			url,
+			title
+		FROM pagereports
+		WHERE id IN (
+			SELECT DISTINCT pagereport_id
+			FROM issues
+			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
+			WHERE issue_types.type = ? AND crawl_id = ?
+		) ORDER BY url ASC LIMIT ?, ?`
+
+	var pageReports []crawler.PageReport
+	rows, err := ds.db.Query(query, errorType, cid, offset, max)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for rows.Next() {
+		p := crawler.PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}

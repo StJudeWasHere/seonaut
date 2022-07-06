@@ -280,26 +280,6 @@ func (ds *Datastore) FindInLinks(s string, cid int64) []crawler.PageReport {
 	return ds.pageReportsQuery(query, hash, cid)
 }
 
-func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []crawler.PageReport {
-	max := paginationMax
-	offset := max * (p - 1)
-
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE id IN (
-			SELECT DISTINCT pagereport_id
-			FROM issues
-			INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
-			WHERE issue_types.type = ? AND crawl_id = ?
-		) ORDER BY url ASC LIMIT ?, ?`
-
-	return ds.pageReportsQuery(query, errorType, cid, offset, max)
-}
-
 func (ds *Datastore) FindRedirectChains(cid int64) []crawler.PageReport {
 	query := `
 		SELECT

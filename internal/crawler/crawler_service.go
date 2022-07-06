@@ -86,12 +86,9 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		return nil, err
 	}
 
-	pageReport := make(chan *PageReport)
 	c := NewCrawler(u, options)
 
-	go c.Crawl(pageReport)
-
-	for r := range pageReport {
+	for r := range c.Crawl() {
 		if r.BlockedByRobotstxt {
 			crawl.BlockedByRobotstxt++
 		} else if r.Noindex {

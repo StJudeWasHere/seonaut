@@ -47,7 +47,7 @@ type Crawler struct {
 	robotsChecker   *RobotsChecker
 
 	que            *que
-	pr             chan<- *PageReport
+	prStream       chan *PageReport
 	client         *Client
 	allowedDomains []string
 }
@@ -71,36 +71,39 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		que:            NewQueue(),
 		client:         NewClient(options.UserAgent),
 		allowedDomains: []string{mainDomain, "www." + mainDomain},
+		prStream:       make(chan *PageReport),
 	}
 }
 
 // Crawl starts crawling an URL and sends pagereports of the crawled URLs
 // through the pr channel. It will end when there are no more URLs to crawl
 // or the MaxPageReports limit is hit.
-func (c *Crawler) Crawl(pr chan<- *PageReport) {
-	defer close(pr)
+func (c *Crawler) Crawl() <-chan *PageReport {
+	go func() {
+		defer close(c.prStream)
 
-	c.pr = pr
+		c.que.Push(c.URL.String())
+		c.storage.Add(c.URL.String())
 
-	c.que.Push(c.URL.String())
-	c.storage.Add(c.URL.String())
+		sitemaps := c.getSitemaps()
+		c.robotstxtExists = c.robotsChecker.Exists(c.URL)
+		c.sitemapExists = c.sitemapChecker.SitemapExists(sitemaps)
 
-	sitemaps := c.getSitemaps()
-	c.robotstxtExists = c.robotsChecker.Exists(c.URL)
-	c.sitemapExists = c.sitemapChecker.SitemapExists(sitemaps)
+		if c.Options.CrawlSitemap && c.sitemapExists {
+			go c.sitemapChecker.ParseSitemaps(sitemaps, c.loadSitemapURLs)
+		}
 
-	if c.Options.CrawlSitemap && c.sitemapExists {
-		go c.sitemapChecker.ParseSitemaps(sitemaps, c.loadSitemapURLs)
-	}
+		wg := new(sync.WaitGroup)
+		wg.Add(consumerThreads)
 
-	wg := new(sync.WaitGroup)
-	wg.Add(consumerThreads)
+		for i := 0; i < consumerThreads; i++ {
+			go c.consumer(wg)
+		}
 
-	for i := 0; i < consumerThreads; i++ {
-		go c.consumer(wg)
-	}
+		wg.Wait()
+	}()
 
-	wg.Wait()
+	return c.prStream
 }
 
 // Returns true if the sitemap.xml file exists
@@ -227,7 +230,7 @@ func (c *Crawler) responseHandler(r *http.Response) {
 	}
 
 	if pageReport.Nofollow == true && c.Options.FollowNofollow == false {
-		c.pr <- pageReport
+		c.prStream <- pageReport
 		return
 	}
 
@@ -239,7 +242,7 @@ func (c *Crawler) responseHandler(r *http.Response) {
 		c.storage.Add(t.String())
 
 		if c.Options.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(t) {
-			c.pr <- &PageReport{
+			c.prStream <- &PageReport{
 				URL:                t.String(),
 				ParsedURL:          t,
 				Crawled:            false,
@@ -254,7 +257,7 @@ func (c *Crawler) responseHandler(r *http.Response) {
 
 	}
 
-	c.pr <- pageReport
+	c.prStream <- pageReport
 }
 
 // Returns all the crawlable URLs found in the HTML document

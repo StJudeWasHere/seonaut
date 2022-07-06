@@ -109,6 +109,7 @@ func TestPageReportHTML(t *testing.T) {
 		{want: 1, got: len(pageReport.Styles)},
 		{want: 1, got: len(pageReport.Iframes)},
 		{want: 3, got: len(pageReport.Audios)},
+		{want: 2, got: len(pageReport.Videos)},
 	}
 
 	stable := []struct {
@@ -140,6 +141,8 @@ func TestPageReportHTML(t *testing.T) {
 		{want: "https://example.com/audio_file.ogg", got: pageReport.Audios[0]},
 		{want: "https://example.com/audio_file.wav", got: pageReport.Audios[1]},
 		{want: "https://example.com/audio_file.mp3", got: pageReport.Audios[2]},
+		{want: "https://example.com/video_file.webm", got: pageReport.Videos[0]},
+		{want: "https://example.com/video_file.mp4", got: pageReport.Videos[1]},
 	}
 
 	btable := []struct {

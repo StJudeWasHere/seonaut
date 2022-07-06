@@ -47,6 +47,7 @@ type PageReport struct {
 	Styles             []string
 	Iframes            []string
 	Audios             []string
+	Videos             []string
 	sanitizer          *bluemonday.Policy
 	ValidHeadings      bool
 	BlockedByRobotstxt bool
@@ -388,6 +389,37 @@ func (pageReport *PageReport) parse() {
 			}
 
 			pageReport.Audios = append(pageReport.Audios, url.String())
+		}
+	}
+
+	// ---
+	// Extract URLs from video elements.
+	// ex.
+	// <video controls width="250">
+	// <source src="video_file.webm" type="video/webm">
+	// <source src="video_file.mp4" type="video/mp4">
+	// </video>
+	// ---
+	videos := htmlquery.Find(doc, "//video")
+	for _, n := range videos {
+
+		src := htmlquery.SelectAttr(n, "src")
+		if strings.TrimSpace(src) != "" {
+			url, err := pageReport.absoluteURL(src)
+			if err == nil {
+				pageReport.Videos = append(pageReport.Videos, url.String())
+			}
+		}
+
+		sources := htmlquery.Find(n, "//source")
+		for _, s := range sources {
+			src := htmlquery.SelectAttr(s, "src")
+			url, err := pageReport.absoluteURL(src)
+			if err != nil {
+				continue
+			}
+
+			pageReport.Videos = append(pageReport.Videos, url.String())
 		}
 	}
 

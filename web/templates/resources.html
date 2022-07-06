@@ -30,6 +30,7 @@
 				{{ if eq .Tab "redirections" }} Redirections {{ end }}
 				{{ if eq .Tab "images" }} Images {{ end }}
 				{{ if eq .Tab "audios" }} Audios {{ end }}
+				{{ if eq .Tab "videos" }} Videos {{ end }}
 				{{ if eq .Tab "iframes" }} Iframes {{ end }}
 				{{ if eq .Tab "scripts" }} Scripts {{ end }}
 				{{ if eq .Tab "styles" }} Styles {{ end }}
@@ -46,6 +47,8 @@
 			<li><a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections">→ Redirections</a></li>
 
 			<li><a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=audios">→ Audios</a></li>
+
+			<li><a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=videos">→ Videos</a></li>
 
 			<li><a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=images">→ Images</a></li>
 
@@ -313,6 +316,24 @@
 			</ul>
 			{{ else }}
 				<p ><small>There are no audios in this page.</small></p>
+			{{ end }}
+		</div>
+	{{ end }}
+
+	{{ if eq .Tab "videos" }}
+		<div class="report-block">
+			{{ if .PageReportView.PageReport.Videos }}
+			<ul class="url-list">
+				{{ range .PageReportView.PageReport.Videos }}
+					<li>
+						<div>
+						<span class="url">{{ . }}</span>
+						</div>
+					</li>
+				{{ end }}
+			</ul>
+			{{ else }}
+				<p ><small>There are no videos in this page.</small></p>
 			{{ end }}
 		</div>
 	{{ end }}

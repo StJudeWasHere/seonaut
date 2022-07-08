@@ -25,7 +25,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 
 	var refresh bool
 	for _, v := range views {
-		if v.Crawl.IssuesEnd.Valid == false {
+		if v.Crawl.IssuesEnd.Valid == false || v.Project.Deleting {
 			refresh = true
 		}
 	}
@@ -42,6 +42,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 	app.renderer.RenderTemplate(w, "home", v)
 }
 
+// Manage the form for adding new projects
 func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 	c := r.Context().Value("user")
 	user, ok := c.(*user.User)
@@ -129,4 +130,31 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.renderer.RenderTemplate(w, "project_add", v)
+}
+
+// Delete a project
+func (app *App) serveDeleteProject(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	p, err := app.projectService.FindProject(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	app.projectService.DeleteProject(&p)
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

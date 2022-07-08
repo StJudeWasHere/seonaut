@@ -18,6 +18,7 @@ type UserService interface {
 
 type ProjectService interface {
 	SaveProject(*project.Project, int) error
+	DeleteProject(p *project.Project)
 	FindProject(id, uid int) (project.Project, error)
 }
 

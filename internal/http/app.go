@@ -84,6 +84,7 @@ func (app *App) Run() {
 	// App
 	http.HandleFunc("/", app.requireAuth(app.serveHome))
 	http.HandleFunc("/new-project", app.requireAuth(app.serveProjectAdd))
+	http.HandleFunc("/delete-project", app.requireAuth(app.serveDeleteProject))
 	http.HandleFunc("/crawl", app.requireAuth(app.serveCrawl))
 	http.HandleFunc("/crawl-live", app.requireAuth(app.serveCrawlLive))
 	http.HandleFunc("/crawl-ws", app.requireAuth(app.serveCrawlWs))

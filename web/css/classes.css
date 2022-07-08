@@ -206,16 +206,29 @@
 	color: var(--highlight-color);
 	border: none;
 }
+
+.project-export {
+	margin-bottom: 1.5rem;
+}
 .project-crawl {
-	display: flex;
-	position:absolute;
-	bottom: 0;
+	display: inline-flex;
 	left:1.5rem;
-	border: 0
+	border: 0;
 }
 .project-crawl span {
 	margin-left: 1rem;
 }
+
+.project-delete {
+	display: inline-flex;
+	left:1.5rem;
+	border: 0;
+	margin-top: 1rem;
+}
+.project-delete span {
+	margin-left: 1rem;
+}
+
 .project-buttons {
 	margin-top: 3rem;
 	box-sizing: border-box;

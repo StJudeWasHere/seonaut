@@ -51,6 +51,7 @@ func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 			include_noindex,
 			crawl_sitemap,
 			allow_subdomains,
+			deleting,
 			created
 		FROM projects
 		WHERE user_id = ?
@@ -72,6 +73,7 @@ func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 			&p.IncludeNoindex,
 			&p.CrawlSitemap,
 			&p.AllowSubdomains,
+			&p.Deleting,
 			&p.Created,
 		)
 		if err != nil {
@@ -95,6 +97,7 @@ func (ds *Datastore) FindProjectById(id int, uid int) (project.Project, error) {
 			include_noindex,
 			crawl_sitemap,
 			allow_subdomains,
+			deleting,
 			created
 		FROM projects
 		WHERE id = ? AND user_id = ?`
@@ -110,6 +113,7 @@ func (ds *Datastore) FindProjectById(id int, uid int) (project.Project, error) {
 		&p.IncludeNoindex,
 		&p.CrawlSitemap,
 		&p.AllowSubdomains,
+		&p.Deleting,
 		&p.Created,
 	)
 	if err != nil {
@@ -295,23 +299,49 @@ func (ds *Datastore) FindPreviousCrawlId(pid int) int {
 	return c
 }
 
+func (ds *Datastore) DeleteProject(p *project.Project) {
+	query := `UPDATE projects SET deleting=1 WHERE id = ?`
+	_, err := ds.db.Exec(query, p.Id)
+	if err != nil {
+		log.Printf("DeleteProject: update: pid %d %v\n", p.Id, err)
+		return
+	}
+
+	go func() {
+		c := ds.GetLastCrawl(p)
+
+		ds.DeleteCrawl(c.Id)
+
+		query := `DELETE FROM projects WHERE id = ?`
+		_, err := ds.db.Exec(query, p.Id)
+		if err != nil {
+			log.Printf("DeleteProject: pid %d %v\n", p.Id, err)
+			return
+		}
+	}()
+}
+
 func (ds *Datastore) DeletePreviousCrawl(pid int) {
 	previousCrawl := ds.FindPreviousCrawlId(pid)
 
-	var deleteFunc func(cid int, table string)
-	deleteFunc = func(cid int, table string) {
+	ds.DeleteCrawl(int64(previousCrawl))
+}
+
+func (ds *Datastore) DeleteCrawl(cid int64) {
+	var deleteFunc func(cid int64, table string)
+	deleteFunc = func(cid int64, table string) {
 		query := fmt.Sprintf("DELETE FROM %s WHERE crawl_id = ? ORDER BY id DESC LIMIT 1000", table)
-		_, err := ds.db.Exec(query, previousCrawl)
+		_, err := ds.db.Exec(query, cid)
 		if err != nil {
-			log.Printf("DeletePreviousCrawl: pid %d table %s %v\n", pid, table, err)
+			log.Printf("DeleteCrawl: cid %d table %s %v\n", cid, table, err)
 			return
 		}
 
 		query = fmt.Sprintf("SELECT count(*) FROM %s WHERE crawl_id = ?", table)
-		row := ds.db.QueryRow(query, previousCrawl)
+		row := ds.db.QueryRow(query, cid)
 		var c int
 		if err := row.Scan(&c); err != nil {
-			log.Printf("DeletePreviousCrawl count: pid %d table %s %v\n", pid, table, err)
+			log.Printf("DeleteCrawl count: pid %d table %s %v\n", cid, table, err)
 		}
 
 		if c > 0 {
@@ -320,15 +350,15 @@ func (ds *Datastore) DeletePreviousCrawl(pid int) {
 		}
 	}
 
-	deleteFunc(previousCrawl, "links")
-	deleteFunc(previousCrawl, "external_links")
-	deleteFunc(previousCrawl, "hreflangs")
-	deleteFunc(previousCrawl, "issues")
-	deleteFunc(previousCrawl, "images")
-	deleteFunc(previousCrawl, "scripts")
-	deleteFunc(previousCrawl, "styles")
-	deleteFunc(previousCrawl, "iframes")
-	deleteFunc(previousCrawl, "audios")
-	deleteFunc(previousCrawl, "videos")
-	deleteFunc(previousCrawl, "pagereports")
+	deleteFunc(cid, "links")
+	deleteFunc(cid, "external_links")
+	deleteFunc(cid, "hreflangs")
+	deleteFunc(cid, "issues")
+	deleteFunc(cid, "images")
+	deleteFunc(cid, "scripts")
+	deleteFunc(cid, "styles")
+	deleteFunc(cid, "iframes")
+	deleteFunc(cid, "audios")
+	deleteFunc(cid, "videos")
+	deleteFunc(cid, "pagereports")
 }

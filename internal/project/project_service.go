@@ -8,6 +8,7 @@ import (
 
 type Storage interface {
 	SaveProject(*Project, int)
+	DeleteProject(*Project)
 	FindProjectById(id int, uid int) (Project, error)
 }
 
@@ -21,6 +22,7 @@ type Project struct {
 	Created         time.Time
 	CrawlSitemap    bool
 	AllowSubdomains bool
+	Deleting        bool
 }
 
 type ProjectService struct {
@@ -65,4 +67,9 @@ func (s *ProjectService) FindProject(id, uid int) (Project, error) {
 	project.Host = parsedURL.Host
 
 	return project, nil
+}
+
+// Delete a project
+func (s *ProjectService) DeleteProject(p *Project) {
+	s.storage.DeleteProject(p)
 }

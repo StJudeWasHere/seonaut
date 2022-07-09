@@ -28,13 +28,13 @@ type Storage interface {
 	SaveCrawl(project.Project) (*Crawl, error)
 	SavePageReport(*PageReport, int64)
 	SaveEndCrawl(*Crawl) (*Crawl, error)
-	DeletePreviousCrawl(int)
+	DeletePreviousCrawl(int64)
 	GetLastCrawls(project.Project, int) []Crawl
 }
 
 type Crawl struct {
 	Id                 int64
-	ProjectId          int
+	ProjectId          int64
 	URL                string
 	Start              time.Time
 	End                sql.NullTime

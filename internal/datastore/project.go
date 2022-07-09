@@ -281,24 +281,6 @@ func (ds *Datastore) SaveIssuesCount(crawlId int64, critical, warning, notice in
 	}
 }
 
-func (ds *Datastore) FindPreviousCrawlId(pid int) int {
-	query := `
-		SELECT
-			id
-		FROM crawls
-		WHERE project_id = ?
-		ORDER BY end DESC
-		LIMIT 1, 1`
-
-	row := ds.db.QueryRow(query, pid)
-	var c int
-	if err := row.Scan(&c); err != nil {
-		log.Printf("FindPreviousCrawlId: %v\n", err)
-	}
-
-	return c
-}
-
 func (ds *Datastore) DeleteProject(p *project.Project) {
 	query := `UPDATE projects SET deleting=1 WHERE id = ?`
 	_, err := ds.db.Exec(query, p.Id)
@@ -321,10 +303,23 @@ func (ds *Datastore) DeleteProject(p *project.Project) {
 	}()
 }
 
-func (ds *Datastore) DeletePreviousCrawl(pid int) {
-	previousCrawl := ds.FindPreviousCrawlId(pid)
+func (ds *Datastore) DeletePreviousCrawl(pid int64) {
+	query := `
+		SELECT
+			id
+		FROM crawls
+		WHERE project_id = ?
+		ORDER BY end DESC
+		LIMIT 1, 1`
 
-	ds.DeleteCrawl(int64(previousCrawl))
+	row := ds.db.QueryRow(query, pid)
+	var c int64
+	if err := row.Scan(&c); err != nil {
+		log.Printf("DeletePreviousCrawl: %v\n", err)
+		return
+	}
+
+	ds.DeleteCrawl(c)
 }
 
 func (ds *Datastore) DeleteCrawl(cid int64) {

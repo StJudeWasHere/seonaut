@@ -13,7 +13,7 @@ type Storage interface {
 }
 
 type Project struct {
-	Id              int
+	Id              int64
 	URL             string
 	Host            string
 	IgnoreRobotsTxt bool

@@ -7,6 +7,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/config"
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/datastore"
+	"github.com/stjudewashere/seonaut/internal/export"
 	"github.com/stjudewashere/seonaut/internal/http"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/project"
@@ -50,6 +51,7 @@ func main() {
 		ReportManager:      newReportManager(ds),
 		ProjectViewService: projectview.NewService(ds),
 		PubSubBroker:       broker,
+		ExportService:      export.NewExporter(ds),
 	}
 
 	server := http.NewApp(

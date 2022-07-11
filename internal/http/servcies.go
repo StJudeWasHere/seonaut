@@ -1,6 +1,8 @@
 package http
 
 import (
+	"io"
+
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/project"
@@ -55,6 +57,11 @@ type PubSubBroker interface {
 	Unsubscribe(s *pubsub.Subscriber)
 }
 
+type Exporter interface {
+	ExportLinks(f io.Writer, crawl *crawler.Crawl)
+	ExportExternalLinks(f io.Writer, crawl *crawler.Crawl)
+}
+
 // Services stores all the services needed by the HTTP server.
 type Services struct {
 	UserService        UserService
@@ -65,4 +72,5 @@ type Services struct {
 	ReportService      ReportService
 	ReportManager      ReportManager
 	PubSubBroker       PubSubBroker
+	ExportService      Exporter
 }

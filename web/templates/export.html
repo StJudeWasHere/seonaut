@@ -1,0 +1,47 @@
+{{ template "head" . }}
+
+{{ with .Data }}
+<div class="content action">
+	<a href="/">Projects</a> / <a href="/dashboard?pid={{ .Project.Id }}">{{ .Project.Host }}</a> / <span class="title">Export</span>
+</div>
+
+<div class="issue-panel">
+	<div class="content">
+		
+		<div class="export-row">
+			<div class="col export-type">
+				<div class="export-title">Export sitemap.xml</div>
+				<div class="export-description">Download a sitemap.xml file with all the canonical pages in your site.</div>
+			</div>
+			<div class="col export-download"><a class="button" href="/sitemap?pid={{ .Project.Id }}">↓ Download</a></div>
+		</div>
+		
+		<div class="export-row">
+			<div class="col export-type">
+				<div class="export-title">Export as CSV</div>
+				<div class="export-description">Export all crawled URLs in CSV format, including all mime types and with additional information such as status code and size.</div>
+			</div>
+			<div class="col export-download"><a class="button" href="/download?pid={{ .Project.Id }}">↓ Download</a></div>
+		</div>
+
+		<div class="export-row">
+			<div class="col export-type">
+				<div class="export-title">Export internal links</div>
+				<div class="export-description">Export all the internal links in the website. Including origin, destination and anchor text.</div>
+			</div>
+			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=internal">↓ Download</a></div>
+		</div>
+
+		<div class="export-row">
+			<div class="col export-type">
+				<div class="export-title">Export external links</div>
+				<div class="export-description">Export all the external links in the website. Including origin, destination and anchor text.</div>
+			</div>
+			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=external">↓ Download</a><div>
+		</div>
+
+	</div>
+</div>
+{{ end}}
+
+{{ template "footer" . }}

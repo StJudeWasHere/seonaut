@@ -31,6 +31,7 @@ type App struct {
 	reportManager      ReportManager
 	projectViewService ProjectViewService
 	pubsubBroker       PubSubBroker
+	exportService      Exporter
 }
 
 // NewApp initializes the template renderer and the session cookie.
@@ -70,6 +71,7 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 		reportManager:      s.ReportManager,
 		projectViewService: s.ProjectViewService,
 		pubsubBroker:       s.PubSubBroker,
+		exportService:      s.ExportService,
 	}
 }
 
@@ -93,6 +95,8 @@ func (app *App) Run() {
 	http.HandleFunc("/dashboard", app.requireAuth(app.serveDashboard))
 	http.HandleFunc("/download", app.requireAuth(app.serveDownloadCSV))
 	http.HandleFunc("/sitemap", app.requireAuth(app.serveSitemap))
+	http.HandleFunc("/export", app.requireAuth(app.serveExport))
+	http.HandleFunc("/export/download", app.requireAuth(app.serveDownload))
 	http.HandleFunc("/resources", app.requireAuth(app.serveResourcesView))
 	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
 	http.HandleFunc("/signup", app.serveSignup)

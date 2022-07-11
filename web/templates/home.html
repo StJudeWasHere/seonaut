@@ -49,8 +49,7 @@
 			<div class="col">
 				{{ if (and (not .Project.Deleting) (and (and .Crawl.Id .Crawl.IssuesEnd.Valid) (gt .Crawl.TotalURLs 0))) }}
 				<div class="project-export">
-					<a class="project-link" href="/download?pid={{ .Project.Id }}">↓ Download crawled URLs</a><br>
-					<a class="project-link" href="/sitemap?pid={{ .Project.Id }}">↓ Download sitemap.xml</a>
+					<a class="project-link" href="/export?pid={{ .Project.Id }}">↗ Export</a><br>
 				</div>
 				{{ end }}
 

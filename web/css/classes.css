@@ -281,6 +281,12 @@
 	color: var(--highlight-color);
 	border: 0;
 }
+.panel {
+	min-height: 30rem;
+	background-color: var(--secondary-color);
+	padding-top: 3rem;
+	overflow: hidden;
+}
 .issue-panel {
 	min-height: 30rem;
 	background-color: var(--secondary-color);
@@ -888,4 +894,28 @@ p.error {
 	background-color: var(--secondary-color);
 	line-height: 2rem;
 	display: flex;
+}
+
+.export-row {
+	border-bottom: 1px solid var(--primary-color);
+	display: flex;
+	padding: 3rem 0;
+}
+.export-row:last-child {
+	border-bottom: none;
+}
+.export-row .col {
+	flex: 1;
+}
+.export-type {
+	flex-grow: 1;
+}
+.export-download {
+	text-align: right;
+	width: auto;
+}
+.export-title {
+	font-size: 1.2rem;
+	font-weight: 600;
+	margin-bottom: .5rem;
 }

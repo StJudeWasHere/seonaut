@@ -457,7 +457,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		log.Println(err)
 	}
 
-	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text FROM links WHERE pagereport_id = ? limit 25", rid)
+	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text FROM links WHERE pagereport_id = ? limit 100", rid)
 	if err != nil {
 		log.Println(err)
 	}
@@ -473,7 +473,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		p.Links = append(p.Links, l)
 	}
 
-	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text FROM external_links WHERE pagereport_id = ? limit 25", rid)
+	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text FROM external_links WHERE pagereport_id = ? limit 100", rid)
 	if err != nil {
 		log.Println(err)
 	}

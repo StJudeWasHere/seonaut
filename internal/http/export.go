@@ -147,7 +147,7 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileName := pv.Project.Host + " " + t + " links " + time.Now().Format("2-15-2006")
+	fileName := pv.Project.Host + " " + t + " " + time.Now().Format("2-15-2006")
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
@@ -155,5 +155,7 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 		app.exportService.ExportLinks(w, &pv.Crawl)
 	} else if t == "external" {
 		app.exportService.ExportExternalLinks(w, &pv.Crawl)
+	} else if t == "images" {
+		app.exportService.ExportImages(w, &pv.Crawl)
 	}
 }

@@ -13,10 +13,18 @@ type Link struct {
 	Text        string
 }
 
+type Image struct {
+	Origin string
+	Image  string
+	Alt    string
+}
+
 type Store interface {
 	ExportLinks(*crawler.Crawl) <-chan *Link
 	ExportExternalLinks(*crawler.Crawl) <-chan *Link
+	ExportImages(crawl *crawler.Crawl) <-chan *Image
 }
+
 type Exporter struct {
 	store Store
 }
@@ -67,6 +75,29 @@ func (e *Exporter) ExportExternalLinks(f io.Writer, crawl *crawler.Crawl) {
 			v.Origin,
 			v.Destination,
 			v.Text,
+		})
+	}
+
+	w.Flush()
+}
+
+// Export all images as a CSV file
+func (e *Exporter) ExportImages(f io.Writer, crawl *crawler.Crawl) {
+	w := csv.NewWriter(f)
+
+	w.Write([]string{
+		"Origin",
+		"Image URL",
+		"Alt",
+	})
+
+	iStream := e.store.ExportImages(crawl)
+
+	for v := range iStream {
+		w.Write([]string{
+			v.Origin,
+			v.Image,
+			v.Alt,
 		})
 	}
 

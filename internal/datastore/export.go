@@ -7,7 +7,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/export"
 )
 
-// Send all export internal links thorugh a read-only channel
+// Send all internal links through a read-only channel
 func (ds *Datastore) ExportLinks(crawl *crawler.Crawl) <-chan *export.Link {
 	lStream := make(chan *export.Link)
 
@@ -43,7 +43,7 @@ func (ds *Datastore) ExportLinks(crawl *crawler.Crawl) <-chan *export.Link {
 	return lStream
 }
 
-// Send all export external links thorugh a read-only channel
+// Send all external links through a read-only channel
 func (ds *Datastore) ExportExternalLinks(crawl *crawler.Crawl) <-chan *export.Link {
 	lStream := make(chan *export.Link)
 
@@ -77,4 +77,40 @@ func (ds *Datastore) ExportExternalLinks(crawl *crawler.Crawl) <-chan *export.Li
 	}()
 
 	return lStream
+}
+
+// Send all image URLs through a read-only channel
+func (ds *Datastore) ExportImages(crawl *crawler.Crawl) <-chan *export.Image {
+	iStream := make(chan *export.Image)
+
+	go func() {
+		defer close(iStream)
+
+		query := `
+			SELECT
+				pagereports.url,
+				images.url,
+				images.alt
+			FROM images
+			LEFT JOIN pagereports ON pagereports.id  = images.pagereport_id
+			WHERE images.crawl_id = ?`
+
+		rows, err := ds.db.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &export.Image{}
+			err := rows.Scan(&v.Origin, &v.Image, &v.Alt)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			iStream <- v
+		}
+	}()
+
+	return iStream
 }

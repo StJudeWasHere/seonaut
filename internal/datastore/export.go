@@ -254,3 +254,38 @@ func (ds *Datastore) ExportAudios(crawl *crawler.Crawl) <-chan *export.Audio {
 
 	return vStream
 }
+
+// Send all video URLs through a read-only channel
+func (ds *Datastore) ExportVideos(crawl *crawler.Crawl) <-chan *export.Video {
+	vStream := make(chan *export.Video)
+
+	go func() {
+		defer close(vStream)
+
+		query := `
+			SELECT
+				pagereports.url,
+				videos.url
+			FROM videos
+			LEFT JOIN pagereports ON pagereports.id  = videos.pagereport_id
+			WHERE videos.crawl_id = ?`
+
+		rows, err := ds.db.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &export.Video{}
+			err := rows.Scan(&v.Origin, &v.Video)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			vStream <- v
+		}
+	}()
+
+	return vStream
+}

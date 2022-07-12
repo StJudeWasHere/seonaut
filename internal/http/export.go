@@ -166,5 +166,7 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 		app.exportService.ExportIframes(w, &pv.Crawl)
 	case "audios":
 		app.exportService.ExportAudios(w, &pv.Crawl)
+	case "videos":
+		app.exportService.ExportVideos(w, &pv.Crawl)
 	}
 }

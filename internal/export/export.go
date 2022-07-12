@@ -44,6 +44,13 @@ type Video struct {
 	Video  string
 }
 
+type Hreflang struct {
+	Origin       string
+	OriginLang   string
+	Hreflang     string
+	HreflangLang string
+}
+
 type Store interface {
 	ExportLinks(*crawler.Crawl) <-chan *Link
 	ExportExternalLinks(*crawler.Crawl) <-chan *Link
@@ -53,6 +60,7 @@ type Store interface {
 	ExportIframes(crawl *crawler.Crawl) <-chan *Iframe
 	ExportAudios(crawl *crawler.Crawl) <-chan *Audio
 	ExportVideos(crawl *crawler.Crawl) <-chan *Video
+	ExportHreflangs(crawl *crawler.Crawl) <-chan *Hreflang
 }
 
 type Exporter struct {
@@ -233,6 +241,31 @@ func (e *Exporter) ExportVideos(f io.Writer, crawl *crawler.Crawl) {
 		w.Write([]string{
 			v.Origin,
 			v.Video,
+		})
+	}
+
+	w.Flush()
+}
+
+// Export all hreflangs as a CSV file
+func (e *Exporter) ExportHreflangs(f io.Writer, crawl *crawler.Crawl) {
+	w := csv.NewWriter(f)
+
+	w.Write([]string{
+		"Origin",
+		"Origin Language",
+		"Hreflang",
+		"Hreflang Language",
+	})
+
+	vStream := e.store.ExportHreflangs(crawl)
+
+	for v := range vStream {
+		w.Write([]string{
+			v.Origin,
+			v.OriginLang,
+			v.Hreflang,
+			v.HreflangLang,
 		})
 	}
 

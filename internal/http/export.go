@@ -168,5 +168,7 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 		app.exportService.ExportAudios(w, &pv.Crawl)
 	case "videos":
 		app.exportService.ExportVideos(w, &pv.Crawl)
+	case "hreflangs":
+		app.exportService.ExportHreflangs(w, &pv.Crawl)
 	}
 }

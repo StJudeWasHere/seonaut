@@ -289,3 +289,40 @@ func (ds *Datastore) ExportVideos(crawl *crawler.Crawl) <-chan *export.Video {
 
 	return vStream
 }
+
+// Send all hreflang URLs and language through a read-only channel
+func (ds *Datastore) ExportHreflangs(crawl *crawler.Crawl) <-chan *export.Hreflang {
+	vStream := make(chan *export.Hreflang)
+
+	go func() {
+		defer close(vStream)
+
+		query := `
+			SELECT
+				pagereports.url,
+				hreflangs.from_lang,
+				hreflangs.to_url,
+				hreflangs.to_lang
+			FROM hreflangs
+			LEFT JOIN pagereports ON pagereports.id  = hreflangs.pagereport_id
+			WHERE hreflangs.crawl_id = ?`
+
+		rows, err := ds.db.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &export.Hreflang{}
+			err := rows.Scan(&v.Origin, &v.OriginLang, &v.Hreflang, &v.HreflangLang)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			vStream <- v
+		}
+	}()
+
+	return vStream
+}

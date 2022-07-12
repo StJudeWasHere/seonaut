@@ -184,3 +184,38 @@ func (ds *Datastore) ExportStyles(crawl *crawler.Crawl) <-chan *export.Style {
 
 	return sStream
 }
+
+// Send all iframe URLs through a read-only channel
+func (ds *Datastore) ExportIframes(crawl *crawler.Crawl) <-chan *export.Iframe {
+	vStream := make(chan *export.Iframe)
+
+	go func() {
+		defer close(vStream)
+
+		query := `
+			SELECT
+				pagereports.url,
+				iframes.url
+			FROM iframes
+			LEFT JOIN pagereports ON pagereports.id  = iframes.pagereport_id
+			WHERE iframes.crawl_id = ?`
+
+		rows, err := ds.db.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &export.Iframe{}
+			err := rows.Scan(&v.Origin, &v.Iframe)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			vStream <- v
+		}
+	}()
+
+	return vStream
+}

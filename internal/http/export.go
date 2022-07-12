@@ -162,5 +162,7 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 		app.exportService.ExportScripts(w, &pv.Crawl)
 	case "styles":
 		app.exportService.ExportStyles(w, &pv.Crawl)
+	case "iframes":
+		app.exportService.ExportIframes(w, &pv.Crawl)
 	}
 }

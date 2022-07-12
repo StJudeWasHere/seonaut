@@ -149,3 +149,38 @@ func (ds *Datastore) ExportScripts(crawl *crawler.Crawl) <-chan *export.Script {
 
 	return sStream
 }
+
+// Send all css style URLs through a read-only channel
+func (ds *Datastore) ExportStyles(crawl *crawler.Crawl) <-chan *export.Style {
+	sStream := make(chan *export.Style)
+
+	go func() {
+		defer close(sStream)
+
+		query := `
+			SELECT
+				pagereports.url,
+				styles.url
+			FROM styles
+			LEFT JOIN pagereports ON pagereports.id  = styles.pagereport_id
+			WHERE styles.crawl_id = ?`
+
+		rows, err := ds.db.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &export.Style{}
+			err := rows.Scan(&v.Origin, &v.Style)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			sStream <- v
+		}
+	}()
+
+	return sStream
+}

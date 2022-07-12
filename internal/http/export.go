@@ -160,5 +160,7 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 		app.exportService.ExportImages(w, &pv.Crawl)
 	case "scripts":
 		app.exportService.ExportScripts(w, &pv.Crawl)
+	case "styles":
+		app.exportService.ExportStyles(w, &pv.Crawl)
 	}
 }

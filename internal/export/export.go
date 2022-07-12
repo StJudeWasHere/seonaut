@@ -24,11 +24,17 @@ type Script struct {
 	Script string
 }
 
+type Style struct {
+	Origin string
+	Style  string
+}
+
 type Store interface {
 	ExportLinks(*crawler.Crawl) <-chan *Link
 	ExportExternalLinks(*crawler.Crawl) <-chan *Link
 	ExportImages(crawl *crawler.Crawl) <-chan *Image
 	ExportScripts(crawl *crawler.Crawl) <-chan *Script
+	ExportStyles(crawl *crawler.Crawl) <-chan *Style
 }
 
 type Exporter struct {
@@ -125,6 +131,27 @@ func (e *Exporter) ExportScripts(f io.Writer, crawl *crawler.Crawl) {
 		w.Write([]string{
 			v.Origin,
 			v.Script,
+		})
+	}
+
+	w.Flush()
+}
+
+// Export all CSS styles as a CSV file
+func (e *Exporter) ExportStyles(f io.Writer, crawl *crawler.Crawl) {
+	w := csv.NewWriter(f)
+
+	w.Write([]string{
+		"Origin",
+		"Style URL",
+	})
+
+	sStream := e.store.ExportStyles(crawl)
+
+	for v := range sStream {
+		w.Write([]string{
+			v.Origin,
+			v.Style,
 		})
 	}
 

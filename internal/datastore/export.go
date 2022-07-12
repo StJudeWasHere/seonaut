@@ -219,3 +219,38 @@ func (ds *Datastore) ExportIframes(crawl *crawler.Crawl) <-chan *export.Iframe {
 
 	return vStream
 }
+
+// Send all audio URLs through a read-only channel
+func (ds *Datastore) ExportAudios(crawl *crawler.Crawl) <-chan *export.Audio {
+	vStream := make(chan *export.Audio)
+
+	go func() {
+		defer close(vStream)
+
+		query := `
+			SELECT
+				pagereports.url,
+				audios.url
+			FROM audios
+			LEFT JOIN pagereports ON pagereports.id  = audios.pagereport_id
+			WHERE audios.crawl_id = ?`
+
+		rows, err := ds.db.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &export.Audio{}
+			err := rows.Scan(&v.Origin, &v.Audio)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			vStream <- v
+		}
+	}()
+
+	return vStream
+}

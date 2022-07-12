@@ -72,6 +72,14 @@
 			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=iframes">↓ Download</a></div>
 		</div>
 
+		<div class="export-row">
+			<div class="col export-type">
+				<div class="export-title">Export audios</div>
+				<div class="export-description">Export all audio URLs in the website, including origin and audio URLs.</div>
+			</div>
+			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=audios">↓ Download</a></div>
+		</div>
+
 	</div>
 </div>
 {{ end}}

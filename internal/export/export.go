@@ -34,6 +34,11 @@ type Iframe struct {
 	Iframe string
 }
 
+type Audio struct {
+	Origin string
+	Audio  string
+}
+
 type Store interface {
 	ExportLinks(*crawler.Crawl) <-chan *Link
 	ExportExternalLinks(*crawler.Crawl) <-chan *Link
@@ -41,6 +46,7 @@ type Store interface {
 	ExportScripts(crawl *crawler.Crawl) <-chan *Script
 	ExportStyles(crawl *crawler.Crawl) <-chan *Style
 	ExportIframes(crawl *crawler.Crawl) <-chan *Iframe
+	ExportAudios(crawl *crawler.Crawl) <-chan *Audio
 }
 
 type Exporter struct {
@@ -179,6 +185,27 @@ func (e *Exporter) ExportIframes(f io.Writer, crawl *crawler.Crawl) {
 		w.Write([]string{
 			v.Origin,
 			v.Iframe,
+		})
+	}
+
+	w.Flush()
+}
+
+// Export all audio styles as a CSV file
+func (e *Exporter) ExportAudios(f io.Writer, crawl *crawler.Crawl) {
+	w := csv.NewWriter(f)
+
+	w.Write([]string{
+		"Origin",
+		"Audio URL",
+	})
+
+	vStream := e.store.ExportAudios(crawl)
+
+	for v := range vStream {
+		w.Write([]string{
+			v.Origin,
+			v.Audio,
 		})
 	}
 

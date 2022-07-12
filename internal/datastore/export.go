@@ -114,3 +114,38 @@ func (ds *Datastore) ExportImages(crawl *crawler.Crawl) <-chan *export.Image {
 
 	return iStream
 }
+
+// Send all scripts URLs through a read-only channel
+func (ds *Datastore) ExportScripts(crawl *crawler.Crawl) <-chan *export.Script {
+	sStream := make(chan *export.Script)
+
+	go func() {
+		defer close(sStream)
+
+		query := `
+			SELECT
+				pagereports.url,
+				scripts.url
+			FROM scripts
+			LEFT JOIN pagereports ON pagereports.id  = scripts.pagereport_id
+			WHERE scripts.crawl_id = ?`
+
+		rows, err := ds.db.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &export.Script{}
+			err := rows.Scan(&v.Origin, &v.Script)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			sStream <- v
+		}
+	}()
+
+	return sStream
+}

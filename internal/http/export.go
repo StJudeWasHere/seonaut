@@ -151,11 +151,14 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
-	if t == "internal" {
+	switch t {
+	case "internal":
 		app.exportService.ExportLinks(w, &pv.Crawl)
-	} else if t == "external" {
+	case "external":
 		app.exportService.ExportExternalLinks(w, &pv.Crawl)
-	} else if t == "images" {
+	case "images":
 		app.exportService.ExportImages(w, &pv.Crawl)
+	case "scripts":
+		app.exportService.ExportScripts(w, &pv.Crawl)
 	}
 }

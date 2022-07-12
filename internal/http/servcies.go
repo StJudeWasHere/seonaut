@@ -61,6 +61,7 @@ type Exporter interface {
 	ExportLinks(f io.Writer, crawl *crawler.Crawl)
 	ExportExternalLinks(f io.Writer, crawl *crawler.Crawl)
 	ExportImages(f io.Writer, crawl *crawler.Crawl)
+	ExportScripts(f io.Writer, crawl *crawler.Crawl)
 }
 
 // Services stores all the services needed by the HTTP server.

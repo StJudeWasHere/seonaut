@@ -184,7 +184,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "inlinks" }}
-
 		<div class="report-block">
 			{{ if .PageReportView.InLinks }}
 			<ul class="url-list">
@@ -202,6 +201,21 @@
 				<p ><small>There are no links to this page.</small></p>
 			{{ end }}
 		</div>
+
+		<div class="pagination">
+			<div class="prev">
+		{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
+			<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+		{{ end }}
+
+			</div>
+			<div><small>{{ .PageReportView.Paginator.CurrentPage }}/{{ .PageReportView.Paginator.TotalPages }}</small></div>
+			<div class="next">
+						{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
+						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+				{{ end }}
+				
+			</div>
 	{{ end }}
 
 	{{ if eq .Tab "redirections" }}

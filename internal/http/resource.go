@@ -49,6 +49,11 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		tab = "details"
 	}
 
+	page, err := strconv.Atoi(r.URL.Query().Get("p"))
+	if err != nil {
+		page = 1
+	}
+
 	c := r.Context().Value("user")
 	user, ok := c.(*user.User)
 	if ok == false {
@@ -68,7 +73,7 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		ProjectView:    pv,
 		Eid:            eid,
 		Tab:            tab,
-		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab),
+		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
 	}
 
 	v := &helper.PageView{

@@ -2,6 +2,7 @@ package datastore
 
 import (
 	"log"
+	"math"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/helper"
@@ -674,7 +675,10 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 	return pageReports
 }
 
-func (ds *Datastore) FindInLinks(s string, cid int64) []crawler.PageReport {
+func (ds *Datastore) FindInLinks(s string, cid int64, p int) []crawler.PageReport {
+	max := paginationMax
+	offset := max * (p - 1)
+
 	hash := helper.Hash(s)
 	query := `
 		SELECT 
@@ -685,10 +689,10 @@ func (ds *Datastore) FindInLinks(s string, cid int64) []crawler.PageReport {
 		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
 		WHERE links.url_hash = ? AND pagereports.crawl_id = ? AND pagereports.crawled = 1
 		GROUP BY pagereports.id
-		LIMIT 25`
+		LIMIT ?,?`
 
 	var pageReports []crawler.PageReport
-	rows, err := ds.db.Query(query, hash, cid)
+	rows, err := ds.db.Query(query, hash, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
@@ -735,4 +739,23 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64) []craw
 	}
 
 	return pageReports
+}
+
+func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, cid int64) int {
+	h := helper.Hash(pageReport.URL)
+	query := `
+		SELECT 
+			count(distinct pagereports.id)
+		FROM links
+		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
+		WHERE links.url_hash = ? AND pagereports.crawl_id = ? AND pagereports.crawled = 1
+	`
+
+	row := ds.db.QueryRow(query, h, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("GetNumberOfPagesForInlinks: %v\n", err)
+	}
+	var f float64 = float64(c) / float64(paginationMax)
+	return int(math.Ceil(f))
 }

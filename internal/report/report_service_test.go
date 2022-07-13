@@ -13,6 +13,7 @@ const (
 	errorType       = "ERROR"
 	tabInlinks      = "inlinks"
 	tabRedirections = "redirections"
+	page            = 1
 )
 
 type storage struct{}
@@ -25,8 +26,12 @@ func (s *storage) FindErrorTypesByPage(reportId int, crawlId int64) []string {
 	return []string{errorType}
 }
 
-func (s *storage) FindInLinks(u string, id int64) []crawler.PageReport {
+func (s *storage) FindInLinks(u string, id int64, page int) []crawler.PageReport {
 	return []crawler.PageReport{crawler.PageReport{Id: reportId}}
+}
+
+func (s *storage) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, cid int64) int {
+	return 1
 }
 
 func (s *storage) FindPageReportsRedirectingToURL(u string, id int64) []crawler.PageReport {
@@ -106,7 +111,7 @@ func TestGetPageReporsByIssueType(t *testing.T) {
 }
 
 func TestGetPageReport(t *testing.T) {
-	v := service.GetPageReport(reportId, crawlId, tabInlinks)
+	v := service.GetPageReport(reportId, crawlId, tabInlinks, page)
 	if v.PageReport.Id != reportId {
 		t.Errorf("GetPageReport: %d != %d", v.PageReport.Id, reportId)
 	}
@@ -123,7 +128,7 @@ func TestGetPageReport(t *testing.T) {
 		t.Errorf("v.Redirects: %d != 0", len(v.Redirects))
 	}
 
-	vr := service.GetPageReport(reportId, crawlId, tabRedirections)
+	vr := service.GetPageReport(reportId, crawlId, tabRedirections, page)
 	if len(vr.InLinks) != 0 {
 		t.Errorf("v.InLinks: %d != 0", len(vr.InLinks))
 	}

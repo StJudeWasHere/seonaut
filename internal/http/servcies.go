@@ -42,7 +42,7 @@ type IssueService interface {
 }
 
 type ReportService interface {
-	GetPageReport(int, int64, string) *report.PageReportView
+	GetPageReport(int, int64, string, int) *report.PageReportView
 	GetPageReporsByIssueType(int64, string) <-chan *crawler.PageReport
 	GetSitemapPageReports(int64) <-chan *crawler.PageReport
 }

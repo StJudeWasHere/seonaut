@@ -458,38 +458,6 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		log.Println(err)
 	}
 
-	lrows, err := ds.db.Query("SELECT url, rel, nofollow, text FROM links WHERE pagereport_id = ? limit 100", rid)
-	if err != nil {
-		log.Println(err)
-	}
-
-	for lrows.Next() {
-		l := crawler.Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		p.Links = append(p.Links, l)
-	}
-
-	lrows, err = ds.db.Query("SELECT url, rel, nofollow, text FROM external_links WHERE pagereport_id = ? limit 100", rid)
-	if err != nil {
-		log.Println(err)
-	}
-
-	for lrows.Next() {
-		l := crawler.Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		p.ExternalLinks = append(p.ExternalLinks, l)
-	}
-
 	hrows, err := ds.db.Query("SELECT to_url, to_lang FROM hreflangs WHERE pagereport_id = ?", rid)
 	if err != nil {
 		log.Println(err)
@@ -605,6 +573,75 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 	return p
 }
 
+func (ds *Datastore) FindLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
+	max := paginationMax
+	offset := max * (p - 1)
+	links := []crawler.Link{}
+
+	query := `
+		SELECT
+			url,
+			rel,
+			nofollow,
+			text
+		FROM links
+		WHERE pagereport_id = ?
+		LIMIT ?,?
+	`
+	lrows, err := ds.db.Query(query, pageReport.Id, offset, max)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for lrows.Next() {
+		l := crawler.Link{}
+		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		links = append(links, l)
+	}
+
+	return links
+}
+
+func (ds *Datastore) FindExternalLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
+	max := paginationMax
+	offset := max * (p - 1)
+	links := []crawler.Link{}
+
+	query := `
+		SELECT
+			url,
+			rel,
+			nofollow,
+			text
+		FROM external_links
+		WHERE pagereport_id = ?
+		LIMIT ?,?
+	`
+
+	lrows, err := ds.db.Query(query, pageReport.Id, offset, max)
+	if err != nil {
+		log.Println(err)
+	}
+
+	for lrows.Next() {
+		l := crawler.Link{}
+		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		links = append(links, l)
+	}
+
+	return links
+}
+
 func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *crawler.PageReport {
 	prStream := make(chan *crawler.PageReport)
 
@@ -711,7 +748,9 @@ func (ds *Datastore) FindInLinks(s string, cid int64, p int) []crawler.PageRepor
 	return pageReports
 }
 
-func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64) []crawler.PageReport {
+func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int) []crawler.PageReport {
+	max := paginationMax
+	offset := max * (p - 1)
 	uh := helper.Hash(u)
 	query := `
 		SELECT
@@ -719,10 +758,11 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64) []craw
 			url,
 			title
 		FROM pagereports
-		WHERE redirect_hash = ? AND crawl_id = ? AND crawled = 1`
+		WHERE redirect_hash = ? AND crawl_id = ? AND crawled = 1
+		LIMIT ?,?`
 
 	var pageReports []crawler.PageReport
-	rows, err := ds.db.Query(query, uh, cid)
+	rows, err := ds.db.Query(query, uh, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
@@ -739,6 +779,40 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64) []craw
 	}
 
 	return pageReports
+}
+
+func (ds *Datastore) GetNumberOfPagesForLinks(pageReport *crawler.PageReport, cid int64) int {
+	query := `
+		SELECT
+			count(*)
+		FROM links
+		WHERE pagereport_id = ? AND crawl_id = ?
+	`
+
+	row := ds.db.QueryRow(query, pageReport.Id, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("GetNumberOfPagesForLinks: %v\n", err)
+	}
+	var f float64 = float64(c) / float64(paginationMax)
+	return int(math.Ceil(f))
+}
+
+func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *crawler.PageReport, cid int64) int {
+	query := `
+		SELECT
+			count(*)
+		FROM external_links
+		WHERE pagereport_id = ? AND crawl_id = ?
+	`
+
+	row := ds.db.QueryRow(query, pageReport.Id, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("GetNumberOfPagesForExternalLinks: %v\n", err)
+	}
+	var f float64 = float64(c) / float64(paginationMax)
+	return int(math.Ceil(f))
 }
 
 func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, cid int64) int {
@@ -758,4 +832,23 @@ func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, 
 	}
 	var f float64 = float64(c) / float64(paginationMax)
 	return int(math.Ceil(f))
+}
+
+func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *crawler.PageReport, cid int64) int {
+	h := helper.Hash(pageReport.URL)
+	query := `
+		SELECT
+			count(id)
+		FROM pagereports
+		WHERE redirect_hash = ? AND crawl_id = ? AND crawled = 1
+	`
+
+	row := ds.db.QueryRow(query, h, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("GetNumberOfPagesForRedirecting: %v\n", err)
+	}
+	var f float64 = float64(c) / float64(paginationMax)
+	return int(math.Ceil(f))
+
 }

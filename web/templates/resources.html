@@ -216,6 +216,7 @@
 				{{ end }}
 				
 			</div>
+		</div>
 	{{ end }}
 
 	{{ if eq .Tab "redirections" }}
@@ -235,6 +236,22 @@
 			{{ else }}
 				<p ><small>There are no redirects to this page.</small></p>
 			{{ end }}
+		</div>
+		
+		<div class="pagination">
+			<div class="prev">
+		{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
+			<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+		{{ end }}
+
+			</div>
+			<div><small>{{ .PageReportView.Paginator.CurrentPage }}/{{ .PageReportView.Paginator.TotalPages }}</small></div>
+			<div class="next">
+						{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
+						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+				{{ end }}
+				
+			</div>
 		</div>
 	{{ end }}
 
@@ -256,6 +273,22 @@
 				<p ><small>There are no internal links in this page.</small></p>
 			{{ end }}
 		</div>
+		
+		<div class="pagination">
+			<div class="prev">
+		{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
+			<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+		{{ end }}
+
+			</div>
+			<div><small>{{ .PageReportView.Paginator.CurrentPage }}/{{ .PageReportView.Paginator.TotalPages }}</small></div>
+			<div class="next">
+						{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
+						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+				{{ end }}
+				
+			</div>
+		</div>
 	{{ end }}
 
 	{{ if eq .Tab "external" }}
@@ -275,6 +308,22 @@
 			{{ else }}
 				<p ><small>There are no external links in this page.</small></p>
 			{{ end }}
+		</div>
+		
+		<div class="pagination">
+			<div class="prev">
+		{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
+			<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+		{{ end }}
+
+			</div>
+			<div><small>{{ .PageReportView.Paginator.CurrentPage }}/{{ .PageReportView.Paginator.TotalPages }}</small></div>
+			<div class="next">
+						{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
+						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+				{{ end }}
+				
+			</div>
 		</div>
 	{{ end }}
 

@@ -18,6 +18,26 @@ const (
 
 type storage struct{}
 
+func (s *storage) FindExternalLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
+	return []crawler.Link{}
+}
+
+func (s *storage) GetNumberOfPagesForExternalLinks(pageReport *crawler.PageReport, cid int64) int {
+	return 0
+}
+
+func (s *storage) GetNumberOfPagesForLinks(pageReport *crawler.PageReport, cid int64) int {
+	return 0
+}
+
+func (s *storage) GetNumberOfPagesForRedirecting(pageReport *crawler.PageReport, cid int64) int {
+	return 0
+}
+
+func (s *storage) FindLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
+	return []crawler.Link{}
+}
+
 func (s *storage) FindPageReportById(id int) crawler.PageReport {
 	return crawler.PageReport{Id: reportId}
 }
@@ -34,7 +54,7 @@ func (s *storage) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, cid
 	return 1
 }
 
-func (s *storage) FindPageReportsRedirectingToURL(u string, id int64) []crawler.PageReport {
+func (s *storage) FindPageReportsRedirectingToURL(u string, id int64, page int) []crawler.PageReport {
 	return []crawler.PageReport{crawler.PageReport{Id: reportId}}
 }
 

@@ -2,11 +2,13 @@ package http
 
 import (
 	"fmt"
+	"io"
 	"log"
 	"net/http"
 	"strconv"
 	"time"
 
+	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/encoding"
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/project"
@@ -15,12 +17,11 @@ import (
 	"github.com/turk/go-sitemap"
 )
 
+// serveExport handles the export request and renders the the export template
 func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveDownloadCSV pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -34,19 +35,14 @@ func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
-	type data struct{ Project project.Project }
-
-	v := &helper.PageView{
-		Data:      data{Project: pv.Project},
+	app.renderer.RenderTemplate(w, "export", &helper.PageView{
+		Data:      struct{ Project project.Project }{Project: pv.Project},
 		User:      *user,
 		PageTitle: "EXPORT_VIEW",
-	}
-
-	app.renderer.RenderTemplate(w, "export", v)
+	})
 }
 
 func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
@@ -125,14 +121,14 @@ func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 	s.Write()
 }
 
-func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
+// serveExportResources exports the resources of a specific project.
+// The URL query parameter t specifys the type of resources to be exported.
+func (app *App) serveExportResources(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
-
-	t := r.URL.Query().Get("t")
 
 	c := r.Context().Value("user")
 	user, ok := c.(*user.User)
@@ -147,28 +143,29 @@ func (app *App) serveDownload(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	t := r.URL.Query().Get("t")
+
+	m := map[string]func(io.Writer, *crawler.Crawl){
+		"internal":  app.exportService.ExportLinks,
+		"external":  app.exportService.ExportExternalLinks,
+		"images":    app.exportService.ExportImages,
+		"scripts":   app.exportService.ExportScripts,
+		"styles":    app.exportService.ExportStyles,
+		"iframes":   app.exportService.ExportIframes,
+		"audios":    app.exportService.ExportAudios,
+		"videos":    app.exportService.ExportVideos,
+		"hreflangs": app.exportService.ExportHreflangs,
+	}
+
+	e, ok := m[t]
+	if !ok {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	fileName := pv.Project.Host + " " + t + " " + time.Now().Format("2-15-2006")
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
-	switch t {
-	case "internal":
-		app.exportService.ExportLinks(w, &pv.Crawl)
-	case "external":
-		app.exportService.ExportExternalLinks(w, &pv.Crawl)
-	case "images":
-		app.exportService.ExportImages(w, &pv.Crawl)
-	case "scripts":
-		app.exportService.ExportScripts(w, &pv.Crawl)
-	case "styles":
-		app.exportService.ExportStyles(w, &pv.Crawl)
-	case "iframes":
-		app.exportService.ExportIframes(w, &pv.Crawl)
-	case "audios":
-		app.exportService.ExportAudios(w, &pv.Crawl)
-	case "videos":
-		app.exportService.ExportVideos(w, &pv.Crawl)
-	case "hreflangs":
-		app.exportService.ExportHreflangs(w, &pv.Crawl)
-	}
+	e(w, &pv.Crawl)
 }

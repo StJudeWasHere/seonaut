@@ -39,19 +39,16 @@
 						<p class="error">The SEOnaut bot could not crawl your site.</p>
 					{{ else if (not .Project.Deleting) }}
 						<p class="project-buttons">
-							<a class="button" href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
+							<a class="button" href="/export?pid={{ .Project.Id }}">Export</a>
 							<a class="button" href="/issues?pid={{ .Project.Id }}">View Issues</a>
+							<a class="button" href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
+
 						</p>
 					{{ end }}
 				{{ end }}
 			</div>
 
 			<div class="col">
-				{{ if (and (not .Project.Deleting) (and (and .Crawl.Id .Crawl.IssuesEnd.Valid) (gt .Crawl.TotalURLs 0))) }}
-				<div class="project-export">
-					<a class="project-link" href="/export?pid={{ .Project.Id }}">↗ Export</a><br>
-				</div>
-				{{ end }}
 
 				<div class="project-actions">
 				{{ if .Project.Deleting }}

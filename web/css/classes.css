@@ -246,6 +246,10 @@
 .issues-buttons {
 	margin-top: 0;
 }
+.button {
+	display: inline-block;
+	text-align: center;
+}
 .issues-buttons .button:hover,
 .project-buttons .button:hover,
 .button:hover {
@@ -264,7 +268,9 @@
 	background-color: var(--highlight-color);
 	border: none;
 }
-
+.project-actions p {
+	margin: 0;
+}
 .link-out {
 	border-bottom: none;
 	color: var(--secondary-color);
@@ -918,4 +924,7 @@ p.error {
 	font-size: 1.2rem;
 	font-weight: 600;
 	margin-bottom: .5rem;
+}
+.export-description {
+	font-weight: 300;
 }

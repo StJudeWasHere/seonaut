@@ -96,7 +96,7 @@ func (app *App) Run() {
 	http.HandleFunc("/download", app.requireAuth(app.serveDownloadCSV))
 	http.HandleFunc("/sitemap", app.requireAuth(app.serveSitemap))
 	http.HandleFunc("/export", app.requireAuth(app.serveExport))
-	http.HandleFunc("/export/download", app.requireAuth(app.serveDownload))
+	http.HandleFunc("/export/download", app.requireAuth(app.serveExportResources))
 	http.HandleFunc("/resources", app.requireAuth(app.serveResourcesView))
 	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
 	http.HandleFunc("/signup", app.serveSignup)

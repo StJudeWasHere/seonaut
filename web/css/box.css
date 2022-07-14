@@ -1,0 +1,26 @@
+.box {
+	border-bottom: 1px solid var(--primary-color);
+	box-sizing: border-box;
+	display: flex;
+	font-weight: 300;
+}
+
+.box:first-child {
+	border-top: 1px solid var(--primary-color);
+}
+
+.box .col {
+	border-right: 1px dotted var(--primary-color);
+}
+
+.box .col-main {
+	flex: 1;
+}
+
+.box .col-actions {
+	width: 20rem;
+}
+
+.box .col-actions-l {
+	width: 30rem;
+}

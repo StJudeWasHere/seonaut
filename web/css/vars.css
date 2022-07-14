@@ -28,4 +28,6 @@
 
 	--main-fontfamily: 'Fira Code', monospace, monospace;
 	--secondary-fontfamily: "Raleway", Helvetica, Arial, sans-serif;
+	
+	--small-screen: 800px;
 }

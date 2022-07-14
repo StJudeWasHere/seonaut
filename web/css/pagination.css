@@ -1,0 +1,12 @@
+.pagination {
+	align-items: center;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	font-weight: 300;
+	color: var(--primary-light-color);
+}
+
+.pagination .next {
+	text-align: right;
+}

@@ -7,12 +7,6 @@
 	.project .col:first-child{
 		margin-bottom: 1.5rem;
 	}
-	.project-crawl {
-		margin-top: 1.5rem;
-		display: flex;
-		position: relative;
-		left: 0;
-	}
 	.project-add-button {
 		width: auto;
 		padding: .5rem;

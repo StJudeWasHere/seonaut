@@ -2,4 +2,8 @@
 @import "vars.css";
 @import "base.css";
 @import "classes.css";
+@import "icon-text.css";
+@import "box.css";
+@import "pagination.css";
+@import "footer.css";
 @import "mobile.css";

@@ -35,3 +35,13 @@ front:
 		--public-path=/resources \
 		--loader:.woff=file \
 		--loader:.woff2=file
+
+watch:
+	esbuild ./web/css/style.css \
+		--bundle \
+		--minify \
+		--outdir=./web/static \
+		--public-path=/resources \
+		--loader:.woff=file \
+		--loader:.woff2=file \
+		--watch

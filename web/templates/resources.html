@@ -2,24 +2,42 @@
 
 {{ with .Data }}
 <a name="menu"></a>
-<div class="content action">
-	<a href="/">Projects</a> /
-	<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a> /
-	<a href="/issues?pid={{ .ProjectView.Project.Id }}">Issues</a> /
-	<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a> /
-	<span class="title">URL</span>
+
+
+<div class="panel">
+
+<div class="box">
+	
+		<div class="col col-main">
+			<div class="content">
+				<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">Back<!-- {{ trans .Eid }} --></a>
+			</div>
+		</div>
+		
+
+		<div class="col col-actions-l main-action">
+			<div class="content">
+				<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a>
+			</div>
+		</div>
+<!--	<a href="/issues?pid={{ .ProjectView.Project.Id }}">Issues</a> / -->
+
 </div>
 
-<div class="issue-panel">
-<div class="content">
-	<div class="url-header">
 
-		<div class="col1">
+	<div class="box">
+
+		<div class="col col-main">
+			<div class="content">
 				{{ if .PageReportView.PageReport.Title }}
 				{{ .PageReportView.PageReport.Title }} <br>
 				{{ end }}
-				 <a href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="url link-out" >{{ .PageReportView.PageReport.URL }} ↗</a></small>
+				 <a href="{{ .PageReportView.PageReport.URL }}" target="_blank" class="url" >{{ .PageReportView.PageReport.URL }}</a>
+			 </div>
 		</div>
+
+		<div class="col">
+			<div class="content">
 		<div class="details-container">
 			<details>
 				<summary>
@@ -59,7 +77,9 @@
 			<li><a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=styles">→ Styles</a></li>
 		</ul>
 		</details>
+	</div>
 		</div>
+	</div>
 	</div>
 
 	{{ $cid := .ProjectView.Crawl.Id }}
@@ -73,24 +93,27 @@
 			{{ with .PageReportView.PageReport }}
 			<div class="report-box" >
 
-				<div class="url-detail">
-					<div>Blocked:</div>
-					<div><small>{{ if .BlockedByRobotstxt }}Blocked{{ else }}Not blocked{{ end }} by robots.txt</small></div>
+				<div class="box" style="border-top:0">
+					<div class="col" style="border-right:0"><div class="content"><b>Blocked</b></div></div>
+					<div class="col"><div class="content">
+						{{ if .BlockedByRobotstxt }}Blocked{{ else }}Not blocked{{ end }} by robots.txt</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Status Code:</div>
-					<div><small>{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}</small></div>
+				<div class="box">
+					<div class="col" style="border-right:0"><div class="content"><b>Status Code</b></div></div>
+					<div class="col"><div class="content">{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Content Type:</div>
-					<div><small>{{ if .ContentType }}{{ .ContentType }}{{ else }}-{{ end }}</small></div>
+				<div class="box">
+					<div class="col" style="border-right:0"><div class="content"><b>Content Type</b></div></div>
+					<div class="col"><div class="content">{{ if .ContentType }}{{ .ContentType }}{{ else }}-{{ end }}</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Size:</div><div> <small>
-						{{ if .Size }}{{ .SizeInKB }}KB{{ else }} - {{ end }}</small><br></div>
+				<div class="box">
+					<div class="col" style="border-right:0"><div class="content"><b>Size</b></div></div>
+					<div class="col">
+						<div class="content">{{ if .Size }}{{ .SizeInKB }}KB{{ else }} - {{ end }}</div>
+					</div>
 				</div>
 
 				<div class="url-detail">
@@ -428,7 +451,7 @@
 		{{ end }}
 		</div>
 	{{ end }}
-</div>
+
 </div>
 {{ end }}
 {{ template "footer" . }}

@@ -1,102 +1,148 @@
 {{ template "head" . }}
 
 {{ with .Data }}
-<div class="content action">
-	<a href="/">Projects</a> / <a href="/dashboard?pid={{ .Project.Id }}">{{ .Project.Host }}</a> / <span class="title">Export</span>
-</div>
-
-<div class="issue-panel">
-	<div class="content">
+<div class="panel">
 		
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="content">
+				<a href="/dashboard?pid={{ .Project.Id }}">{{ .Project.Host }}</a> / <span class="title">Export</span>
+			</div>
+		</div>
+		
+
+		
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export sitemap.xml</div>
 				<div class="export-description">Download a sitemap.xml file with all the canonical pages in your site.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/sitemap?pid={{ .Project.Id }}">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/sitemap?pid={{ .Project.Id }}">↓ Download</a>
+				</div>
+			</div>
 		</div>
 		
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export as CSV</div>
 				<div class="export-description">Export all crawled URLs in CSV format, including all mime types and with additional information such as status code and size.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/download?pid={{ .Project.Id }}">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/download?pid={{ .Project.Id }}">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export internal links</div>
 				<div class="export-description">Export all the internal links in the website. Including origin, destination and anchor text.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=internal">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=internal">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export external links</div>
 				<div class="export-description">Export all the external links in the website. Including origin, destination and anchor text.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=external">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=external">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export images</div>
 				<div class="export-description">Export all the image URLs in the website, including origin, image URLs and alt text.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=images">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=images">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export scripts</div>
 				<div class="export-description">Export all the script URLs in the website, including origin and script URLs.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=scripts">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=scripts">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export styles</div>
 				<div class="export-description">Export all the CSS stylesheet URLs in the website, including origin and style URLs.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=styles">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=styles">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export iframes</div>
 				<div class="export-description">Export all the iframe URLs in the website, including origin and iframe URLs.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=iframes">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=iframes">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export audios</div>
 				<div class="export-description">Export all audio URLs in the website, including origin and audio URLs.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=audios">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=audios">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export videos</div>
 				<div class="export-description">Export all video URLs in the website, including origin and video URLs.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=videos">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=videos">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-		<div class="export-row">
-			<div class="col export-type">
+		<div class="box">
+			<div class="col col-main export-type">
 				<div class="export-title">Export Hreflangs</div>
 				<div class="export-description">Export all hreflang URLs in the website, including origin URL and language as well as hreflang URL and language.</div>
 			</div>
-			<div class="col export-download"><a class="button" href="/export/download?pid={{ .Project.Id }}&t=hreflangs">↓ Download</a></div>
+			<div class="col col-actions export-download">
+				<div class="project-actions">
+					<a href="/export/download?pid={{ .Project.Id }}&t=hreflangs">↓ Download</a>
+				</div>
+			</div>
 		</div>
 
-	</div>
 </div>
 {{ end}}
 

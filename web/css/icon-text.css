@@ -1,0 +1,16 @@
+.icon-text {
+	border: 0;
+	display: block;
+	text-align: center;
+}
+.icon-text svg {
+	display: block;
+	margin: 0 auto 1rem auto;
+}
+
+@media only screen and (max-width: var(--small-screen)) {
+	.icon-text {
+		display: flex;
+		margin-top: 1.5rem;
+	}
+}

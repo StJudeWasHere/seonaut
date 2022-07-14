@@ -1,4 +1,4 @@
-.content { padding: 0 3rem; }
+.content { padding: 3rem; }
 
 .action {
 	padding-bottom: 5rem ;
@@ -12,7 +12,6 @@
 .url {
 	word-wrap: break-word;
 	font-weight: 300;
-	font-size: .8rem;
 }
 
 #header {
@@ -22,18 +21,6 @@
 
 #main {
 	min-height: 100%;
-}
-
-#footer {
-	background-color: var(--secondary-color);
-	font-size: .8rem;
-	padding: 3rem 0;
-}
-
-#footer a {
-	border: 0;
-	color: var(--primary-light-color);
-	margin-right: 1.5rem;
 }
 
 .credentials {
@@ -141,49 +128,13 @@
 	border-radius: 10px;
 }
 .project-container {
-	background-color: var(--secondary-color);
 	overflow: hidden;
 	min-height: 100%;
-}
-.project {
-	padding: 0;
-	font-weight: 300;
-	background-color: var(--main-bg-color);
-	border-radius: 10px;
-	box-sizing: border-box;
-	width: 100%;
-	padding: 3rem;
-	margin: 2.5rem 0;
-	display: flex;
-}
-.project-add {
-	background-color: var(--main-section-color);
-	background: linear-gradient(to right, var(--main-section-color), var(--main-section-secondary-color));
-	font-weight: 300;
-	padding: 1.5rem;
-}
-.project-add-button {
-	border: none; 
-	text-align:center;
-	width: 25%;
-	background-color: var(--light-opacity-color);
-	padding: 1.5rem 1.5rem;
-	border-radius: 15px;
-	margin-right: 3rem;
-	font-size: 1rem;
-}
-.project-add-button:hover {
-	background-color: var(--light-opacity-secondary-color);
-}
-.project p {
-	margin-bottom: 0;
-}
-.project li {
-	font-weight: 300;
 }
 .project-title {
 	display: flex;
 	align-items: center;
+	padding: 3rem;
 }
 .project-title h2 {
 	font-size: 1.2rem;
@@ -194,6 +145,30 @@
 	white-space: nowrap;
 	overflow: hidden;
 	flex: 1;
+}
+
+.project-actions a.project-crawl {
+	padding: 3rem 1.5rem;
+	background-color: var(--secondary-color);
+		border-bottom: none;
+}
+
+.main-action {
+	background-color: var(--main-section-color);
+	padding: 3rem;
+	text-align: center;
+}
+.project-actions a {
+	display: block;
+	border-bottom: 1px dotted var(--primary-color);
+	padding: 1rem 1.5rem;
+	text-align: center;
+}
+.project-actions a:last-child {
+	border-bottom: none;
+}
+.project-actions a:first-child {
+	border-bottom: 1px dotted var(--primary-color);
 }
 .col .project-title h2 {
 	text-align: left;
@@ -210,14 +185,7 @@
 .project-export {
 	margin-bottom: 1.5rem;
 }
-.project-crawl {
-	display: inline-flex;
-	left:1.5rem;
-	border: 0;
-}
-.project-crawl span {
-	margin-left: 1rem;
-}
+
 
 .project-delete {
 	display: inline-flex;
@@ -271,6 +239,7 @@
 .project-actions p {
 	margin: 0;
 }
+
 .link-out {
 	border-bottom: none;
 	color: var(--secondary-color);
@@ -289,14 +258,11 @@
 }
 .panel {
 	min-height: 30rem;
-	background-color: var(--secondary-color);
-	padding-top: 3rem;
 	overflow: hidden;
 }
 .issue-panel {
 	min-height: 30rem;
 	background-color: var(--secondary-color);
-	padding-top: 3rem;
 	overflow: hidden;
 }
 .issues-empty {
@@ -375,17 +341,8 @@
 	padding:0;
 	position:relative
 }
-.col:nth-child(odd) {
-	padding-right: 1.5rem;
-}
-.col:nth-child(even) {
-	padding-left: 1.5rem;
-}
-
-.col h2 {
-	width: 10rem;
-	display: inline-block;
-	text-align: center;
+.pad {
+	padding: 3rem;
 }
 .col-s {
 	width: 11rem;
@@ -410,32 +367,7 @@ a.button {
 .crawler-item span {
 	margin-left: 1rem;
 }
-.pagination {
-	align-items: center;
-	background: linear-gradient(to right, var(--secondary-section-color), var(--secondary-section-secondary-color));
-	margin: 3rem 0;
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	color: var(--secondary-color);
-	border-radius: 10px;
-	padding: 1.5rem;
-	margin-bottom: 3rem;
-	display: flex;
-}
 
-.pagination .prev , .pagination .next  {
-	width: 50%;
-}
-.pagination .next {
-	text-align: right;
-}
-.pagination .prev a, .pagination .next a {
-	font-size: .8rem;
-	border: 0;
-	font-weight: 300;
-	color: var(--secondary-color);
-}
 
 .url-header {
 	background: linear-gradient(to right, var(--secondary-section-color), var(--secondary-section-secondary-color));
@@ -577,12 +509,6 @@ a.active {
 .action-buttons {
 	margin-bottom: 3rem;
 	margin-top: .5rem
-}
-.box {
-	border-radius: 5px;
-	box-shadow: 5px 5px var(--shadow-color);
-	border-top: 1px solid var(--shadow-color);
-	border-left: 1px solid var(--shadow-color);
 }
 
 .report-block {
@@ -901,24 +827,23 @@ p.error {
 	line-height: 2rem;
 	display: flex;
 }
-
 .export-row {
 	border-bottom: 1px solid var(--primary-color);
 	display: flex;
-	padding: 3rem 0;
 }
-.export-row:last-child {
-	border-bottom: none;
-}
-.export-row .col {
-	flex: 1;
-}
+
 .export-type {
-	flex-grow: 1;
+	border-right: 1px dotted var(--primary-color);
+	padding: 3rem;
 }
 .export-download {
 	text-align: right;
-	width: auto;
+	width: 20rem;
+	padding: 0;
+	font-weight: 300;
+}
+.export-download a {
+	background-color: var(--secondary-color);
 }
 .export-title {
 	font-size: 1.2rem;

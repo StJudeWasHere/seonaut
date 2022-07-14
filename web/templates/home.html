@@ -1,10 +1,11 @@
 {{ template "head" . }}
 
-<div class="project-container">
+<div class="panel">
 
 		<div class="box">
 			<div class="col col-main">
-				<div class="pad">
+				<div class="content content-centered">
+					<div>
 				<h2>Welcome to SEOnaut</h2>
 
 				{{ $projects := len .Data.Projects }}
@@ -15,6 +16,7 @@
 				{{ else }}
 					You currently have {{ $projects }} projects.
 				{{ end }}
+			</div>
 				</div>
 			</div>
 			<div class="col col-actions-l main-action">
@@ -54,7 +56,7 @@
 
 			<div class="col col-actions">
 
-				<div class="project-actions">
+
 				{{ if .Project.Deleting }}
 				<div>Deleting project.<br> This can take a few minutes, please wait...</div>
 				{{ else }}
@@ -76,7 +78,7 @@
 						<div><a href="/crawl-live?pid={{ .Project.Id }}">Crawling...</a></div>
 						{{ end }}
 					{{ end }}
-				</div>
+
 			</div>
 		</div>
 	{{ end }}

@@ -8,8 +8,10 @@
 
 	<div class="box">
 		<div class="col col-main">
-			<div class="content">
-				<h2>Issues</h2>
+			<div class="content content-centered">
+				<div>
+					<h2>Issues</h2>
+				</div>
 			</div>
 		</div>
 		<div class="col col-actions-l main-action">
@@ -41,25 +43,25 @@
 				</div>
 			</div>
 		</div>
-		
+			
 			{{ if .IssueCount.CriticalIssues }}
 			{{ range .IssueCount.CriticalIssues }}
-			<div class="box">
+			<div class="box borderless">
 				<div class="col col-main">
 					<div class="content">
 					<h2>{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} {{ trans .ErrorType }}</h2>
 					<p>{{ trans (print .ErrorType "_DESC") }}</p>
 				</div>
-				<div class="box" style=" border-bottom: 0; background: white; border-top: 1px dotted black">
-					<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">CRITICAL</div>
-					<div clas="col" style="padding: 1rem 3rem;">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</div> 				</div>
-				</div>
+
 				<div class="col col-actions">
-									<div class="project-actions">
-							<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">↓ Download URLs</a><br>
-							<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">→ View URLs</a>
-						</div>
+					<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">Download URLs</a>
+					<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">View URLs</a>
 				</div>
+				
+			</div>
+			<div class="box box-highlight inverted">
+				<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">CRITICAL</div>
+				<div clas="col" style="padding: 1rem 3rem;">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</div> 				</div>
 			</div>
 			{{ end }}
 			{{ end }}
@@ -68,58 +70,55 @@
 
 			{{ if .IssueCount.AlertIssues }}
 			{{ range .IssueCount.AlertIssues }}
-			<div class="box">
+			<div class="box borderless">
 				<div class="col col-main">
-
 					<div class="content">
-					<h2>{{ trans .ErrorType }}</h2>
-					<p>{{ trans (print .ErrorType "_DESC") }}</p>
+						<h2>{{ trans .ErrorType }}</h2>
+						<p>{{ trans (print .ErrorType "_DESC") }}</p>
+					</div>
 				</div>
-				<div class="box" style=" border-bottom: 0; background: white; border-top: 1px dotted black">
-					<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">ALERT</div>
-					<div clas="col" style="padding: 1rem 3rem;">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</div>
-				</div>
-				</div>
+
 				<div class="col col-actions">
-				<div class="project-actions">
-					<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">↓ Download URLs</a>
-					<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">→ View URLs</a>
-				</div>
+					<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">Download URLs</a>
+					<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">View URLs</a>
 				</div>
 			</div>
+
+			<div class="box box-highlight inverted" >
+				<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">ALERT</div>
+				<div clas="col" style="padding: 1rem 3rem;">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</div>
+			</div>
 			{{ end }}
-			{{ else }}
-				<p class="issues-empty">No issues where detected.</p>
 			{{ end }}
 
 
 
 			{{ if .IssueCount.WarningIssues }}
 			{{ range .IssueCount.WarningIssues }}
-			<div class="box">
+			<div class="box borderless" style="border-bottom: 0;">
 				<div class="col col-main">
-				<div class="content">
-					<h2>{{ trans .ErrorType }}</h2>
-					<p>{{ trans (print .ErrorType "_DESC") }}</p>
+					<div class="content">
+						<h2>{{ trans .ErrorType }}</h2>
+						<p>{{ trans (print .ErrorType "_DESC") }}</p>
+					</div>
 				</div>
-				<div class="box" style=" border-bottom: 0; background: white; border-top: 1px dotted black">
-					<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">WARNING</div>
-					<div clas="col" style="padding: 1rem 3rem;">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} </div> 				</div>
-				</div>
+
 				<div class="col col-actions">
-					<div class="project-actions">
-							<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">↓ Download URLs</a><br>
-							<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">→ View URLs</a>
-						</div>
+					<a href="/download?pid={{ $pid }}&eid={{ .ErrorType }}">Download URLs</a>
+					<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">View URLs</a>
 				</div>
 			</div>
+
+			<div class="box box-highlight inverted">
+				<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">WARNING</div>
+				<div clas="col" style="padding: 1rem 3rem;">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }} </div>
+			</div>
 			{{ end }}
-			{{ else }}
-				<p class="issues-empty">No issues where detected.</p>
 			{{ end }}
 		</div>
 
 </div>
+
 {{ end}}
 
 {{ template "footer" . }}

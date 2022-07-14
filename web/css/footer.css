@@ -1,11 +1,9 @@
 
 #footer {
-	font-size: .8rem;
 	padding: 3rem 0;
 }
 
 #footer a {
 	border: 0;
-	color: var(--primary-light-color);
 	margin-right: 1.5rem;
 }

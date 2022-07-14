@@ -94,57 +94,66 @@
 			<div class="report-box" >
 
 				<div class="box" style="border-top:0">
-					<div class="col" style="border-right:0"><div class="content"><b>Blocked</b></div></div>
+					<div class="col borderless"><div class="content"><b>Blocked</b></div></div>
 					<div class="col"><div class="content">
 						{{ if .BlockedByRobotstxt }}Blocked{{ else }}Not blocked{{ end }} by robots.txt</div></div>
 				</div>
 
 				<div class="box">
-					<div class="col" style="border-right:0"><div class="content"><b>Status Code</b></div></div>
+					<div class="col borderless"><div class="content"><b>Status Code</b></div></div>
 					<div class="col"><div class="content">{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}</div></div>
 				</div>
 
 				<div class="box">
-					<div class="col" style="border-right:0"><div class="content"><b>Content Type</b></div></div>
+					<div class="col borderless"><div class="content"><b>Content Type</b></div></div>
 					<div class="col"><div class="content">{{ if .ContentType }}{{ .ContentType }}{{ else }}-{{ end }}</div></div>
 				</div>
 
 				<div class="box">
-					<div class="col" style="border-right:0"><div class="content"><b>Size</b></div></div>
+					<div class="col borderless"><div class="content"><b>Size</b></div></div>
 					<div class="col">
 						<div class="content">{{ if .Size }}{{ .SizeInKB }}KB{{ else }} - {{ end }}</div>
 					</div>
 				</div>
 
-				<div class="url-detail">
-					<div>Robots: </div><div><small>
-						{{ if .Robots }}{{ .Robots }}{{ else }} - {{ end }}</small><br></div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Robots</b></div></div>
+					<div class="col"><div class="content">
+						{{ if .Robots }}{{ .Robots }}{{ else }} - {{ end }}
+					</div></div>
 				</div>
 
 				
-				<div class="url-detail">
-					<div>Redirect URL:</div>
-					<div><small>{{ if .RedirectURL }}{{ .RedirectURL }}{{ else }} - {{ end }}</small></div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Redirect URL</b></div></div>
+					<div class="col"><div class="content">
+						{{ if .RedirectURL }}{{ .RedirectURL }}{{ else }} - {{ end }}
+					</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Refresh: </div>
-					<div><small>{{ if .Refresh }}{{ .Refresh }}{{ else }} - {{ end }}</small></div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Refresh</b></div></div>
+					<div class="col"><div class="content">
+						{{ if .Refresh }}{{ .Refresh }}{{ else }} - {{ end }}
+					</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Canonical:</div>
-					<div><small>{{ if .Canonical }}{{ .Canonical }}{{ else }} - {{ end }}</small></div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Canonical</b></div></div>
+					<div class="col"><div class="content">
+						{{ if .Canonical }}{{ .Canonical }}{{ else }} - {{ end }}
+					</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Language:</div>
-					<div><small>{{ if .Lang }}{{ .Lang }}{{ else }} - {{ end }}</small></div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Language</b></div></div>
+					<div class="col"><div class="content">
+						{{ if .Lang }}{{ .Lang }}{{ else }} - {{ end }}</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Hreflang:</div>
-					<div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Hreflang</b></div></div>
+					<div class="col"><div class="content">
 						{{ if .Hreflangs }}
 						<div class="hreflang-list">
 							<span>Language</span>
@@ -159,46 +168,54 @@
 						{{ else }}
 							-
 						{{ end }}
-					</div>
+					</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Title:</div>
-					<div><small>{{ if .Title }}{{ .Title }}{{ else }} - {{ end }}</small></div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Title</b></div></div>
+					<div class="col"><div class="content">{{ if .Title }}{{ .Title }}{{ else }} - {{ end }}</div></div>
 				</div>
 
-				<div class="url-detail">
-					<div>Description:</div>
-					<div><small>{{ if .Description }}{{ .Description }}{{ else }} - {{ end }}</small></div>
+				<div class="box">
+					<div class="col borderless"><div class="content"><b>Description</b></div></div>
+					<div class="col"><div class="content">
+						{{ if .Description }}{{ .Description }}{{ else }} - {{ end }}</div></div>
+				</div>
+
+					<div class="box">
+						<div class="col borderless"><div class="content"><b>H1</b></div></div>
+						<div class="col borderless"><div class="content">
+							{{ if .H1 }}{{ .H1 }}{{ else }}-{{ end }}
+						</div></div>
 					</div>
 
-					<div class="url-detail">
-						<div>H1:</div>
-						<div><small>{{ if .H1 }}{{ .H1 }}{{ else }}-{{ end }}</small></div>
+					<div class="box">
+						<div class="col borderless"><div class="content"><b>H2</b></div></div>
+						<div class="col borderless"><div class="content">
+							{{ if .H2 }}{{ .H2 }}{{ else }} - {{ end }}
+						</div></div>
 					</div>
 
-					<div class="url-detail">
-						<div>H2:</div>
-						<div><small>{{ if .H2 }}{{ .H2 }}{{ else }} - {{ end }}</small></div>
+					<div class="box">
+						<div class="col borderless"><div class="content"><b>
+							Words</b></div></div>
+						<div class="col borderless"><div class="content">{{ if .Words }}{{ .Words }}{{ else }} - {{ end }}</div></div>
 					</div>
 
-					<div class="url-detail">
-						<div>Words:</div>
-						<div><small>{{ if .Words }}{{ .Words }}{{ else }} - {{ end }}</small></div>
-					</div>
-					<div class="url-detail">
-						<div>Issues:</div>
-						<div>
+					<div class="box">
+						<div class="col borderless"><div class="content"><b>Issues</b></div></div>
+<div class="col borderless"><div class="content">
 							{{ if $errorTypes }}
-							<ul class="pagereport-errors">
+							<ul>
 							{{ range $errorTypes }}
-									<li><a href="/issues/view?pid={{ $pid }}&eid={{ . }}">→ {{ trans . }}</a></li>
+									<li><a href="/issues/view?pid={{ $pid }}&eid={{ . }}">{{ trans . }}</a></li>
 							{{ end }}
 							</ul>
 							{{ else }}
 								-
 							{{ end }}
 						</div>
+					</div>
 					</div>
 			</div>
 			{{ end }}

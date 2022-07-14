@@ -1,4 +1,13 @@
-.content { padding: 3rem; }
+.content {
+	box-sizing: border-box;
+	padding: 3rem;
+}
+
+.content-centered {
+	display: flex;
+	align-items: center;
+	height: 100%;
+}
 
 .action {
 	padding-bottom: 5rem ;
@@ -15,8 +24,6 @@
 }
 
 #header {
-	padding: 3rem 0 5rem 0;
-	background-color: var(--main-bg-color);
 }
 
 #main {
@@ -127,15 +134,13 @@
 	background: linear-gradient(to right, var(--main-section-color), var(--main-section-secondary-color));
 	border-radius: 10px;
 }
-.project-container {
-	overflow: hidden;
-	min-height: 100%;
-}
+
 .project-title {
 	display: flex;
 	align-items: center;
 	padding: 3rem;
 }
+
 .project-title h2 {
 	font-size: 1.2rem;
 	margin: 0;
@@ -147,10 +152,10 @@
 	flex: 1;
 }
 
-.project-actions a.project-crawl {
+.col-actions a.project-crawl {
 	padding: 3rem 1.5rem;
 	background-color: var(--secondary-color);
-		border-bottom: none;
+	border-bottom: none;
 }
 
 .main-action {
@@ -158,18 +163,9 @@
 	padding: 3rem;
 	text-align: center;
 }
-.project-actions a {
-	display: block;
-	border-bottom: 1px dotted var(--primary-color);
-	padding: 1rem 1.5rem;
-	text-align: center;
-}
-.project-actions a:last-child {
-	border-bottom: none;
-}
-.project-actions a:first-child {
-	border-bottom: 1px dotted var(--primary-color);
-}
+
+
+
 .col .project-title h2 {
 	text-align: left;
 }
@@ -182,11 +178,6 @@
 	border: none;
 }
 
-.project-export {
-	margin-bottom: 1.5rem;
-}
-
-
 .project-delete {
 	display: inline-flex;
 	left:1.5rem;
@@ -197,95 +188,20 @@
 	margin-left: 1rem;
 }
 
-.project-buttons {
-	margin-top: 3rem;
-	box-sizing: border-box;
-	display: flex;
-}
 .issues-chart {
 	width: 100%;
 	height: 25rem;
-	margin-bottom:5rem;
 }
 .issues-chart-buttons {
 	text-align: center;
 	margin-bottom: 5rem;
 }
-.issues-buttons {
-	margin-top: 0;
-}
-.button {
-	display: inline-block;
-	text-align: center;
-}
-.issues-buttons .button:hover,
-.project-buttons .button:hover,
-.button:hover {
-	background-color: var(--secondary-highlight-color);
-}
-.issues-buttons .button,
-.project-buttons .button, .button {
-	color: var(--secondary-color);
-	box-shadow: 5px 5px transparent;
-	border-radius: 5px;
-	box-sizing: border-box;
-	line-height: 1rem;
-	font-size:1rem;
-	margin-right:1rem;
-	box-sizing: border-box;
-	background-color: var(--highlight-color);
-	border: none;
-}
-.project-actions p {
-	margin: 0;
-}
 
-.link-out {
-	border-bottom: none;
-	color: var(--secondary-color);
-}
-.pagereport-title {
-	margin-bottom: 3rem;
-}
-.pagereport-errors {
-	margin-bottom: 0;
-	list-style: none;
-	padding: 0;
-}
-.pagereport-errors a {
-	color: var(--highlight-color);
-	border: 0;
-}
 .panel {
 	min-height: 30rem;
 	overflow: hidden;
 }
-.issue-panel {
-	min-height: 30rem;
-	background-color: var(--secondary-color);
-	overflow: hidden;
-}
-.issues-empty {
-	margin: 3rem 1.5rem;
-	font-weight: 400;
-}
-.issue-container {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	align-items: stretch;
-}
-.issue-col:nth-child(1) {
-	width:70%;
-}
-.issue-links {
-	text-align: left;
-	padding-left: 3rem;
-}
-.issue-links a {
-	color: var(--highlight-color);
-	border: none;
-}
+
 .flex-container {
 	display: flex;
 	flex-direction: row;
@@ -313,21 +229,15 @@
 	background-color: var(--secondary-color);
 }
 .crawl-chart-container {
-	background-color: var(--main-section-color);
-	background: linear-gradient(to right, var(--main-section-color), var(--main-section-secondary-color));
-	padding: 6rem 0;
+	width: 100%;
 }
 .crawl-chart {
 	width: 100%;
 	height: 20rem;
 }
-.issues-timeline-container {
-	width: 100%;
-	padding: 6rem 0;
-}
 .issues-timeline-chart {
 	width: 100%;
-	height: 30rem;
+	height: 20rem;
 }
 .bottom-margin {
 	margin: 0 0 3rem 0;
@@ -341,9 +251,6 @@
 	padding:0;
 	position:relative
 }
-.pad {
-	padding: 3rem;
-}
 .col-s {
 	width: 11rem;
 }
@@ -352,7 +259,6 @@
 }
 .col li {
 	font-weight: 300;
-	font-size: .9rem;
 }
 a.button {
 	border: none;
@@ -364,51 +270,11 @@ a.button {
 	align-items: center;
 	height: 24px;
 }
+
 .crawler-item span {
 	margin-left: 1rem;
 }
 
-
-.url-header {
-	background: linear-gradient(to right, var(--secondary-section-color), var(--secondary-section-secondary-color));
-	color: var(--secondary-color);
-	border-radius: 10px;
-	padding: 1.5rem;
-	margin-bottom: 3rem;
-	display: flex;
-	align-items: center
-}
-.url-header .col1 {
-	width: 75%;
-	margin-right: 1.5rem;
-	display: block;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	overflow: hidden;
-}
-.url-header p {
-	margin: 0;
-	font-weight:400;
-}
-.url-header .url-button {
-	text-align: center;
-	width: 25%;
-	background-color: var(--light-opacity-color);
-	border-radius: 15px;
-	color: var(--secondary-color);
-	border:0;
-	font-weight: 300
-}
-.url-header .url-button a {
-	display: inline-block;
-	color: var(--secondary-color);
-	border: 0;
-	padding: 1rem;
-}
-
-.url-header svg {
-	fill: var(--secondary-color);
-}
 
 
 .details-container {
@@ -416,59 +282,6 @@ a.button {
 	width: 25%;
 	padding: 0 1.5rem;
 	border-radius: 15px;
-}
-
-.issues {
-	margin-bottom: 1.5rem;
-	font-weight: 300;
-	background-color: var(--secondary-color);
-	border-radius: 10px;
-	box-sizing: border-box;
-	padding: 1.5rem;
-}
-.issues:nth-child(odd) {
-	background-color: var(--row-issue-color);
-}
-.issue-description {
-	padding: 0 2.5rem .5rem 2.5rem;
-}
-
-.issues svg {
-	vertical-align: baseline;
-	transform: translateY(2px);
-}
-
-.issues h2 {
-	margin: 0;
-	line-height: 1.6rem;
-	display: inline-block;
-	margin-bottom:1.5rem;
-}
-.issues p {
-	margin: 0;
-	margin-bottom: 1.5rem;
-}
-.issues-header {
-	background: linear-gradient(to right, var(--tertiary-section-color), var(--tertiary-section-secondary-color));
-	color: var(--secondary-color);
-	padding: 1.5rem; 
-	border-radius: 10px;
-	margin-bottom: 1.5rem;
-}
-.issues-header p {
-	margin: 0;
-}
-.issues-header h2 {
-	margin: 0 0 1.5rem 0;
-}
-.critical-issues {
-	margin-bottom: 3rem;
-}
-.alert-issues {
-	margin-bottom: 3rem;
-}
-.notice-issues {
-	margin-bottom: 3rem;
 }
 
 span.alert {
@@ -545,10 +358,7 @@ a.active {
 	padding: 5rem 0;
 }
 
-.links-chart {
-	width: 100%;
-	height: 20rem;
-}
+
 .chart-container {
 	background-color: var(--secondary-color);
 	padding: 3rem 1.5rem;
@@ -561,24 +371,7 @@ a.active {
 
 .chart-container h2 {margin:0;}
 
-.chart {
-	margin-top: 1rem;
-	border-radius: 50%;
-	width: 10rem;
-	height: 10rem;
-	position: relative;
-}
 
-.chart:after {
-	position: absolute;
-	background-color: var(--main-bg-color);
-	top: 3rem;
-	bottom: 3rem;
-	left: 3rem;
-	right: 3rem;
-	content: " ";
-	border-radius: 50%;
-}
 
 .legend-block {
 	padding-bottom: 5rem;
@@ -827,29 +620,4 @@ p.error {
 	line-height: 2rem;
 	display: flex;
 }
-.export-row {
-	border-bottom: 1px solid var(--primary-color);
-	display: flex;
-}
 
-.export-type {
-	border-right: 1px dotted var(--primary-color);
-	padding: 3rem;
-}
-.export-download {
-	text-align: right;
-	width: 20rem;
-	padding: 0;
-	font-weight: 300;
-}
-.export-download a {
-	background-color: var(--secondary-color);
-}
-.export-title {
-	font-size: 1.2rem;
-	font-weight: 600;
-	margin-bottom: .5rem;
-}
-.export-description {
-	font-weight: 300;
-}

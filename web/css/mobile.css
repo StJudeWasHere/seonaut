@@ -62,9 +62,6 @@
 		height: auto;
 		padding: .5rem 0;
 	}
-	.issue-container {
-		display: block;
-	}
 	.issue-col, .issue-col:nth-child(1) {
 		width: auto;
 	}

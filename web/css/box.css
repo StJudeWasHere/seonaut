@@ -13,6 +13,10 @@
 	border-right: 1px dotted var(--primary-color);
 }
 
+.box .col:last-child {
+	border-right: none;
+}
+
 .box .col-main {
 	flex: 1;
 }
@@ -23,4 +27,30 @@
 
 .box .col-actions-l {
 	width: 30rem;
+}
+
+.box.inverted {
+	border-top: 1px dotted var(--primary-color);
+}
+
+.box-highlight {
+	background-color: var(--secondary-color);
+}
+
+.box.borderless, .box .col.borderless {
+	border: none;
+}
+
+.box.soft {
+	border-bottom-style: dotted;
+}
+
+.col-actions a {
+	flex-grow: 1;
+	align-items: center;
+	justify-content: space-between;
+	display: block;
+	border-bottom: 1px dotted var(--primary-color);
+	padding: 1rem 1.5rem;
+	text-align: center;
 }

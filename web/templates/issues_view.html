@@ -20,13 +20,16 @@
 
 	<div class="box">
 		<div class="col col-main">
-			<div class="content">
-				<h2>{{ trans .Eid }}</h2>
+			<div class="content content-centered">
+				<div>
+					<h2 >{{ trans .Eid }}</h2>
+					<!-- <p style="margin-bottom: 0"> {{ .PaginatorView.Paginator.TotalPages }} URLs are affected by this issue.</p> -->
+				</div>
 			</div>
 		</div>
 		<div class="col col-actions">
-			<div class="project-actions">
-				<a class="icon-text" style="background: white; padding: 2rem 0;border-bottom:0" href="/download?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">
+			<div class="project-actions" style="height: 100%">
+				<a class="icon-text" style="height: 100%; box-sizing: border-box;background: white; padding: 2rem 0;border-bottom:0" href="/download?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">
 					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M16.965 2.381c3.593 1.946 6.035 5.749 6.035 10.119 0 6.347-5.153 11.5-11.5 11.5s-11.5-5.153-11.5-11.5c0-4.37 2.442-8.173 6.035-10.119l.608.809c-3.353 1.755-5.643 5.267-5.643 9.31 0 5.795 4.705 10.5 10.5 10.5s10.5-4.705 10.5-10.5c0-4.043-2.29-7.555-5.643-9.31l.608-.809zm-4.965-2.381v14.826l3.747-4.604.753.666-5 6.112-5-6.101.737-.679 3.763 4.608v-14.828h1z"/></svg>
 					<span>Download URLs</span>
 				</a>

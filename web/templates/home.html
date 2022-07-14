@@ -6,22 +6,23 @@
 			<div class="col col-main">
 				<div class="content content-centered">
 					<div>
-				<h2>Welcome to SEOnaut</h2>
-
-				{{ $projects := len .Data.Projects }}
-				{{ if eq $projects 0 }}
-					You don't have any project yet, start now by adding one!
-				{{ else if eq $projects 1}}
-					You currently have one project.
-				{{ else }}
-					You currently have {{ $projects }} projects.
-				{{ end }}
-			</div>
+						<h2>Welcome to SEOnaut</h2>
+						<p>
+							{{ $projects := len .Data.Projects }}
+							{{ if eq $projects 0 }}
+								You don't have any project yet, start now by adding one!
+							{{ else if eq $projects 1}}
+								You currently have one project.
+							{{ else }}
+								You currently have {{ $projects }} projects.
+							{{ end }}
+						</p>
+					</div>
 				</div>
 			</div>
-			<div class="col col-actions-l main-action">
+			<div class="col col-actions-l">
 				<div class="main-action">
-				<a class="icon-text" href="/new-project">
+				<a class="icon-text borderless" href="/new-project">
 					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg>
 					<span>Add Project</span>
 			</a>

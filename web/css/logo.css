@@ -1,0 +1,21 @@
+.logo {
+	background-color: var(--primary-color);
+	font-family: var(--secondary-fontfamily);
+	font-size: 1rem;
+	font-weight: 600;
+	letter-spacing: .1rem;
+	line-height: 2rem;
+	margin: 0;
+	padding: .5rem 6rem .5rem .5rem;
+	text-decoration: none;
+}
+.logo a {
+	color: var(--secondary-color);
+	text-decoration: none;
+	font-size: 1rem;
+	font-weight: 600;
+	border: none;
+}
+.logo a:hover {
+	text-decoration: none;
+}

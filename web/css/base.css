@@ -16,14 +16,12 @@ body {
 	cursor: crosshair;
 }
 
-p:last-child {
-	margin-bottom: 0;
+p {
+	margin-top: .5rem;
 }
 
-hr {
-	border: none;
-	border-top: 1px solid var(--border-color);
-	margin: 3rem 0;
+p:last-child {
+	margin-bottom: 0;
 }
 
 ul {
@@ -34,6 +32,14 @@ a {
 	border-bottom: 1px dotted var(--primary-color);
 	color: var(--primary-color);
 	text-decoration: none;
+}
+
+a:hover {
+	border-bottom: 1px solid var(--primary-color);
+}
+
+a.borderless {
+	border: none;
 }
 
 input {
@@ -72,20 +78,15 @@ label.checkbox {
 	margin-left: .5rem;
 }
 
-small {
-	font-weight: 300;
-	font-size: .8rem;
-}
-
 form {
 	margin-bottom: 3rem;
 }
 
 h2 {
-	margin: 0;
 	font-size: 1.2rem;
 	font-weight: normal;
 	line-height: 1.2rem;
+	margin: 0;
 }
 
 button {

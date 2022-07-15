@@ -122,15 +122,22 @@
 	
 	
 	<div class="box soft">
-		<div class="content" style="width: 100%">
-			<h2>Links</h2>
-			<div id="links-chart" class="links-chart"></div>
+		<div class="col col-actions-l borderless">
+			<div class="content" style="width: 100%">
+				<h2>Links</h2>
+				<div id="links-chart" class="links-chart"></div>
+			</div>
 		</div>
+		<div class="col col-main">
+			<div class="content" style="width: 100%">
+				<div id="test-chart" class="links-chart"></div>
+			</div>
+		</div>	
 	</div>
 	
 
 	<div class="box">
-		<div class="col borderless">
+		<div class="col">
 			<div class="content">
 				<h2>Media Type</h2>
 				<div id="mediachart" style="width:100%;height: 20rem"></div>
@@ -143,10 +150,6 @@
 			</div>
 		</div>
 	</div>
-
-
-
-
 
 
 
@@ -217,7 +220,6 @@
 			name: 'Critical',
 			type: 'line',
 			stack: 'Total',
-			smooth: true,
 			lineStyle: {
 				width: 0
 			},
@@ -239,7 +241,6 @@
 			name: 'Warning',
 			type: 'line',
 			stack: 'Total',
-			smooth: true,
 			lineStyle: {
 				width: 0
 			},
@@ -261,7 +262,6 @@
 			name: 'Notice',
 			type: 'line',
 			stack: 'Total',
-			smooth: true,
 			lineStyle: {
 				width: 0
 			},
@@ -551,9 +551,6 @@
 					color: 'rgba(0, 0, 0, 0.8)'
 				},
 				labelLine: {
-					lineStyle: {
-						color: 'rgba(0, 0, 0, 0.8)'
-					},
 					smooth: 0.2,
 					length: 10,
 					length2: 20
@@ -601,11 +598,11 @@
 			height: '180',
 			containLabel: true
 		},
-		xAxis: {
+		yAxis: {
 			type: 'value',
 			show: false,
 		},
-		yAxis: {
+		xAxis: {
 			type: 'category',
 			show: true,
 			data: ['Internal', 'External'],
@@ -666,6 +663,98 @@
 	};
 
 	linksChart.setOption(option);
+	
+	
+	////////
+	
+	
+	var testChart = echarts.init(document.getElementById('test-chart'));
+		
+	option = {
+	  legend: {
+	    data: [
+	      'Follow',
+	      'Nofollow',
+	    ]
+	  },
+	textStyle: {
+		fontFamily: "Fira Code",
+		fontSize: "1rem",
+		fontWeight: 300,
+	},
+	tooltip: {
+		trigger: 'axis',
+		axisPointer: {
+			type: 'none'
+		}
+	},
+	toolbox: {
+		show: true,
+		top: "bottom",
+		left: 0,
+		feature: {
+			saveAsImage: {
+				show: true,
+				name: "links"
+			}
+		}
+	},
+	legend: {
+		orient: 'vertical',
+		left: 'right',
+		show: false,
+	},
+	  color: ['#F7E497', '#2C7D91'],
+	  series: [
+	    {
+	      name: 'Internal',
+	      type: 'pie',
+	      selectedMode: 'single',
+	      radius: ['15%', '45%'],
+	      label: {
+	        show: false,
+	      },
+	      labelLine: {
+	        show: false
+	      },
+	      data: [
+    			{{ range .LinksCount.Internal }}
+    				{{ if eq .Key "follow" }}
+    					{ value: {{ .Value }}, name: "Follow"},
+    				{{ end }}
+    			{{ end }}
+    			{{ range .LinksCount.Internal }}
+    				{{ if eq .Key "nofollow" }}
+    					{ value: {{ .Value }}, name: "Nofollow"},
+    				{{ end }}
+    			{{ end }}
+	      ]
+	    },
+	    {
+	      name: 'External',
+	      type: 'pie',
+	      radius: ['50%', '75%'],
+	      labelLine: {
+	        length: 30
+	      },
+	      data: [
+    			{{ range .LinksCount.External }}
+    				{{ if eq .Key "follow" }}
+    					{ value: {{ .Value }}, name: "Follow"},
+    				{{ end }}
+    			{{ end }}
+    			{{ range .LinksCount.External }}
+    				{{ if eq .Key "nofollow" }}
+    					{ value: {{ .Value }}, name: "Nofollow"},
+    				{{ end }}
+    			{{ end }}
+	      ]
+	    }
+	  ]
+	};
+
+	testChart.setOption(option);
+	
 </script>
 
 </div>

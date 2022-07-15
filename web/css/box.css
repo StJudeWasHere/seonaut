@@ -56,6 +56,11 @@
 	text-align: center;
 }
 
-.col-actions a:hover {
+.col-actions a:hover,
+.col-actions a.highlight:hover {
 	background-color: var(--highlight-color);
+}
+
+.col-actions a.highlight {
+	background-color: var(--secondary-color);
 }

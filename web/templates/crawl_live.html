@@ -61,7 +61,7 @@
 		const stmpl = document.getElementById("tmpl")
 		const msgTmpl = document.getElementById("msgTmpl")
 
-		addMsg = function(msg) {
+		addMsg = msg => {
 			t = msgTmpl.content.cloneNode(true)
 			t.querySelector(".content").innerHTML = msg;
 			container.prepend(t)
@@ -78,11 +78,11 @@
 		const protocol = {{ if .Data.Secure }}"wss://" {{ else }}"ws://"{{ end }}
 		let conn = new WebSocket(protocol + document.location.host + "/crawl-ws?pid={{ .Data.Project.Id }}")
 
-		conn.onclose = function (evt) {
+		conn.onclose = evt => {
 			conn = null
 		}
 
-		conn.onmessage = function (evt) {
+		conn.onmessage = evt => {
 			let msg = JSON.parse(evt.data);
 			let data = msg.Data
 

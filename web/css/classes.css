@@ -14,7 +14,7 @@
 }
 
 .panel {
-	min-height: 30rem;
+	min-height: 45rem;
 	overflow: hidden;
 }
 
@@ -81,28 +81,6 @@
 	margin-left: 1rem;
 }
 
-.project-add-container {
-	background-color: var(--secondary-color);
-	padding: 2.5rem 0;
-	font-weight: 300;
-}
-
-.project-add-col {
-	width:50%;
-	padding: 3rem;
-	color: var(--secondary-light-color);
-}
-
-.project-add-col:nth-child(2) {
-	padding-left: 0;
-}
-
-.project-form-container {
-	background-color: var(--main-section-color);
-	background: linear-gradient(to right, var(--main-section-color), var(--main-section-secondary-color));
-	border-radius: 10px;
-}
-
 .col-actions a.project-crawl {
 	padding: 3rem 1.5rem;
 	background-color: var(--secondary-color);
@@ -124,22 +102,6 @@
 
 .project-delete span {
 	margin-left: 1rem;
-}
-
-.flex-container {
-	display: flex;
-	flex-direction: row;
-}
-
-.flex {
-	display: flex;
-	flex-wrap: wrap;
-	flex-direction: row;
-	margin-bottom: 3rem;
-}
-
-.page-details {
-	font-weight: 300;
 }
 
 .crawler-item {
@@ -170,14 +132,7 @@ p.error {
 	color: var(--tertiary-section-color);
 }
 
-.flex-container {
-	display: flex;
-}
-
-
 .label {
 	margin-left: 1rem;
 	font-weight: 400;
 }
-
-

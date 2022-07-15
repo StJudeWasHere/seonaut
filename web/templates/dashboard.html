@@ -121,15 +121,17 @@
 	</div>
 	
 	
+	<div class="box borderless">
+		<div style="padding: 3rem 3rem 0 3rem"><h2>Links</h2></div>
+	</div>
 	<div class="box soft">
-		<div class="col col-actions-l borderless">
-			<div class="content" style="width: 100%">
-				<h2>Links</h2>
+		<div class="col borderless">
+			<div class="content" style="width: 100%;padding-top:0">
 				<div id="links-chart" class="links-chart"></div>
 			</div>
 		</div>
 		<div class="col col-main">
-			<div class="content" style="width: 100%">
+			<div class="content" style="width: 100%; height: 100%;padding-top:0">
 				<div id="test-chart" class="links-chart"></div>
 			</div>
 		</div>	
@@ -225,7 +227,7 @@
 			},
 			showSymbol: false,
 			areaStyle: {
-				opacity: 0.8,
+				opacity: 1,
 
 			},
 			emphasis: {
@@ -246,7 +248,7 @@
 			},
 			showSymbol: false,
 			areaStyle: {
-				opacity: 0.8,
+				opacity: 1,
 
 			},
 			emphasis: {
@@ -267,7 +269,7 @@
 			},
 			showSymbol: false,
 			areaStyle: {
-				opacity: 0.8,
+				opacity: 1,
 			},
 			emphasis: {
 				focus: 'series'
@@ -552,8 +554,7 @@
 				},
 				labelLine: {
 					smooth: 0.2,
-					length: 10,
-					length2: 20
+					length: 20,
 				},
 				animation: false,
 			}
@@ -569,7 +570,7 @@
 			fontSize: "1rem",
 			fontWeight: 300,
 		},
-		color: ['#F7E497', '#2C7D91'],
+		color: ['#2C7D91'],
 		tooltip: {
 			trigger: 'axis',
 			axisPointer: {
@@ -588,15 +589,20 @@
 			}
 		},
 		legend: {
-			orient: 'vertical',
-			left: 'right',
+			show: false,
+			top: 'top',
+			left: 'left',
+			orient: 'horizontal',
+			itemGap: 50,
 		},
 		grid: {
-			left: '4%',
-			right: '4%',
+			left: '0%',
+			right: '0%',
 			bottom: '20%',
-			height: '180',
-			containLabel: true
+			top: '10%',
+			backgroundColor: 'transparent',
+			borderWidth: 0,
+			show: true,
 		},
 		yAxis: {
 			type: 'value',
@@ -605,58 +611,32 @@
 		xAxis: {
 			type: 'category',
 			show: true,
-			data: ['Internal', 'External'],
+			data: ['Total', 'Internal', 'External', 'Sponsored', 'UGC'],
 			axisLabel: {
 				fontSize: '1rem',
 				width: '100'
 			},
 			axisLine: {
-				show: false,
+				show: true,
 			},
 			axisTick: {
-				show: false,
+				show: true,
 			},
 		},
 		series: [
 			{
-				name: 'Follow',
+				name: 'Internal',
 				type: 'bar',
-				stack: 'total',
+				showBackground: true,
+				/*
+backgroundStyle: {
+        color: 'rgba(180, 180, 180, 0.2)'
+      }*/
 				emphasis: {
 					focus: 'series'
 				},
 				data: [
-					{{ range .LinksCount.Internal }}
-						{{ if eq .Key "follow" }}
-							{{ .Value }},
-						{{ end }}
-					{{ end }}
-					{{ range .LinksCount.External }}
-						{{ if eq .Key "follow" }}
-							{{ .Value }},
-						{{ end }}
-					{{ end }}
-				]
-			},
-			{
-				name: 'Nofollow',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-
-					{{ range .LinksCount.Internal }}
-						{{ if eq .Key "nofollow" }}
-							{{ .Value }},
-						{{ end }}
-					{{ end }}
-					{{ range .LinksCount.External }}
-						{{ if eq .Key "nofollow" }}
-							{{ .Value }},
-						{{ end }}
-					{{ end }}
+					1000, 700, 300, 10, 0
 				]
 			},
 		]
@@ -683,10 +663,7 @@
 		fontWeight: 300,
 	},
 	tooltip: {
-		trigger: 'axis',
-		axisPointer: {
-			type: 'none'
-		}
+		trigger: 'item'
 	},
 	toolbox: {
 		show: true,
@@ -710,13 +687,13 @@
 	      name: 'Internal',
 	      type: 'pie',
 	      selectedMode: 'single',
-	      radius: ['15%', '45%'],
+	      radius: ['0%', '35%'],
 	      label: {
 	        show: false,
 	      },
-	      labelLine: {
-	        show: false
-	      },
+		labelLine: {
+			show: false
+		},
 	      data: [
     			{{ range .LinksCount.Internal }}
     				{{ if eq .Key "follow" }}
@@ -733,10 +710,11 @@
 	    {
 	      name: 'External',
 	      type: 'pie',
-	      radius: ['50%', '75%'],
-	      labelLine: {
-	        length: 30
-	      },
+	      radius: ['40%', '75%'],
+			labelLine: {
+				smooth: 0.2,
+				length: 20,
+			},
 	      data: [
     			{{ range .LinksCount.External }}
     				{{ if eq .Key "follow" }}

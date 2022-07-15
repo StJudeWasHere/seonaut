@@ -26,6 +26,15 @@ p:last-child {
 
 ul {
 	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+ul li {
+	margin-bottom: 1rem;
+}
+ul li:last-child {
+	margin-bottom: 0;
 }
 
 a {
@@ -60,7 +69,7 @@ input[type="submit"] {
 	color: var(--secondary-color);
 	border: none;
 	margin-top: 1.5rem;
-	background-color: var(--highlight-color);
+	background-color: var(--action-color);
 	width: auto;
 	padding: .5rem 1.5rem;
 }
@@ -98,32 +107,33 @@ button {
 summary {
 	padding: 1rem;
 	cursor: pointer;
-	border-radius: 5px;
 	list-style: none;
 }
 
 details {
 	position:relative;
-	padding: 0;
-	margin: 0;
 }
 
 details ul {
-	position:absolute;
 	background-color: var(--secondary-color);
-	box-shadow: 2px 2px 3px var(--dark-opacity-color);
-	width: 100%;
+	border: 1px solid var(--primary-color);
+	width: 80%;
 	margin: 0 0 0 -1.5rem;
-	border-radius: 15px;
-	padding: 1.5rem;
-	list-style: none;
+	position:absolute;
+	padding: 1rem 0;
 }
 
 details ul li {
-	padding: .2rem 0;
+	margin: 0rem;
 }
 
-details ul a {
-	color: var(--highlight-color);
-	border: 0;
+details ul li a {
+	display: block;
+	padding: .5rem 1.5rem;
+	border: none;
+}
+
+details ul li a:hover {
+	background-color: var(--highlight-color);
+	border: none;
 }

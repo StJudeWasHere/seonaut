@@ -1,93 +1,96 @@
 {{ template "head" . }}
 
-<div class="content action">
-	<a href="/">Projects</a> / <span class="title">Add</span>
-</div>
+<div class="panel">
 
-<div class="project-add-container">
-	<div class="content">
-		<div class="project-form-container">
+	<div class="box box-highlight">
+		<div class="col col-main">
+			<div class="content content-centered">
+				<div>
+					<h2>Add Project</h2>
+				</div>
+			</div>
+		</div>
+	</div>
 
-			<form method="POST" >
-				<div class="flex-container">
 
-					<div class="project-add-col">
-						<div class="project-title bottom-margin">
-							<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-							<h2>Add Project</h2>
-						</div>
+	<form method="POST">
+		<div class="box" style="border-top: 0">
+			<div class="col">
+				<div class="content">
 
-						<label for="url">URL:</label>
-						<input type="url" name="url" autofocus>
-						<small>Full project URL including <i>http://</i> or <i>https://</i></small>
-						{{ if .Data.Error }}
-							<p class="error">The URL is not valid.</p>
-						{{ end }}
+					<label for="url">URL:</label>
+					<input type="url" name="url" autofocus>
+					Full project URL including <i>http://</i> or <i>https://</i>
+					{{ if .Data.Error }}
+						<p class="error">The URL is not valid.</p>
+					{{ end }}
+					<input type="submit" value="Add Project">
+				</div>
+			</div>
 
-						<input type="submit" value="Add Project">
+
+			<div class="col">
+				<div class="content">
+
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="ignore_robotstxt">
+							<span class="slider"></span>
+						</label>
+						<span class="label" >Ignore robots.txt</span>
 					</div>
+					<span class="toggle-help">
+						If checked the crawler will bypass any restriction you have set in your robots file.
+					</span>
 
-					<div class="project-add-col">
-						<p >
-							<div class="toggle-container">
-								<label class="toggle" >
-									<input type="checkbox" value="1" name="ignore_robotstxt">
-									<span class="slider"></span>
-								</label>
-								<span class="label" >Ignore robots.txt</span>
-							</div>
-							<small class="toggle-help">If checked the crawler will bypass any restriction you have set in your robots file. </small>
-						</p>
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="follow_nofollow">
+								<span class="slider"></span>
+							</label>
+							<span class="label">Follow <i>nofollow</i> internal links</span>
+					</div>
+					<span class="toggle-help">
+						If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag.
+					</span>
 
-						<p>
-							<div class="toggle-container">
-								<label class="toggle" >
-									<input type="checkbox" value="1" name="follow_nofollow">
-									<span class="slider"></span>
-								</label>
-								<span class="label">Follow <i>nofollow</i> internal links</span>
-							</div>
-							<small class="toggle-help">If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag. </small>
-						</p>
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="include_noindex">
+							<span class="slider"></span>
+						</label>
+						<span class="label">Include <i>noindex</i> pages in the report</span>
+					</div>
+					<span class="toggle-help">
+						If checked the pages with the <i>noindex</i> attribute will also be included in the report.
+					</span>
 
-						<p>
-							<div class="toggle-container">
-								<label class="toggle" >
-									<input type="checkbox" value="1" name="include_noindex">
-									<span class="slider"></span>
-								</label>
-								<span class="label">Include <i>noindex</i> pages in the report</span>
-							</div>
-							<small class="toggle-help">If checked the pages with the <i>noindex</i> attribute will also be included in the report. </small>
-						</p>
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="crawl_sitemap">
+							<span class="slider"></span>
+						</label>
+						<span class="label">Crawl sitemap</span>
+					</div>
+					<span class="toggle-help">
+						If checked the URLs in the sitemap.xml will also be crawled.
+					</span>
 
-						<p>
-							<div class="toggle-container">
-								<label class="toggle" >
-									<input type="checkbox" value="1" name="crawl_sitemap">
-									<span class="slider"></span>
-								</label>
-								<span class="label">Crawl sitemap</span>
-							</div>
-							<small class="toggle-help">If checked the URLs in the sitemap.xml will also be crawled. </small>
-						</p>
-
-						<p>
-							<div class="toggle-container">
-								<label class="toggle" >
-									<input type="checkbox" value="1" name="allow_subdomains">
-									<span class="slider"></span>
-								</label>
-								<span class="label">Allow subdomains</span>
-							</div>
-							<small class="toggle-help">If checked the crawler will also crawl URLs from subdomains.</small>
-						</p>
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="allow_subdomains">
+							<span class="slider"></span>
+						</label>
+						<span class="label">Allow subdomains</span>
+					</div>
+					<span class="toggle-help">
+						If checked the crawler will also crawl URLs from subdomains.
+					</span>
 
 					</div>
 				</div>
-			</form>
-		</div>
-	</div>
+			</div>
+		</form>
 </div>
 
 {{ template "footer" . }}

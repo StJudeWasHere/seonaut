@@ -383,6 +383,8 @@
 								{{ if .Text }}{{ .Text }} <br> {{ end }}
 								<span class="url">{{ .URL }}</span>
 								{{ if not .NoFollow }}<br><span class="alert">follow</span>{{ end }}
+								{{ if .Sponsored }}<span class="alert"><small>sponsored</small></span>{{ end }}
+								{{ if .UGC }}<span class="alert"><small>ugc</small></span>{{ end }}
 							</div>
 						</div>
 					</div>

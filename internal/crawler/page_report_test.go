@@ -152,6 +152,8 @@ func TestPageReportHTML(t *testing.T) {
 		{want: false, got: pageReport.Links[0].External},
 		{want: false, got: pageReport.ValidHeadings},
 		{want: true, got: pageReport.Noindex},
+		{want: true, got: pageReport.ExternalLinks[0].Sponsored},
+		{want: true, got: pageReport.ExternalLinks[0].UGC},
 	}
 
 	for _, v := range itable {

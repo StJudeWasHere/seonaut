@@ -61,6 +61,8 @@ type Link struct {
 	Text      string
 	External  bool
 	NoFollow  bool
+	Sponsored bool
+	UGC       bool
 }
 
 type Hreflang struct {
@@ -482,6 +484,8 @@ func (p *PageReport) newLink(n *html.Node) (Link, error) {
 		Text:      p.sanitizer.Sanitize(strings.TrimSpace(htmlquery.InnerText(n))),
 		External:  u.Host != p.ParsedURL.Host,
 		NoFollow:  strings.Contains(rel, "nofollow"),
+		Sponsored: strings.Contains(rel, "sponsored"),
+		UGC:       strings.Contains(rel, "ugc"),
 	}
 
 	return l, nil

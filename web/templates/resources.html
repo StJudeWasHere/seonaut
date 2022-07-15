@@ -25,7 +25,7 @@
 </div>
 
 
-	<div class="box">
+	<div class="box box-highlight">
 
 		<div class="col col-main">
 			<div class="content">
@@ -231,7 +231,7 @@
 					</div>
 
 					<div class="col col-actions">
-						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">View details</a>
+						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="highlight">View details</a>
 					</div>
 				</div>
 				{{ end }}
@@ -492,7 +492,7 @@
 		{{ if .PageReportView.PageReport.Styles }}
 			{{ range .PageReportView.PageReport.Styles }}
 				<div class="box">
-					<div class="col">
+					<div class="col col-main">
 						<div class="content">
 							<span class="url">{{ . }}</span>
 						</div>

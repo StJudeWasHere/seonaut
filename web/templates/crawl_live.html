@@ -1,72 +1,116 @@
 {{ template "head" . }}
 
-<div class="content action">
-	<a href="/">Projects</a> / <span class="title">Live Crawling</span>
-</div>
+<div class="panel">
 
-<div class="project-add-container">
-	<div class="content">
-		<div class="live-crawling-header">
-			<h2>Live Crawling</h2>
-			<p><small>{{ .Data.Project.URL }}</small></p>
+	<div class="box">
+		<div class="col col-main">
+			<div class="content content-centered">
+				<div>
+					<h2>Live Crawling</h2>
+				</div>
+			</div>
 		</div>
 
-		<div id="crawl-start-msg">Connecting to the server, please wait...</div>
-		<div id="urls">
+		<div class="col col-actions-l">
+			<div class="main-action">
+				{{ .Data.Project.Host }}
+			</div>
 		</div>
 	</div>
+
+	<noscript>
+		<div id="crawl-start-msg" class="box box-highlight" style="border-top: 0">
+			<div class="content content-centered">
+				Live crawl is not availabel for your browser. Javascript support is needed.
+			</div>
+		</div>
+	</noscript>
+
+	<div id="urls"></div>
+
 </div>
 
 <template id="tmpl">
-	<div class="url-block">
-		<span class="status-code"></span>
-		<span class="url"></span>
+	<div class="box box-highlight" style="border-top: 0">
+		<div class="col col-main">
+			<div class="content">
+				<span class="url"></span>
+			</div>
+		</div>
+
+		<div class="col col-s status-column">
+			<div class="content">
+				<span class="status-code"></span>
+			</div>
+		</div>
+	</div>
+</template>
+
+<template id="msgTmpl">
+	<div class="box box-highlight soft" style="border-top: 0">
+		<div class="col col-main">
+			<div class="content">
+			</div>
+		</div>
 	</div>
 </template>
 
 <script>
 	document.addEventListener('DOMContentLoaded', () => {
+		const container = document.getElementById("urls")
+		const stmpl = document.getElementById("tmpl")
+		const msgTmpl = document.getElementById("msgTmpl")
+
+		addMsg = function(msg) {
+			t = msgTmpl.content.cloneNode(true)
+			t.querySelector(".content").innerHTML = msg;
+			container.prepend(t)
+		}
+
 		if (!window["WebSocket"]) {
-			console.log("Websockets not supported")
+			addMesg("Live crawl is not availabel for your browser. Websocket support is needed.")
+
 			return
 		}
 		
-		container = document.getElementById("urls")
-		crawlStartMsg = document.getElementById("crawl-start-msg")
-		stmpl = document.getElementById("tmpl")
+		addMsg("Connecting to the server, please wait...")
 
-		conn = new WebSocket({{ if .Data.Secure }}"wss://" {{ else }}"ws://"{{ end }}+ document.location.host + "/crawl-ws?pid={{ .Data.Project.Id }}")
+		const protocol = {{ if .Data.Secure }}"wss://" {{ else }}"ws://"{{ end }}
+		let conn = new WebSocket(protocol + document.location.host + "/crawl-ws?pid={{ .Data.Project.Id }}")
 
 		conn.onclose = function (evt) {
 			conn = null
 		}
 
 		conn.onmessage = function (evt) {
-			if (crawlStartMsg.style.display != "none") {
-				crawlStartMsg.style.display ="none"
-			}
-
 			let msg = JSON.parse(evt.data);
 			let data = msg.Data
 
-			if (msg.Name == "PageReport") {
+			switch (msg.Name) {
+			case 'PageReport':
 				t = tmpl.content.cloneNode(true)
-				t.querySelector(".status-code").textContent = data.StatusCode
 
 				if (data.StatusCode >= 300) {
-					t.querySelector(".url-block").classList.add("ko")
+					t.querySelector(".status-column").classList.add("status-ko")
+				} else if (data.StatusCode >= 200 && data.StatusCode < 300) {
+					t.querySelector(".status-column").classList.add("status-ok")
 				}
+				
+				if (data.StatusCode < 1) {
+					data.StatusCode = "-"
+				}
+
+				t.querySelector(".status-code").textContent = data.StatusCode				
 
 				t.querySelector(".url").textContent = data.URL
 				container.prepend(t)
-			} else if (msg.Name == "IssuesInit") {
-				var el = document.createElement("div");
-				el.classList.add("url-block")
-				el.classList.add("message")
-				el.innerHTML = "Crawl completed. Creating the crawl report, please wait..";
-				container.prepend(el)
-			} else if (msg.Name == "CrawlEnd") {
+				break
+			case 'IssuesInit':
+				addMsg("Crawl completed. Creating the report, please wait...")
+				break
+			case 'CrawlEnd':
 				window.location = "/dashboard?pid={{ .Data.Project.Id }}"
+				break
 			}
 
 			if (container.childElementCount > 15) {

@@ -30,6 +30,10 @@
 	width: 30rem;
 }
 
+.box .col-s {
+	width: 10rem;
+}
+
 .box.inverted {
 	border-top: 1px dotted var(--primary-color);
 }
@@ -64,3 +68,4 @@
 .col-actions a.highlight {
 	background-color: var(--secondary-color);
 }
+

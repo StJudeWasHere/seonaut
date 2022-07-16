@@ -1,29 +1,74 @@
 {{ template "head" . }}
 
+{{ with .Data }}
+
 <div class="panel">
 
 	<div class="box box-first box-highlight">
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
-					<h2>Add Project</h2>
+					<h2>Edit Project</h2>
 				</div>
 			</div>
 		</div>
+
+		<div class="col col-actions-l">
+			<div class="main-action">
+				<a href="/dashboard?pid={{ .Project.Id }}">{{ .Project.Host }}</a>
+			</div>
+		</div>
 	</div>
+
+	{{ if .Error }}
+	<div class="box soft">
+		<div class="col col-main">
+			<div class="content">
+				<p class="error">
+					An error occurred and the project could not be saved.
+				</p>
+			</div>
+		</div>
+	</div>
+	{{ end }}
 
 	<form method="POST">
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
-					<label for="url">URL:</label>
-					<input type="url" name="url" autofocus>
-					Full project URL including <i>http://</i> or <i>https://</i>
-					{{ if .Data.Error }}
-						<p class="error">The URL is not valid.</p>
-					{{ end }}
+
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="ignore_robotstxt"{{ if .Project.IgnoreRobotsTxt }} checked{{ end }}>
+							<span class="slider"></span>
+						</label>
+						<span class="label" >Ignore robots.txt</span>
+					</div>
+					<span class="toggle-help">
+						If checked the crawler will bypass any restriction you have set in your robots file.
+					</span>
+
 				</div>
 			</div>
+		</div>
+		
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+		
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="follow_nofollow"{{ if .Project.FollowNofollow }} checked{{ end }}>
+								<span class="slider"></span>
+							</label>
+							<span class="label">Follow <i>nofollow</i> internal links</span>
+					</div>
+					<span class="toggle-help">
+						If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag.
+					</span>
+
+				</div>
+			</div>	
 		</div>
 		
 		<div class="box soft">
@@ -32,45 +77,7 @@
 
 					<div class="toggle-container">
 						<label class="toggle" >
-							<input type="checkbox" value="1" name="ignore_robotstxt">
-							<span class="slider"></span>
-						</label>
-						<span class="label" >Ignore robots.txt</span>
-					</div>
-					<span class="toggle-help">
-						If checked the crawler will bypass any restriction you have set in your robots file.
-					</span>
-					
-				</div>
-			</div>
-		</div>
-
-	<div class="box soft">
-		<div class="col col-main">
-			<div class="content">
-
-					<div class="toggle-container">
-						<label class="toggle" >
-							<input type="checkbox" value="1" name="follow_nofollow">
-								<span class="slider"></span>
-							</label>
-							<span class="label">Follow <i>nofollow</i> internal links</span>
-					</div>
-					<span class="toggle-help">
-						If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag.
-					</span>
-			
-			</div>
-		</div>
-	</div>
-
-	<div class="box soft">
-		<div class="col col-main">
-			<div class="content">
-
-					<div class="toggle-container">
-						<label class="toggle" >
-							<input type="checkbox" value="1" name="include_noindex">
+							<input type="checkbox" value="1" name="include_noindex"{{ if .Project.IncludeNoindex }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
 						<span class="label">Include <i>noindex</i> pages in the report</span>
@@ -79,17 +86,18 @@
 						If checked the pages with the <i>noindex</i> attribute will also be included in the report.
 					</span>
 
+
 				</div>
-			</div>
+			</div>	
 		</div>
 
-	<div class="box soft">
-		<div class="col col-main">
-			<div class="content">
 
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
 					<div class="toggle-container">
 						<label class="toggle" >
-							<input type="checkbox" value="1" name="crawl_sitemap">
+							<input type="checkbox" value="1" name="crawl_sitemap"{{ if .Project.CrawlSitemap }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
 						<span class="label">Crawl sitemap</span>
@@ -97,18 +105,16 @@
 					<span class="toggle-help">
 						If checked the URLs in the sitemap.xml will also be crawled.
 					</span>
-
 				</div>
-			</div>
+			</div>	
 		</div>
-		
+
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
-
 					<div class="toggle-container">
 						<label class="toggle" >
-							<input type="checkbox" value="1" name="allow_subdomains">
+							<input type="checkbox" value="1" name="allow_subdomains"{{ if .Project.AllowSubdomains }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
 						<span class="label">Allow subdomains</span>
@@ -116,22 +122,38 @@
 					<span class="toggle-help">
 						If checked the crawler will also crawl URLs from subdomains.
 					</span>
-
-					</div>
 				</div>
-			</div>
-			
-			<div class="box box-highlight">
-				<div class="col col-main">
-					<div class="content-s">
+			</div>	
+		</div>
 
-						<input type="submit" value="Save" class="inline"> or <a href="/">cancel</a>.
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content-s">
 
-					</div>
-				</div>	
-			</div>
-			
-		</form>
+					<input type="submit" value="Save" class="inline"> or <a href="/">cancel</a>.
+
+				</div>
+			</div>	
+		</div>
+
+	</form>
+
+	<div class="box bg-alert">
+		<div class="col col-main">
+			<div class="content">
+				<a href="/delete-project?pid={{ .Project.Id }}">
+					Delete Project
+				</a>
+				<p>
+					This action will delete the {{ .Project.Host }} project and all its related data. <br>
+					Deleting a project can take a few minutes and can not be undone.
+				</p>
+			</div>		
+		</div>
+	</div>
+		
 </div>
+
+{{ end }}
 
 {{ template "footer" . }}

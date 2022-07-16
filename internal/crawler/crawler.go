@@ -47,7 +47,7 @@ type Crawler struct {
 	robotsChecker   *RobotsChecker
 
 	que            *que
-	prStream       chan *PageReport
+	prStream       chan *PageReportMessage
 	client         *Client
 	allowedDomains []string
 }
@@ -71,14 +71,14 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		que:            NewQueue(),
 		client:         NewClient(options.UserAgent),
 		allowedDomains: []string{mainDomain, "www." + mainDomain},
-		prStream:       make(chan *PageReport),
+		prStream:       make(chan *PageReportMessage),
 	}
 }
 
 // Crawl starts crawling an URL and sends pagereports of the crawled URLs
 // through the pr channel. It will end when there are no more URLs to crawl
 // or the MaxPageReports limit is hit.
-func (c *Crawler) Crawl() <-chan *PageReport {
+func (c *Crawler) Crawl() <-chan *PageReportMessage {
 	go func() {
 		defer close(c.prStream)
 
@@ -229,8 +229,16 @@ func (c *Crawler) responseHandler(r *http.Response) {
 		c.increaseCrawledCounter()
 	}
 
+	crawled := c.getCrawledCount()
+	discovered := c.getDiscoveredURLs()
+
 	if pageReport.Nofollow == true && c.Options.FollowNofollow == false {
-		c.prStream <- pageReport
+		c.prStream <- &PageReportMessage{
+			PageReport: pageReport,
+			Crawled:    crawled,
+			Discovered: discovered,
+		}
+
 		return
 	}
 
@@ -242,22 +250,33 @@ func (c *Crawler) responseHandler(r *http.Response) {
 		c.storage.Add(t.String())
 
 		if c.Options.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(t) {
-			c.prStream <- &PageReport{
+			message := &PageReportMessage{
+				Crawled:    crawled,
+				Discovered: discovered,
+			}
+
+			message.PageReport = &PageReport{
 				URL:                t.String(),
 				ParsedURL:          t,
 				Crawled:            false,
 				BlockedByRobotstxt: true,
 			}
 
-			continue
+			c.prStream <- message
 
+			continue
 		}
 
 		c.que.Push(t.String())
-
 	}
 
-	c.prStream <- pageReport
+	message := &PageReportMessage{
+		PageReport: pageReport,
+		Crawled:    crawled,
+		Discovered: discovered,
+	}
+
+	c.prStream <- message
 }
 
 // Returns all the crawlable URLs found in the HTML document
@@ -358,4 +377,18 @@ func (c *Crawler) getCrawlableURLs(p *PageReport) []*url.URL {
 	}
 
 	return urls
+}
+
+// Returns the number of crawled URLs
+func (c *Crawler) getCrawledCount() int {
+	c.plock.Lock()
+	l := c.responseCounter
+	defer c.plock.Unlock()
+
+	return l
+}
+
+// Returns the number of URLs currently in the queue
+func (c *Crawler) getDiscoveredURLs() int {
+	return c.que.Count()
 }

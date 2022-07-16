@@ -56,3 +56,15 @@ func (ds *Datastore) FindUserById(id int) *user.User {
 
 	return &u
 }
+
+func (ds *Datastore) UserUpdatePassword(email, hashedPassword string) error {
+	query := `
+		UPDATE users
+		SET password = ?
+		WHERE email = ?
+	`
+
+	_, err := ds.db.Exec(query, hashedPassword, email)
+
+	return err
+}

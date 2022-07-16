@@ -1,0 +1,22 @@
+.progress-box {
+	display: none;
+	font-weight: normal;
+}
+
+.progress-container {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+.progress-counter {
+	background: var(--crawler-section-color);
+	color: var(--secondary-color);
+}
+
+.progress {
+	height: 100%;
+	width: 0;
+	background: var(--crawler-section-color);
+}

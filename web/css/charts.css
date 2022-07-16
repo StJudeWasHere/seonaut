@@ -1,8 +1,11 @@
 .chart {
 	margin-top: 1.5rem;
+	width:100%;
+	height: 20rem;
 }
 
-.links-chart {
+.links-chart,
+.follow-chart {
 	width: 100%;
 	height: 25rem;
 }

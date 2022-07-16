@@ -170,13 +170,17 @@ func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if pubsubMessage.Name == "PageReport" {
-			pagereport := pubsubMessage.Data.(*crawler.PageReport)
+			msg := pubsubMessage.Data.(*crawler.PageReportMessage)
 			wsMessage.Data = struct {
 				StatusCode int
 				URL        string
+				Crawled    int
+				Discovered int
 			}{
-				StatusCode: pagereport.StatusCode,
-				URL:        pagereport.URL,
+				StatusCode: msg.PageReport.StatusCode,
+				URL:        msg.PageReport.URL,
+				Crawled:    msg.Crawled,
+				Discovered: msg.Discovered,
 			}
 		}
 

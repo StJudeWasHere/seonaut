@@ -7,29 +7,21 @@
 	--tertiary-light-color: #f5f8f9;
 	--secondary-color: white;
 	--border-color: #ccc;
-	--highlight-color: #F9E7EF;
+	--highlight-color: #e6f4f7;
 	--secondary-highlight-color: #c84a70;
 	--alert-color: #E17E56;
 	--light-opacity-color: rgba(256, 256, 256, .3);
 	--light-opacity-secondary-color: rgba(256, 256, 256, .4);
 	--dark-opacity-color: rgba(0, 0, 0, .15);
 	--main-section-color: #F7E497;
-	--main-section-secondary-color: #fbf8e0;
 	--secondary-section-color: #2C7D91;
-	--secondary-section-secondary-color: #80b1bd;
 	--tertiary-section-color: #FD7B6A;
-	--tertiary-section-secondary-color: #ffa899;
 	--crawler-section-color: #648560;
 	--crawler-section-secondary-color: #f1f4f0;
 	--row-issue-color: #ffe9e5;
-	--shadow-color: #f0f0f0;
 
 	--action-color: rgb(183, 15, 87);
 
-	--content-max-width: 80ch;
-
 	--main-fontfamily: 'Fira Code', monospace, monospace;
 	--secondary-fontfamily: "Raleway", Helvetica, Arial, sans-serif;
-
-	--small-screen: 800px;
 }

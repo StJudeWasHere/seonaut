@@ -32,6 +32,12 @@ type Storage interface {
 	GetLastCrawls(project.Project, int) []Crawl
 }
 
+type PageReportMessage struct {
+	PageReport *PageReport
+	Crawled    int
+	Discovered int
+}
+
 type Crawl struct {
 	Id                 int64
 	ProjectId          int64
@@ -89,15 +95,15 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	c := NewCrawler(u, options)
 
 	for r := range c.Crawl() {
-		if r.BlockedByRobotstxt {
+		if r.PageReport.BlockedByRobotstxt {
 			crawl.BlockedByRobotstxt++
-		} else if r.Noindex {
+		} else if r.PageReport.Noindex {
 			crawl.Noindex++
 		} else {
 			crawl.TotalURLs++
 		}
 
-		s.store.SavePageReport(r, crawl.Id)
+		s.store.SavePageReport(r.PageReport, crawl.Id)
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "PageReport", Data: r})
 	}
 

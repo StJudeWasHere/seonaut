@@ -6,6 +6,7 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/issue"
 )
 
 func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
@@ -853,4 +854,148 @@ func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *crawler.PageRepo
 	var f float64 = float64(c) / float64(paginationMax)
 	return int(math.Ceil(f))
 
+}
+
+func (ds *Datastore) CountSponsoredLinks(cid int64) int {
+	query := `
+		SELECT
+			count(id)
+		FROM external_links
+		WHERE sponsored = 1 AND crawl_id = ?
+	`
+
+	row := ds.db.QueryRow(query, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("CountSponsoredLinks: %v\n", err)
+	}
+
+	return c
+}
+
+func (ds *Datastore) CountUGCLinks(cid int64) int {
+	query := `
+		SELECT
+			count(id)
+		FROM external_links
+		WHERE ugc = 1 AND crawl_id = ?
+	`
+
+	row := ds.db.QueryRow(query, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("CountUGCLinks: %v\n", err)
+	}
+
+	return c
+}
+
+func (ds *Datastore) CountByCanonical(cid int64) int {
+	query := `
+		SELECT
+			count(id)
+		FROM pagereports 
+		WHERE crawl_id = ? AND media_type = "text/html" AND (canonical = "" OR canonical = url)
+			AND status_code >= 200 AND status_code < 300
+	`
+
+	row := ds.db.QueryRow(query, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("CountUGCLinks: %v\n", err)
+	}
+
+	return c
+}
+
+func (ds *Datastore) CountByNonCanonical(cid int64) int {
+	query := `
+		SELECT
+			count(id)
+		FROM pagereports 
+		WHERE crawl_id = ? AND media_type = "text/html" AND canonical != "" AND canonical != url
+			AND status_code >= 200 AND status_code < 300
+	`
+
+	row := ds.db.QueryRow(query, cid)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("CountUGCLinks: %v\n", err)
+	}
+
+	return c
+}
+
+func (ds *Datastore) CountImagesAlt(cid int64) *issue.AltCount {
+	query := `
+		SELECT 
+			if(alt = "", "no alt", "alt") as a,
+			count(*)
+		FROM images
+		WHERE crawl_id = ?
+		GROUP BY a
+	`
+
+	c := &issue.AltCount{}
+
+	rows, err := ds.db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return c
+	}
+
+	for rows.Next() {
+		var v int
+		var a string
+
+		err := rows.Scan(&a, &v)
+		if err != nil {
+			continue
+		}
+
+		if a == "alt" {
+			c.Alt = v
+		} else {
+			c.NonAlt = v
+		}
+	}
+
+	return c
+}
+
+func (ds *Datastore) CountScheme(cid int64) *issue.SchemeCount {
+	query := `
+		SELECT
+			scheme,
+			count(*)
+		FROM pagereports
+		WHERE crawl_id = ?
+		GROUP BY scheme
+	`
+
+	c := &issue.SchemeCount{}
+
+	rows, err := ds.db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return c
+	}
+
+	for rows.Next() {
+		var v int
+		var a string
+
+		err := rows.Scan(&a, &v)
+		if err != nil {
+			continue
+		}
+
+		if a == "https" {
+			c.HTTPS = v
+		} else {
+			c.HTTP = v
+		}
+	}
+
+	return c
 }

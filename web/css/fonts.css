@@ -13,13 +13,6 @@
 }
 
 @font-face {
-	font-family: 'Fira Code';
-	font-style: normal;
-	font-weight: 600;
-	src: url('../fonts/FiraCode-SemiBold.woff2') format('woff2');
-}
-
-@font-face {
 	font-family: 'Raleway';
 	font-style: bold;
 	font-weight: 600;

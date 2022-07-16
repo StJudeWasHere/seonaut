@@ -2,7 +2,7 @@
 
 <div class="panel">
 
-	<div class="box">
+	<div class="box box-first">
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
@@ -18,8 +18,20 @@
 		</div>
 	</div>
 
+	<div class="box progress-box" id="progress-box">
+		<div class="col col-actions-l borderless progress-counter">
+			<div class="content content-s" id="counter"></div>
+		</div>
+
+		<div class="col col-main">
+			<div class="progress-container">
+				<div class="progress" id="progress"></div>
+			</div>
+		</div>
+	</div>
+
 	<noscript>
-		<div id="crawl-start-msg" class="box box-highlight" style="border-top: 0">
+		<div id="crawl-start-msg" class="box box-highlight">
 			<div class="content content-centered">
 				Live crawl is not availabel for your browser. Javascript support is needed.
 			</div>
@@ -31,7 +43,7 @@
 </div>
 
 <template id="tmpl">
-	<div class="box box-highlight" style="border-top: 0">
+	<div class="box box-highlight">
 		<div class="col col-main">
 			<div class="content">
 				<span class="url"></span>
@@ -39,7 +51,7 @@
 		</div>
 
 		<div class="col col-s status-column">
-			<div class="content">
+			<div class="content aligned">
 				<span class="status-code"></span>
 			</div>
 		</div>
@@ -47,7 +59,7 @@
 </template>
 
 <template id="msgTmpl">
-	<div class="box box-highlight soft" style="border-top: 0">
+	<div class="box box-highlight soft">
 		<div class="col col-main">
 			<div class="content">
 			</div>
@@ -60,6 +72,11 @@
 		const container = document.getElementById("urls")
 		const stmpl = document.getElementById("tmpl")
 		const msgTmpl = document.getElementById("msgTmpl")
+		const progress = document.getElementById("progress")
+		const counter = document.getElementById("counter")
+		const progressBox = document.getElementById("progress-box")
+
+		let started = false;
 
 		addMsg = msg => {
 			t = msgTmpl.content.cloneNode(true)
@@ -91,9 +108,9 @@
 				t = tmpl.content.cloneNode(true)
 
 				if (data.StatusCode >= 300) {
-					t.querySelector(".status-column").classList.add("status-ko")
+					t.querySelector(".status-column").classList.add("bg-alert")
 				} else if (data.StatusCode >= 200 && data.StatusCode < 300) {
-					t.querySelector(".status-column").classList.add("status-ok")
+					t.querySelector(".status-column").classList.add("bg-success")
 				}
 				
 				if (data.StatusCode < 1) {
@@ -102,6 +119,13 @@
 
 				t.querySelector(".status-code").textContent = data.StatusCode				
 
+				progress.style.width = 100 - ((data.Discovered / (data.Crawled + data.Discovered)) * 100) + "%"
+				let p = "URL"
+				if (data.Crawled > 1) {
+					p += "s"
+				}
+				counter.textContent = data.Crawled + " " + p + " crawled"
+
 				t.querySelector(".url").textContent = data.URL
 				container.prepend(t)
 				break
@@ -109,8 +133,14 @@
 				addMsg("Crawl completed. Creating the report, please wait...")
 				break
 			case 'CrawlEnd':
+				conn.close()
 				window.location = "/dashboard?pid={{ .Data.Project.Id }}"
 				break
+			}
+
+			if (started == false) {
+				started = true
+				progressBox.style.display = "flex"
 			}
 
 			if (container.childElementCount > 15) {

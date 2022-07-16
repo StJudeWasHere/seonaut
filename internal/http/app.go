@@ -86,6 +86,7 @@ func (app *App) Run() {
 	// App
 	http.HandleFunc("/", app.requireAuth(app.serveHome))
 	http.HandleFunc("/new-project", app.requireAuth(app.serveProjectAdd))
+	http.HandleFunc("/edit-project", app.requireAuth(app.serveProjectEdit))
 	http.HandleFunc("/delete-project", app.requireAuth(app.serveDeleteProject))
 	http.HandleFunc("/crawl", app.requireAuth(app.serveCrawl))
 	http.HandleFunc("/crawl-live", app.requireAuth(app.serveCrawlLive))
@@ -99,6 +100,7 @@ func (app *App) Run() {
 	http.HandleFunc("/export/download", app.requireAuth(app.serveExportResources))
 	http.HandleFunc("/resources", app.requireAuth(app.serveResourcesView))
 	http.HandleFunc("/signout", app.requireAuth(app.serveSignout))
+	http.HandleFunc("/account", app.requireAuth(app.serveAccount))
 	http.HandleFunc("/signup", app.serveSignup)
 	http.HandleFunc("/signin", app.serveSignin)
 

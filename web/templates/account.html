@@ -1,0 +1,68 @@
+{{ template "head" . }}
+
+{{ with .Data }}
+
+<div class="panel">
+
+	<div class="box box-first box-highlight">
+		<div class="col col-main">
+			<div class="content content-centered">
+				<div>
+					<h2>Edit Account</h2>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{{ if .Error }}
+	<div class="box soft">
+		<div class="col col-main">
+			<div class="content">
+				<p class="error">
+					{{ .ErrorMessage }}
+				</p>
+			</div>
+		</div>
+	</div>
+	{{ end }}
+
+	<form method="POST">
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+
+					<label for="password">Current password:</label>
+					<input type="password" name="password">		
+
+				</div>
+			</div>
+		</div>
+		
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+
+					<label for="password">New password:</label>
+					<input type="password" name="new_password">		
+
+				</div>
+			</div>	
+		</div>
+
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content-s">
+
+					<input type="submit" value="Save" class="inline"> or <a href="/">cancel</a>.
+
+				</div>
+			</div>	
+		</div>
+
+	</form>
+		
+</div>
+
+{{ end }}
+
+{{ template "footer" . }}

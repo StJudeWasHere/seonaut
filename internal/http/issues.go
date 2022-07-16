@@ -13,12 +13,15 @@ import (
 )
 
 type IssuesGroupView struct {
-	ProjectView *projectview.ProjectView
-	MediaChart  helper.Chart
-	StatusChart helper.Chart
-	IssueCount  *issue.IssueCount
-	Crawls      []crawler.Crawl
-	LinksCount  *issue.LinksCount
+	ProjectView    *projectview.ProjectView
+	MediaChart     helper.Chart
+	StatusChart    helper.Chart
+	IssueCount     *issue.IssueCount
+	Crawls         []crawler.Crawl
+	LinksCount     *issue.LinksCount
+	CanonicalCount *issue.CanonicalCount
+	AltCount       *issue.AltCount
+	SchemeCount    *issue.SchemeCount
 }
 
 type IssuesView struct {
@@ -93,12 +96,15 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)
 
 	ig := IssuesGroupView{
-		ProjectView: pv,
-		MediaChart:  helper.NewChart(issueCount.MediaCount),
-		StatusChart: helper.NewChart(issueCount.StatusCount),
-		IssueCount:  issueCount,
-		Crawls:      app.crawlerService.GetLastCrawls(pv.Project),
-		LinksCount:  app.issueService.GetLinksCount(pv.Crawl.Id),
+		ProjectView:    pv,
+		MediaChart:     helper.NewChart(issueCount.MediaCount),
+		StatusChart:    helper.NewChart(issueCount.StatusCount),
+		IssueCount:     issueCount,
+		Crawls:         app.crawlerService.GetLastCrawls(pv.Project),
+		LinksCount:     app.issueService.GetLinksCount(pv.Crawl.Id),
+		CanonicalCount: app.issueService.GetCanonicalCount(pv.Crawl.Id),
+		AltCount:       app.issueService.GetImageAltCount(pv.Crawl.Id),
+		SchemeCount:    app.issueService.GetSchemeCount(pv.Crawl.Id),
 	}
 
 	v := &helper.PageView{

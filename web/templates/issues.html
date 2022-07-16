@@ -4,7 +4,7 @@
 
 <div class="panel">
 
-	<div class="box">
+	<div class="box box-first">
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
@@ -22,11 +22,16 @@
 		
 	{{ $pid := .ProjectView.Project.Id }}
 
-	<div class="box" style="background-color: white">
+	<div class="box box-highlight">
 		<div class="col">
 			<div class="content" >
 				<h2>
-					<a href="#critical" class="borderless">{{ .IssueCount.Critical }} Critical Issues</a>
+					{{ if ne .IssueCount.Critical 0 }}
+						<a href="#critical" class="borderless">{{ .IssueCount.Critical }} Critical Issues</a>
+					{{ else }}
+						{{ .IssueCount.Critical }} Critical Issues
+					{{ end }}
+					
 				</h2>
 				<p>Critical errors affecting your ranking. Fix them first.</p>
 			</div>
@@ -34,15 +39,25 @@
 		
 		<div class="col">
 			<div class="content">
-				<h2><a href="#alert" class="borderless">{{ .IssueCount.Alert }} Alerts</a></h2>
-					<p>Issues that are holding your site back. Fix them next.</p>
+				<h2>
+					{{ if ne .IssueCount.Alert 0 }}
+						<a href="#alert" class="borderless">{{ .IssueCount.Alert }} Alerts</a>
+					{{ else }}
+						{{ .IssueCount.Alert }} Alerts
+					{{ end }}
+				</h2>
+				<p>Issues that are holding your site back. Fix them next.</p>
 			</div>
 		</div>
 
 		<div class="col">
 			<div class="content">
 				<h2>
-					<a href="#warning" class="borderless">{{ .IssueCount.Warning }} Warnings</a>
+					{{ if ne .IssueCount.Warning 0 }}
+						<a href="#warning" class="borderless">{{ .IssueCount.Warning }} Warnings</a>
+					{{ else }}
+						{{ .IssueCount.Warning }} Warnings
+					{{ end }}
 				</h2>
 				<p>Issues you may want to keep an eye on.</p>
 			</div>
@@ -66,10 +81,16 @@
 				</div>
 			</div>
 
-			<div class="box box-highlight inverted">
-				<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">CRITICAL</div>
-				<div clas="col" style="padding: 1rem 3rem;">
-					{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+			<div class="box box-highlight inverted always-row">
+				<div class="col col-s bg-alert">
+					<div class="content content-s">
+						CRITICAL
+					</div>
+				</div>
+				<div clas="col">
+					<div class="content content-s">
+						{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+					</div>
 				</div>
 			</div>
 		{{ end }}
@@ -92,10 +113,16 @@
 				</div>
 			</div>
 
-			<div class="box box-highlight inverted" >
-				<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">ALERT</div>
-				<div clas="col" style="padding: 1rem 3rem;">
-					{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+			<div class="box box-highlight inverted always-row" >
+				<div class="col col-s bg-alert">
+					<div class="content content-s">
+						ALERT
+					</div>
+				</div>
+				<div clas="col">
+					<div class="content content-s">
+						{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+					</div>
 				</div>
 			</div>
 		{{ end }}
@@ -118,10 +145,16 @@
 				</div>
 			</div>
 
-			<div class="box box-highlight inverted">
-				<div class="col" style="background-color: #FEE4E1; width: 10rem;padding: 1rem 3rem;">WARNING</div>
-				<div clas="col" style="padding: 1rem 3rem;">
-					{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+			<div class="box box-highlight inverted always-row">
+				<div class="col col-s bg-alert">
+					<div class="content content-s">
+						WARNING
+					</div>
+				</div>
+				<div clas="col">
+					<div class="content content-s">
+						{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+					</div>
 				</div>
 			</div>
 		{{ end }}

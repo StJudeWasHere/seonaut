@@ -16,12 +16,14 @@ type UserService interface {
 	FindById(id int) *user.User
 	SignUp(email, password string) error
 	SignIn(email, password string) (*user.User, error)
+	UpdatePassword(email, password string) error
 }
 
 type ProjectService interface {
 	SaveProject(*project.Project, int) error
 	DeleteProject(p *project.Project)
 	FindProject(id, uid int) (project.Project, error)
+	UpdateProject(p *project.Project) error
 }
 
 type ProjectViewService interface {
@@ -39,6 +41,9 @@ type IssueService interface {
 	GetPaginatedReportsByIssue(int64, int, string) (issue.PaginatorView, error)
 	GetLinksCount(int64) *issue.LinksCount
 	SaveCrawlIssuesCount(int64)
+	GetCanonicalCount(crawlId int64) *issue.CanonicalCount
+	GetImageAltCount(crawlId int64) *issue.AltCount
+	GetSchemeCount(crawlId int64) *issue.SchemeCount
 }
 
 type ReportService interface {

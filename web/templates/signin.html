@@ -1,27 +1,33 @@
 {{ template "head_credentials" . }}
 
-
-<div class="content credentials">
+<div class="panel">
+	<div class="box borderless">
+		<div class="col col-main">
+			<div class="content">
 	
-	<div id="header">
-		<span class="logo"><a href="/">SEOnaut</a></span>
+				<div id="header">
+					<span class="logo"><a href="/">SEOnaut</a></span>
+				</div>
+	
+				<form method="POST">
+					<label for="email">Email:</label>
+					<input type="email" name="email" value="{{ .Data.Email }}" autofocus>
+					<label for="password">Password:</label>
+					<input type="password" name="password">
+					<input type="submit" value="Sign In">
+				</form>
+
+				{{ if .Data.Error }}
+					<p class="error">The email address or password is not valid.</p>
+				{{ end }}
+
+				<p>
+					New to SEOnaut? <a href="/signup">Sign up</a>
+				</p>
+
+			</div>
+		</div>
 	</div>
-	
-	<form method="POST">
-		<label for="email">Email:</label>
-		<input type="email" name="email" value="{{ .Data.Email }}" autofocus>
-		<label for="password">Password:</label>
-		<input type="password" name="password">
-		<input type="submit" value="Sign In">
-	</form>
-
-	{{ if .Data.Error }}
-		<p class="error">The email address or password is not valid.</p>
-	{{ end }}
-
-	<p>
-		New to SEOnaut? <a href="/signup">Sign up</a>
-	</p>
 </div>
 
 {{ template "footer" . }}

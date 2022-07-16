@@ -303,6 +303,32 @@ func (ds *Datastore) DeleteProject(p *project.Project) {
 	}()
 }
 
+func (ds *Datastore) UpdateProject(p *project.Project) error {
+	query := `
+		UPDATE projects SET
+			ignore_robotstxt = ?,
+			follow_nofollow = ?,
+			include_noindex = ?,
+			crawl_sitemap = ?,
+			allow_subdomains = ?
+		WHERE id = ?
+	`
+	_, err := ds.db.Exec(
+		query,
+		p.IgnoreRobotsTxt,
+		p.FollowNofollow,
+		p.IncludeNoindex,
+		p.CrawlSitemap,
+		p.AllowSubdomains,
+		p.Id,
+	)
+	if err != nil {
+		log.Printf("UpdateProject: pid %d %v\n", p.Id, err)
+	}
+
+	return err
+}
+
 func (ds *Datastore) DeletePreviousCrawl(pid int64) {
 	query := `
 		SELECT

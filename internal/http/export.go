@@ -69,7 +69,7 @@ func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eid := r.URL.Query().Get("eid")
-	fileName := pv.Project.Host + " crawl " + time.Now().Format("2-15-2006")
+	fileName := pv.Project.Host + " crawl " + time.Now().Format("2006-01-02")
 	if eid != "" {
 		fileName = fileName + "-" + eid
 	}
@@ -109,7 +109,7 @@ func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Add(
 		"Content-Disposition",
-		fmt.Sprint("attachment; filename=\""+pv.Project.Host+" "+time.Now().Format("2-15-2006")+" sitemap.xml\""))
+		fmt.Sprint("attachment; filename=\""+pv.Project.Host+" "+time.Now().Format("2006-01-02")+" sitemap.xml\""))
 
 	s := sitemap.NewSitemap(w, true)
 	prStream := app.reportService.GetSitemapPageReports(pv.Crawl.Id)
@@ -163,7 +163,7 @@ func (app *App) serveExportResources(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileName := pv.Project.Host + " " + t + " " + time.Now().Format("2-15-2006")
+	fileName := pv.Project.Host + " " + t + " " + time.Now().Format("2006-01-02")
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 

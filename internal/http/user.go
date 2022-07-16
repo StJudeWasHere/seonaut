@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
@@ -100,6 +101,69 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.renderer.RenderTemplate(w, "signin", v)
+}
+
+func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
+	data := struct {
+		Error        bool
+		ErrorMessage string
+	}{}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
+		}
+
+		password := r.FormValue("password")
+		newPassword := r.FormValue("new_password")
+
+		_, err = app.userService.SignIn(user.Email, password)
+		if err != nil {
+			data.Error = true
+			data.ErrorMessage = "Current password is not correct."
+
+			v := &helper.PageView{
+				PageTitle: "ACCOUNT_VIEW",
+				Data:      data,
+			}
+
+			app.renderer.RenderTemplate(w, "account", v)
+			return
+		}
+
+		err = app.userService.UpdatePassword(user.Email, newPassword)
+		if err != nil {
+			data.Error = true
+			data.ErrorMessage = "New password is not valid."
+
+			v := &helper.PageView{
+				PageTitle: "ACCOUNT_VIEW",
+				Data:      data,
+			}
+
+			app.renderer.RenderTemplate(w, "account", v)
+			return
+		}
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	v := &helper.PageView{
+		PageTitle: "ACCOUNT_VIEW",
+		Data:      data,
+	}
+
+	app.renderer.RenderTemplate(w, "account", v)
 }
 
 func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {

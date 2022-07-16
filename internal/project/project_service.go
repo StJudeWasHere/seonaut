@@ -9,6 +9,7 @@ import (
 type Storage interface {
 	SaveProject(*Project, int)
 	DeleteProject(*Project)
+	UpdateProject(p *Project) error
 	FindProjectById(id int, uid int) (Project, error)
 }
 
@@ -72,4 +73,9 @@ func (s *ProjectService) FindProject(id, uid int) (Project, error) {
 // Delete a project
 func (s *ProjectService) DeleteProject(p *Project) {
 	s.storage.DeleteProject(p)
+}
+
+// Update project
+func (s *ProjectService) UpdateProject(p *Project) error {
+	return s.storage.UpdateProject(p)
 }

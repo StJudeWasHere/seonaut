@@ -1,10 +1,25 @@
 #main {
 	min-height: 100%;
+	border: 1px solid var(--primary-color);
+	max-width: 1500px;
+	margin: 0 auto;
+}
+
+#main.borderless {
+	border: none;
 }
 
 .content {
 	box-sizing: border-box;
 	padding: 3rem;
+}
+
+.content-s {
+	padding: 1rem 3rem;
+}
+
+.inline {
+	display: inline;
 }
 
 .content-centered {
@@ -21,7 +36,7 @@
 .project-title {
 	display: flex;
 	align-items: center;
-	padding: 3rem;
+	padding: 3rem 3rem 0 3rem;
 }
 
 .project-title h2 {
@@ -35,12 +50,17 @@
 	flex: 1;
 }
 
-.status-ko {
+.bg-alert {
 	background-color: var(--row-issue-color);
 }
 
-.status-ok {
+.bg-success {
 	background-color: var(--crawler-section-secondary-color);
+}
+
+.aligned {
+	text-align: center;
+	justify-content: center;
 }
 
 .action {
@@ -57,25 +77,15 @@
 .url {
 	word-wrap: break-word;
 	font-weight: 300;
+	overflow:hidden;
 }
 
-
-.credentials {
-	width: 25rem;
-	margin: 0 auto;
-}
-
-.title {
-	font-weight: 600;
-}
-
-.logout {
+.menu {
 	float: right;
 	line-height: 2rem;
-	font-weight: 300;
 }
 
-.logout a {
+.menu a {
 	font-decoration: none;
 	color: var(--primary-color);
 	margin-left: 1rem;
@@ -85,14 +95,35 @@
 	padding: 3rem 1.5rem;
 	background-color: var(--secondary-color);
 	border-bottom: none;
+	flex: 1;
+}
+
+.col-actions a.main {
+	box-sizing: border-box;
+	padding: 2rem 0;	
+	flex-grow: 1;
 }
 
 .main-action {
 	background-color: var(--main-section-color);
+	height: 100%;
 	padding: 3rem;
+	box-sizing: border-box;
 	text-align: center;
 }
 
+@keyframes spin {
+    from {transform:rotate(0deg);}
+    to {transform:rotate(360deg);}
+}
+
+.main-action a:hover svg{	
+	animation-name: spin;
+	animation-duration: 500ms;
+	animation-iteration-count: infinite;
+	animation-timing-function: linear;
+}
+	
 .project-delete {
 	display: inline-flex;
 	left:1.5rem;
@@ -123,11 +154,6 @@ span.alert {
 	font-size: .8rem;
 }
 
-.secondary-container {
-	overflow: hidden;
-	background-color: var(--main-bg-color);
-}
-
 p.error {
 	color: var(--tertiary-section-color);
 }
@@ -135,4 +161,50 @@ p.error {
 .label {
 	margin-left: 1rem;
 	font-weight: 400;
+}
+
+.links-box {
+	border-bottom: 1px dotted var(--primary-color);
+}
+
+h2.title {
+	margin-bottom:1.5rem;
+}
+
+@media only screen and (max-width: 820px) {
+	.panel {
+		min-height: 60rem;
+		width: 100%;
+	}
+
+	.content {
+		padding: 1.5rem 1rem;
+	}
+
+	.status-column {
+		border-top: 1px dotted var(--primary-color);
+	}
+	
+	.main-action {
+		border-top: 1px dotted var(--primary-color);
+		padding: 1.5rem 1rem;
+		box-sizing: border-box;
+		text-align: left;
+	}
+	
+
+	.project-title svg {
+		display: none;
+	}
+	
+	.menu {
+		display: block;
+		float: none;
+	}
+
+	.menu a {
+		display: block;
+		border-bottom: none;
+		margin: 1.5rem 0 0 0;
+	}
 }

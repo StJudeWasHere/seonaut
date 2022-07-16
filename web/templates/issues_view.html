@@ -4,12 +4,13 @@
 
 <div class="panel">
 
-	<div class="box">
+	<div class="box box-first">
 		<div class="col col-main">
 			<div class="content">
-				<a href="/issues?pid={{ .ProjectView.Project.Id }}">Back to Issues</a>
+				<a href="/issues?pid={{ .ProjectView.Project.Id }}">Issues</a>
 			</div>
 		</div>
+
 		<div class="col col-actions-l">
 			<div class="main-action">
 				<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a>
@@ -23,17 +24,15 @@
 			<div class="content content-centered">
 				<div>
 					<h2 >{{ trans .Eid }}</h2>
-					<!-- <p style="margin-bottom: 0"> {{ .PaginatorView.Paginator.TotalPages }} URLs are affected by this issue.</p> -->
 				</div>
 			</div>
 		</div>
+
 		<div class="col col-actions">
-			<div class="project-actions" style="height: 100%">
-				<a class="icon-text highlight" style="height: 100%; box-sizing: border-box; padding: 2rem 0;border-bottom:0" href="/download?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M16.965 2.381c3.593 1.946 6.035 5.749 6.035 10.119 0 6.347-5.153 11.5-11.5 11.5s-11.5-5.153-11.5-11.5c0-4.37 2.442-8.173 6.035-10.119l.608.809c-3.353 1.755-5.643 5.267-5.643 9.31 0 5.795 4.705 10.5 10.5 10.5s10.5-4.705 10.5-10.5c0-4.043-2.29-7.555-5.643-9.31l.608-.809zm-4.965-2.381v14.826l3.747-4.604.753.666-5 6.112-5-6.101.737-.679 3.763 4.608v-14.828h1z"/></svg>
-					<span>Download URLs</span>
-				</a>
-			</div>
+			<a class="icon-text highlight borderless main" href="/download?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">
+				<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M16.965 2.381c3.593 1.946 6.035 5.749 6.035 10.119 0 6.347-5.153 11.5-11.5 11.5s-11.5-5.153-11.5-11.5c0-4.37 2.442-8.173 6.035-10.119l.608.809c-3.353 1.755-5.643 5.267-5.643 9.31 0 5.795 4.705 10.5 10.5 10.5s10.5-4.705 10.5-10.5c0-4.043-2.29-7.555-5.643-9.31l.608-.809zm-4.965-2.381v14.826l3.747-4.604.753.666-5 6.112-5-6.101.737-.679 3.763 4.608v-14.828h1z"/></svg>
+				<span>Download URLs</span>
+			</a>
 		</div>
 	</div>
 
@@ -42,64 +41,84 @@
 		{{ $pid := .ProjectView.Project.Id }}
 		{{ $eid := .Eid }}
 		{{ range .PaginatorView.PageReports }}
+
 		<div class="box">
-				<div class="col col-main">
-					<div class="content content-centered">
-						<div>
-							{{ if .Title }}{{ .Title }}<br />{{ end }}
-							<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
-						</div>
-				</div>
-				</div>
-				<div class="col col-actions">
-					<div class="project-actions">
-						<a href="{{ .URL }}" target="_blank">Open URL</a>
-						<a class="icon-text highlight" style="border-bottom: 0" href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">
-							<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12.01 20c-5.065 0-9.586-4.211-12.01-8.424 2.418-4.103 6.943-7.576 12.01-7.576 5.135 0 9.635 3.453 11.999 7.564-2.241 4.43-6.726 8.436-11.999 8.436zm-10.842-8.416c.843 1.331 5.018 7.416 10.842 7.416 6.305 0 10.112-6.103 10.851-7.405-.772-1.198-4.606-6.595-10.851-6.595-6.116 0-10.025 5.355-10.842 6.584zm10.832-4.584c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 1c2.208 0 4 1.792 4 4s-1.792 4-4 4-4-1.792-4-4 1.792-4 4-4z"/></svg>
-							<span>View Details</span>
-						</a>
-					</div>
-				</div>
-	</div>
-		{{ end }}
-
-
-		{{ if gt .PaginatorView.Paginator.TotalPages 1 }}
-			<div class="box pagination">
-				<div class="col prev">
-					<div class="content">
-				{{ if .PaginatorView.Paginator.PreviousPage }}
-					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.PreviousPage }}">
-						← prev
-					</a>
-				{{ else }}
-					← prev
-				{{ end }}
-					</div>
-				</div>
-				<div class="col">
-					<div class="content" style="text-align: center">
-						{{ .PaginatorView.Paginator.CurrentPage }}/{{ .PaginatorView.Paginator.TotalPages }}
-					</div>
-				</div>
-				<div class="col next">
-					<div class="content">
-				{{ if .PaginatorView.Paginator.NextPage }}
-					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.NextPage }}">
-						next →
-					</a>
-				{{ else }}
-					next →
-				{{ end }}
+			<div class="col col-main">
+				<div class="content content-centered">
+					<div class="url">
+						{{ if .Title }}{{ .Title }}<br />{{ end }}
+						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">{{ .URL }}</a>
 					</div>
 				</div>
 			</div>
-		{{ end }}
-	{{ else }}
-		<p><b>Everything is ok</b></p>
-	{{ end }}
 
-</div>
+			<div class="col col-actions">
+				<a href="{{ .URL }}" target="_blank">Open URL</a>
+				<a class="icon-text highlight borderless main" href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">
+					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12.01 20c-5.065 0-9.586-4.211-12.01-8.424 2.418-4.103 6.943-7.576 12.01-7.576 5.135 0 9.635 3.453 11.999 7.564-2.241 4.43-6.726 8.436-11.999 8.436zm-10.842-8.416c.843 1.331 5.018 7.416 10.842 7.416 6.305 0 10.112-6.103 10.851-7.405-.772-1.198-4.606-6.595-10.851-6.595-6.116 0-10.025 5.355-10.842 6.584zm10.832-4.584c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 1c2.208 0 4 1.792 4 4s-1.792 4-4 4-4-1.792-4-4 1.792-4 4-4z"/></svg>
+					<span>View Details</span>
+				</a>
+			</div>
+		</div>
+
+		{{ end }}
+
+		{{ if gt .PaginatorView.Paginator.TotalPages 1 }}
+
+			<div class="box pagination">
+				<div class="col prev">
+					<div class="content">
+
+					{{ if .PaginatorView.Paginator.PreviousPage }}
+
+						<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.PreviousPage }}">
+							← prev
+						</a>
+
+					{{ else }}
+
+						← prev
+
+					{{ end }}
+
+					</div>
+				</div>
+		
+				<div class="col">
+					<div class="content aligned">
+						{{ .PaginatorView.Paginator.CurrentPage }}/{{ .PaginatorView.Paginator.TotalPages }}
+					</div>
+				</div>
+
+				<div class="col next">
+					<div class="content">
+
+					{{ if .PaginatorView.Paginator.NextPage }}
+
+					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.NextPage }}">
+						next →
+					</a>
+
+					{{ else }}
+
+						next →
+
+					{{ end }}
+
+					</div>
+				</div>
+			</div>
+
+			{{ end }}
+
+		{{ else }}
+
+			<p><b>Everything is ok</b></p>
+
+		{{ end }}
+
+	</div>
+
 {{ end }}
 
 {{ template "footer" . }}

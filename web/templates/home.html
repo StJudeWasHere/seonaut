@@ -2,86 +2,103 @@
 
 <div class="panel">
 
-		<div class="box">
-			<div class="col col-main">
-				<div class="content content-centered">
-					<div>
-						<h2>Welcome to SEOnaut</h2>
-						<p>
-							{{ $projects := len .Data.Projects }}
-							{{ if eq $projects 0 }}
-								You don't have any project yet, start now by adding one!
-							{{ else if eq $projects 1}}
-								You currently have one project.
-							{{ else }}
-								You currently have {{ $projects }} projects.
-							{{ end }}
-						</p>
-					</div>
+	<div class="box box-first">
+		<div class="col col-main">
+			<div class="content content-centered">
+				<div>
+					<h2>Welcome to SEOnaut</h2>
+					<p>
+						{{ $projects := len .Data.Projects }}
+						{{ if eq $projects 0 }}
+							You don't have any project yet, start now by adding one!
+						{{ else if eq $projects 1}}
+							You currently have one project.
+						{{ else }}
+							You currently have {{ $projects }} projects.
+						{{ end }}
+					</p>
 				</div>
 			</div>
-			<div class="col col-actions-l">
-				<div class="main-action">
+		</div>
+		
+		<div class="col col-actions-l">
+			<div class="main-action">
 				<a class="icon-text borderless" href="/new-project">
 					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg>
 					<span>Add Project</span>
-			</a>
-		</div>
+				</a>
 			</div>
 		</div>
+	</div>
 
+	{{ if eq (len .Data.Projects) 0 }}
+		<div class="box">
+			<div class="col col-main ">
+				<div class="content aligned intro">
+					We
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 4.419c-2.826-5.695-11.999-4.064-11.999 3.27 0 7.27 9.903 10.938 11.999 15.311 2.096-4.373 12-8.041 12-15.311 0-7.327-9.17-8.972-12-3.27z"/></svg> 
+					Crawlable Websites
+					<p>Add your first project to gain insights about your website.</p>
+				</div>
+			</div>
+		</div>
+	{{ end }}
 
 	{{ range .Data.Projects }}
 
-		<div class="box">
-			<div class="col col-main">
-				<div class="project-title">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
-					<h2>{{ .Project.URL }}</h2>
+	<div class="box">
+		<div class="col col-main">
+			<div class="box borderless">
+				<div class="col col-main borderless">
+					<div class="project-title">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
+						<h2>{{ .Project.URL }}</h2>
+					</div>
+					<div class="content">
+						{{ if .Project.Deleting }}
+							<p>Deleting project.<br> This can take a few minutes, please wait...</p>
+						{{ else if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
+							{{ if eq .Crawl.TotalURLs 0 }}
+								<p class="error">The SEOnaut bot could not crawl your site.</p>
+							{{ end }}
+						{{ end }}
+					</div>					
 				</div>
 
-
-				{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
-					{{ if eq .Crawl.TotalURLs 0 }}
-						<p class="error">The SEOnaut bot could not crawl your site.</p>
-					{{ else if (not .Project.Deleting) }}
-					<!--
-					<a href="/delete-project?pid={{ .Project.Id }}" class="project-delete">
-						Delete project
-					</a>
-						-->
+				<div class="col col-right">
+					<div class="content">
+					{{ if (and (not .Project.Deleting) (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid))) }}
+						<a href="/edit-project?pid={{ .Project.Id }}" class="icon-link borderless">
+							<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.071 21.586l-7.071 1.414 1.414-7.071 14.929-14.929 5.657 5.657-14.929 14.929zm-.493-.921l-4.243-4.243-1.06 5.303 5.303-1.06zm9.765-18.251l-13.3 13.301 4.242 4.242 13.301-13.3-4.243-4.243z"/></svg>
+						</a>
 					{{ end }}
-				{{ end }}
-
-			</div>
-
-			<div class="col col-actions">
-
-
-				{{ if .Project.Deleting }}
-				<div>Deleting project.<br> This can take a few minutes, please wait...</div>
-				{{ else }}
-
-					{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
-						<a href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
-						<a href="/issues?pid={{ .Project.Id }}">Issues</a>
-						<a href="/export?pid={{ .Project.Id }}">Export</a>
-					{{ end }}
-
-					{{ if (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid)) }}						
-					<a class="icon-text project-crawl" href="/crawl?pid={{ .Project.Id }}">
-						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg>
-						<span>Crawl Now</span>
-					</a>
-					
-
-					{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
-						<div><a href="/crawl-live?pid={{ .Project.Id }}">Crawling...</a></div>
-						{{ end }}
-					{{ end }}
-
+					</div>
+				</div>
 			</div>
 		</div>
+
+		{{ if not .Project.Deleting }}
+
+		<div class="col col-actions">
+			{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
+				<a href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
+				<a href="/issues?pid={{ .Project.Id }}">Issues</a>
+				<a href="/export?pid={{ .Project.Id }}">Export</a>
+			{{ end }}
+
+			{{ if (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid)) }}
+				<a class="icon-text project-crawl " href="/crawl?pid={{ .Project.Id }}">
+					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg>
+					<span>Crawl Now</span>
+				</a>
+			{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
+				<a href="/crawl-live?pid={{ .Project.Id }}">Crawling...</a>
+			{{ end }}
+		</div>
+
+		{{ end }}
+	</div>
+
 	{{ end }}
 
 </div>

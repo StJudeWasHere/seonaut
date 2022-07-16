@@ -1,16 +1,18 @@
 package crawler
 
 type que struct {
-	in  chan interface{}
-	out chan interface{}
-	ack chan interface{}
+	in    chan interface{}
+	out   chan interface{}
+	ack   chan interface{}
+	count chan interface{}
 }
 
 func NewQueue() *que {
 	q := que{
-		in:  make(chan interface{}),
-		out: make(chan interface{}),
-		ack: make(chan interface{}),
+		in:    make(chan interface{}),
+		out:   make(chan interface{}),
+		ack:   make(chan interface{}),
+		count: make(chan interface{}),
 	}
 	go q.manage()
 
@@ -23,6 +25,7 @@ func (q *que) manage() {
 		close(q.in)
 		close(q.out)
 		close(q.ack)
+		close(q.count)
 	}()
 
 	queue := []interface{}{}
@@ -44,6 +47,7 @@ func (q *que) manage() {
 		}
 
 		select {
+		case q.count <- len(queue):
 		case v := <-q.in:
 			queue = append(queue, v)
 		case out <- first:
@@ -74,4 +78,15 @@ func (q *que) Poll() (interface{}, bool) {
 // Acknwoledge a message has been processed
 func (q *que) Ack(s string) {
 	q.ack <- s
+}
+
+// Returns the number of items currently in the queue
+func (q *que) Count() int {
+	v, ok := <-q.count
+
+	if !ok {
+		return 0
+	}
+
+	return v.(int)
 }

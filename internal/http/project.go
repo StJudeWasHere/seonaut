@@ -25,7 +25,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 
 	var refresh bool
 	for _, v := range views {
-		if v.Crawl.IssuesEnd.Valid == false || v.Project.Deleting {
+		if v.Crawl.Id > 0 && (v.Crawl.IssuesEnd.Valid == false || v.Project.Deleting) {
 			refresh = true
 		}
 	}
@@ -157,4 +157,90 @@ func (app *App) serveDeleteProject(w http.ResponseWriter, r *http.Request) {
 	app.projectService.DeleteProject(&p)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// Edit project
+func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	c := r.Context().Value("user")
+	user, ok := c.(*user.User)
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	p, err := app.projectService.FindProject(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	data := struct {
+		Project project.Project
+		Error   bool
+	}{Project: p}
+
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
+		if err != nil {
+			log.Printf("serveProjectEdit ParseForm: %v\n", err)
+			http.Redirect(w, r, "/", http.StatusSeeOther)
+			return
+		}
+
+		p.IgnoreRobotsTxt, err = strconv.ParseBool(r.FormValue("ignore_robotstxt"))
+		if err != nil {
+			p.IgnoreRobotsTxt = false
+		}
+
+		p.FollowNofollow, err = strconv.ParseBool(r.FormValue("follow_nofollow"))
+		if err != nil {
+			p.FollowNofollow = false
+		}
+
+		p.IncludeNoindex, err = strconv.ParseBool(r.FormValue("include_noindex"))
+		if err != nil {
+			p.IncludeNoindex = false
+		}
+
+		p.CrawlSitemap, err = strconv.ParseBool(r.FormValue("crawl_sitemap"))
+		if err != nil {
+			p.CrawlSitemap = false
+		}
+
+		p.AllowSubdomains, err = strconv.ParseBool(r.FormValue("allow_subdomains"))
+		if err != nil {
+			p.AllowSubdomains = false
+		}
+
+		err = app.projectService.UpdateProject(&p)
+		if err != nil {
+			data.Error = true
+			v := &helper.PageView{
+				User:      *user,
+				PageTitle: "EDIT_PROJECT",
+				Data:      data,
+			}
+
+			app.renderer.RenderTemplate(w, "project_edit", v)
+			return
+		}
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	v := &helper.PageView{
+		User:      *user,
+		PageTitle: "EDIT_PROJECT",
+		Data:      data,
+	}
+
+	app.renderer.RenderTemplate(w, "project_edit", v)
 }

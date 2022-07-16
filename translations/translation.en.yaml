@@ -1,5 +1,6 @@
 PROJECTS_VIEW: Projects
 ADD_PROJECT: Add project
+EDIT_PROJECT: Edit Project
 ISSUES_VIEW: Project Issues
 ISSUES_DETAIL: Issues Detail
 RESOURCES_VIEW_DETAILS: URL resource details
@@ -15,7 +16,7 @@ RESOURCES_VIEW_AUDIOS: URL audios
 RESOURCES_VIEW_VIDEOS: URL videos
 SIGNUP_VIEW: Sign Up
 SIGNIN_VIEW: Sign In
-UPGRADE: Upgrade your account
+ACCOUNT_VIEW: Edit Account
 PROJECT_DASHBOARD: Project Dashboard
 CRAWL_LIVE: Crawling Project
 EXPORT_VIEW: Export

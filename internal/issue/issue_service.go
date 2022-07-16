@@ -15,6 +15,12 @@ const (
 type IssueStore interface {
 	CountByMediaType(int64) CountList
 	CountByStatusCode(int64) CountList
+	CountByCanonical(int64) int
+	CountImagesAlt(int64) *AltCount
+	CountScheme(int64) *SchemeCount
+	CountByNonCanonical(int64) int
+	CountSponsoredLinks(int64) int
+	CountUGCLinks(int64) int
 	GetNumberOfPagesForIssues(int64, string) int
 	FindPageReportIssues(int64, int, string) []crawler.PageReport
 	CountByFollowLinks(int64) CountList
@@ -37,6 +43,21 @@ type IssueGroup struct {
 	ErrorType string
 	Priority  int
 	Count     int
+}
+
+type CanonicalCount struct {
+	Canonical    int
+	NonCanonical int
+}
+
+type AltCount struct {
+	Alt    int
+	NonAlt int
+}
+
+type SchemeCount struct {
+	HTTP  int
+	HTTPS int
 }
 
 type IssueCount struct {
@@ -63,8 +84,13 @@ type PaginatorView struct {
 }
 
 type LinksCount struct {
-	Internal CountList
-	External CountList
+	Internal      CountList
+	External      CountList
+	Total         int
+	TotalInternal int
+	TotalExternal int
+	Sponsored     int
+	UGC           int
 }
 
 func NewService(s IssueStore) *IssueService {
@@ -147,9 +173,36 @@ func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int
 
 func (s *IssueService) GetLinksCount(crawlId int64) *LinksCount {
 	l := &LinksCount{
-		Internal: s.store.CountByFollowLinks(crawlId),
-		External: s.store.CountByFollowExternalLinks(crawlId),
+		Internal:  s.store.CountByFollowLinks(crawlId),
+		External:  s.store.CountByFollowExternalLinks(crawlId),
+		Sponsored: s.store.CountSponsoredLinks(crawlId),
+		UGC:       s.store.CountUGCLinks(crawlId),
+	}
+
+	for _, v := range l.Internal {
+		l.Total += v.Value
+		l.TotalInternal += v.Value
+	}
+
+	for _, v := range l.External {
+		l.Total += v.Value
+		l.TotalExternal += v.Value
 	}
 
 	return l
+}
+
+func (s *IssueService) GetCanonicalCount(crawlId int64) *CanonicalCount {
+	return &CanonicalCount{
+		Canonical:    s.store.CountByCanonical(crawlId),
+		NonCanonical: s.store.CountByNonCanonical(crawlId),
+	}
+}
+
+func (s *IssueService) GetImageAltCount(crawlId int64) *AltCount {
+	return s.store.CountImagesAlt(crawlId)
+}
+
+func (s *IssueService) GetSchemeCount(crawlId int64) *SchemeCount {
+	return s.store.CountScheme(crawlId)
 }

@@ -11,6 +11,7 @@ type UserStore interface {
 	FindUserById(int) *User
 	UserSignup(string, string)
 	FindUserByEmail(string) *User
+	UserUpdatePassword(email, hashedPassword string) error
 }
 
 type UserService struct {
@@ -73,4 +74,23 @@ func (s *UserService) SignIn(email, password string) (*User, error) {
 	}
 
 	return u, nil
+}
+
+// Sets a new password for the user identified with the email address.
+func (s *UserService) UpdatePassword(email, password string) error {
+	if len(password) < 1 {
+		return errors.New("invalid password")
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return err
+	}
+
+	err = s.store.UserUpdatePassword(email, string(hashedPassword))
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

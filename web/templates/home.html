@@ -2,7 +2,7 @@
 
 <div class="panel">
 
-	<div class="box box-first">
+	<div class="box box-first box-highlight">
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
@@ -10,7 +10,7 @@
 					<p>
 						{{ $projects := len .Data.Projects }}
 						{{ if eq $projects 0 }}
-							You don't have any project yet, start now by adding one!
+							You don't have any project yet.
 						{{ else if eq $projects 1}}
 							You currently have one project.
 						{{ else }}
@@ -32,13 +32,13 @@
 	</div>
 
 	{{ if eq (len .Data.Projects) 0 }}
-		<div class="box">
+		<div class="box box-highlight">
 			<div class="col col-main ">
 				<div class="content aligned intro">
 					We
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 4.419c-2.826-5.695-11.999-4.064-11.999 3.27 0 7.27 9.903 10.938 11.999 15.311 2.096-4.373 12-8.041 12-15.311 0-7.327-9.17-8.972-12-3.27z"/></svg> 
 					Crawlable Websites
-					<p>Add your first project to gain insights about your website.</p>
+					<p><a href="/new-project">Add your first project</a> to gain insights about your website.</p>
 				</div>
 			</div>
 		</div>

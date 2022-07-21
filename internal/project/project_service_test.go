@@ -19,6 +19,9 @@ type storage struct{}
 
 func (s *storage) SaveProject(project *project.Project, userId int) {}
 func (s *storage) DeleteProject(project *project.Project)           {}
+func (s *storage) UpdateProject(p *project.Project) error {
+	return nil
+}
 func (s *storage) FindProjectById(id, uid int) (project.Project, error) {
 	p := project.Project{}
 

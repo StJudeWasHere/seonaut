@@ -28,6 +28,10 @@ func (s *storage) FindUserById(i int) *user.User {
 	return &user.User{}
 }
 
+func (s *storage) UserUpdatePassword(email, hashedPassword string) error {
+	return nil
+}
+
 func (s *storage) UserSignup(e, p string) {}
 
 func (s *storage) FindUserByEmail(e string) *user.User {

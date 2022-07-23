@@ -70,7 +70,7 @@ func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm.AddReporter(ds.Find40xPageReports, issue.Error40x)
 	rm.AddReporter(ds.Find50xPageReports, issue.Error50x)
 	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, issue.ErrorDuplicatedTitle)
-	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, issue.ErrorDuplicatedDescription)
+	rm.AddReporter(ds.FindPageReportsWithDuplicatedDescription, issue.ErrorDuplicatedDescription)
 	rm.AddReporter(ds.FindPageReportsWithEmptyTitle, issue.ErrorEmptyTitle)
 	rm.AddReporter(ds.FindPageReportsWithShortTitle, issue.ErrorShortTitle)
 	rm.AddReporter(ds.FindPageReportsWithLongTitle, issue.ErrorLongTitle)

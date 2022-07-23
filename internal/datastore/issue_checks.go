@@ -166,7 +166,7 @@ func (ds *Datastore) FindPageReportsWithLongDescription(cid int64) <-chan *crawl
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int) <-chan *crawler.PageReport {
+func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int64) <-chan *crawler.PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -186,7 +186,7 @@ func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int) <-chan *c
 		) d 
 		ON d.description = y.description AND d.lang = y.lang
 		WHERE y.media_type = "text/html" AND length(y.description) > 0 AND y.crawl_id = ?
-		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url AND crawled = 1`
+		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url AND crawled = 1)`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }

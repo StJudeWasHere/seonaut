@@ -302,16 +302,25 @@ func (ds *Datastore) InternalNoFollowLinks(cid int64) <-chan *crawler.PageReport
 
 func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) <-chan *crawler.PageReport {
 	query := `
-		SELECT pagereports.id, pagereports.url, pagereports.title
-		FROM pagereports 
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
 		INNER JOIN (
 			SELECT
-				DISTINCT links.pagereport_id
-			FROM links
-			INNER JOIN pagereports ON pagereports.url_hash = links.url_hash AND pagereports.crawl_id = links.crawl_id
-			WHERE links.nofollow = 1 AND pagereports.noindex = 0 AND links.crawl_id = ? AND pagereports.crawled = 1
-		) AS b ON b.pagereport_id = pagereports.id
-		WHERE pagereports.crawl_id = ? AND pagereports.crawled = 1`
+				a.pagereport_id
+			FROM (
+				SELECT
+					DISTINCT links.pagereport_id,
+					links.url_hash
+				FROM links
+				WHERE links.crawl_id = ? AND links.nofollow = 1
+			) AS a INNER JOIN pagereports ON a.url_hash = pagereports.url_hash
+			WHERE pagereports.noindex = 0 AND pagereports.crawled = 1 AND pagereports.crawl_id = ?
+		) AS b
+		ON b.pagereport_id = pagereports.id
+	`
 
 	return ds.pageReportsQuery(query, cid, cid)
 }

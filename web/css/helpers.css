@@ -1,12 +1,7 @@
 #main {
 	min-height: 100%;
-	border: 1px solid var(--primary-color);
 	max-width: 1500px;
 	margin: 0 auto;
-}
-
-#main.borderless {
-	border: none;
 }
 
 .content {

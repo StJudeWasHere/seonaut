@@ -88,6 +88,7 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("serveIssues GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
 	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)

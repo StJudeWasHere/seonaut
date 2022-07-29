@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"io"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
@@ -17,6 +18,8 @@ type UserService interface {
 	SignUp(email, password string) error
 	SignIn(email, password string) (*user.User, error)
 	UpdatePassword(email, password string) error
+	GetUserFromContext(c context.Context) (*user.User, bool)
+	SetUserToContext(user *user.User, c context.Context) context.Context
 }
 
 type ProjectService interface {

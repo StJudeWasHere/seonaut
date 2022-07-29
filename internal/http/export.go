@@ -12,7 +12,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/encoding"
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/project"
-	"github.com/stjudewashere/seonaut/internal/user"
 
 	"github.com/turk/go-sitemap"
 )
@@ -25,8 +24,7 @@ func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -54,8 +52,7 @@ func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -93,8 +90,7 @@ func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -130,8 +126,7 @@ func (app *App) serveExportResources(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return

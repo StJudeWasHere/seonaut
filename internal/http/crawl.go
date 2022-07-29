@@ -13,7 +13,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
-	"github.com/stjudewashere/seonaut/internal/user"
 
 	"github.com/gorilla/websocket"
 )
@@ -34,8 +33,7 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -78,8 +76,7 @@ func (app *App) serveCrawlLive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -125,8 +122,7 @@ func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		w.WriteHeader(http.StatusUnauthorized)
 		return

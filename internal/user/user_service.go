@@ -1,6 +1,7 @@
 package user
 
 import (
+	"context"
 	"errors"
 	"net/mail"
 
@@ -93,4 +94,16 @@ func (s *UserService) UpdatePassword(email, password string) error {
 	}
 
 	return nil
+}
+
+// Gets a User from the given Context
+func (s *UserService) GetUserFromContext(c context.Context) (*User, bool) {
+	v := c.Value("user")
+	user, ok := v.(*User)
+	return user, ok
+}
+
+// Returns a Context with the given User
+func (s *UserService) SetUserToContext(user *User, c context.Context) context.Context {
+	return context.WithValue(c, "user", user)
 }

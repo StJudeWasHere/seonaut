@@ -10,12 +10,10 @@ import (
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -44,8 +42,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 
 // Manage the form for adding new projects
 func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -141,8 +138,7 @@ func (app *App) serveDeleteProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -168,8 +164,7 @@ func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return

@@ -9,7 +9,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/projectview"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 type IssuesGroupView struct {
@@ -31,8 +30,7 @@ type IssuesView struct {
 }
 
 func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -72,8 +70,7 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -117,8 +114,7 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return

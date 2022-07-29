@@ -1,12 +1,10 @@
 package http
 
 import (
-	"context"
 	"log"
 	"net/http"
 
 	"github.com/stjudewashere/seonaut/internal/helper"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
@@ -109,8 +107,7 @@ func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
 		ErrorMessage string
 	}{}
 
-	c := r.Context().Value("user")
-	user, ok := c.(*user.User)
+	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -187,7 +184,7 @@ func (app *App) requireAuth(f func(w http.ResponseWriter, r *http.Request)) http
 				session.Save(r, w)
 				uid := session.Values["uid"].(int)
 				user := app.userService.FindById(uid)
-				ctx := context.WithValue(r.Context(), "user", user)
+				ctx := app.userService.SetUserToContext(user, r.Context())
 				req := r.WithContext(ctx)
 				f(w, req)
 

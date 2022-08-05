@@ -144,7 +144,6 @@ span.alert {
 	background-color: var(--alert-color);
 	color: var(--secondary-color);
 	padding: .2rem .5rem;
-	border-radius: 5px;
 	font-weight: 300;
 	font-size: .8rem;
 }

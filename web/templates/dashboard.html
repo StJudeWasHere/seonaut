@@ -270,7 +270,7 @@
 			]
 		},
 		{
-			name: 'Warning',
+			name: 'Alert',
 			type: 'line',
 			stack: 'Total',
 			lineStyle: {
@@ -285,12 +285,12 @@
 			},
 			data: [
 			{{ range .Crawls }}
-				{{ .WarningIssues }},
+				{{ .AlertIssues }},
 			{{ end }}
 			]
 		},
 		{
-			name: 'Notice',
+			name: 'Warning',
 			type: 'line',
 			stack: 'Total',
 			lineStyle: {
@@ -305,7 +305,7 @@
 			},
 			data: [
 				{{ range .Crawls }}
-					{{ .NoticeIssues }},
+					{{ .WarningIssues }},
 				{{ end }}
 			]
 		},

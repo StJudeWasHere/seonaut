@@ -229,8 +229,8 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 			total_issues,
 			issues_end,
 			critical_issues,
+			alert_issues,
 			warning_issues,
-			notice_issues,
 			blocked_by_robotstxt,
 			noindex
 		FROM crawls
@@ -253,8 +253,8 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 			&crawl.TotalIssues,
 			&crawl.IssuesEnd,
 			&crawl.CriticalIssues,
+			&crawl.AlertIssues,
 			&crawl.WarningIssues,
-			&crawl.NoticeIssues,
 			&crawl.BlockedByRobotstxt,
 			&crawl.Noindex,
 		)
@@ -267,15 +267,15 @@ func (ds *Datastore) GetLastCrawls(p project.Project, limit int) []crawler.Crawl
 	return crawls
 }
 
-func (ds *Datastore) SaveIssuesCount(crawlId int64, critical, warning, notice int) {
+func (ds *Datastore) SaveIssuesCount(crawlId int64, critical, alert, warning int) {
 	query := `UPDATE
 		crawls
-		SET critical_issues = ?, warning_issues = ?, notice_issues = ?
+		SET critical_issues = ?, alert_issues = ?, warning_issues = ?
 		WHERE id = ?`
 
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
-	_, err := stmt.Exec(critical, warning, notice, crawlId)
+	_, err := stmt.Exec(critical, alert, warning, crawlId)
 	if err != nil {
 		log.Printf("SaveIssuesCount: %v\n", err)
 	}

@@ -48,8 +48,8 @@ type Crawl struct {
 	TotalURLs          int
 	IssuesEnd          sql.NullTime
 	CriticalIssues     int
+	AlertIssues        int
 	WarningIssues      int
-	NoticeIssues       int
 	BlockedByRobotstxt int // URLs blocked by robots.txt
 	Noindex            int // URLS with noindex attribute
 	SitemapExists      bool

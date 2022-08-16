@@ -46,7 +46,7 @@ type Crawler struct {
 	responseCounter int
 	robotsChecker   *RobotsChecker
 
-	que            *que
+	queue          *queue
 	prStream       chan *PageReportMessage
 	client         *Client
 	allowedDomains []string
@@ -68,7 +68,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		plock:          &sync.RWMutex{},
 		robotsChecker:  NewRobotsChecker(options.UserAgent),
 
-		que:            NewQueue(),
+		queue:          NewQueue(),
 		client:         NewClient(options.UserAgent),
 		allowedDomains: []string{mainDomain, "www." + mainDomain},
 		prStream:       make(chan *PageReportMessage),
@@ -82,7 +82,7 @@ func (c *Crawler) Crawl() <-chan *PageReportMessage {
 	go func() {
 		defer close(c.prStream)
 
-		c.que.Push(c.URL.String())
+		c.queue.Push(c.URL.String())
 		c.storage.Add(c.URL.String())
 
 		sitemaps := c.getSitemaps()
@@ -123,7 +123,7 @@ func (c *Crawler) consumer(w *sync.WaitGroup) {
 			break
 		}
 
-		url, ok := c.que.Poll()
+		url, ok := c.queue.Poll()
 		if !ok {
 			break
 		}
@@ -132,11 +132,11 @@ func (c *Crawler) consumer(w *sync.WaitGroup) {
 
 		r, err := c.client.Get(url.(string))
 		if err != nil {
-			c.que.Ack(url.(string))
+			c.queue.Ack(url.(string))
 			continue
 		}
 		c.responseHandler(r)
-		c.que.Ack(url.(string))
+		c.queue.Ack(url.(string))
 	}
 	w.Done()
 }
@@ -202,7 +202,7 @@ func (c *Crawler) loadSitemapURLs(u string) {
 	}
 
 	c.storage.Add(l.String())
-	c.que.Push(l.String())
+	c.queue.Push(l.String())
 }
 
 // Handles the HTTP response
@@ -267,7 +267,7 @@ func (c *Crawler) responseHandler(r *http.Response) {
 			continue
 		}
 
-		c.que.Push(t.String())
+		c.queue.Push(t.String())
 	}
 
 	message := &PageReportMessage{
@@ -390,5 +390,5 @@ func (c *Crawler) getCrawledCount() int {
 
 // Returns the number of URLs currently in the queue
 func (c *Crawler) getDiscoveredURLs() int {
-	return c.que.Count()
+	return c.queue.Count()
 }

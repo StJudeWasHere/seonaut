@@ -1,14 +1,14 @@
 package crawler
 
-type que struct {
+type queue struct {
 	in    chan interface{}
 	out   chan interface{}
 	ack   chan interface{}
 	count chan interface{}
 }
 
-func NewQueue() *que {
-	q := que{
+func NewQueue() *queue {
+	q := queue{
 		in:    make(chan interface{}),
 		out:   make(chan interface{}),
 		ack:   make(chan interface{}),
@@ -20,7 +20,7 @@ func NewQueue() *que {
 }
 
 // Manage the push, poll and acknowledege of elements in the queue
-func (q *que) manage() {
+func (q *queue) manage() {
 	defer func() {
 		close(q.in)
 		close(q.out)
@@ -64,24 +64,24 @@ func (q *que) manage() {
 }
 
 // Adds a new value to the end of the queue
-func (q *que) Push(value interface{}) {
+func (q *queue) Push(value interface{}) {
 	q.in <- value
 }
 
 // Returns the first element in the queue adn a boolean indicating if operation was ok
-func (q *que) Poll() (interface{}, bool) {
+func (q *queue) Poll() (interface{}, bool) {
 	v, ok := <-q.out
 
 	return v, ok
 }
 
 // Acknwoledge a message has been processed
-func (q *que) Ack(s string) {
+func (q *queue) Ack(s string) {
 	q.ack <- s
 }
 
 // Returns the number of items currently in the queue
-func (q *que) Count() int {
+func (q *queue) Count() int {
 	v, ok := <-q.count
 
 	if !ok {

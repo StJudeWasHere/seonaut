@@ -3,8 +3,6 @@ package http
 import (
 	"log"
 	"net/http"
-
-	"github.com/stjudewashere/seonaut/internal/helper"
 )
 
 func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +13,7 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 		Error bool
 	}{}
 
-	pageView := &helper.PageView{
+	pageView := &PageView{
 		PageTitle: "SIGNUP_VIEW",
 		Data:      pageData}
 
@@ -90,7 +88,7 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 		e = true
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		PageTitle: "SIGNIN_VIEW",
 		Data: struct {
 			Email string
@@ -128,7 +126,7 @@ func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
 			data.Error = true
 			data.ErrorMessage = "Current password is not correct."
 
-			v := &helper.PageView{
+			v := &PageView{
 				PageTitle: "ACCOUNT_VIEW",
 				Data:      data,
 			}
@@ -142,7 +140,7 @@ func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
 			data.Error = true
 			data.ErrorMessage = "New password is not valid."
 
-			v := &helper.PageView{
+			v := &PageView{
 				PageTitle: "ACCOUNT_VIEW",
 				Data:      data,
 			}
@@ -155,7 +153,7 @@ func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		PageTitle: "ACCOUNT_VIEW",
 		Data:      data,
 	}

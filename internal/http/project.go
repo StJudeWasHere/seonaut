@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
@@ -28,7 +27,7 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		Data: struct {
 			Projects []projectview.ProjectView
 		}{Projects: views},
@@ -85,7 +84,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 
 		parsedURL, err := url.ParseRequestURI(strings.TrimSpace(u))
 		if err != nil {
-			v := &helper.PageView{
+			v := &PageView{
 				User:      *user,
 				PageTitle: "ADD_PROJECT",
 				Data:      struct{ Error bool }{Error: true},
@@ -106,7 +105,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 
 		err = app.projectService.SaveProject(project, user.Id)
 		if err != nil {
-			v := &helper.PageView{
+			v := &PageView{
 				User:      *user,
 				PageTitle: "ADD_PROJECT",
 				Data:      struct{ Error bool }{Error: true},
@@ -120,7 +119,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		User:      *user,
 		PageTitle: "ADD_PROJECT",
 		Data:      struct{ Error bool }{Error: false},
@@ -217,7 +216,7 @@ func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
 		err = app.projectService.UpdateProject(&p)
 		if err != nil {
 			data.Error = true
-			v := &helper.PageView{
+			v := &PageView{
 				User:      *user,
 				PageTitle: "EDIT_PROJECT",
 				Data:      data,
@@ -231,7 +230,7 @@ func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		User:      *user,
 		PageTitle: "EDIT_PROJECT",
 		Data:      data,

@@ -10,7 +10,6 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/encoding"
-	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/project"
 
 	"github.com/turk/go-sitemap"
@@ -36,7 +35,7 @@ func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.renderer.RenderTemplate(w, "export", &helper.PageView{
+	app.renderer.RenderTemplate(w, "export", &PageView{
 		Data:      struct{ Project project.Project }{Project: pv.Project},
 		User:      *user,
 		PageTitle: "EXPORT_VIEW",

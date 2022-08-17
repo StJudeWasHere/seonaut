@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/renderer"
+	"github.com/stjudewashere/seonaut/internal/user"
 
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
@@ -22,7 +23,7 @@ type HTTPServerConfig struct {
 type App struct {
 	config             *HTTPServerConfig
 	cookie             *sessions.CookieStore
-	renderer           *helper.Renderer
+	renderer           *renderer.Renderer
 	userService        UserService
 	projectService     ProjectService
 	crawlerService     CrawlerService
@@ -34,10 +35,18 @@ type App struct {
 	exportService      Exporter
 }
 
+// PageView is the data structure used to render the html templates
+type PageView struct {
+	PageTitle string
+	User      user.User
+	Data      interface{}
+	Refresh   bool
+}
+
 // NewApp initializes the template renderer and the session cookie.
 // Returns a new HTTP application server.
 func NewApp(c *HTTPServerConfig, s *Services) *App {
-	renderer, err := helper.NewRenderer(&helper.RendererConfig{
+	renderer, err := renderer.NewRenderer(&renderer.RendererConfig{
 		TemplatesFolder:  "web/templates",
 		TranslationsFile: "translations/translation.en.yaml",
 	})

@@ -60,7 +60,7 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 		Crawls:      app.crawlerService.GetLastCrawls(pv.Project),
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		Data:      ig,
 		User:      *user,
 		PageTitle: "ISSUES_VIEW",
@@ -105,7 +105,7 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 		SchemeCount:    app.issueService.GetSchemeCount(pv.Crawl.Id),
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		Data:      ig,
 		User:      *user,
 		PageTitle: "PROJECT_DASHBOARD",
@@ -164,7 +164,7 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 		PaginatorView: paginatorView,
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		Data:      view,
 		User:      *user,
 		PageTitle: "ISSUES_DETAIL",

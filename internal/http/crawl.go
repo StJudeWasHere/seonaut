@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
-	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 
@@ -99,7 +98,7 @@ func (app *App) serveCrawlLive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		Data: struct {
 			Project project.Project
 			Secure  bool

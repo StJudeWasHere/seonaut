@@ -1,4 +1,4 @@
-package helper
+package renderer
 
 import (
 	"fmt"
@@ -8,17 +8,8 @@ import (
 	"log"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/user"
-
 	"gopkg.in/yaml.v3"
 )
-
-type PageView struct {
-	PageTitle string
-	User      user.User
-	Data      interface{}
-	Refresh   bool
-}
 
 type RendererConfig struct {
 	TemplatesFolder  string
@@ -52,7 +43,7 @@ func NewRenderer(config *RendererConfig) (*Renderer, error) {
 }
 
 // Render a template with the specified PageView data.
-func (r *Renderer) RenderTemplate(w io.Writer, t string, v *PageView) {
+func (r *Renderer) RenderTemplate(w io.Writer, t string, v interface{}) {
 	var templates = template.Must(
 		template.New("").Funcs(template.FuncMap{
 			"trans":      r.trans,

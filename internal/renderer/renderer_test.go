@@ -1,14 +1,14 @@
-package helper_test
+package renderer_test
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/helper"
+	"github.com/stjudewashere/seonaut/internal/renderer"
 )
 
 func TestRenderer(t *testing.T) {
-	renderer, err := helper.NewRenderer(&helper.RendererConfig{
+	r, err := renderer.NewRenderer(&renderer.RendererConfig{
 		TemplatesFolder:  "./testdata",
 		TranslationsFile: "./testdata/translations.test.yaml",
 	})
@@ -19,7 +19,7 @@ func TestRenderer(t *testing.T) {
 	eb := new(bytes.Buffer)
 	e := "Page Title: Test Title"
 
-	renderer.RenderTemplate(eb, "test", &helper.PageView{PageTitle: "Test Title"})
+	r.RenderTemplate(eb, "test", &struct{ PageTitle string }{PageTitle: "Test Title"})
 	if eb.String() != e {
 		t.Errorf("renderer %s != %s", eb.String(), e)
 	}
@@ -27,7 +27,7 @@ func TestRenderer(t *testing.T) {
 	tb := new(bytes.Buffer)
 	te := "test translation"
 
-	renderer.RenderTemplate(tb, "translations", &helper.PageView{})
+	r.RenderTemplate(tb, "translations", &struct{}{})
 	if tb.String() != te {
 		t.Errorf("renderer %s != %s", tb.String(), te)
 	}

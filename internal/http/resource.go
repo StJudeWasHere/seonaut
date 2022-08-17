@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/report"
 )
@@ -74,7 +73,7 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
 	}
 
-	v := &helper.PageView{
+	v := &PageView{
 		Data:      rv,
 		User:      *user,
 		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab),

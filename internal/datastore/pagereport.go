@@ -5,15 +5,14 @@ import (
 	"math"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
-	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/issue"
 )
 
 func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
-	urlHash := helper.Hash(r.URL)
+	urlHash := Hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
-		redirectHash = helper.Hash(r.RedirectURL)
+		redirectHash = Hash(r.RedirectURL)
 	}
 
 	query := `
@@ -92,7 +91,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, url_hash) values "
 		v := []interface{}{}
 		for _, l := range r.Links {
-			hash := helper.Hash(l.URL)
+			hash := Hash(l.URL)
 			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
 			v = append(v, lid, cid, l.URL, l.ParsedURL.Scheme, l.Rel, l.NoFollow, l.Text, hash)
 		}
@@ -136,7 +135,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		v := []interface{}{}
 		for _, h := range r.Hreflangs {
 			sqlString += "(?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, helper.Hash(r.URL), helper.Hash(h.URL))
+			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, Hash(r.URL), Hash(h.URL))
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ := ds.db.Prepare(sqlString)
@@ -719,7 +718,7 @@ func (ds *Datastore) FindInLinks(s string, cid int64, p int) []crawler.PageRepor
 	max := paginationMax
 	offset := max * (p - 1)
 
-	hash := helper.Hash(s)
+	hash := Hash(s)
 	query := `
 		SELECT 
 			pagereports.id,
@@ -754,7 +753,7 @@ func (ds *Datastore) FindInLinks(s string, cid int64, p int) []crawler.PageRepor
 func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int) []crawler.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
-	uh := helper.Hash(u)
+	uh := Hash(u)
 	query := `
 		SELECT
 			id,
@@ -819,7 +818,7 @@ func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *crawler.PageRe
 }
 
 func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, cid int64) int {
-	h := helper.Hash(pageReport.URL)
+	h := Hash(pageReport.URL)
 	query := `
 		SELECT 
 			count(distinct pagereports.id)
@@ -838,7 +837,7 @@ func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, 
 }
 
 func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *crawler.PageReport, cid int64) int {
-	h := helper.Hash(pageReport.URL)
+	h := Hash(pageReport.URL)
 	query := `
 		SELECT
 			count(id)

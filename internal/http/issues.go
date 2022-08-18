@@ -6,15 +6,18 @@ import (
 	"strconv"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
-	"github.com/stjudewashere/seonaut/internal/helper"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
+const (
+	chartLimit = 4
+)
+
 type IssuesGroupView struct {
 	ProjectView    *projectview.ProjectView
-	MediaChart     helper.Chart
-	StatusChart    helper.Chart
+	MediaChart     Chart
+	StatusChart    Chart
 	IssueCount     *issue.IssueCount
 	Crawls         []crawler.Crawl
 	LinksCount     *issue.LinksCount
@@ -28,6 +31,13 @@ type IssuesView struct {
 	Eid           string
 	PaginatorView issue.PaginatorView
 }
+
+type ChartItem struct {
+	Key   string
+	Value int
+}
+
+type Chart []ChartItem
 
 func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
@@ -54,8 +64,8 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	ig := IssuesGroupView{
 		ProjectView: pv,
-		MediaChart:  helper.NewChart(issueCount.MediaCount),
-		StatusChart: helper.NewChart(issueCount.StatusCount),
+		MediaChart:  newChart(issueCount.MediaCount),
+		StatusChart: newChart(issueCount.StatusCount),
 		IssueCount:  issueCount,
 		Crawls:      app.crawlerService.GetLastCrawls(pv.Project),
 	}
@@ -95,8 +105,8 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 
 	ig := IssuesGroupView{
 		ProjectView:    pv,
-		MediaChart:     helper.NewChart(issueCount.MediaCount),
-		StatusChart:    helper.NewChart(issueCount.StatusCount),
+		MediaChart:     newChart(issueCount.MediaCount),
+		StatusChart:    newChart(issueCount.StatusCount),
 		IssueCount:     issueCount,
 		Crawls:         app.crawlerService.GetLastCrawls(pv.Project),
 		LinksCount:     app.issueService.GetLinksCount(pv.Crawl.Id),
@@ -171,4 +181,33 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.renderer.RenderTemplate(w, "issues_view", v)
+}
+
+func newChart(c issue.CountList) Chart {
+	chart := Chart{}
+	total := 0
+
+	for _, i := range c {
+		total = total + i.Value
+	}
+
+	for _, i := range c {
+		ci := ChartItem{
+			Key:   i.Key,
+			Value: i.Value,
+		}
+
+		chart = append(chart, ci)
+	}
+
+	if len(chart) > chartLimit {
+		chart[chartLimit-1].Key = "Other"
+		for _, v := range chart[chartLimit:] {
+			chart[chartLimit-1].Value += v.Value
+		}
+
+		chart = chart[:chartLimit]
+	}
+
+	return chart
 }

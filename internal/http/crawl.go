@@ -44,26 +44,76 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go func() {
-		log.Printf("Crawling %s\n", p.URL)
-		crawl, err := app.crawlerService.StartCrawler(p)
+	if p.BasicAuth == true {
+		http.Redirect(w, r, "/crawl-auth?id="+strconv.Itoa(pid), http.StatusSeeOther)
+		return
+	}
+
+	go app.startCrawler(p)
+
+	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+}
+
+func (app *App) serveCrawlAuth(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		log.Printf("serveCrawl pid: %v\n", err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	user, ok := app.userService.GetUserFromContext(r.Context())
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	p, err := app.projectService.FindProject(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		err := r.ParseForm()
 		if err != nil {
-			log.Printf("StartCrawler: %s %v\n", p.URL, err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			log.Printf("serveCrawlAuth ParseForm: %v\n", err)
+			http.Redirect(w, r, "/crawl-auth", http.StatusSeeOther)
+
 			return
 		}
 
-		log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
+		p.BasicAuth = true
+		p.AuthUser = r.FormValue("username")
+		p.AuthPass = r.FormValue("password")
 
-		app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
+		go app.startCrawler(p)
 
-		app.reportManager.CreateIssues(crawl.Id)
-		app.issueService.SaveCrawlIssuesCount(crawl.Id)
+		http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+	}
 
-		app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd"})
-	}()
+	pageView := &PageView{
+		PageTitle: "CRAWL_AUTH_VIEW",
+		Data:      struct{ Project project.Project }{Project: p},
+	}
 
-	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+	app.renderer.RenderTemplate(w, "crawl_auth", pageView)
+}
+
+func (app *App) startCrawler(p project.Project) {
+	log.Printf("Crawling %s\n", p.URL)
+	crawl, err := app.crawlerService.StartCrawler(p)
+	if err != nil {
+		log.Printf("StartCrawler: %s %v\n", p.URL, err)
+		return
+	}
+
+	log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
+
+	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
+	app.reportManager.CreateIssues(crawl.Id)
+	app.issueService.SaveCrawlIssuesCount(crawl.Id)
+	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd"})
 }
 
 // Start crawling a project

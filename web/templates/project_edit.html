@@ -123,8 +123,25 @@
 						If checked the crawler will also crawl URLs from subdomains.
 					</span>
 				</div>
-			</div>	
+			</div>
 		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="basic_auth"{{ if .Project.BasicAuth }} checked{{ end }}>
+							<span class="slider"></span>
+						</label>
+						<span class="label">Use HTTP Basic Authentication</span>
+					</div>
+					<span class="toggle-help">
+						Check this option if your site is password protected with HTTP Basic Auth.
+					</span>
+					</div>
+				</div>
+			</div>
 
 		<div class="box box-highlight">
 			<div class="col col-main">

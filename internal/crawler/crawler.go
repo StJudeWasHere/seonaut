@@ -32,6 +32,9 @@ type Options struct {
 	UserAgent       string
 	CrawlSitemap    bool
 	AllowSubdomains bool
+	BasicAuth       bool
+	AuthUser        string
+	AuthPass        string
 }
 
 type Crawler struct {
@@ -68,8 +71,13 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		plock:          &sync.RWMutex{},
 		robotsChecker:  NewRobotsChecker(options.UserAgent),
 
-		queue:          NewQueue(),
-		client:         NewClient(options.UserAgent),
+		queue: NewQueue(),
+		client: NewClient(&ClientOptions{
+			UserAgent: options.UserAgent,
+			BasicAuth: options.BasicAuth,
+			AuthUser:  options.AuthUser,
+			AuthPass:  options.AuthPass,
+		}),
 		allowedDomains: []string{mainDomain, "www." + mainDomain},
 		prStream:       make(chan *PageReportMessage),
 	}

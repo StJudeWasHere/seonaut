@@ -99,6 +99,7 @@ func (app *App) Run() {
 	http.HandleFunc("/delete-project", app.requireAuth(app.serveDeleteProject))
 	http.HandleFunc("/crawl", app.requireAuth(app.serveCrawl))
 	http.HandleFunc("/crawl-live", app.requireAuth(app.serveCrawlLive))
+	http.HandleFunc("/crawl-auth", app.requireAuth(app.serveCrawlAuth))
 	http.HandleFunc("/crawl-ws", app.requireAuth(app.serveCrawlWs))
 	http.HandleFunc("/issues", app.requireAuth(app.serveIssues))
 	http.HandleFunc("/issues/view", app.requireAuth(app.serveIssuesView))

@@ -19,9 +19,10 @@ func (ds *Datastore) SaveProject(project *project.Project, uid int) {
 			include_noindex,
 			crawl_sitemap,
 			allow_subdomains,
+			basic_auth,
 			user_id
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	stmt, _ := ds.db.Prepare(query)
@@ -33,6 +34,7 @@ func (ds *Datastore) SaveProject(project *project.Project, uid int) {
 		project.IncludeNoindex,
 		project.CrawlSitemap,
 		project.AllowSubdomains,
+		project.BasicAuth,
 		uid,
 	)
 	if err != nil {
@@ -51,6 +53,7 @@ func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 			include_noindex,
 			crawl_sitemap,
 			allow_subdomains,
+			basic_auth,
 			deleting,
 			created
 		FROM projects
@@ -73,6 +76,7 @@ func (ds *Datastore) FindProjectsByUser(uid int) []project.Project {
 			&p.IncludeNoindex,
 			&p.CrawlSitemap,
 			&p.AllowSubdomains,
+			&p.BasicAuth,
 			&p.Deleting,
 			&p.Created,
 		)
@@ -97,6 +101,7 @@ func (ds *Datastore) FindProjectById(id int, uid int) (project.Project, error) {
 			include_noindex,
 			crawl_sitemap,
 			allow_subdomains,
+			basic_auth,
 			deleting,
 			created
 		FROM projects
@@ -113,6 +118,7 @@ func (ds *Datastore) FindProjectById(id int, uid int) (project.Project, error) {
 		&p.IncludeNoindex,
 		&p.CrawlSitemap,
 		&p.AllowSubdomains,
+		&p.BasicAuth,
 		&p.Deleting,
 		&p.Created,
 	)
@@ -310,7 +316,8 @@ func (ds *Datastore) UpdateProject(p *project.Project) error {
 			follow_nofollow = ?,
 			include_noindex = ?,
 			crawl_sitemap = ?,
-			allow_subdomains = ?
+			allow_subdomains = ?,
+			basic_auth = ?
 		WHERE id = ?
 	`
 	_, err := ds.db.Exec(
@@ -320,6 +327,7 @@ func (ds *Datastore) UpdateProject(p *project.Project) error {
 		p.IncludeNoindex,
 		p.CrawlSitemap,
 		p.AllowSubdomains,
+		p.BasicAuth,
 		p.Id,
 	)
 	if err != nil {

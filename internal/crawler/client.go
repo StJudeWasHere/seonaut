@@ -6,11 +6,18 @@ import (
 )
 
 type Client struct {
-	userAgent string
-	client    *http.Client
+	options *ClientOptions
+	client  *http.Client
 }
 
-func NewClient(ua string) *Client {
+type ClientOptions struct {
+	UserAgent string
+	BasicAuth bool
+	AuthUser  string
+	AuthPass  string
+}
+
+func NewClient(options *ClientOptions) *Client {
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
@@ -19,8 +26,8 @@ func NewClient(ua string) *Client {
 	}
 
 	return &Client{
-		client:    httpClient,
-		userAgent: ua,
+		client:  httpClient,
+		options: options,
 	}
 }
 
@@ -31,7 +38,10 @@ func (c *Client) Get(u string) (*http.Response, error) {
 		return &http.Response{}, err
 	}
 
-	req.Header.Set("User-Agent", c.userAgent)
+	req.Header.Set("User-Agent", c.options.UserAgent)
+	if c.options.BasicAuth {
+		req.SetBasicAuth(c.options.AuthUser, c.options.AuthPass)
+	}
 
 	resp, err := c.client.Do(req)
 	if err != nil {

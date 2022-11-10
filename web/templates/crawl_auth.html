@@ -1,0 +1,62 @@
+{{ template "head" . }}
+
+<div class="panel">
+
+	<div class="box box-first">
+		<div class="col col-main">
+			<div class="content content-centered">
+				<div>
+					<h2>Live Crawling</h2>
+				</div>
+			</div>
+		</div>
+
+		<div class="col col-actions-l">
+			<div class="main-action">
+				{{ .Data.Project.Host }}
+			</div>
+		</div>
+	</div>
+
+	<div class="box">
+		<div class="col col-main">
+			<div class="content">
+				<p>This project uses HTTP Basic Authentication. You must provide the credentials before the crawl starts.</p>
+				<p><i>Credentials are not stored on the server, and they will be requested every time you want to crawl this project.</i></p>
+			</div>
+		</div>
+	</div>
+
+	<form method="POST" action="/crawl-auth?pid={{ .Data.Project.Id }}">
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+					<label for="username">Username:</label>
+					<input type="username" name="username" autofocus>
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+					<label for="password">Password:</label>
+					<input type="password" name="password" autofocus>
+				</div>
+			</div>
+		</div>
+
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content-s">
+
+					<input type="submit" value="Crawl Now" class="inline"> or <a href="/">cancel</a>.
+
+				</div>
+			</div>
+		</div>
+
+		</form>
+</div>
+
+{{ template "footer" . }}

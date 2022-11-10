@@ -85,6 +85,9 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		UserAgent:       s.config.Agent,
 		CrawlSitemap:    p.CrawlSitemap,
 		AllowSubdomains: p.AllowSubdomains,
+		BasicAuth:       p.BasicAuth,
+		AuthUser:        p.AuthUser,
+		AuthPass:        p.AuthPass,
 	}
 
 	crawl, err := s.store.SaveCrawl(p)

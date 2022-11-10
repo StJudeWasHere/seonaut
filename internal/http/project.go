@@ -82,6 +82,11 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			allowSubdomains = false
 		}
 
+		basicAuth, err := strconv.ParseBool(r.FormValue("basic_auth"))
+		if err != nil {
+			basicAuth = false
+		}
+
 		parsedURL, err := url.ParseRequestURI(strings.TrimSpace(u))
 		if err != nil {
 			v := &PageView{
@@ -101,6 +106,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			IncludeNoindex:  includeNoindex,
 			CrawlSitemap:    crawlSitemap,
 			AllowSubdomains: allowSubdomains,
+			BasicAuth:       basicAuth,
 		}
 
 		err = app.projectService.SaveProject(project, user.Id)
@@ -211,6 +217,11 @@ func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
 		p.AllowSubdomains, err = strconv.ParseBool(r.FormValue("allow_subdomains"))
 		if err != nil {
 			p.AllowSubdomains = false
+		}
+
+		p.BasicAuth, err = strconv.ParseBool(r.FormValue("basic_auth"))
+		if err != nil {
+			p.BasicAuth = false
 		}
 
 		err = app.projectService.UpdateProject(&p)

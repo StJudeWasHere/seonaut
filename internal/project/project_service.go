@@ -24,6 +24,9 @@ type Project struct {
 	CrawlSitemap    bool
 	AllowSubdomains bool
 	Deleting        bool
+	BasicAuth       bool
+	AuthUser        string
+	AuthPass        string
 }
 
 type ProjectService struct {

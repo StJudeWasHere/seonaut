@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 )
@@ -26,14 +27,14 @@ type Config struct {
 
 type Storage interface {
 	SaveCrawl(project.Project) (*Crawl, error)
-	SavePageReport(*PageReport, int64)
+	SavePageReport(*pagereport.PageReport, int64)
 	SaveEndCrawl(*Crawl) (*Crawl, error)
 	DeletePreviousCrawl(int64)
 	GetLastCrawls(project.Project, int) []Crawl
 }
 
 type PageReportMessage struct {
-	PageReport *PageReport
+	PageReport *pagereport.PageReport
 	Crawled    int
 	Discovered int
 }
@@ -77,6 +78,10 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 		return nil, err
 	}
 
+	if u.Path == "" {
+		u.Path = "/"
+	}
+
 	options := &Options{
 		MaxPageReports:  MaxPageReports,
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
@@ -97,7 +102,7 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 
 	c := NewCrawler(u, options)
 
-	for r := range c.Crawl() {
+	for r := range c.Stream() {
 		if r.PageReport.BlockedByRobotstxt {
 			crawl.BlockedByRobotstxt++
 		} else if r.PageReport.Noindex {

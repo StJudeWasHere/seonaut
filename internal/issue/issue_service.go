@@ -3,7 +3,7 @@ package issue
 import (
 	"errors"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 )
 
 const (
@@ -22,7 +22,7 @@ type IssueStore interface {
 	CountSponsoredLinks(int64) int
 	CountUGCLinks(int64) int
 	GetNumberOfPagesForIssues(int64, string) int
-	FindPageReportIssues(int64, int, string) []crawler.PageReport
+	FindPageReportIssues(int64, int, string) []pagereport.PageReport
 	CountByFollowLinks(int64) CountList
 	CountByFollowExternalLinks(int64) CountList
 	FindIssuesByPriority(int64, int) []IssueGroup
@@ -80,7 +80,7 @@ type Paginator struct {
 
 type PaginatorView struct {
 	Paginator   Paginator
-	PageReports []crawler.PageReport
+	PageReports []pagereport.PageReport
 }
 
 type LinksCount struct {

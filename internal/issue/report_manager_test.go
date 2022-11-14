@@ -4,8 +4,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 )
 
 const (
@@ -24,14 +24,14 @@ func (s *storage) SaveEndIssues(crawlId int64, t time.Time, total int) {}
 var service = issue.NewReportManager(&storage{})
 
 func TestCreateIssues(t *testing.T) {
-	pageReports := []crawler.PageReport{
-		crawler.PageReport{Id: pageReportId},
+	pageReports := []pagereport.PageReport{
+		pagereport.PageReport{Id: pageReportId},
 	}
 
 	total := 0
 
-	service.AddReporter(func(crawlId int64) <-chan *crawler.PageReport {
-		prStream := make(chan *crawler.PageReport)
+	service.AddReporter(func(crawlId int64) <-chan *pagereport.PageReport {
+		prStream := make(chan *pagereport.PageReport)
 		go func() {
 			defer close(prStream)
 			for _, v := range pageReports {

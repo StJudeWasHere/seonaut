@@ -4,11 +4,11 @@ import (
 	"log"
 	"math"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 )
 
-func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
+func (ds *Datastore) SavePageReport(r *pagereport.PageReport, cid int64) {
 	urlHash := Hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
@@ -39,9 +39,10 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 			size,
 			valid_headings,
 			robotstxt_blocked,
-			crawled
+			crawled,
+			in_sitemap
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -74,6 +75,7 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 		r.ValidHeadings,
 		r.BlockedByRobotstxt,
 		r.Crawled,
+		r.InSitemap,
 	)
 
 	if err != nil {
@@ -255,8 +257,8 @@ func (ds *Datastore) SavePageReport(r *crawler.PageReport, cid int64) {
 	}
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *crawler.PageReport {
-	prStream := make(chan *crawler.PageReport)
+func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *pagereport.PageReport {
+	prStream := make(chan *pagereport.PageReport)
 
 	go func() {
 		defer close(prStream)
@@ -282,7 +284,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *crawler.Page
 				size,
 				valid_headings,
 				robotstxt_blocked,
-				crawled
+				crawled,
+				in_sitemap
 			FROM pagereports
 			WHERE crawl_id = ?`
 
@@ -292,7 +295,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *crawler.Page
 		}
 
 		for rows.Next() {
-			p := &crawler.PageReport{}
+			p := &pagereport.PageReport{}
 			err := rows.Scan(&p.Id,
 				&p.URL,
 				&p.RedirectURL,
@@ -313,6 +316,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *crawler.Page
 				&p.ValidHeadings,
 				&p.BlockedByRobotstxt,
 				&p.Crawled,
+				&p.InSitemap,
 			)
 			if err != nil {
 				log.Println(err)
@@ -326,8 +330,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *crawler.Page
 	return prStream
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) <-chan *crawler.PageReport {
-	prStream := make(chan *crawler.PageReport)
+func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) <-chan *pagereport.PageReport {
+	prStream := make(chan *pagereport.PageReport)
 
 	go func() {
 		defer close(prStream)
@@ -353,7 +357,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				size,
 				valid_headings,
 				robotstxt_blocked,
-				crawled
+				crawled,
+				in_sitemap
 			FROM pagereports
 			WHERE crawl_id = ?
 			AND id IN (
@@ -370,7 +375,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 		}
 
 		for rows.Next() {
-			p := &crawler.PageReport{}
+			p := &pagereport.PageReport{}
 			err := rows.Scan(&p.Id,
 				&p.URL,
 				&p.RedirectURL,
@@ -391,6 +396,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				&p.ValidHeadings,
 				&p.BlockedByRobotstxt,
 				&p.Crawled,
+				&p.InSitemap,
 			)
 			if err != nil {
 				log.Println(err)
@@ -404,7 +410,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 	return prStream
 }
 
-func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
+func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 	query := `
 		SELECT
 			id,
@@ -426,13 +432,14 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 			size,
 			valid_headings,
 			robotstxt_blocked,
-			crawled
+			crawled,
+			in_sitemap
 		FROM pagereports
 		WHERE id = ?`
 
 	row := ds.db.QueryRow(query, rid)
 
-	p := crawler.PageReport{}
+	p := pagereport.PageReport{}
 	err := row.Scan(&p.Id,
 		&p.URL,
 		&p.RedirectURL,
@@ -453,6 +460,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 		&p.ValidHeadings,
 		&p.BlockedByRobotstxt,
 		&p.Crawled,
+		&p.InSitemap,
 	)
 	if err != nil {
 		log.Println(err)
@@ -464,7 +472,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 	}
 
 	for hrows.Next() {
-		h := crawler.Hreflang{}
+		h := pagereport.Hreflang{}
 		err = hrows.Scan(&h.URL, &h.Lang)
 		if err != nil {
 			log.Println(err)
@@ -480,7 +488,7 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 	}
 
 	for irows.Next() {
-		i := crawler.Image{}
+		i := pagereport.Image{}
 		err = irows.Scan(&i.URL, &i.Alt)
 		if err != nil {
 			log.Println(err)
@@ -573,10 +581,10 @@ func (ds *Datastore) FindPageReportById(rid int) crawler.PageReport {
 	return p
 }
 
-func (ds *Datastore) FindLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
+func (ds *Datastore) FindLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
 	max := paginationMax
 	offset := max * (p - 1)
-	links := []crawler.Link{}
+	links := []pagereport.Link{}
 
 	query := `
 		SELECT
@@ -594,7 +602,7 @@ func (ds *Datastore) FindLinks(pageReport *crawler.PageReport, cid int64, p int)
 	}
 
 	for lrows.Next() {
-		l := crawler.Link{}
+		l := pagereport.Link{}
 		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
 		if err != nil {
 			log.Println(err)
@@ -607,10 +615,10 @@ func (ds *Datastore) FindLinks(pageReport *crawler.PageReport, cid int64, p int)
 	return links
 }
 
-func (ds *Datastore) FindExternalLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
+func (ds *Datastore) FindExternalLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
 	max := paginationMax
 	offset := max * (p - 1)
-	links := []crawler.Link{}
+	links := []pagereport.Link{}
 
 	query := `
 		SELECT
@@ -631,7 +639,7 @@ func (ds *Datastore) FindExternalLinks(pageReport *crawler.PageReport, cid int64
 	}
 
 	for lrows.Next() {
-		l := crawler.Link{}
+		l := pagereport.Link{}
 		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.Sponsored, &l.UGC)
 		if err != nil {
 			log.Println(err)
@@ -644,8 +652,8 @@ func (ds *Datastore) FindExternalLinks(pageReport *crawler.PageReport, cid int64
 	return links
 }
 
-func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *crawler.PageReport {
-	prStream := make(chan *crawler.PageReport)
+func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *pagereport.PageReport {
+	prStream := make(chan *pagereport.PageReport)
 
 	go func() {
 		defer close(prStream)
@@ -663,7 +671,7 @@ func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *crawler.PageRepor
 		}
 
 		for rows.Next() {
-			p := &crawler.PageReport{}
+			p := &pagereport.PageReport{}
 			err := rows.Scan(&p.Id, &p.URL, &p.Title)
 			if err != nil {
 				log.Println(err)
@@ -677,7 +685,7 @@ func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *crawler.PageRepor
 	return prStream
 }
 
-func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []crawler.PageReport {
+func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []pagereport.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 
@@ -694,14 +702,14 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 			WHERE issue_types.type = ? AND crawl_id = ?
 		) ORDER BY url ASC LIMIT ?, ?`
 
-	var pageReports []crawler.PageReport
+	var pageReports []pagereport.PageReport
 	rows, err := ds.db.Query(query, errorType, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		p := crawler.PageReport{}
+		p := pagereport.PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
 			log.Println(err)
@@ -714,7 +722,7 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 	return pageReports
 }
 
-func (ds *Datastore) FindInLinks(s string, cid int64, p int) []crawler.PageReport {
+func (ds *Datastore) FindInLinks(s string, cid int64, p int) []pagereport.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 
@@ -730,14 +738,14 @@ func (ds *Datastore) FindInLinks(s string, cid int64, p int) []crawler.PageRepor
 		GROUP BY pagereports.id
 		LIMIT ?,?`
 
-	var pageReports []crawler.PageReport
+	var pageReports []pagereport.PageReport
 	rows, err := ds.db.Query(query, hash, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		p := crawler.PageReport{}
+		p := pagereport.PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
 			log.Println(err)
@@ -750,7 +758,7 @@ func (ds *Datastore) FindInLinks(s string, cid int64, p int) []crawler.PageRepor
 	return pageReports
 }
 
-func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int) []crawler.PageReport {
+func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int) []pagereport.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 	uh := Hash(u)
@@ -763,14 +771,14 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int)
 		WHERE redirect_hash = ? AND crawl_id = ? AND crawled = 1
 		LIMIT ?,?`
 
-	var pageReports []crawler.PageReport
+	var pageReports []pagereport.PageReport
 	rows, err := ds.db.Query(query, uh, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		p := crawler.PageReport{}
+		p := pagereport.PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
 			log.Println(err)
@@ -783,7 +791,7 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int)
 	return pageReports
 }
 
-func (ds *Datastore) GetNumberOfPagesForLinks(pageReport *crawler.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForLinks(pageReport *pagereport.PageReport, cid int64) int {
 	query := `
 		SELECT
 			count(*)
@@ -800,7 +808,7 @@ func (ds *Datastore) GetNumberOfPagesForLinks(pageReport *crawler.PageReport, ci
 	return int(math.Ceil(f))
 }
 
-func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *crawler.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *pagereport.PageReport, cid int64) int {
 	query := `
 		SELECT
 			count(*)
@@ -817,7 +825,7 @@ func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *crawler.PageRe
 	return int(math.Ceil(f))
 }
 
-func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *pagereport.PageReport, cid int64) int {
 	h := Hash(pageReport.URL)
 	query := `
 		SELECT 
@@ -836,7 +844,7 @@ func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, 
 	return int(math.Ceil(f))
 }
 
-func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *crawler.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *pagereport.PageReport, cid int64) int {
 	h := Hash(pageReport.URL)
 	query := `
 		SELECT

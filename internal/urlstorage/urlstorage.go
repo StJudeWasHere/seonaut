@@ -1,4 +1,4 @@
-package crawler
+package urlstorage
 
 import (
 	"sync"
@@ -30,4 +30,13 @@ func (s *URLStorage) Add(u string) {
 	s.lock.Lock()
 	s.seen[u] = true
 	s.lock.Unlock()
+}
+
+// Returns the entire underlying storage map.
+func (s *URLStorage) All() map[string]bool {
+	s.lock.Lock()
+	r := s.seen
+	s.lock.Unlock()
+
+	return r
 }

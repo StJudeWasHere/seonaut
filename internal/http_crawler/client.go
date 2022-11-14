@@ -1,4 +1,4 @@
-package crawler
+package http_crawler
 
 import (
 	"net/http"
@@ -31,7 +31,8 @@ func NewClient(options *ClientOptions) *Client {
 	}
 }
 
-// Gets an URL and handles the response with the responseHandler method
+// Makes a GET request to an URL and returns the http response or an error.
+// It sets the client's User-Agent as well as the BasicAuth details if they are available.
 func (c *Client) Get(u string) (*http.Response, error) {
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {

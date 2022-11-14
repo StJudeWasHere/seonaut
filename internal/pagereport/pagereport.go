@@ -1,9 +1,11 @@
-package crawler
+package pagereport
 
 import (
 	"bytes"
 	"errors"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
@@ -15,6 +17,12 @@ import (
 	"github.com/microcosm-cc/bluemonday"
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/charset"
+)
+
+const (
+	// MaxBodySize is the limit of the retrieved response body in bytes.
+	// The default value for MaxBodySize is 10MB (10 * 1024 * 1024 bytes).
+	maxBodySize = 10 * 1024 * 1024
 )
 
 type PageReport struct {
@@ -52,6 +60,7 @@ type PageReport struct {
 	ValidHeadings      bool
 	BlockedByRobotstxt bool
 	Crawled            bool
+	InSitemap          bool
 }
 
 type Link struct {
@@ -75,6 +84,22 @@ type Image struct {
 	Alt string
 }
 
+// Create a new PageReport from an http.Response
+func NewPageReportFromHTTPResponse(r *http.Response) (*PageReport, error) {
+	defer r.Body.Close()
+
+	var bodyReader io.Reader = r.Body
+	bodyReader = io.LimitReader(bodyReader, int64(maxBodySize))
+
+	b, err := ioutil.ReadAll(bodyReader)
+	if err != nil {
+		return &PageReport{}, err
+	}
+
+	return NewPageReport(r.Request.URL, r.StatusCode, &r.Header, b), nil
+}
+
+// Return a new PageReport.
 func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) *PageReport {
 	pageReport := PageReport{
 		URL:           u.String(),

@@ -1,4 +1,4 @@
-package crawler_test
+package pagereport_test
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 )
 
 const (
@@ -29,7 +29,7 @@ func TestNewPageReport(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
 
 	if pageReport.URL != testURL {
 		t.Error("NewPageReport URL != testURL")
@@ -67,7 +67,7 @@ func TestNewRedirectPageReport(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
 
 	if pageReport.RedirectURL != redirectURL {
 		t.Errorf("NewPageReport RedirectURL != %s", pageReport.RedirectURL)
@@ -94,7 +94,7 @@ func TestPageReportHTML(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	pageReport := crawler.NewPageReport(u, statusCode, headers, body)
+	pageReport := pagereport.NewPageReport(u, statusCode, headers, body)
 
 	itable := []struct {
 		want int
@@ -188,7 +188,7 @@ func TestNoindex(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
 
 	if pageReport.Nofollow == false {
 		t.Error("Nofollow == false")
@@ -213,7 +213,7 @@ func TestContentLanguage(t *testing.T) {
 		"Content-Type":     []string{"text/html"},
 	}
 
-	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
 
 	if pageReport.Lang != contentLanguage {
 		t.Errorf("ContentLanguage: %s != %s", pageReport.Lang, contentLanguage)
@@ -239,7 +239,7 @@ func TestHreflangHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
 
 	if len(pageReport.Hreflangs) != 3 {
 		t.Errorf("HreflangHeader: %d != 3", len(pageReport.Hreflangs))
@@ -277,7 +277,7 @@ func TestCanonicalHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := crawler.NewPageReport(u, statusCode, &headers, body)
+	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
 
 	if pageReport.Canonical != "https://example.com/canonical" {
 		t.Errorf("Canonical headers: %s != https://example.com/canonical", pageReport.Canonical)

@@ -3,7 +3,7 @@ package issue
 import (
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 )
 
 const (
@@ -39,7 +39,7 @@ const (
 	ErrorOrphan                                 // Orphan pages
 )
 
-type Reporter func(int64) <-chan *crawler.PageReport
+type Reporter func(int64) <-chan *pagereport.PageReport
 
 type IssueCallback struct {
 	Callback  Reporter

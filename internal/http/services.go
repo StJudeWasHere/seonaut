@@ -6,6 +6,7 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
@@ -51,8 +52,8 @@ type IssueService interface {
 
 type ReportService interface {
 	GetPageReport(int, int64, string, int) *report.PageReportView
-	GetPageReporsByIssueType(int64, string) <-chan *crawler.PageReport
-	GetSitemapPageReports(int64) <-chan *crawler.PageReport
+	GetPageReporsByIssueType(int64, string) <-chan *pagereport.PageReport
+	GetSitemapPageReports(int64) <-chan *pagereport.PageReport
 }
 
 type ReportManager interface {

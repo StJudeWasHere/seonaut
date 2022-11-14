@@ -1,24 +1,24 @@
 package report
 
 import (
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 )
 
 type ReportStore interface {
-	FindPageReportById(int) crawler.PageReport
+	FindPageReportById(int) pagereport.PageReport
 	FindErrorTypesByPage(int, int64) []string
-	FindInLinks(string, int64, int) []crawler.PageReport
-	FindPageReportsRedirectingToURL(string, int64, int) []crawler.PageReport
-	FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *crawler.PageReport
-	FindAllPageReportsByCrawlId(int64) <-chan *crawler.PageReport
-	FindSitemapPageReports(int64) <-chan *crawler.PageReport
-	FindLinks(pageReport *crawler.PageReport, cid int64, page int) []crawler.Link
-	FindExternalLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link
+	FindInLinks(string, int64, int) []pagereport.PageReport
+	FindPageReportsRedirectingToURL(string, int64, int) []pagereport.PageReport
+	FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *pagereport.PageReport
+	FindAllPageReportsByCrawlId(int64) <-chan *pagereport.PageReport
+	FindSitemapPageReports(int64) <-chan *pagereport.PageReport
+	FindLinks(pageReport *pagereport.PageReport, cid int64, page int) []pagereport.Link
+	FindExternalLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link
 
-	GetNumberOfPagesForInlinks(*crawler.PageReport, int64) int
-	GetNumberOfPagesForRedirecting(*crawler.PageReport, int64) int
-	GetNumberOfPagesForLinks(*crawler.PageReport, int64) int
-	GetNumberOfPagesForExternalLinks(pageReport *crawler.PageReport, cid int64) int
+	GetNumberOfPagesForInlinks(*pagereport.PageReport, int64) int
+	GetNumberOfPagesForRedirecting(*pagereport.PageReport, int64) int
+	GetNumberOfPagesForLinks(*pagereport.PageReport, int64) int
+	GetNumberOfPagesForExternalLinks(pageReport *pagereport.PageReport, cid int64) int
 }
 
 type ReportService struct {
@@ -26,10 +26,10 @@ type ReportService struct {
 }
 
 type PageReportView struct {
-	PageReport crawler.PageReport
+	PageReport pagereport.PageReport
 	ErrorTypes []string
-	InLinks    []crawler.PageReport
-	Redirects  []crawler.PageReport
+	InLinks    []pagereport.PageReport
+	Redirects  []pagereport.PageReport
 	Paginator  Paginator
 }
 
@@ -91,7 +91,7 @@ func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string, page i
 }
 
 // Return channel of PageReports by error type
-func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *crawler.PageReport {
+func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *pagereport.PageReport {
 	if eid != "" {
 		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
 	}
@@ -100,6 +100,6 @@ func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-ch
 }
 
 // Returns a channel of crawlable PageReports that can be included in a sitemap
-func (s *ReportService) GetSitemapPageReports(crawlId int64) <-chan *crawler.PageReport {
+func (s *ReportService) GetSitemapPageReports(crawlId int64) <-chan *pagereport.PageReport {
 	return s.store.FindSitemapPageReports(crawlId)
 }

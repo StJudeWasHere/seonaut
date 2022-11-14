@@ -117,6 +117,20 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
+							<b>Status Code</b>
+						</div>
+					</div>
+					
+					<div class="col">
+						<div class="content">
+							{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}
+						</div>
+					</div>
+				</div>
+
+				<div class="box soft">
+					<div class="col borderless">
+						<div class="content">
 							<b>Blocked</b>
 						</div>
 					</div>
@@ -131,13 +145,13 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Status Code</b>
+							<b>Sitemap</b>
 						</div>
 					</div>
-					
+
 					<div class="col">
 						<div class="content">
-							{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}
+							The URL {{ if .InSitemap }}is{{ else }}is not{{ end }} in the sitemap
 						</div>
 					</div>
 				</div>

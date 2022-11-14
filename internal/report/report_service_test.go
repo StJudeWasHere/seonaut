@@ -3,7 +3,7 @@ package report_test
 import (
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/pagereport"
 	"github.com/stjudewashere/seonaut/internal/report"
 )
 
@@ -18,75 +18,75 @@ const (
 
 type storage struct{}
 
-func (s *storage) FindExternalLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
-	return []crawler.Link{}
+func (s *storage) FindExternalLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
+	return []pagereport.Link{}
 }
 
-func (s *storage) GetNumberOfPagesForExternalLinks(pageReport *crawler.PageReport, cid int64) int {
+func (s *storage) GetNumberOfPagesForExternalLinks(pageReport *pagereport.PageReport, cid int64) int {
 	return 0
 }
 
-func (s *storage) GetNumberOfPagesForLinks(pageReport *crawler.PageReport, cid int64) int {
+func (s *storage) GetNumberOfPagesForLinks(pageReport *pagereport.PageReport, cid int64) int {
 	return 0
 }
 
-func (s *storage) GetNumberOfPagesForRedirecting(pageReport *crawler.PageReport, cid int64) int {
+func (s *storage) GetNumberOfPagesForRedirecting(pageReport *pagereport.PageReport, cid int64) int {
 	return 0
 }
 
-func (s *storage) FindLinks(pageReport *crawler.PageReport, cid int64, p int) []crawler.Link {
-	return []crawler.Link{}
+func (s *storage) FindLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
+	return []pagereport.Link{}
 }
 
-func (s *storage) FindPageReportById(id int) crawler.PageReport {
-	return crawler.PageReport{Id: reportId}
+func (s *storage) FindPageReportById(id int) pagereport.PageReport {
+	return pagereport.PageReport{Id: reportId}
 }
 
 func (s *storage) FindErrorTypesByPage(reportId int, crawlId int64) []string {
 	return []string{errorType}
 }
 
-func (s *storage) FindInLinks(u string, id int64, page int) []crawler.PageReport {
-	return []crawler.PageReport{crawler.PageReport{Id: reportId}}
+func (s *storage) FindInLinks(u string, id int64, page int) []pagereport.PageReport {
+	return []pagereport.PageReport{pagereport.PageReport{Id: reportId}}
 }
 
-func (s *storage) GetNumberOfPagesForInlinks(pageReport *crawler.PageReport, cid int64) int {
+func (s *storage) GetNumberOfPagesForInlinks(pageReport *pagereport.PageReport, cid int64) int {
 	return 1
 }
 
-func (s *storage) FindPageReportsRedirectingToURL(u string, id int64, page int) []crawler.PageReport {
-	return []crawler.PageReport{crawler.PageReport{Id: reportId}}
+func (s *storage) FindPageReportsRedirectingToURL(u string, id int64, page int) []pagereport.PageReport {
+	return []pagereport.PageReport{pagereport.PageReport{Id: reportId}}
 }
 
-func (s *storage) FindAllPageReportsByCrawlIdAndErrorType(id int64, e string) <-chan *crawler.PageReport {
-	prStream := make(chan *crawler.PageReport)
+func (s *storage) FindAllPageReportsByCrawlIdAndErrorType(id int64, e string) <-chan *pagereport.PageReport {
+	prStream := make(chan *pagereport.PageReport)
 	go func() {
 		defer close(prStream)
-		prStream <- &crawler.PageReport{}
+		prStream <- &pagereport.PageReport{}
 	}()
 
 	return prStream
 }
 
-func (s *storage) FindAllPageReportsByCrawlId(id int64) <-chan *crawler.PageReport {
-	prStream := make(chan *crawler.PageReport)
+func (s *storage) FindAllPageReportsByCrawlId(id int64) <-chan *pagereport.PageReport {
+	prStream := make(chan *pagereport.PageReport)
 
 	go func() {
 		defer close(prStream)
-		prStream <- &crawler.PageReport{}
-		prStream <- &crawler.PageReport{}
+		prStream <- &pagereport.PageReport{}
+		prStream <- &pagereport.PageReport{}
 	}()
 
 	return prStream
 }
 
-func (s *storage) FindSitemapPageReports(id int64) <-chan *crawler.PageReport {
-	prStream := make(chan *crawler.PageReport)
+func (s *storage) FindSitemapPageReports(id int64) <-chan *pagereport.PageReport {
+	prStream := make(chan *pagereport.PageReport)
 
 	go func() {
 		defer close(prStream)
 		if id == crawlId {
-			prStream <- &crawler.PageReport{}
+			prStream <- &pagereport.PageReport{}
 		}
 	}()
 

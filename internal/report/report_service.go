@@ -21,7 +21,7 @@ type ReportStore interface {
 	GetNumberOfPagesForExternalLinks(pageReport *pagereport.PageReport, cid int64) int
 }
 
-type ReportService struct {
+type Service struct {
 	store ReportStore
 }
 
@@ -40,15 +40,15 @@ type Paginator struct {
 	TotalPages   int
 }
 
-func NewService(store ReportStore) *ReportService {
-	return &ReportService{
+func NewService(store ReportStore) *Service {
+	return &Service{
 		store: store,
 	}
 }
 
 // Returns a PageReportView by PageReport Id and Crawl Id
 // it also loads the data specified in the tab paramater
-func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string, page int) *PageReportView {
+func (s *Service) GetPageReport(rid int, crawlId int64, tab string, page int) *PageReportView {
 	paginator := Paginator{
 		CurrentPage: page,
 	}
@@ -91,7 +91,7 @@ func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string, page i
 }
 
 // Return channel of PageReports by error type
-func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *pagereport.PageReport {
+func (s *Service) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *pagereport.PageReport {
 	if eid != "" {
 		return s.store.FindAllPageReportsByCrawlIdAndErrorType(crawlId, eid)
 	}
@@ -100,6 +100,6 @@ func (s *ReportService) GetPageReporsByIssueType(crawlId int64, eid string) <-ch
 }
 
 // Returns a channel of crawlable PageReports that can be included in a sitemap
-func (s *ReportService) GetSitemapPageReports(crawlId int64) <-chan *pagereport.PageReport {
+func (s *Service) GetSitemapPageReports(crawlId int64) <-chan *pagereport.PageReport {
 	return s.store.FindSitemapPageReports(crawlId)
 }

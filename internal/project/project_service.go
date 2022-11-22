@@ -29,18 +29,18 @@ type Project struct {
 	AuthPass        string
 }
 
-type ProjectService struct {
+type Service struct {
 	storage Storage
 }
 
-func NewService(s Storage) *ProjectService {
-	return &ProjectService{
+func NewService(s Storage) *Service {
+	return &Service{
 		storage: s,
 	}
 }
 
 // SaveProject stores a new project
-func (s *ProjectService) SaveProject(project *Project, userId int) error {
+func (s *Service) SaveProject(project *Project, userId int) error {
 	parsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func (s *ProjectService) SaveProject(project *Project, userId int) error {
 
 // Return a project specified by id and user.
 // It populates the Host field from the project's URL.
-func (s *ProjectService) FindProject(id, uid int) (Project, error) {
+func (s *Service) FindProject(id, uid int) (Project, error) {
 	project, err := s.storage.FindProjectById(id, uid)
 	if err != nil {
 		return project, err
@@ -74,11 +74,11 @@ func (s *ProjectService) FindProject(id, uid int) (Project, error) {
 }
 
 // Delete a project
-func (s *ProjectService) DeleteProject(p *Project) {
+func (s *Service) DeleteProject(p *Project) {
 	s.storage.DeleteProject(p)
 }
 
 // Update project
-func (s *ProjectService) UpdateProject(p *Project) error {
+func (s *Service) UpdateProject(p *Project) error {
 	return s.storage.UpdateProject(p)
 }

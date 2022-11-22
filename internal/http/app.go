@@ -5,7 +5,14 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/export"
+	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/projectview"
+	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/renderer"
+	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/user"
 
 	"github.com/gorilla/securecookie"
@@ -20,22 +27,36 @@ type HTTPServerConfig struct {
 	URL    string `mapstructure:"url"`
 }
 
+// Services stores all the services needed by the HTTP server.
+type Services struct {
+	UserService        *user.Service
+	ProjectService     *project.Service
+	ProjectViewService *projectview.Service
+	CrawlerService     *crawler.Service
+	IssueService       *issue.Service
+	ReportService      *report.Service
+	ReportManager      *issue.ReportManager
+	PubSubBroker       *pubsub.Broker
+	ExportService      *export.Exporter
+}
+
+// App is the server application, and it contains all the needed services to handle requests.
 type App struct {
 	config             *HTTPServerConfig
 	cookie             *sessions.CookieStore
 	renderer           *renderer.Renderer
-	userService        UserService
-	projectService     ProjectService
-	crawlerService     CrawlerService
-	issueService       IssueService
-	reportService      ReportService
-	reportManager      ReportManager
-	projectViewService ProjectViewService
-	pubsubBroker       PubSubBroker
-	exportService      Exporter
+	userService        *user.Service
+	projectService     *project.Service
+	crawlerService     *crawler.Service
+	issueService       *issue.Service
+	reportService      *report.Service
+	reportManager      *issue.ReportManager
+	projectViewService *projectview.Service
+	pubsubBroker       *pubsub.Broker
+	exportService      *export.Exporter
 }
 
-// PageView is the data structure used to render the html templates
+// PageView is the data structure used to render the html templates.
 type PageView struct {
 	PageTitle string
 	User      user.User

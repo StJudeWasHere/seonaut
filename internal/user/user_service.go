@@ -15,7 +15,7 @@ type UserStore interface {
 	UserUpdatePassword(email, hashedPassword string) error
 }
 
-type UserService struct {
+type Service struct {
 	store UserStore
 }
 
@@ -25,20 +25,20 @@ type User struct {
 	Password string
 }
 
-func NewService(s UserStore) *UserService {
-	return &UserService{
+func NewService(s UserStore) *Service {
+	return &Service{
 		store: s,
 	}
 }
 
 // FindById returns a by its Id.
-func (s *UserService) FindById(id int) *User {
+func (s *Service) FindById(id int) *User {
 	return s.store.FindUserById(id)
 }
 
 // SignUp validates the user email and password and saves a new
 // user in the user storage.
-func (s *UserService) SignUp(email, password string) error {
+func (s *Service) SignUp(email, password string) error {
 	u := s.store.FindUserByEmail(email)
 	if u.Id != 0 {
 		return errors.New("user already exists")
@@ -64,7 +64,7 @@ func (s *UserService) SignUp(email, password string) error {
 }
 
 // SignIn checks if user credencials are correct to sign in a user.
-func (s *UserService) SignIn(email, password string) (*User, error) {
+func (s *Service) SignIn(email, password string) (*User, error) {
 	u := s.store.FindUserByEmail(email)
 	if u.Id == 0 {
 		return nil, errors.New("user does not exist")
@@ -78,7 +78,7 @@ func (s *UserService) SignIn(email, password string) (*User, error) {
 }
 
 // Sets a new password for the user identified with the email address.
-func (s *UserService) UpdatePassword(email, password string) error {
+func (s *Service) UpdatePassword(email, password string) error {
 	if len(password) < 1 {
 		return errors.New("invalid password")
 	}
@@ -97,13 +97,13 @@ func (s *UserService) UpdatePassword(email, password string) error {
 }
 
 // Gets a User from the given Context
-func (s *UserService) GetUserFromContext(c context.Context) (*User, bool) {
+func (s *Service) GetUserFromContext(c context.Context) (*User, bool) {
 	v := c.Value("user")
 	user, ok := v.(*User)
 	return user, ok
 }
 
 // Returns a Context with the given User
-func (s *UserService) SetUserToContext(user *User, c context.Context) context.Context {
+func (s *Service) SetUserToContext(user *User, c context.Context) context.Context {
 	return context.WithValue(c, "user", user)
 }

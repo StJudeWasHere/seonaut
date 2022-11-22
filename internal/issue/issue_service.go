@@ -35,7 +35,7 @@ type Issue struct {
 	ErrorType    int
 }
 
-type IssueService struct {
+type Service struct {
 	store IssueStore
 }
 
@@ -93,13 +93,13 @@ type LinksCount struct {
 	UGC           int
 }
 
-func NewService(s IssueStore) *IssueService {
-	return &IssueService{
+func NewService(s IssueStore) *Service {
+	return &Service{
 		store: s,
 	}
 }
 
-func (s *IssueService) GetIssuesCount(crawlID int64) *IssueCount {
+func (s *Service) GetIssuesCount(crawlID int64) *IssueCount {
 	c := &IssueCount{
 		MediaCount:     s.store.CountByMediaType(crawlID),
 		StatusCount:    s.store.CountByStatusCode(crawlID),
@@ -123,7 +123,7 @@ func (s *IssueService) GetIssuesCount(crawlID int64) *IssueCount {
 	return c
 }
 
-func (s *IssueService) SaveCrawlIssuesCount(crawlID int64) {
+func (s *Service) SaveCrawlIssuesCount(crawlID int64) {
 	criticalIssues := s.store.FindIssuesByPriority(crawlID, Critical)
 	alertIssues := s.store.FindIssuesByPriority(crawlID, Alert)
 	warningIssues := s.store.FindIssuesByPriority(crawlID, Warning)
@@ -145,7 +145,7 @@ func (s *IssueService) SaveCrawlIssuesCount(crawlID int64) {
 	s.store.SaveIssuesCount(crawlID, critical, alert, warning)
 }
 
-func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (PaginatorView, error) {
+func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (PaginatorView, error) {
 	paginator := Paginator{
 		TotalPages:  s.store.GetNumberOfPagesForIssues(crawlId, issueId),
 		CurrentPage: currentPage,
@@ -171,7 +171,7 @@ func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int
 	return paginatorView, nil
 }
 
-func (s *IssueService) GetLinksCount(crawlId int64) *LinksCount {
+func (s *Service) GetLinksCount(crawlId int64) *LinksCount {
 	l := &LinksCount{
 		Internal:  s.store.CountByFollowLinks(crawlId),
 		External:  s.store.CountByFollowExternalLinks(crawlId),
@@ -192,17 +192,17 @@ func (s *IssueService) GetLinksCount(crawlId int64) *LinksCount {
 	return l
 }
 
-func (s *IssueService) GetCanonicalCount(crawlId int64) *CanonicalCount {
+func (s *Service) GetCanonicalCount(crawlId int64) *CanonicalCount {
 	return &CanonicalCount{
 		Canonical:    s.store.CountByCanonical(crawlId),
 		NonCanonical: s.store.CountByNonCanonical(crawlId),
 	}
 }
 
-func (s *IssueService) GetImageAltCount(crawlId int64) *AltCount {
+func (s *Service) GetImageAltCount(crawlId int64) *AltCount {
 	return s.store.CountImagesAlt(crawlId)
 }
 
-func (s *IssueService) GetSchemeCount(crawlId int64) *SchemeCount {
+func (s *Service) GetSchemeCount(crawlId int64) *SchemeCount {
 	return s.store.CountScheme(crawlId)
 }

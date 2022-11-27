@@ -26,8 +26,8 @@ type testStorage struct{}
 
 func (s *testStorage) FindProjectsByUser(uid int) []project.Project {
 	return []project.Project{
-		project.Project{},
-		project.Project{},
+		{},
+		{},
 	}
 }
 

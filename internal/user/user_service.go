@@ -63,7 +63,7 @@ func (s *Service) SignUp(email, password string) error {
 	return nil
 }
 
-// SignIn checks if user credencials are correct to sign in a user.
+// SignIn checks if user credentials are correct to sign in a user.
 func (s *Service) SignIn(email, password string) (*User, error) {
 	u := s.store.FindUserByEmail(email)
 	if u.Id == 0 {

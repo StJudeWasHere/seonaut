@@ -47,7 +47,7 @@ func (s *storage) FindErrorTypesByPage(reportId int, crawlId int64) []string {
 }
 
 func (s *storage) FindInLinks(u string, id int64, page int) []pagereport.PageReport {
-	return []pagereport.PageReport{pagereport.PageReport{Id: reportId}}
+	return []pagereport.PageReport{{Id: reportId}}
 }
 
 func (s *storage) GetNumberOfPagesForInlinks(pageReport *pagereport.PageReport, cid int64) int {
@@ -55,7 +55,7 @@ func (s *storage) GetNumberOfPagesForInlinks(pageReport *pagereport.PageReport, 
 }
 
 func (s *storage) FindPageReportsRedirectingToURL(u string, id int64, page int) []pagereport.PageReport {
-	return []pagereport.PageReport{pagereport.PageReport{Id: reportId}}
+	return []pagereport.PageReport{{Id: reportId}}
 }
 
 func (s *storage) FindAllPageReportsByCrawlIdAndErrorType(id int64, e string) <-chan *pagereport.PageReport {

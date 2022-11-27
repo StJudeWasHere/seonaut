@@ -79,7 +79,7 @@ func (q *Queue) Poll() string {
 	return <-q.out
 }
 
-// Acknwoledge a message has been processed.
+// Acknwoledges a message has been processed.
 func (q *Queue) Ack(s string) {
 	q.ack <- s
 }

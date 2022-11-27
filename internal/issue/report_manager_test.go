@@ -25,7 +25,7 @@ var service = issue.NewReportManager(&storage{})
 
 func TestCreateIssues(t *testing.T) {
 	pageReports := []pagereport.PageReport{
-		pagereport.PageReport{Id: pageReportId},
+		{Id: pageReportId},
 	}
 
 	total := 0

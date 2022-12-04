@@ -37,7 +37,7 @@ type Crawler struct {
 	responseCounter int
 	robotsChecker   *RobotsChecker
 	prStream        chan *PageReportMessage
-	allowedDomains  []string
+	allowedDomains  map[string]bool
 	httpCrawler     *http_crawler.HttpCrawler
 	qStream         chan string
 }
@@ -78,7 +78,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		sitemaps:        sitemaps,
 		robotsChecker:   robotsChecker,
 		robotstxtExists: robotsChecker.Exists(url),
-		allowedDomains:  []string{mainDomain, "www." + mainDomain},
+		allowedDomains:  map[string]bool{mainDomain: true, "www." + mainDomain: true},
 		prStream:        make(chan *PageReportMessage),
 		qStream:         qStream,
 		httpCrawler: http_crawler.New(
@@ -220,14 +220,13 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 // If the AllowSubdomains option is set, returns true the given domain is a subdomain of the
 // crawlers's base domain.
 func (c *Crawler) domainIsAllowed(s string) bool {
-	for _, v := range c.allowedDomains {
-		if v == s {
-			return true
-		}
+	_, ok := c.allowedDomains[s]
+	if ok {
+		return true
 	}
 
-	if c.options.AllowSubdomains {
-		return strings.HasSuffix(s, c.url.Host)
+	if c.options.AllowSubdomains && strings.HasSuffix(s, c.url.Host) {
+		return true
 	}
 
 	return false

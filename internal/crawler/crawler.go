@@ -49,7 +49,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		url.Path = "/"
 	}
 
-	storage := urlstorage.NewURLStorage()
+	storage := urlstorage.New()
 	storage.Add(url.String())
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -72,7 +72,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		options:         options,
 		queue:           q,
 		storage:         storage,
-		sitemapStorage:  urlstorage.NewURLStorage(),
+		sitemapStorage:  urlstorage.New(),
 		sitemapChecker:  sitemapChecker,
 		sitemapExists:   sitemapChecker.SitemapExists(sitemaps),
 		sitemaps:        sitemaps,
@@ -252,12 +252,12 @@ func (c *Crawler) loadSitemapURLs(u string) {
 
 // queueSitemapURLs loops through the sitemap's URLs, adding any unseen URLs to the crawler's queue.
 func (c *Crawler) queueSitemapURLs() {
-	for v := range c.sitemapStorage.All() {
+	c.sitemapStorage.Iterate(func(v string) {
 		if c.storage.Seen(v) == false {
 			c.storage.Add(v)
 			c.queue.Push(v)
 		}
-	}
+	})
 }
 
 // Returns true if the sitemap.xml file exists

@@ -9,7 +9,7 @@ type Queue struct {
 	out    chan string
 	ack    chan string
 	count  chan int
-	active chan int
+	active chan bool
 }
 
 func New(ctx context.Context) *Queue {
@@ -18,7 +18,7 @@ func New(ctx context.Context) *Queue {
 		out:    make(chan string),
 		ack:    make(chan string),
 		count:  make(chan int),
-		active: make(chan int),
+		active: make(chan bool),
 	}
 
 	go q.manage(ctx)
@@ -40,10 +40,9 @@ func (q *Queue) manage(ctx context.Context) {
 	active := make(map[string]bool)
 
 	var first string
+	var out chan string
 
 	for {
-		out := q.out
-
 		if first == "" && len(queue) > 0 {
 			first = queue[0]
 			active[first] = true
@@ -52,13 +51,15 @@ func (q *Queue) manage(ctx context.Context) {
 
 		if first == "" {
 			out = nil
+		} else {
+			out = q.out
 		}
 
 		select {
 		case <-ctx.Done():
 			return
 		case q.count <- len(queue):
-		case q.active <- len(active):
+		case q.active <- (len(active) > 0 || len(queue) > 0):
 		case v := <-q.in:
 			queue = append(queue, v)
 		case out <- first:
@@ -96,8 +97,5 @@ func (q *Queue) Count() int {
 
 // Active returns true if the queue is not empty or has active elements.
 func (q *Queue) Active() bool {
-	va := <-q.active
-	vc := <-q.count
-
-	return va > 0 || vc > 0
+	return <-q.active
 }

@@ -22,14 +22,14 @@ type Message struct {
 	Data interface{}
 }
 
-func NewBroker() *Broker {
+func New() *Broker {
 	return &Broker{
 		subscribers: make(map[string][]*Subscriber, 0),
 		lock:        &sync.RWMutex{},
 	}
 }
 
-// Returns a new subsciber to the topic
+// Returns a new subsciber to the topic.
 func (b *Broker) NewSubscriber(topic string, c func(*Message) error) *Subscriber {
 	s := &Subscriber{
 		Id:       uuid.New(),
@@ -44,7 +44,7 @@ func (b *Broker) NewSubscriber(topic string, c func(*Message) error) *Subscriber
 	return s
 }
 
-// Unsubscribes a subscriber
+// Unsubscribes a subscriber.
 func (b *Broker) Unsubscribe(s *Subscriber) {
 	b.lock.RLock()
 	subscribers := b.subscribers[s.Topic]
@@ -59,6 +59,11 @@ func (b *Broker) Unsubscribe(s *Subscriber) {
 			r = append(r, subs[i+1:]...)
 
 			b.subscribers[s.Topic] = r
+
+			// The topic is removed once there are no more subscribers.
+			if len(b.subscribers[s.Topic]) == 0 {
+				delete(b.subscribers, s.Topic)
+			}
 			b.lock.Unlock()
 
 			break
@@ -66,7 +71,7 @@ func (b *Broker) Unsubscribe(s *Subscriber) {
 	}
 }
 
-// Publishes a message to all subscribers of a topic
+// Publishes a message to all subscribers of a topic.
 func (b *Broker) Publish(topic string, m *Message) {
 	b.lock.RLock()
 	subscribers := b.subscribers[topic]
@@ -77,6 +82,5 @@ func (b *Broker) Publish(topic string, m *Message) {
 		if err != nil {
 			b.Unsubscribe(v)
 		}
-
 	}
 }

@@ -40,7 +40,7 @@ func main() {
 		log.Fatalf("Error running migrations: %v\n", err)
 	}
 
-	broker := pubsub.NewBroker()
+	broker := pubsub.New()
 
 	services := &http.Services{
 		UserService:        user.NewService(ds),

@@ -10,7 +10,7 @@ func TestPubSub(t *testing.T) {
 	testval := false
 	expectedval := true
 
-	broker := pubsub.NewBroker()
+	broker := pubsub.New()
 
 	broker.NewSubscriber("channel", func(m *pubsub.Message) error {
 		testval = m.Data.(bool)
@@ -28,7 +28,7 @@ func TestPubSubUnsusbscribe(t *testing.T) {
 	var counter int
 	expected := 1
 
-	broker := pubsub.NewBroker()
+	broker := pubsub.New()
 
 	subscriber := broker.NewSubscriber("channel", func(m *pubsub.Message) error {
 		counter++

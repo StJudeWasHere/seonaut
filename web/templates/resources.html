@@ -106,6 +106,7 @@
 
 	{{ $cid := .ProjectView.Crawl.Id }}
 	{{ $pid := .ProjectView.Project.Id }}
+	{{ $crawlSitemap := .ProjectView.Project.CrawlSitemap }}
 	{{ $eid := .Eid }}
 
 	{{ if eq .Tab "details" }}
@@ -142,19 +143,21 @@
 					</div>
 				</div>
 
-				<div class="box soft">
-					<div class="col borderless">
-						<div class="content">
-							<b>Sitemap</b>
+				{{ if $crawlSitemap }}
+					<div class="box soft">
+						<div class="col borderless">
+							<div class="content">
+								<b>Sitemap</b>
+							</div>
 						</div>
-					</div>
 
-					<div class="col">
-						<div class="content">
-							The URL {{ if .InSitemap }}is{{ else }}is not{{ end }} in the sitemap
+						<div class="col">
+							<div class="content">
+								The URL {{ if .InSitemap }}is{{ else }}is not{{ end }} in the sitemap
+							</div>
 						</div>
 					</div>
-				</div>
+				{{ end }}
 
 				<div class="box soft">
 					<div class="col borderless">

@@ -64,7 +64,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		sitemaps = []string{url.Scheme + "://" + url.Host + "/sitemap.xml"}
 	}
 
-	sitemapChecker := NewSitemapChecker()
+	sitemapChecker := NewSitemapChecker(options.MaxPageReports)
 	qStream := make(chan string)
 
 	c := &Crawler{
@@ -127,7 +127,7 @@ func (c *Crawler) queueStreamer(ctx context.Context) {
 func (c *Crawler) crawl(ctx context.Context) {
 	defer close(c.prStream)
 
-	if c.sitemapExists {
+	if c.sitemapExists && c.options.CrawlSitemap {
 		c.sitemapChecker.ParseSitemaps(c.sitemaps, c.loadSitemapURLs)
 	}
 
@@ -234,10 +234,6 @@ func (c *Crawler) domainIsAllowed(s string) bool {
 
 // Callback to load sitemap URLs into the sitemap storage
 func (c *Crawler) loadSitemapURLs(u string) {
-	if c.responseCounter >= c.options.MaxPageReports {
-		return
-	}
-
 	l, err := url.Parse(u)
 	if err != nil {
 		return

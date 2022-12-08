@@ -1,15 +1,21 @@
 package crawler
 
 import (
+	"errors"
 	"net/http"
+	"sync"
 
 	"github.com/oxffaa/gopher-parse-sitemap"
 )
 
-type SitemapChecker struct{}
+type SitemapChecker struct {
+	limit int
+}
 
-func NewSitemapChecker() *SitemapChecker {
-	return &SitemapChecker{}
+func NewSitemapChecker(limit int) *SitemapChecker {
+	return &SitemapChecker{
+		limit: limit,
+	}
 }
 
 // Check if any of the sitemap URLs provided exist
@@ -35,16 +41,39 @@ func (sc *SitemapChecker) urlExists(URL string) bool {
 
 // Parse the sitemaps using a callback function on each entry
 // For each URL provided check if it's an index sitemap
-func (sc *SitemapChecker) ParseSitemaps(URLs []string, c func(u string)) {
+func (sc *SitemapChecker) ParseSitemaps(URLs []string, callback func(u string)) {
+	c := 0
+	wg := new(sync.WaitGroup)
+	lock := sync.RWMutex{}
+
 	for _, l := range URLs {
 		sitemaps := sc.checkIndex(l)
 		for _, s := range sitemaps {
-			sitemap.ParseFromSite(s, func(e sitemap.Entry) error {
-				c(e.GetLocation())
-				return nil
-			})
+			wg.Add(1)
+
+			// Each sitemap is parsed in its own Go routine
+			// If the sitemap limit is hit the parser function returns an error to stop the proccess
+			go func(s string) {
+				sitemap.ParseFromSite(s, func(e sitemap.Entry) error {
+					callback(e.GetLocation())
+
+					lock.Lock()
+					defer lock.Unlock()
+
+					c++
+					if c >= sc.limit {
+						return errors.New("URL limit hit")
+					}
+
+					return nil
+				})
+
+				wg.Done()
+			}(s)
 		}
 	}
+
+	wg.Wait()
 }
 
 // Returns a slice of strings with sitemap URLs

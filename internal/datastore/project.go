@@ -218,8 +218,8 @@ func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 		&crawl.RobotstxtExists,
 		&crawl.SitemapExists,
 	)
-	if err != nil {
-		log.Printf("GetLastCrawl: %v\n", err)
+	if err != nil && err != sql.ErrNoRows {
+		log.Printf("GetLastCrawl project id %d: %v\n", p.Id, err)
 	}
 
 	return crawl
@@ -348,8 +348,8 @@ func (ds *Datastore) DeletePreviousCrawl(pid int64) {
 
 	row := ds.db.QueryRow(query, pid)
 	var c int64
-	if err := row.Scan(&c); err != nil {
-		log.Printf("DeletePreviousCrawl: %v\n", err)
+	if err := row.Scan(&c); err != nil && err != sql.ErrNoRows {
+		log.Printf("DeletePreviousCrawl project id %d: %v\n", pid, err)
 		return
 	}
 

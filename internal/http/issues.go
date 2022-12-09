@@ -50,7 +50,6 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("serveIssues pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -58,6 +57,12 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("serveIssues GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if pv.Crawl.TotalURLs == 0 {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
 	}
 
 	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)
@@ -90,13 +95,17 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Printf("serveIssues pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Printf("serveIssues GetProjectView: %v\n", err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if pv.Crawl.TotalURLs == 0 {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

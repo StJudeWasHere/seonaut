@@ -113,7 +113,7 @@ func (app *App) startCrawler(p project.Project) {
 	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
 	app.reportManager.CreateIssues(crawl.Id)
 	app.issueService.SaveCrawlIssuesCount(crawl.Id)
-	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd"})
+	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 }
 
 // Start crawling a project
@@ -227,6 +227,11 @@ func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
 				Crawled:    msg.Crawled,
 				Discovered: msg.Discovered,
 			}
+		}
+
+		if pubsubMessage.Name == "CrawlEnd" {
+			msg := pubsubMessage.Data.(int)
+			wsMessage.Data = msg
 		}
 
 		connLock.Lock()

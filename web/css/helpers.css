@@ -185,12 +185,7 @@ h2.title {
 		box-sizing: border-box;
 		text-align: left;
 	}
-	
 
-	.project-title svg {
-		display: none;
-	}
-	
 	.menu {
 		display: block;
 		float: none;
@@ -200,5 +195,17 @@ h2.title {
 		display: block;
 		border-bottom: none;
 		margin: 1.5rem 0 0 0;
+	}
+
+	.project-title {
+		padding: 1.5rem 1rem;
+	}
+
+	.project-title svg {
+		display: none;
+	}
+
+	.project-title h2 {
+		margin: 0;
 	}
 }

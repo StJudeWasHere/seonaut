@@ -35,6 +35,11 @@ func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if pv.Crawl.TotalURLs == 0 {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
 	app.renderer.RenderTemplate(w, "export", &PageView{
 		Data:      struct{ Project project.Project }{Project: pv.Project},
 		User:      *user,

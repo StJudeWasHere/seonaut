@@ -1,7 +1,10 @@
-.icon-text {
+a.icon-text {
 	border: 0;
-	display: block;
 	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
 }
 .icon-text svg {
 	display: block;

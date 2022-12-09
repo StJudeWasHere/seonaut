@@ -89,7 +89,7 @@
 
 			return
 		}
-		
+
 		addMsg("Connecting to the server, please wait...")
 
 		const protocol = {{ if .Data.Secure }}"wss://" {{ else }}"ws://"{{ end }}
@@ -117,7 +117,7 @@
 					data.StatusCode = "-"
 				}
 
-				t.querySelector(".status-code").textContent = data.StatusCode				
+				t.querySelector(".status-code").textContent = data.StatusCode
 
 				progress.style.width = 100 - ((data.Discovered / (data.Crawled + data.Discovered)) * 100) + "%"
 				let p = "URL"
@@ -134,7 +134,13 @@
 				break
 			case 'CrawlEnd':
 				conn.close()
-				window.location = "/dashboard?pid={{ .Data.Project.Id }}"
+				let totalURLs = msg.Data
+				console.log(msg)
+				if (totalURLs > 0) {
+					window.location = "/dashboard?pid={{ .Data.Project.Id }}"
+				} else {
+					window.location = "/"
+				}
 				break
 			}
 

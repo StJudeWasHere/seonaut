@@ -2,6 +2,7 @@ package crawler
 
 import (
 	"context"
+	"log"
 	"net/url"
 	"strings"
 
@@ -136,7 +137,7 @@ func (c *Crawler) crawl(ctx context.Context) {
 	for rm := range c.httpCrawler.Crawl(ctx) {
 		err := c.handleResponse(rm)
 		if err != nil {
-			continue
+			log.Println(err)
 		}
 
 		if c.queue.Active() == false && c.options.CrawlSitemap && sitemapLoaded == false {

@@ -20,7 +20,7 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<div class="col col-actions-l">
 			<div class="main-action">
 				<a class="icon-text borderless" href="/new-project">
@@ -59,10 +59,10 @@
 							<p>Deleting project.<br> This can take a few minutes, please wait...</p>
 						{{ else if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
 							{{ if eq .Crawl.TotalURLs 0 }}
-								<p class="error">The SEOnaut bot could not crawl your site.</p>
+								<p class="error">The SEOnaut bot was unable to access your website. Check that the URL is correct and not blocked by the Robots settings or Basic HTTP Authentication.</p>
 							{{ end }}
 						{{ end }}
-					</div>					
+					</div>
 				</div>
 
 				<div class="col col-right">
@@ -77,13 +77,15 @@
 			</div>
 		</div>
 
-		{{ if not .Project.Deleting }}
+		{{ if (not .Project.Deleting) }}
 
 		<div class="col col-actions">
-			{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
-				<a href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
-				<a href="/issues?pid={{ .Project.Id }}">Issues</a>
-				<a href="/export?pid={{ .Project.Id }}">Export</a>
+			{{ if gt .Crawl.TotalURLs 0 }}
+				{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
+					<a href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
+					<a href="/issues?pid={{ .Project.Id }}">Issues</a>
+					<a href="/export?pid={{ .Project.Id }}">Export</a>
+				{{ end }}
 			{{ end }}
 
 			{{ if (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid)) }}
@@ -94,6 +96,7 @@
 			{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
 				<a href="/crawl-live?pid={{ .Project.Id }}">Crawling...</a>
 			{{ end }}
+
 		</div>
 
 		{{ end }}

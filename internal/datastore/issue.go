@@ -90,19 +90,35 @@ func (ds *Datastore) SaveEndIssues(cid int64, t time.Time, totalIssues int) {
 }
 
 func (ds *Datastore) SaveIssues(iStream <-chan *issue.Issue) {
-	query := `
-		INSERT INTO issues (pagereport_id, crawl_id, issue_type_id)
-		VALUES (?, ?, ?)`
+	query := "INSERT INTO issues (pagereport_id, crawl_id, issue_type_id) VALUES "
+	sqlString := ""
+	v := []interface{}{}
 
-	stmt, _ := ds.db.Prepare(query)
-	defer stmt.Close()
+	fn := func() {
+		sqlString = sqlString[0 : len(sqlString)-1]
+		stmt, _ := ds.db.Prepare(query + sqlString)
+		defer stmt.Close()
+
+		_, err := stmt.Exec(v...)
+		if err != nil {
+			log.Println(err)
+		}
+
+		v = []interface{}{}
+		sqlString = ""
+	}
 
 	for i := range iStream {
-		_, err := stmt.Exec(i.PageReportId, i.CrawlId, i.ErrorType)
-		if err != nil {
-			log.Printf("saveIssues -> ID: %d ERROR: %d CRAWL: %d %v\n", i.PageReportId, i.ErrorType, i.CrawlId, err)
-			continue
+		sqlString += "(?, ?, ?),"
+		v = append(v, i.PageReportId, i.CrawlId, i.ErrorType)
+
+		if len(v) >= 100 {
+			fn()
 		}
+	}
+
+	if len(v) > 0 {
+		fn()
 	}
 }
 

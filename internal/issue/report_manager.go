@@ -1,6 +1,7 @@
 package issue
 
 import (
+	"sync"
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/pagereport"
@@ -72,9 +73,14 @@ func (r *ReportManager) AddReporter(c Reporter, t int) {
 func (r *ReportManager) CreateIssues(cid int64) {
 	issueCount := 0
 	iStream := make(chan *Issue)
-	defer close(iStream)
 
-	go r.store.SaveIssues(iStream)
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+
+	go func() {
+		r.store.SaveIssues(iStream)
+		wg.Done()
+	}()
 
 	for _, c := range r.callbacks {
 		for p := range c.Callback(cid) {
@@ -89,6 +95,10 @@ func (r *ReportManager) CreateIssues(cid int64) {
 			issueCount++
 		}
 	}
+
+	close(iStream)
+
+	wg.Wait()
 
 	r.store.SaveEndIssues(cid, time.Now(), issueCount)
 }

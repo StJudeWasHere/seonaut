@@ -38,6 +38,9 @@ const (
 	HreflangNoindexable                         // Hreflang to a non indexable page
 	ErrorBlocked                                // Blocked by robots.txt
 	ErrorOrphan                                 // Orphan pages
+	SitemapNoIndex                              // No index pages included in the sitemap
+	SitemapBlocked                              // Pages included in the sitemap that are blocked in robots.txt
+	SitemapNonCanonical                         // Non canonical pages included in the sitemap
 )
 
 type Reporter func(int64) <-chan *pagereport.PageReport

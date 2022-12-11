@@ -442,6 +442,45 @@ func (ds *Datastore) FindOrphanPages(cid int64) <-chan *pagereport.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
+// Finds non-indexable pagereports that are included in the sitemap.
+func (ds *Datastore) FindNoIndexInSitemap(cid int64) <-chan *pagereport.PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		WHERE pagereports.crawl_id = ? AND pagereports.noindex = 1 AND pagereports.in_sitemap = 1`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
+// Finds pagereports that are blocked by robots.txt and are included in the sitemap.
+func (ds *Datastore) FindBlockedInSitemap(cid int64) <-chan *pagereport.PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		WHERE pagereports.crawl_id = ? AND pagereports.robotstxt_blocked = 1 AND pagereports.in_sitemap = 1`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
+// Finds non-canonical pagereports that are included in the sitemap.
+func (ds *Datastore) FindNonCanonicalInSitemap(cid int64) <-chan *pagereport.PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports
+		WHERE pagereports.crawl_id = ? AND pagereports.canonical != "" AND pagereports.canonical != pagereports.url`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
 func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) <-chan *pagereport.PageReport {
 	prStream := make(chan *pagereport.PageReport)
 

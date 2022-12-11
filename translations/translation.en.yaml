@@ -111,3 +111,12 @@ ERROR_BLOCKED_DESC: Pages blocked by robots.txt won't be crawled by search engin
 
 ERROR_ORPHAN: Orphan pages
 ERROR_ORPHAN_DESC: Pages that are not linked anywhere in your site, this means no visitors can access to it and may lead to lead to crawl wastage.
+
+NO_INDEX_IN_SITEMAP: Non-indexable pages are included in the sitemap
+NO_INDEX_IN_SITEMAP_DESC: Non-indexable pages should not be included in a sitemap, as this sends a mixed signal to the search engines. They can also slow down the crawling process and lead to incorrect indexing.
+
+BLOCKED_IN_SITEMAP: Blocked pages are included in the sitemap
+BLOCKED_IN_SITEMAP_DESC: Pages blocked by the robots.txt file should not be included in the sitemap, as this sends a mixed signal to the search engines. They can also slow down the crawling process and lead to incorrect indexing.
+
+NON_CANONICAL_IN_SITEMAP: Non-canonical pages included in the sitemap
+NON_CANONICAL_IN_SITEMAP_DESC: Non-canonical pages should not be included in a sitemap as they can mislead search engines, waste time and resources, and lead to incorrect indexing.

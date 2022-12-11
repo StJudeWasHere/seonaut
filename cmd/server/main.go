@@ -96,6 +96,9 @@ func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm.AddReporter(ds.HreflangNoindexable, issue.HreflangNoindexable)
 	rm.AddReporter(ds.FindBlockedByRobotstxt, issue.ErrorBlocked)
 	rm.AddReporter(ds.FindOrphanPages, issue.ErrorOrphan)
+	rm.AddReporter(ds.FindNoIndexInSitemap, issue.SitemapNoIndex)
+	rm.AddReporter(ds.FindBlockedInSitemap, issue.SitemapBlocked)
+	rm.AddReporter(ds.FindNonCanonicalInSitemap, issue.SitemapNonCanonical)
 
 	return rm
 }

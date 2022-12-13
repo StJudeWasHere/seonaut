@@ -137,7 +137,7 @@ func (c *Crawler) crawl(ctx context.Context) {
 	for rm := range c.httpCrawler.Crawl(ctx) {
 		err := c.handleResponse(rm)
 		if err != nil {
-			log.Println(err)
+			log.Printf("handleResponse %s: Error %v", rm.URL, err)
 		}
 
 		if c.queue.Active() == false && c.options.CrawlSitemap && sitemapLoaded == false {
@@ -181,7 +181,18 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 		return nil
 	}
 
-	for _, t := range c.getCrawlableURLs(pageReport) {
+	crawlable := [][]*url.URL{
+		c.getCrawlableLinks(pageReport),
+		c.getResourceURLs(pageReport),
+		c.getCrawlableURLs(pageReport),
+	}
+
+	urls := []*url.URL{}
+	for _, c := range crawlable {
+		urls = append(urls, c...)
+	}
+
+	for _, t := range urls {
 		if c.storage.Seen(t.String()) == true {
 			continue
 		}
@@ -267,83 +278,37 @@ func (c *Crawler) RobotstxtExists() bool {
 	return c.robotstxtExists
 }
 
-// Returns all the crawlable URLs found in the HTML document.
-// URLs extracted from the PageReport's Scripts, Styles, Images, Audios and Videos are always considered crawlable.
-// HrefLangs, Iframes, RedirectURLs and Canonical URLs are crawlable only if their the domain name is allowed.
+// Returns a slice with all the crawlable Links from the PageReport's links.
 // URLs extracted from internal Links and ExternalLinks are crawlable only if the domain name is allowed and
 // if they don't have the "nofollow" attribute. If they have the "nofollow" attribute, they are also considered
 // crawlable if the crawler's FollowNofollow option is enabled.
-func (c *Crawler) getCrawlableURLs(p *pagereport.PageReport) []*url.URL {
+func (c *Crawler) getCrawlableLinks(p *pagereport.PageReport) []*url.URL {
+	var urls []*url.URL
+
+	links := append(p.Links, p.ExternalLinks...)
+	for _, l := range links {
+		if (!l.NoFollow || c.options.FollowNofollow) && c.domainIsAllowed(l.ParsedURL.Host) {
+			urls = append(urls, l.ParsedURL)
+		}
+	}
+
+	return urls
+}
+
+// Returns a slice containing all the resource URLs from a PageReport.
+// The resource URLs are always considered crawlable.
+func (c *Crawler) getResourceURLs(p *pagereport.PageReport) []*url.URL {
 	var urls []*url.URL
 	var resources []string
-
-	for _, l := range p.Links {
-		if (!l.NoFollow || c.options.FollowNofollow) && c.domainIsAllowed(l.ParsedURL.Host) {
-			urls = append(urls, l.ParsedURL)
-		}
-	}
-
-	for _, l := range p.ExternalLinks {
-		if (!l.NoFollow || c.options.FollowNofollow) && c.domainIsAllowed(l.ParsedURL.Host) {
-			urls = append(urls, l.ParsedURL)
-		}
-	}
-
-	for _, l := range p.Hreflangs {
-		parsed, err := url.Parse(l.URL)
-		if err != nil {
-			continue
-		}
-
-		if c.domainIsAllowed(parsed.Host) {
-			urls = append(urls, parsed)
-		}
-	}
-
-	for _, l := range p.Iframes {
-		parsed, err := url.Parse(l)
-		if err != nil {
-			continue
-		}
-
-		if c.domainIsAllowed(parsed.Host) {
-			urls = append(urls, parsed)
-		}
-	}
-
-	if p.RedirectURL != "" {
-		parsed, err := url.Parse(p.RedirectURL)
-		if err == nil && c.domainIsAllowed(parsed.Host) {
-			urls = append(urls, parsed)
-		}
-	}
-
-	if p.Canonical != "" {
-		parsed, err := url.Parse(p.Canonical)
-		if err == nil && c.domainIsAllowed(parsed.Host) {
-			urls = append(urls, parsed)
-		}
-	}
-
-	for _, l := range p.Scripts {
-		resources = append(resources, l)
-	}
-
-	for _, l := range p.Styles {
-		resources = append(resources, l)
-	}
 
 	for _, l := range p.Images {
 		resources = append(resources, l.URL)
 	}
 
-	for _, l := range p.Audios {
-		resources = append(resources, l)
-	}
-
-	for _, l := range p.Videos {
-		resources = append(resources, l)
-	}
+	resources = append(resources, p.Scripts...)
+	resources = append(resources, p.Styles...)
+	resources = append(resources, p.Audios...)
+	resources = append(resources, p.Videos...)
 
 	for _, v := range resources {
 		t, err := url.Parse(v)
@@ -351,6 +316,43 @@ func (c *Crawler) getCrawlableURLs(p *pagereport.PageReport) []*url.URL {
 			continue
 		}
 		urls = append(urls, t)
+	}
+
+	return urls
+}
+
+// Returns a slice of crawlable URLs extracted from the Hreflangs, Iframes,
+// Redirect URLs and Canonical URLs found in the PageReport.
+// The URLs are considered crawlable only if its domain is allowed by the crawler.
+func (c *Crawler) getCrawlableURLs(p *pagereport.PageReport) []*url.URL {
+	var urls []*url.URL
+	var resources []string
+
+	for _, l := range p.Hreflangs {
+		resources = append(resources, l.URL)
+	}
+
+	for _, l := range p.Iframes {
+		resources = append(resources, l)
+	}
+
+	if p.RedirectURL != "" {
+		resources = append(resources, p.RedirectURL)
+	}
+
+	if p.Canonical != "" {
+		resources = append(resources, p.Canonical)
+	}
+
+	for _, r := range resources {
+		parsed, err := url.Parse(r)
+		if err != nil {
+			continue
+		}
+
+		if c.domainIsAllowed(parsed.Host) {
+			urls = append(urls, parsed)
+		}
 	}
 
 	return urls

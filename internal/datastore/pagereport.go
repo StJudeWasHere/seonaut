@@ -71,7 +71,7 @@ func (ds *Datastore) SavePageReport(r *pagereport.PageReport, cid int64) {
 		r.H1,
 		r.H2,
 		r.Words,
-		len(r.Body),
+		r.Size,
 		r.ValidHeadings,
 		r.BlockedByRobotstxt,
 		r.Crawled,

@@ -29,7 +29,10 @@ func TestNewPageReport(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if pageReport.URL != testURL {
 		t.Error("NewPageReport URL != testURL")
@@ -45,10 +48,6 @@ func TestNewPageReport(t *testing.T) {
 
 	if pageReport.ContentType != "text/html" {
 		t.Error("NewPageReport ContentType != contentType")
-	}
-
-	if string(pageReport.Body) != string(body) {
-		t.Error("NewPageReport Body != body")
 	}
 }
 
@@ -67,7 +66,10 @@ func TestNewRedirectPageReport(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if pageReport.RedirectURL != redirectURL {
 		t.Errorf("NewPageReport RedirectURL != %s", pageReport.RedirectURL)
@@ -94,7 +96,10 @@ func TestPageReportHTML(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	pageReport := pagereport.NewPageReport(u, statusCode, headers, body)
+	pageReport, err := pagereport.NewPageReport(u, statusCode, headers, body)
+	if err != nil {
+		t.Error(err)
+	}
 
 	itable := []struct {
 		want int
@@ -188,7 +193,10 @@ func TestNoindex(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if pageReport.Nofollow == false {
 		t.Error("Nofollow == false")
@@ -213,7 +221,10 @@ func TestContentLanguage(t *testing.T) {
 		"Content-Type":     []string{"text/html"},
 	}
 
-	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if pageReport.Lang != contentLanguage {
 		t.Errorf("ContentLanguage: %s != %s", pageReport.Lang, contentLanguage)
@@ -239,7 +250,10 @@ func TestHreflangHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if len(pageReport.Hreflangs) != 3 {
 		t.Errorf("HreflangHeader: %d != 3", len(pageReport.Hreflangs))
@@ -277,7 +291,10 @@ func TestCanonicalHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
 
 	if pageReport.Canonical != "https://example.com/canonical" {
 		t.Errorf("Canonical headers: %s != https://example.com/canonical", pageReport.Canonical)

@@ -26,10 +26,10 @@
 		<div class="col">
 			<div class="content" >
 				<h2>
-					{{ if ne .IssueCount.Critical 0 }}
-						<a href="#critical" class="borderless">{{ .IssueCount.Critical }} Critical Issues</a>
+					{{ if ne .ProjectView.Crawl.CriticalIssues 0 }}
+						<a href="#critical" class="borderless">{{ .ProjectView.Crawl.CriticalIssues }} Critical Issues</a>
 					{{ else }}
-						{{ .IssueCount.Critical }} Critical Issues
+						{{ .ProjectView.Crawl.CriticalIssues }} Critical Issues
 					{{ end }}
 					
 				</h2>
@@ -40,10 +40,10 @@
 		<div class="col">
 			<div class="content">
 				<h2>
-					{{ if ne .IssueCount.Alert 0 }}
-						<a href="#alert" class="borderless">{{ .IssueCount.Alert }} Alerts</a>
+					{{ if ne .ProjectView.Crawl.AlertIssues 0 }}
+						<a href="#alert" class="borderless">{{ .ProjectView.Crawl.AlertIssues }} Alerts</a>
 					{{ else }}
-						{{ .IssueCount.Alert }} Alerts
+						{{ .ProjectView.Crawl.AlertIssues }} Alerts
 					{{ end }}
 				</h2>
 				<p>Issues that are holding your site back. Fix them next.</p>
@@ -53,10 +53,10 @@
 		<div class="col">
 			<div class="content">
 				<h2>
-					{{ if ne .IssueCount.Warning 0 }}
-						<a href="#warning" class="borderless">{{ .IssueCount.Warning }} Warnings</a>
+					{{ if ne .ProjectView.Crawl.WarningIssues 0 }}
+						<a href="#warning" class="borderless">{{ .ProjectView.Crawl.WarningIssues }} Warnings</a>
 					{{ else }}
-						{{ .IssueCount.Warning }} Warnings
+						{{ .ProjectView.Crawl.WarningIssues }} Warnings
 					{{ end }}
 				</h2>
 				<p>Issues you may want to keep an eye on.</p>

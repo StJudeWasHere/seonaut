@@ -1,7 +1,6 @@
 package http
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 
@@ -14,7 +13,7 @@ const (
 	chartLimit = 4
 )
 
-type IssuesGroupView struct {
+type DashboardView struct {
 	ProjectView    *projectview.ProjectView
 	MediaChart     Chart
 	StatusChart    Chart
@@ -24,6 +23,11 @@ type IssuesGroupView struct {
 	CanonicalCount *issue.CanonicalCount
 	AltCount       *issue.AltCount
 	SchemeCount    *issue.SchemeCount
+}
+
+type IssuesGroupView struct {
+	ProjectView *projectview.ProjectView
+	IssueCount  *issue.IssueCount
 }
 
 type IssuesView struct {
@@ -48,14 +52,12 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveIssues pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
-		log.Printf("serveIssues GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -65,14 +67,9 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)
-
 	ig := IssuesGroupView{
 		ProjectView: pv,
-		MediaChart:  newChart(issueCount.MediaCount),
-		StatusChart: newChart(issueCount.StatusCount),
-		IssueCount:  issueCount,
-		Crawls:      app.crawlerService.GetLastCrawls(pv.Project),
+		IssueCount:  app.issueService.GetIssuesCount(pv.Crawl.Id),
 	}
 
 	v := &PageView{
@@ -93,14 +90,12 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveIssues pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
-		log.Printf("serveIssues GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -112,7 +107,7 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 
 	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)
 
-	ig := IssuesGroupView{
+	ig := DashboardView{
 		ProjectView:    pv,
 		MediaChart:     newChart(issueCount.MediaCount),
 		StatusChart:    newChart(issueCount.StatusCount),
@@ -142,17 +137,13 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 
 	eid := r.URL.Query().Get("eid")
 	if eid == "" {
-		log.Println("serveIssuesView: eid parameter missing")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveIssuesView pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -163,17 +154,13 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
-		log.Printf("serveIssuesView GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	paginatorView, err := app.issueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
 	if err != nil {
-		log.Printf("serveIssuesView GetPaginatedReportsByIssue: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 

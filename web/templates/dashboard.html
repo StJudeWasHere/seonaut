@@ -571,14 +571,14 @@
 				type: 'pie',
 				center: ['50%', '50%'],
 				data: [
-					{{ if .IssueCount.Critical }}
-						{ value: {{ .IssueCount.Critical }}, name: 'Critical Error', itemStyle: {color: '#FD7B6A'}},
+					{{ if .ProjectView.Crawl.CriticalIssues }}
+						{ value: {{ .ProjectView.Crawl.CriticalIssues }}, name: 'Critical Error', itemStyle: {color: '#FD7B6A'}},
 					{{ end }}
-					{{ if .IssueCount.Alert }}
-						{ value: {{ .IssueCount.Alert }}, name: 'Alert', itemStyle: {color: '#F7E497'}},
+					{{ if .ProjectView.Crawl.AlertIssues }}
+						{ value: {{ .ProjectView.Crawl.AlertIssues }}, name: 'Alert', itemStyle: {color: '#F7E497'}},
 					{{ end }}
-					{{ if .IssueCount.Warning }}
-						{ value: {{ .IssueCount.Warning }}, name: 'Warning', itemStyle: {color: '#2C7D91'}},
+					{{ if .ProjectView.Crawl.WarningIssues }}
+						{ value: {{ .ProjectView.Crawl.WarningIssues }}, name: 'Warning', itemStyle: {color: '#2C7D91'}},
 					{{ end }}
 				].sort(function (a, b) {
 					return a.value - b.value;

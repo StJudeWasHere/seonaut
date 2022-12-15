@@ -61,9 +61,6 @@ type SchemeCount struct {
 }
 
 type IssueCount struct {
-	Critical       int
-	Alert          int
-	Warning        int
 	MediaCount     CountList
 	StatusCount    CountList
 	CriticalIssues []IssueGroup
@@ -106,18 +103,6 @@ func (s *Service) GetIssuesCount(crawlID int64) *IssueCount {
 		CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
 		AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
 		WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
-	}
-
-	for _, v := range c.CriticalIssues {
-		c.Critical += v.Count
-	}
-
-	for _, v := range c.AlertIssues {
-		c.Alert += v.Count
-	}
-
-	for _, v := range c.WarningIssues {
-		c.Warning += v.Count
 	}
 
 	return c

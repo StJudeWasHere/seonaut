@@ -172,14 +172,12 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 	pageReport.BlockedByRobotstxt = c.robotsChecker.IsBlocked(parsedURL)
 	pageReport.InSitemap = c.sitemapStorage.Seen(r.URL)
 
-	if pageReport.Noindex == false || c.options.IncludeNoindex == true {
-		pageReport.Crawled = true
-		c.responseCounter++
-	}
-
 	if pageReport.Nofollow == true && c.options.FollowNofollow == false {
 		return nil
 	}
+
+	pageReport.Crawled = true
+	c.responseCounter++
 
 	crawlable := [][]*url.URL{
 		c.getCrawlableLinks(pageReport),
@@ -217,13 +215,13 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 		c.queue.Push(t.String())
 	}
 
-	message := &PageReportMessage{
-		PageReport: pageReport,
-		Crawled:    c.responseCounter,
-		Discovered: c.queue.Count(),
+	if pageReport.Noindex == false || c.options.IncludeNoindex == true {
+		c.prStream <- &PageReportMessage{
+			PageReport: pageReport,
+			Crawled:    c.responseCounter,
+			Discovered: c.queue.Count(),
+		}
 	}
-
-	c.prStream <- message
 
 	return nil
 }

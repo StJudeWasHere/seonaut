@@ -48,6 +48,7 @@ func (r *Renderer) RenderTemplate(w io.Writer, t string, v interface{}) {
 		template.New("").Funcs(template.FuncMap{
 			"trans":      r.trans,
 			"total_time": r.totalTime,
+			"add":        r.add,
 		}).ParseGlob(r.config.TemplatesFolder + "/*.html"))
 
 	err := templates.ExecuteTemplate(w, t+".html", v)
@@ -71,4 +72,14 @@ func (r *Renderer) trans(s string) string {
 // Returns the difference between the start time and the end time
 func (r *Renderer) totalTime(start, end time.Time) time.Duration {
 	return end.Sub(start)
+}
+
+// Add integers
+func (r *Renderer) add(i ...int) int {
+	total := 0
+	for _, v := range i {
+		total += v
+	}
+
+	return total
 }

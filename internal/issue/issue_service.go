@@ -19,12 +19,8 @@ type IssueStore interface {
 	CountImagesAlt(int64) *AltCount
 	CountScheme(int64) *SchemeCount
 	CountByNonCanonical(int64) int
-	CountSponsoredLinks(int64) int
-	CountUGCLinks(int64) int
 	GetNumberOfPagesForIssues(int64, string) int
 	FindPageReportIssues(int64, int, string) []pagereport.PageReport
-	CountByFollowLinks(int64) CountList
-	CountByFollowExternalLinks(int64) CountList
 	FindIssuesByPriority(int64, int) []IssueGroup
 	SaveIssuesCount(int64, int, int, int)
 }
@@ -78,16 +74,6 @@ type Paginator struct {
 type PaginatorView struct {
 	Paginator   Paginator
 	PageReports []pagereport.PageReport
-}
-
-type LinksCount struct {
-	Internal      CountList
-	External      CountList
-	Total         int
-	TotalInternal int
-	TotalExternal int
-	Sponsored     int
-	UGC           int
 }
 
 func NewService(s IssueStore) *Service {
@@ -154,27 +140,6 @@ func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, iss
 	}
 
 	return paginatorView, nil
-}
-
-func (s *Service) GetLinksCount(crawlId int64) *LinksCount {
-	l := &LinksCount{
-		Internal:  s.store.CountByFollowLinks(crawlId),
-		External:  s.store.CountByFollowExternalLinks(crawlId),
-		Sponsored: s.store.CountSponsoredLinks(crawlId),
-		UGC:       s.store.CountUGCLinks(crawlId),
-	}
-
-	for _, v := range l.Internal {
-		l.Total += v.Value
-		l.TotalInternal += v.Value
-	}
-
-	for _, v := range l.External {
-		l.Total += v.Value
-		l.TotalExternal += v.Value
-	}
-
-	return l
 }
 
 func (s *Service) GetCanonicalCount(crawlId int64) *CanonicalCount {

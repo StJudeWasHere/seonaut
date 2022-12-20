@@ -661,11 +661,12 @@
 				type: 'bar',
 				showBackground: true,
 				data: [
-					{{ .LinksCount.Total }},
-					{{ .LinksCount.TotalInternal }},
-					{{ .LinksCount.TotalExternal }},
-					{{ .LinksCount.Sponsored }},
-					{{ .LinksCount.UGC }}
+					{{ add .ProjectView.Crawl.InternalFollowLinks .ProjectView.Crawl.InternalNoFollowLinks
+						.ProjectView.Crawl.ExternalFollowLinks .ProjectView.Crawl.ExternalNoFollowLinks }},
+					{{ add .ProjectView.Crawl.InternalFollowLinks .ProjectView.Crawl.InternalNoFollowLinks }},
+					{{ add .ProjectView.Crawl.ExternalFollowLinks .ProjectView.Crawl.ExternalNoFollowLinks }},
+					{{ .ProjectView.Crawl.SponsoredLinks }},
+					{{ .ProjectView.Crawl.UGCLinks }}
 				]
 			},
 		]
@@ -706,9 +707,9 @@
 		legend: {
 			show: false,
 		},
-	  	color: ['#F7E497', '#2C7D91'],
+		color: ['#F7E497', '#2C7D91'],
 		series: [
-	    {
+		{
 			name: 'Internal',
 			type: 'pie',
 			selectedMode: 'single',
@@ -720,19 +721,11 @@
 				show: false
 			},
 			data: [
-    			{{ range .LinksCount.Internal }}
-    				{{ if eq .Key "follow" }}
-    					{ value: {{ .Value }}, name: "Follow"},
-    				{{ end }}
-    			{{ end }}
-    			{{ range .LinksCount.Internal }}
-    				{{ if eq .Key "nofollow" }}
-    					{ value: {{ .Value }}, name: "Nofollow"},
-    				{{ end }}
-    			{{ end }}
-	      ]
-	  	},
-	    {
+				{ value: {{ .ProjectView.Crawl.InternalFollowLinks }}, name: "Follow"},
+				{ value: {{ .ProjectView.Crawl.InternalNoFollowLinks }}, name: "Nofollow"},
+			]
+		},
+		{
 			name: 'External',
 			type: 'pie',
 			radius: ['40%', '75%'],
@@ -745,19 +738,10 @@
 				length: 20,
 			},
 			data: [
-    			{{ range .LinksCount.External }}
-    				{{ if eq .Key "follow" }}
-    					{ value: {{ .Value }}, name: "Follow"},
-    				{{ end }}
-    			{{ end }}
-    			{{ range .LinksCount.External }}
-    				{{ if eq .Key "nofollow" }}
-    					{ value: {{ .Value }}, name: "Nofollow"},
-    				{{ end }}
-    			{{ end }}
-	      ]
-	    }
-	  ]
+				{ value: {{ .ProjectView.Crawl.ExternalFollowLinks }}, name: "Follow"},
+				{ value: {{ .ProjectView.Crawl.ExternalNoFollowLinks }}, name: "Nofollow"},
+			]
+		}]
 	};
 
 	followChart.setOption(option);

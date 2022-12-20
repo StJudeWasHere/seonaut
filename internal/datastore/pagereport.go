@@ -863,40 +863,6 @@ func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *pagereport.PageR
 
 }
 
-func (ds *Datastore) CountSponsoredLinks(cid int64) int {
-	query := `
-		SELECT
-			count(id)
-		FROM external_links
-		WHERE sponsored = 1 AND crawl_id = ?
-	`
-
-	row := ds.db.QueryRow(query, cid)
-	var c int
-	if err := row.Scan(&c); err != nil {
-		log.Printf("CountSponsoredLinks: %v\n", err)
-	}
-
-	return c
-}
-
-func (ds *Datastore) CountUGCLinks(cid int64) int {
-	query := `
-		SELECT
-			count(id)
-		FROM external_links
-		WHERE ugc = 1 AND crawl_id = ?
-	`
-
-	row := ds.db.QueryRow(query, cid)
-	var c int
-	if err := row.Scan(&c); err != nil {
-		log.Printf("CountUGCLinks: %v\n", err)
-	}
-
-	return c
-}
-
 func (ds *Datastore) CountByCanonical(cid int64) int {
 	query := `
 		SELECT
@@ -909,7 +875,7 @@ func (ds *Datastore) CountByCanonical(cid int64) int {
 	row := ds.db.QueryRow(query, cid)
 	var c int
 	if err := row.Scan(&c); err != nil {
-		log.Printf("CountUGCLinks: %v\n", err)
+		log.Printf("CountByCanonical: %v\n", err)
 	}
 
 	return c
@@ -927,7 +893,7 @@ func (ds *Datastore) CountByNonCanonical(cid int64) int {
 	row := ds.db.QueryRow(query, cid)
 	var c int
 	if err := row.Scan(&c); err != nil {
-		log.Printf("CountUGCLinks: %v\n", err)
+		log.Printf("CountByNonCanonical: %v\n", err)
 	}
 
 	return c

@@ -162,7 +162,13 @@ func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) (*crawler.Crawl, error) {
 			blocked_by_robotstxt = ?,
 			noindex = ?,
 			robotstxt_exists = ?,
-			sitemap_exists = ?
+			sitemap_exists = ?,
+			links_internal_follow = ?,
+			links_internal_nofollow = ?,
+			links_external_follow = ?,
+			links_external_nofollow = ?,
+			links_sponsored = ?,
+			links_ugc = ?
 		WHERE id = ?
 	`
 	stmt, _ := ds.db.Prepare(query)
@@ -180,6 +186,12 @@ func (ds *Datastore) SaveEndCrawl(c *crawler.Crawl) (*crawler.Crawl, error) {
 		c.Noindex,
 		c.RobotstxtExists,
 		c.SitemapExists,
+		c.InternalFollowLinks,
+		c.InternalNoFollowLinks,
+		c.ExternalFollowLinks,
+		c.ExternalNoFollowLinks,
+		c.SponsoredLinks,
+		c.UGCLinks,
 		c.Id,
 	)
 	if err != nil {
@@ -203,7 +215,13 @@ func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 			warning_issues,
 			issues_end,
 			robotstxt_exists,
-			sitemap_exists
+			sitemap_exists,
+			links_internal_follow,
+			links_internal_nofollow,
+			links_external_follow,
+			links_external_nofollow,
+			links_sponsored,
+			links_ugc
 		FROM crawls
 		WHERE project_id = ?
 		ORDER BY start DESC LIMIT 1`
@@ -223,6 +241,12 @@ func (ds *Datastore) GetLastCrawl(p *project.Project) crawler.Crawl {
 		&crawl.IssuesEnd,
 		&crawl.RobotstxtExists,
 		&crawl.SitemapExists,
+		&crawl.InternalFollowLinks,
+		&crawl.InternalNoFollowLinks,
+		&crawl.ExternalFollowLinks,
+		&crawl.ExternalNoFollowLinks,
+		&crawl.SponsoredLinks,
+		&crawl.UGCLinks,
 	)
 	if err != nil && err != sql.ErrNoRows {
 		log.Printf("GetLastCrawl project id %d: %v\n", p.Id, err)

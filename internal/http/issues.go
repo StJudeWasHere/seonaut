@@ -19,7 +19,6 @@ type DashboardView struct {
 	StatusChart    Chart
 	IssueCount     *issue.IssueCount
 	Crawls         []crawler.Crawl
-	LinksCount     *issue.LinksCount
 	CanonicalCount *issue.CanonicalCount
 	AltCount       *issue.AltCount
 	SchemeCount    *issue.SchemeCount
@@ -113,7 +112,6 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 		StatusChart:    newChart(issueCount.StatusCount),
 		IssueCount:     issueCount,
 		Crawls:         app.crawlerService.GetLastCrawls(pv.Project),
-		LinksCount:     app.issueService.GetLinksCount(pv.Crawl.Id),
 		CanonicalCount: app.issueService.GetCanonicalCount(pv.Crawl.Id),
 		AltCount:       app.issueService.GetImageAltCount(pv.Crawl.Id),
 		SchemeCount:    app.issueService.GetSchemeCount(pv.Crawl.Id),

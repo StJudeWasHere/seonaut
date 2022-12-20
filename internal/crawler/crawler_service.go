@@ -40,21 +40,27 @@ type PageReportMessage struct {
 }
 
 type Crawl struct {
-	Id                 int64
-	ProjectId          int64
-	URL                string
-	Start              time.Time
-	End                sql.NullTime
-	TotalIssues        int
-	TotalURLs          int
-	IssuesEnd          sql.NullTime
-	CriticalIssues     int
-	AlertIssues        int
-	WarningIssues      int
-	BlockedByRobotstxt int // URLs blocked by robots.txt
-	Noindex            int // URLS with noindex attribute
-	SitemapExists      bool
-	RobotstxtExists    bool
+	Id                    int64
+	ProjectId             int64
+	URL                   string
+	Start                 time.Time
+	End                   sql.NullTime
+	TotalIssues           int
+	TotalURLs             int
+	IssuesEnd             sql.NullTime
+	CriticalIssues        int
+	AlertIssues           int
+	WarningIssues         int
+	BlockedByRobotstxt    int // URLs blocked by robots.txt
+	Noindex               int // URLS with noindex attribute
+	SitemapExists         bool
+	RobotstxtExists       bool
+	InternalFollowLinks   int
+	InternalNoFollowLinks int
+	ExternalFollowLinks   int
+	ExternalNoFollowLinks int
+	SponsoredLinks        int
+	UGCLinks              int
 }
 
 type Service struct {
@@ -103,12 +109,41 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	c := NewCrawler(u, options)
 
 	for r := range c.Stream() {
+		// URLs are added to the TotalURLs count if they are not blocked
+		// by the robots.txt and they are indexable.
+		// Otherwise they are added to the BlockedByRobotstxt or Noindex count.
 		if r.PageReport.BlockedByRobotstxt {
 			crawl.BlockedByRobotstxt++
 		} else if r.PageReport.Noindex {
 			crawl.Noindex++
 		} else {
 			crawl.TotalURLs++
+		}
+
+		// Count total internal follow and nofollow links.
+		for _, l := range r.PageReport.Links {
+			if l.NoFollow {
+				crawl.InternalNoFollowLinks++
+			} else {
+				crawl.InternalFollowLinks++
+			}
+		}
+
+		// Count total external follow, nofollow, sponsored and UGC links.
+		for _, l := range r.PageReport.ExternalLinks {
+			if l.NoFollow {
+				crawl.ExternalNoFollowLinks++
+			} else {
+				crawl.ExternalFollowLinks++
+			}
+
+			if l.Sponsored {
+				crawl.SponsoredLinks++
+			}
+
+			if l.UGC {
+				crawl.UGCLinks++
+			}
 		}
 
 		s.store.SavePageReport(r.PageReport, crawl.Id)

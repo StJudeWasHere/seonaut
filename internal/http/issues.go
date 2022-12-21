@@ -4,25 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
-
-const (
-	chartLimit = 4
-)
-
-type DashboardView struct {
-	ProjectView    *projectview.ProjectView
-	MediaChart     Chart
-	StatusChart    Chart
-	IssueCount     *issue.IssueCount
-	Crawls         []crawler.Crawl
-	CanonicalCount *issue.CanonicalCount
-	AltCount       *issue.AltCount
-	SchemeCount    *issue.SchemeCount
-}
 
 type IssuesGroupView struct {
 	ProjectView *projectview.ProjectView
@@ -34,13 +18,6 @@ type IssuesView struct {
 	Eid           string
 	PaginatorView issue.PaginatorView
 }
-
-type ChartItem struct {
-	Key   string
-	Value int
-}
-
-type Chart []ChartItem
 
 func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
@@ -78,52 +55,6 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.renderer.RenderTemplate(w, "issues", v)
-}
-
-func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
-		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-		return
-	}
-
-	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
-	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
-	if pv.Crawl.TotalURLs == 0 {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
-	issueCount := app.issueService.GetIssuesCount(pv.Crawl.Id)
-
-	ig := DashboardView{
-		ProjectView:    pv,
-		MediaChart:     newChart(issueCount.MediaCount),
-		StatusChart:    newChart(issueCount.StatusCount),
-		IssueCount:     issueCount,
-		Crawls:         app.crawlerService.GetLastCrawls(pv.Project),
-		CanonicalCount: app.issueService.GetCanonicalCount(pv.Crawl.Id),
-		AltCount:       app.issueService.GetImageAltCount(pv.Crawl.Id),
-		SchemeCount:    app.issueService.GetSchemeCount(pv.Crawl.Id),
-	}
-
-	v := &PageView{
-		Data:      ig,
-		User:      *user,
-		PageTitle: "PROJECT_DASHBOARD",
-	}
-
-	app.renderer.RenderTemplate(w, "dashboard", v)
 }
 
 func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
@@ -175,33 +106,4 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.renderer.RenderTemplate(w, "issues_view", v)
-}
-
-func newChart(c issue.CountList) Chart {
-	chart := Chart{}
-	total := 0
-
-	for _, i := range c {
-		total = total + i.Value
-	}
-
-	for _, i := range c {
-		ci := ChartItem{
-			Key:   i.Key,
-			Value: i.Value,
-		}
-
-		chart = append(chart, ci)
-	}
-
-	if len(chart) > chartLimit {
-		chart[chartLimit-1].Key = "Other"
-		for _, v := range chart[chartLimit:] {
-			chart[chartLimit-1].Value += v.Value
-		}
-
-		chart = chart[:chartLimit]
-	}
-
-	return chart
 }

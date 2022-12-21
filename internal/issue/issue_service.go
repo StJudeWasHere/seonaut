@@ -13,12 +13,6 @@ const (
 )
 
 type IssueStore interface {
-	CountByMediaType(int64) CountList
-	CountByStatusCode(int64) CountList
-	CountByCanonical(int64) int
-	CountImagesAlt(int64) *AltCount
-	CountScheme(int64) *SchemeCount
-	CountByNonCanonical(int64) int
 	GetNumberOfPagesForIssues(int64, string) int
 	FindPageReportIssues(int64, int, string) []pagereport.PageReport
 	FindIssuesByPriority(int64, int) []IssueGroup
@@ -41,24 +35,7 @@ type IssueGroup struct {
 	Count     int
 }
 
-type CanonicalCount struct {
-	Canonical    int
-	NonCanonical int
-}
-
-type AltCount struct {
-	Alt    int
-	NonAlt int
-}
-
-type SchemeCount struct {
-	HTTP  int
-	HTTPS int
-}
-
 type IssueCount struct {
-	MediaCount     CountList
-	StatusCount    CountList
 	CriticalIssues []IssueGroup
 	AlertIssues    []IssueGroup
 	WarningIssues  []IssueGroup
@@ -83,15 +60,11 @@ func NewService(s IssueStore) *Service {
 }
 
 func (s *Service) GetIssuesCount(crawlID int64) *IssueCount {
-	c := &IssueCount{
-		MediaCount:     s.store.CountByMediaType(crawlID),
-		StatusCount:    s.store.CountByStatusCode(crawlID),
+	return &IssueCount{
 		CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
 		AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
 		WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
 	}
-
-	return c
 }
 
 func (s *Service) SaveCrawlIssuesCount(crawlID int64) {
@@ -140,19 +113,4 @@ func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, iss
 	}
 
 	return paginatorView, nil
-}
-
-func (s *Service) GetCanonicalCount(crawlId int64) *CanonicalCount {
-	return &CanonicalCount{
-		Canonical:    s.store.CountByCanonical(crawlId),
-		NonCanonical: s.store.CountByNonCanonical(crawlId),
-	}
-}
-
-func (s *Service) GetImageAltCount(crawlId int64) *AltCount {
-	return s.store.CountImagesAlt(crawlId)
-}
-
-func (s *Service) GetSchemeCount(crawlId int64) *SchemeCount {
-	return s.store.CountScheme(crawlId)
 }

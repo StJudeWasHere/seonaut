@@ -3,56 +3,10 @@ package datastore
 import (
 	"log"
 	"math"
-	"sort"
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/issue"
 )
-
-func (ds *Datastore) CountByMediaType(cid int64) issue.CountList {
-	query := `
-		SELECT media_type, count(*)
-		FROM pagereports
-		WHERE crawl_id = ? AND crawled = 1
-		GROUP BY media_type`
-
-	return ds.countListQuery(query, cid)
-}
-
-func (ds *Datastore) CountByStatusCode(cid int64) issue.CountList {
-	query := `
-		SELECT
-			status_code,
-			count(*)
-		FROM pagereports
-		WHERE crawl_id = ? AND crawled = 1
-		GROUP BY status_code`
-
-	return ds.countListQuery(query, cid)
-}
-
-func (ds *Datastore) countListQuery(query string, cid int64) issue.CountList {
-	m := issue.CountList{}
-	rows, err := ds.db.Query(query, cid)
-	if err != nil {
-		log.Println(err)
-		return m
-	}
-
-	for rows.Next() {
-		c := issue.CountItem{}
-		err := rows.Scan(&c.Key, &c.Value)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		m = append(m, c)
-	}
-
-	sort.Sort(sort.Reverse(m))
-
-	return m
-}
 
 func (ds *Datastore) SaveEndIssues(cid int64, t time.Time, totalIssues int) {
 	stmt, _ := ds.db.Prepare("UPDATE crawls SET issues_end = ?, total_issues = ? WHERE id = ?")

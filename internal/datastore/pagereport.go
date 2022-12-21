@@ -3,9 +3,10 @@ package datastore
 import (
 	"log"
 	"math"
+	"sort"
 
-	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/report"
 )
 
 func (ds *Datastore) SavePageReport(r *pagereport.PageReport, cid int64) {
@@ -899,7 +900,7 @@ func (ds *Datastore) CountByNonCanonical(cid int64) int {
 	return c
 }
 
-func (ds *Datastore) CountImagesAlt(cid int64) *issue.AltCount {
+func (ds *Datastore) CountImagesAlt(cid int64) *report.AltCount {
 	query := `
 		SELECT 
 			if(alt = "", "no alt", "alt") as a,
@@ -909,7 +910,7 @@ func (ds *Datastore) CountImagesAlt(cid int64) *issue.AltCount {
 		GROUP BY a
 	`
 
-	c := &issue.AltCount{}
+	c := &report.AltCount{}
 
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -936,7 +937,7 @@ func (ds *Datastore) CountImagesAlt(cid int64) *issue.AltCount {
 	return c
 }
 
-func (ds *Datastore) CountScheme(cid int64) *issue.SchemeCount {
+func (ds *Datastore) CountScheme(cid int64) *report.SchemeCount {
 	query := `
 		SELECT
 			scheme,
@@ -946,7 +947,7 @@ func (ds *Datastore) CountScheme(cid int64) *issue.SchemeCount {
 		GROUP BY scheme
 	`
 
-	c := &issue.SchemeCount{}
+	c := &report.SchemeCount{}
 
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -971,4 +972,49 @@ func (ds *Datastore) CountScheme(cid int64) *issue.SchemeCount {
 	}
 
 	return c
+}
+
+func (ds *Datastore) CountByMediaType(cid int64) report.CountList {
+	query := `
+		SELECT media_type, count(*)
+		FROM pagereports
+		WHERE crawl_id = ? AND crawled = 1
+		GROUP BY media_type`
+
+	return ds.countListQuery(query, cid)
+}
+
+func (ds *Datastore) CountByStatusCode(cid int64) report.CountList {
+	query := `
+		SELECT
+			status_code,
+			count(*)
+		FROM pagereports
+		WHERE crawl_id = ? AND crawled = 1
+		GROUP BY status_code`
+
+	return ds.countListQuery(query, cid)
+}
+
+func (ds *Datastore) countListQuery(query string, cid int64) report.CountList {
+	m := report.CountList{}
+	rows, err := ds.db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return m
+	}
+
+	for rows.Next() {
+		c := report.CountItem{}
+		err := rows.Scan(&c.Key, &c.Value)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		m = append(m, c)
+	}
+
+	sort.Sort(sort.Reverse(m))
+
+	return m
 }

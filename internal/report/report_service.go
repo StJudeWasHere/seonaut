@@ -19,6 +19,29 @@ type ReportStore interface {
 	GetNumberOfPagesForRedirecting(*pagereport.PageReport, int64) int
 	GetNumberOfPagesForLinks(*pagereport.PageReport, int64) int
 	GetNumberOfPagesForExternalLinks(pageReport *pagereport.PageReport, cid int64) int
+
+	CountByMediaType(int64) CountList
+	CountByStatusCode(int64) CountList
+
+	CountByCanonical(int64) int
+	CountImagesAlt(int64) *AltCount
+	CountScheme(int64) *SchemeCount
+	CountByNonCanonical(int64) int
+}
+
+type CanonicalCount struct {
+	Canonical    int
+	NonCanonical int
+}
+
+type SchemeCount struct {
+	HTTP  int
+	HTTPS int
+}
+
+type AltCount struct {
+	Alt    int
+	NonAlt int
 }
 
 type Service struct {
@@ -102,4 +125,32 @@ func (s *Service) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *pa
 // Returns a channel of crawlable PageReports that can be included in a sitemap
 func (s *Service) GetSitemapPageReports(crawlId int64) <-chan *pagereport.PageReport {
 	return s.store.FindSitemapPageReports(crawlId)
+}
+
+// Returns a CountList with the PageReport's media type count
+func (s *Service) GetMediaCount(crawlId int64) CountList {
+	return s.store.CountByMediaType(crawlId)
+}
+
+// Returns a CountList with the PageReport's status code count
+func (s *Service) GetStatusCount(crawlId int64) CountList {
+	return s.store.CountByStatusCode(crawlId)
+}
+
+// Returns the count Images with and without the alt attribute
+func (s *Service) GetImageAltCount(crawlId int64) *AltCount {
+	return s.store.CountImagesAlt(crawlId)
+}
+
+// Returns the count of PageReports with and without https
+func (s *Service) GetSchemeCount(crawlId int64) *SchemeCount {
+	return s.store.CountScheme(crawlId)
+}
+
+// Returns a count of PageReports that are canonical or not
+func (s *Service) GetCanonicalCount(crawlId int64) *CanonicalCount {
+	return &CanonicalCount{
+		Canonical:    s.store.CountByCanonical(crawlId),
+		NonCanonical: s.store.CountByNonCanonical(crawlId),
+	}
 }

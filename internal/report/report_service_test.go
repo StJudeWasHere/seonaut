@@ -18,6 +18,30 @@ const (
 
 type storage struct{}
 
+func (s *storage) CountByMediaType(i int64) report.CountList {
+	return report.CountList{}
+}
+
+func (s *storage) CountByStatusCode(i int64) report.CountList {
+	return report.CountList{}
+}
+
+func (s *storage) CountByCanonical(i int64) int {
+	return 0
+}
+
+func (s *storage) CountImagesAlt(i int64) *report.AltCount {
+	return &report.AltCount{}
+}
+
+func (s *storage) CountScheme(i int64) *report.SchemeCount {
+	return &report.SchemeCount{}
+}
+
+func (s *storage) CountByNonCanonical(i int64) int {
+	return 0
+}
+
 func (s *storage) FindExternalLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
 	return []pagereport.Link{}
 }

@@ -13,7 +13,7 @@ import (
 
 const (
 	// Max number of page reports that will be created
-	MaxPageReports = 10000
+	MaxPageReports = 20000
 
 	// Max number returned by GetLastCrawls
 	LastCrawlsLimit = 5

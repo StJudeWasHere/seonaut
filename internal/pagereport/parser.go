@@ -319,9 +319,11 @@ func (p *Parser) htmlIframes() []string {
 // The image's alt text is used in the sources.
 // ex.
 // <picture>
-//     <source srcset="/img/pic-wide.png" media="(min-width: 800px)">
-//     <source srcset="/img/pic-medium.png" media="(min-width: 600px)">
-//     <img src="/img/pic-narrow.png" alt="picture alt">
+//
+//	<source srcset="/img/pic-wide.png" media="(min-width: 800px)">
+//	<source srcset="/img/pic-medium.png" media="(min-width: 600px)">
+//	<img src="/img/pic-narrow.png" alt="picture alt">
+//
 // </picture>
 func (p *Parser) htmlPictures() []Image {
 	pictures := []Image{}
@@ -547,8 +549,9 @@ func (p *Parser) headersLocation() string {
 
 // Parse srcset attribute and return the URLs
 // ex. srcset="/img/image-wide.jpg 3724w,
-//             /img/image-4by3.jpg 1961w,
-//             /img/image-tall.jpg 1060w"
+//
+//	/img/image-4by3.jpg 1961w,
+//	/img/image-tall.jpg 1060w"
 func (p *Parser) parseSrcSet(srcset string) []string {
 	var imageURLs []string
 

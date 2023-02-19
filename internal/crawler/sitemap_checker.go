@@ -52,7 +52,7 @@ func (sc *SitemapChecker) ParseSitemaps(URLs []string, callback func(u string)) 
 			wg.Add(1)
 
 			// Each sitemap is parsed in its own Go routine
-			// If the sitemap limit is hit the parser function returns an error to stop the proccess
+			// If the sitemap limit is hit the parser function returns an error to stop the process
 			go func(s string) {
 				sitemap.ParseFromSite(s, func(e sitemap.Entry) error {
 					callback(e.GetLocation())

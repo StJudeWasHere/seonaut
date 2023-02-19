@@ -1,7 +1,10 @@
 # SEOnaut
-![SEOnaut technical SEO tool](https://seonaut.org/seonaut.png)
 
-This repository contains the code for SEOnaut, a web based technical SEO audit tool.
+<img src="resources/logo.jpg" alt="Logo" align="right"/>
+
+SEOnaut is an open source SEO Auditing Tool built for web enthusiasts who want to create high-ranking websites that attract more visitors.
+
+It can identify broken links to prevent 404 not found errors, temporary or permanent redirects and redirect loops, missing or duplicated meta tags, missing or incorrectly ordered headings and more.
 
 A hosted version of SEOnaut is available at [seonaut.org](https://seonaut.org).
 

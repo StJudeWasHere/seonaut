@@ -300,3 +300,25 @@ func TestCanonicalHeaders(t *testing.T) {
 		t.Errorf("Canonical headers: %s != https://example.com/canonical", pageReport.Canonical)
 	}
 }
+
+func TestNoBodyTag(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	body := []byte("<html><frameset></frameset></html>")
+	statusCode := 200
+	headers := http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if pageReport.Words != 0 {
+		t.Errorf("NoBody: %d != 0", pageReport.Words)
+	}
+}

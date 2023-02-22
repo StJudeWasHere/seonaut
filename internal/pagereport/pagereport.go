@@ -151,8 +151,11 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) (*
 			}
 		}
 
-		pageReport.Words = countWords(parser.htmlBodyNode())
-		pageReport.ValidHeadings = headingOrderIsValid(parser.htmlBodyNode())
+		bnode := parser.htmlBodyNode()
+		if bnode != nil {
+			pageReport.Words = countWords(bnode)
+			pageReport.ValidHeadings = headingOrderIsValid(bnode)
+		}
 	}
 
 	return &pageReport, nil

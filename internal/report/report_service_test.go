@@ -70,8 +70,8 @@ func (s *storage) FindErrorTypesByPage(reportId int, crawlId int64) []string {
 	return []string{errorType}
 }
 
-func (s *storage) FindInLinks(u string, id int64, page int) []pagereport.PageReport {
-	return []pagereport.PageReport{{Id: reportId}}
+func (s *storage) FindInLinks(u string, id int64, page int) []pagereport.InternalLink {
+	return []pagereport.InternalLink{{PageReport: pagereport.PageReport{Id: reportId}}}
 }
 
 func (s *storage) GetNumberOfPagesForInlinks(pageReport *pagereport.PageReport, cid int64) int {

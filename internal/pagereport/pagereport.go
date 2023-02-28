@@ -67,6 +67,11 @@ type Link struct {
 	UGC       bool
 }
 
+type InternalLink struct {
+	PageReport PageReport
+	Link       Link
+}
+
 type Hreflang struct {
 	URL  string
 	Lang string

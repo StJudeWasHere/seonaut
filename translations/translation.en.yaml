@@ -120,3 +120,6 @@ BLOCKED_IN_SITEMAP_DESC: Pages blocked by the robots.txt file should not be incl
 
 NON_CANONICAL_IN_SITEMAP: Non-canonical pages included in the sitemap
 NON_CANONICAL_IN_SITEMAP_DESC: Non-canonical pages should not be included in a sitemap as they can mislead search engines, waste time and resources, and lead to incorrect indexing.
+
+INCOMING_FOLLOW_NOFOLLOW: Incoming follow and nofollow links
+INCOMING_FOLLOW_NOFOLLOW_DESC: Having pages with internal incoming follow and nofollow links can dilute the authority and relevance signals, confusing search engines and making it less likely to rank high in search engine results.

@@ -384,13 +384,19 @@
 				<div class="box">
 					<div class="col col-main">
 						<div class="content">
-							{{ if .Title }}{{ .Title }}<br/>{{ end }}
-							<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+							{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
+							{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
+							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="url">
+								{{ .PageReport.URL }}
+							</a>
+							{{ if .Link.NoFollow }}<p><span class="alert">nofollow</span></p>{{ end }}
 						</div>
 					</div>
 
 					<div class="col col-actions">
-						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="highlight">View details</a>
+						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="highlight">
+							View details
+						</a>
 					</div>
 				</div>
 				{{ end }}

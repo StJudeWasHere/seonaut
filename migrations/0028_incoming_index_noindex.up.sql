@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(34, "INCOMING_FOLLOW_NOFOLLOW", 2);

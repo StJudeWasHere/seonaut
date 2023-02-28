@@ -481,6 +481,26 @@ func (ds *Datastore) FindNonCanonicalInSitemap(cid int64) <-chan *pagereport.Pag
 	return ds.pageReportsQuery(query, cid)
 }
 
+// Finds pages with index and nonindex incoming links.
+func (ds *Datastore) FindIncomingIndexNoIndex(cid int64) <-chan *pagereport.PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports WHERE crawl_id = ? and url_hash in (
+			SELECT
+				url_hash
+			FROM links
+			WHERE crawl_id = ?
+			GROUP BY url_hash
+			HAVING COUNT(DISTINCT nofollow) > 1
+		)
+	`
+
+	return ds.pageReportsQuery(query, cid, cid)
+}
+
 func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) <-chan *pagereport.PageReport {
 	prStream := make(chan *pagereport.PageReport)
 

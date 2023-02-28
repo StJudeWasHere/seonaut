@@ -7,7 +7,7 @@ import (
 type ReportStore interface {
 	FindPageReportById(int) pagereport.PageReport
 	FindErrorTypesByPage(int, int64) []string
-	FindInLinks(string, int64, int) []pagereport.PageReport
+	FindInLinks(string, int64, int) []pagereport.InternalLink
 	FindPageReportsRedirectingToURL(string, int64, int) []pagereport.PageReport
 	FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *pagereport.PageReport
 	FindAllPageReportsByCrawlId(int64) <-chan *pagereport.PageReport
@@ -51,7 +51,7 @@ type Service struct {
 type PageReportView struct {
 	PageReport pagereport.PageReport
 	ErrorTypes []string
-	InLinks    []pagereport.PageReport
+	InLinks    []pagereport.InternalLink
 	Redirects  []pagereport.PageReport
 	Paginator  Paginator
 }

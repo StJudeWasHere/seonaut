@@ -723,40 +723,41 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 	return pageReports
 }
 
-func (ds *Datastore) FindInLinks(s string, cid int64, p int) []pagereport.PageReport {
+func (ds *Datastore) FindInLinks(s string, cid int64, p int) []pagereport.InternalLink {
 	max := paginationMax
 	offset := max * (p - 1)
 
 	hash := Hash(s)
 	query := `
-		SELECT 
+		SELECT
 			pagereports.id,
 			pagereports.url,
-			pagereports.Title
+			pagereports.title,
+			links.nofollow,
+			links.text
 		FROM links
 		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
 		WHERE links.url_hash = ? AND pagereports.crawl_id = ? AND pagereports.crawled = 1
-		GROUP BY pagereports.id
 		LIMIT ?,?`
 
-	var pageReports []pagereport.PageReport
+	var internalLinks []pagereport.InternalLink
 	rows, err := ds.db.Query(query, hash, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		p := pagereport.PageReport{}
-		err := rows.Scan(&p.Id, &p.URL, &p.Title)
+		il := pagereport.InternalLink{}
+		err := rows.Scan(&il.PageReport.Id, &il.PageReport.URL, &il.PageReport.Title, &il.Link.NoFollow, &il.Link.Text)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
 
-		pageReports = append(pageReports, p)
+		internalLinks = append(internalLinks, il)
 	}
 
-	return pageReports
+	return internalLinks
 }
 
 func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int) []pagereport.PageReport {

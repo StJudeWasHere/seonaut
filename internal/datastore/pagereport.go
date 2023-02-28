@@ -582,29 +582,44 @@ func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 	return p
 }
 
-func (ds *Datastore) FindLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
+func (ds *Datastore) FindLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.InternalLink {
 	max := paginationMax
 	offset := max * (p - 1)
-	links := []pagereport.Link{}
+	links := []pagereport.InternalLink{}
 
 	query := `
 		SELECT
-			url,
-			rel,
-			nofollow,
-			text
+			pagereports.id,
+			pagereports.url,
+			pagereports.title,
+			pagereports.crawled,
+			links.url,
+			links.rel,
+			links.nofollow,
+			links.text
 		FROM links
-		WHERE pagereport_id = ?
+		LEFT JOIN pagereports ON links.url_hash = pagereports.url_hash
+		WHERE links.pagereport_id = ? and pagereports.crawl_id = ?
 		LIMIT ?,?
 	`
-	lrows, err := ds.db.Query(query, pageReport.Id, offset, max)
+
+	lrows, err := ds.db.Query(query, pageReport.Id, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for lrows.Next() {
-		l := pagereport.Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text)
+		l := pagereport.InternalLink{}
+		err = lrows.Scan(
+			&l.PageReport.Id,
+			&l.PageReport.URL,
+			&l.PageReport.Title,
+			&l.PageReport.Crawled,
+			&l.Link.URL,
+			&l.Link.Rel,
+			&l.Link.NoFollow,
+			&l.Link.Text,
+		)
 		if err != nil {
 			log.Println(err)
 			continue
@@ -831,7 +846,7 @@ func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *pagereport.PageRepor
 	h := Hash(pageReport.URL)
 	query := `
 		SELECT 
-			count(distinct pagereports.id)
+			count(pagereports.id)
 		FROM links
 		LEFT JOIN pagereports ON pagereports.id = links.pagereport_id
 		WHERE links.url_hash = ? AND pagereports.crawl_id = ? AND pagereports.crawled = 1

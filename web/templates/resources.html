@@ -481,16 +481,27 @@
 	{{ end }}
 
 	{{ if eq .Tab "internal" }}
-			{{ if .PageReportView.PageReport.Links }}
-					{{ range .PageReportView.PageReport.Links }}
+			{{ if .PageReportView.PageReport.InternalLinks }}
+					{{ range .PageReportView.PageReport.InternalLinks }}
 						<div class="box">
 							<div class="col col-main">
 								<div class="content">
-								{{ if .Text }}{{ .Text }}<br/>{{ end }}
-								<span class="url">{{ .URL }}</span>
-								{{ if .NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
+								{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
+								{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
+								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="url">
+									{{ .Link.URL }}
+								</a>
+								{{ if .Link.NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
 								</div>
 							</div>
+
+							{{ if .PageReport.Crawled }}
+							<div class="col col-actions">
+								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="highlight">
+									View details
+								</a>
+							</div>
+							{{ end }}
 						</div>
 					{{ end }}
 			{{ else }}

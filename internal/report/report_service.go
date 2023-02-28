@@ -12,7 +12,7 @@ type ReportStore interface {
 	FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *pagereport.PageReport
 	FindAllPageReportsByCrawlId(int64) <-chan *pagereport.PageReport
 	FindSitemapPageReports(int64) <-chan *pagereport.PageReport
-	FindLinks(pageReport *pagereport.PageReport, cid int64, page int) []pagereport.Link
+	FindLinks(pageReport *pagereport.PageReport, cid int64, page int) []pagereport.InternalLink
 	FindExternalLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link
 
 	GetNumberOfPagesForInlinks(*pagereport.PageReport, int64) int
@@ -84,7 +84,7 @@ func (s *Service) GetPageReport(rid int, crawlId int64, tab string, page int) *P
 	switch tab {
 	case "internal":
 		paginator.TotalPages = s.store.GetNumberOfPagesForLinks(&v.PageReport, crawlId)
-		v.PageReport.Links = s.store.FindLinks(&v.PageReport, crawlId, page)
+		v.PageReport.InternalLinks = s.store.FindLinks(&v.PageReport, crawlId, page)
 	case "external":
 		paginator.TotalPages = s.store.GetNumberOfPagesForExternalLinks(&v.PageReport, crawlId)
 		v.PageReport.ExternalLinks = s.store.FindExternalLinks(&v.PageReport, crawlId, page)

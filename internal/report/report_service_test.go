@@ -58,8 +58,8 @@ func (s *storage) GetNumberOfPagesForRedirecting(pageReport *pagereport.PageRepo
 	return 0
 }
 
-func (s *storage) FindLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
-	return []pagereport.Link{}
+func (s *storage) FindLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.InternalLink {
+	return []pagereport.InternalLink{}
 }
 
 func (s *storage) FindPageReportById(id int) pagereport.PageReport {

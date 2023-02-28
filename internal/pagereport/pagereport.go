@@ -54,6 +54,7 @@ type PageReport struct {
 	BlockedByRobotstxt bool
 	Crawled            bool
 	InSitemap          bool
+	InternalLinks      []InternalLink
 }
 
 type Link struct {

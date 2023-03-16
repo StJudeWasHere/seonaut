@@ -100,6 +100,7 @@ func newReportManager(ds *datastore.Datastore) *issue.ReportManager {
 	rm.AddReporter(ds.FindBlockedInSitemap, issue.SitemapBlocked)
 	rm.AddReporter(ds.FindNonCanonicalInSitemap, issue.SitemapNonCanonical)
 	rm.AddReporter(ds.FindIncomingIndexNoIndex, issue.IncomingFollowNofollow)
+	rm.AddReporter(ds.FindInvalidLang, issue.InvalidLanguage)
 
 	return rm
 }

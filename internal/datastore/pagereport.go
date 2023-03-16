@@ -41,9 +41,10 @@ func (ds *Datastore) SavePageReport(r *pagereport.PageReport, cid int64) {
 			valid_headings,
 			robotstxt_blocked,
 			crawled,
-			in_sitemap
+			in_sitemap,
+			valid_lang
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -77,6 +78,7 @@ func (ds *Datastore) SavePageReport(r *pagereport.PageReport, cid int64) {
 		r.BlockedByRobotstxt,
 		r.Crawled,
 		r.InSitemap,
+		r.ValidLang,
 	)
 
 	if err != nil {
@@ -286,7 +288,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *pagereport.P
 				valid_headings,
 				robotstxt_blocked,
 				crawled,
-				in_sitemap
+				in_sitemap,
+				valid_lang
 			FROM pagereports
 			WHERE crawl_id = ?`
 
@@ -318,6 +321,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *pagereport.P
 				&p.BlockedByRobotstxt,
 				&p.Crawled,
 				&p.InSitemap,
+				&p.ValidLang,
 			)
 			if err != nil {
 				log.Println(err)
@@ -359,7 +363,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				valid_headings,
 				robotstxt_blocked,
 				crawled,
-				in_sitemap
+				in_sitemap,
+				valid_lang
 			FROM pagereports
 			WHERE crawl_id = ?
 			AND id IN (
@@ -398,6 +403,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				&p.BlockedByRobotstxt,
 				&p.Crawled,
 				&p.InSitemap,
+				&p.ValidLang,
 			)
 			if err != nil {
 				log.Println(err)
@@ -434,7 +440,8 @@ func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 			valid_headings,
 			robotstxt_blocked,
 			crawled,
-			in_sitemap
+			in_sitemap,
+			valid_lang
 		FROM pagereports
 		WHERE id = ?`
 
@@ -462,6 +469,7 @@ func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 		&p.BlockedByRobotstxt,
 		&p.Crawled,
 		&p.InSitemap,
+		&p.ValidLang,
 	)
 	if err != nil {
 		log.Println(err)

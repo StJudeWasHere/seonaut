@@ -123,3 +123,6 @@ NON_CANONICAL_IN_SITEMAP_DESC: Non-canonical pages should not be included in a s
 
 INCOMING_FOLLOW_NOFOLLOW: Incoming follow and nofollow links
 INCOMING_FOLLOW_NOFOLLOW_DESC: Having pages with internal incoming follow and nofollow links can dilute the authority and relevance signals, confusing search engines and making it less likely to rank high in search engine results.
+
+INVALID_LANG: Pages with invalid lang attribute
+INVALID_LANG_DESC: Pages with an invalid lang attribute can cause problems for both search engines and users. Search engines may have trouble identifying the language of the content, while users may struggle with understanding it or using assistive technologies.

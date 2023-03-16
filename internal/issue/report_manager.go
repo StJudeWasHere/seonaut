@@ -42,6 +42,7 @@ const (
 	SitemapBlocked                              // Pages included in the sitemap that are blocked in robots.txt
 	SitemapNonCanonical                         // Non canonical pages included in the sitemap
 	IncomingFollowNofollow                      // Pages with index and noindex incoming links
+	InvalidLanguage                             // Pages with invalid lang attribute
 )
 
 type Reporter func(int64) <-chan *pagereport.PageReport

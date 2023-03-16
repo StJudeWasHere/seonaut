@@ -501,6 +501,20 @@ func (ds *Datastore) FindIncomingIndexNoIndex(cid int64) <-chan *pagereport.Page
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
+// Finds pages with invalid lang attribute.
+func (ds *Datastore) FindInvalidLang(cid int64) <-chan *pagereport.PageReport {
+	query := `
+		SELECT
+			pagereports.id,
+			pagereports.url,
+			pagereports.title
+		FROM pagereports WHERE crawl_id = ? AND lang <> ""
+			AND valid_lang = 0 AND media_type = "text/html" AND crawled = 1
+	`
+
+	return ds.pageReportsQuery(query, cid)
+}
+
 func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) <-chan *pagereport.PageReport {
 	prStream := make(chan *pagereport.PageReport)
 

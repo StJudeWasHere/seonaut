@@ -13,7 +13,7 @@ A hosted version of SEOnaut is available at [seonaut.org](https://seonaut.org).
 
 SEOnaut is a web based application built with the Go programming language and a MySQL database for its data storage. On the frontend side, the user interface is designed with simplicity in mind, using custom CSS and minimal vanilla Javascript. To make the dashboard interactive, the application utilizes Apache ECharts.
 
-While it is possible to configure your own database and compile SEOnaut by yourself, it's generally more convenient to use the provided Docker files. These files streamline the setup process and eliminate the need for manual configuration, allowing you to get started withSEOnaut more quickly and easily.
+While it is possible to configure your own database and compile SEOnaut by yourself, it's generally more convenient to use the provided Docker files. These files streamline the setup process and eliminate the need for manual configuration, allowing you to get started with SEOnaut more quickly and easily.
 
 ### Docker
 

@@ -326,9 +326,7 @@ func (ds *Datastore) DeleteProject(p *project.Project) {
 	}
 
 	go func() {
-		c := ds.GetLastCrawl(p)
-
-		ds.DeleteCrawl(c.Id)
+		ds.DeleteCrawls(p)
 
 		query := `DELETE FROM projects WHERE id = ?`
 		_, err := ds.db.Exec(query, p.Id)
@@ -420,4 +418,28 @@ func (ds *Datastore) DeleteCrawl(cid int64) {
 	deleteFunc(cid, "audios")
 	deleteFunc(cid, "videos")
 	deleteFunc(cid, "pagereports")
+}
+
+// DeleteCrawls deletes the project's crawl data
+func (ds *Datastore) DeleteCrawls(p *project.Project) {
+	query := `
+		SELECT
+			id
+		FROM crawls
+		WHERE project_id = ?
+	`
+
+	rows, err := ds.db.Query(query, p.Id)
+	if err != nil {
+		log.Printf("DeleteCrawls Query: %v\n", err)
+	}
+
+	for rows.Next() {
+		var id int64
+		if err := rows.Scan(&id); err != nil {
+			log.Printf("DeleteCrawls: %v\n", err)
+		}
+
+		ds.DeleteCrawl(id)
+	}
 }

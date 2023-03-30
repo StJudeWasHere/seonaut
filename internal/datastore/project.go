@@ -325,8 +325,8 @@ func (ds *Datastore) DeleteProject(p *project.Project) {
 		return
 	}
 
-	go func() {
-		ds.DeleteCrawls(p)
+	go func(p project.Project) {
+		ds.DeleteCrawls(&p)
 
 		query := `DELETE FROM projects WHERE id = ?`
 		_, err := ds.db.Exec(query, p.Id)
@@ -334,7 +334,7 @@ func (ds *Datastore) DeleteProject(p *project.Project) {
 			log.Printf("DeleteProject: pid %d %v\n", p.Id, err)
 			return
 		}
-	}()
+	}(*p)
 }
 
 func (ds *Datastore) UpdateProject(p *project.Project) error {

@@ -3,10 +3,10 @@ package datastore
 import (
 	"log"
 
-	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -19,7 +19,7 @@ func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int64) <-chan *pagereport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) Find40xPageReports(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) Find40xPageReports(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -31,7 +31,7 @@ func (ds *Datastore) Find40xPageReports(cid int64) <-chan *pagereport.PageReport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) Find30xPageReports(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) Find30xPageReports(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -43,7 +43,7 @@ func (ds *Datastore) Find30xPageReports(cid int64) <-chan *pagereport.PageReport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) Find50xPageReports(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) Find50xPageReports(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -55,7 +55,7 @@ func (ds *Datastore) Find50xPageReports(cid int64) <-chan *pagereport.PageReport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithLittleContent(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithLittleContent(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -67,7 +67,7 @@ func (ds *Datastore) FindPageReportsWithLittleContent(cid int64) <-chan *pagerep
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithShortTitle(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithShortTitle(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -79,7 +79,7 @@ func (ds *Datastore) FindPageReportsWithShortTitle(cid int64) <-chan *pagereport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithLongTitle(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithLongTitle(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -91,7 +91,7 @@ func (ds *Datastore) FindPageReportsWithLongTitle(cid int64) <-chan *pagereport.
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -116,7 +116,7 @@ func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int64) <-chan *pager
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithoutH1(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithoutH1(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -129,7 +129,7 @@ func (ds *Datastore) FindPageReportsWithoutH1(cid int64) <-chan *pagereport.Page
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -142,7 +142,7 @@ func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int64) <-chan *page
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithShortDescription(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithShortDescription(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -154,7 +154,7 @@ func (ds *Datastore) FindPageReportsWithShortDescription(cid int64) <-chan *page
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithLongDescription(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithLongDescription(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -166,7 +166,7 @@ func (ds *Datastore) FindPageReportsWithLongDescription(cid int64) <-chan *pager
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			y.id,
@@ -191,7 +191,7 @@ func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int64) <-chan 
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindImagesWithNoAlt(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindImagesWithNoAlt(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -205,7 +205,7 @@ func (ds *Datastore) FindImagesWithNoAlt(cid int64) <-chan *pagereport.PageRepor
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -218,7 +218,7 @@ func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int64) <-chan *pagereport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -234,7 +234,7 @@ func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int64) <-chan *pagereport.
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindMissingHrelangReturnLinks(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindMissingHrelangReturnLinks(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			distinct pagereports.id,
@@ -250,7 +250,7 @@ func (ds *Datastore) FindMissingHrelangReturnLinks(cid int64) <-chan *pagereport
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindRedirectChains(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindRedirectChains(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -264,7 +264,7 @@ func (ds *Datastore) FindRedirectChains(cid int64) <-chan *pagereport.PageReport
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) TooManyLinks(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) TooManyLinks(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -285,7 +285,7 @@ func (ds *Datastore) TooManyLinks(cid int64) <-chan *pagereport.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) InternalNoFollowLinks(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) InternalNoFollowLinks(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports 
@@ -300,7 +300,7 @@ func (ds *Datastore) InternalNoFollowLinks(cid int64) <-chan *pagereport.PageRep
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -325,7 +325,7 @@ func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) <-chan *pagerepor
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) NoIndexable(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) NoIndexable(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports 
@@ -334,7 +334,7 @@ func (ds *Datastore) NoIndexable(cid int64) <-chan *pagereport.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) HreflangNoindexable(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) HreflangNoindexable(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports
@@ -348,7 +348,7 @@ func (ds *Datastore) HreflangNoindexable(cid int64) <-chan *pagereport.PageRepor
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -362,7 +362,7 @@ func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int64) <-chan *pagerepor
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -376,7 +376,7 @@ func (ds *Datastore) FindCanonicalizedToNonCanonical(cid int64) <-chan *pagerepo
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindRedirectLoops(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindRedirectLoops(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			a.id,
@@ -390,7 +390,7 @@ func (ds *Datastore) FindRedirectLoops(cid int64) <-chan *pagereport.PageReport 
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindNotValidHeadingsOrder(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindNotValidHeadingsOrder(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -402,7 +402,7 @@ func (ds *Datastore) FindNotValidHeadingsOrder(cid int64) <-chan *pagereport.Pag
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -417,7 +417,7 @@ func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) <-chan *pagereport.P
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindBlockedByRobotstxt(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindBlockedByRobotstxt(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -429,7 +429,7 @@ func (ds *Datastore) FindBlockedByRobotstxt(cid int64) <-chan *pagereport.PageRe
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) FindOrphanPages(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindOrphanPages(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -443,7 +443,7 @@ func (ds *Datastore) FindOrphanPages(cid int64) <-chan *pagereport.PageReport {
 }
 
 // Finds non-indexable pagereports that are included in the sitemap.
-func (ds *Datastore) FindNoIndexInSitemap(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindNoIndexInSitemap(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -456,7 +456,7 @@ func (ds *Datastore) FindNoIndexInSitemap(cid int64) <-chan *pagereport.PageRepo
 }
 
 // Finds pagereports that are blocked by robots.txt and are included in the sitemap.
-func (ds *Datastore) FindBlockedInSitemap(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindBlockedInSitemap(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -469,7 +469,7 @@ func (ds *Datastore) FindBlockedInSitemap(cid int64) <-chan *pagereport.PageRepo
 }
 
 // Finds non-canonical pagereports that are included in the sitemap.
-func (ds *Datastore) FindNonCanonicalInSitemap(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindNonCanonicalInSitemap(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -482,7 +482,7 @@ func (ds *Datastore) FindNonCanonicalInSitemap(cid int64) <-chan *pagereport.Pag
 }
 
 // Finds pages with index and nonindex incoming links.
-func (ds *Datastore) FindIncomingIndexNoIndex(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindIncomingIndexNoIndex(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -502,7 +502,7 @@ func (ds *Datastore) FindIncomingIndexNoIndex(cid int64) <-chan *pagereport.Page
 }
 
 // Finds pages with invalid lang attribute.
-func (ds *Datastore) FindInvalidLang(cid int64) <-chan *pagereport.PageReport {
+func (ds *Datastore) FindInvalidLang(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
 			pagereports.id,
@@ -515,8 +515,8 @@ func (ds *Datastore) FindInvalidLang(cid int64) <-chan *pagereport.PageReport {
 	return ds.pageReportsQuery(query, cid)
 }
 
-func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) <-chan *pagereport.PageReport {
-	prStream := make(chan *pagereport.PageReport)
+func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) <-chan *models.PageReport {
+	prStream := make(chan *models.PageReport)
 
 	go func() {
 		defer close(prStream)
@@ -527,7 +527,7 @@ func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) <-chan 
 		}
 
 		for rows.Next() {
-			p := &pagereport.PageReport{}
+			p := &models.PageReport{}
 			err := rows.Scan(&p.Id, &p.URL, &p.Title)
 			if err != nil {
 				log.Println(err)

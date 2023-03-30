@@ -6,8 +6,9 @@ import (
 	"net/url"
 	"strings"
 
+	"github.com/stjudewashere/seonaut/internal/html_parser"
 	"github.com/stjudewashere/seonaut/internal/http_crawler"
-	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/queue"
 	"github.com/stjudewashere/seonaut/internal/urlstorage"
 )
@@ -159,7 +160,7 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 		return r.Error
 	}
 
-	pageReport, err := pagereport.NewPageReportFromHTTPResponse(r.Response)
+	pageReport, err := html_parser.NewFromHTTPResponse(r.Response)
 	if err != nil {
 		return err
 	}
@@ -201,7 +202,7 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 			c.prStream <- &PageReportMessage{
 				Crawled:    c.responseCounter,
 				Discovered: c.queue.Count(),
-				PageReport: &pagereport.PageReport{
+				PageReport: &models.PageReport{
 					URL:                t.String(),
 					ParsedURL:          t,
 					Crawled:            false,
@@ -280,7 +281,7 @@ func (c *Crawler) RobotstxtExists() bool {
 // URLs extracted from internal Links and ExternalLinks are crawlable only if the domain name is allowed and
 // if they don't have the "nofollow" attribute. If they have the "nofollow" attribute, they are also considered
 // crawlable if the crawler's FollowNofollow option is enabled.
-func (c *Crawler) getCrawlableLinks(p *pagereport.PageReport) []*url.URL {
+func (c *Crawler) getCrawlableLinks(p *models.PageReport) []*url.URL {
 	var urls []*url.URL
 
 	links := append(p.Links, p.ExternalLinks...)
@@ -295,7 +296,7 @@ func (c *Crawler) getCrawlableLinks(p *pagereport.PageReport) []*url.URL {
 
 // Returns a slice containing all the resource URLs from a PageReport.
 // The resource URLs are always considered crawlable.
-func (c *Crawler) getResourceURLs(p *pagereport.PageReport) []*url.URL {
+func (c *Crawler) getResourceURLs(p *models.PageReport) []*url.URL {
 	var urls []*url.URL
 	var resources []string
 
@@ -322,7 +323,7 @@ func (c *Crawler) getResourceURLs(p *pagereport.PageReport) []*url.URL {
 // Returns a slice of crawlable URLs extracted from the Hreflangs, Iframes,
 // Redirect URLs and Canonical URLs found in the PageReport.
 // The URLs are considered crawlable only if its domain is allowed by the crawler.
-func (c *Crawler) getCrawlableURLs(p *pagereport.PageReport) []*url.URL {
+func (c *Crawler) getCrawlableURLs(p *models.PageReport) []*url.URL {
 	var urls []*url.URL
 	var resources []string
 

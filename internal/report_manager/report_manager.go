@@ -1,10 +1,12 @@
-package issue
+package report_manager
 
 import (
 	"sync"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/cache_manager"
+	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 const (
@@ -45,7 +47,7 @@ const (
 	InvalidLanguage                             // Pages with invalid lang attribute
 )
 
-type Reporter func(int64) <-chan *pagereport.PageReport
+type Reporter func(int64) <-chan *models.PageReport
 
 type IssueCallback struct {
 	Callback  Reporter
@@ -53,18 +55,20 @@ type IssueCallback struct {
 }
 
 type ReportManager struct {
-	store     ReportManagerStore
-	callbacks []IssueCallback
+	store        ReportManagerStore
+	callbacks    []IssueCallback
+	cacheManager *cache_manager.CacheManager
 }
 
 type ReportManagerStore interface {
-	SaveIssues(<-chan *Issue)
+	SaveIssues(<-chan *issue.Issue)
 	SaveEndIssues(int64, time.Time, int)
 }
 
-func NewReportManager(s ReportManagerStore) *ReportManager {
+func NewReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) *ReportManager {
 	return &ReportManager{
-		store: s,
+		store:        s,
+		cacheManager: cm,
 	}
 }
 
@@ -75,9 +79,9 @@ func (r *ReportManager) AddReporter(c Reporter, t int) {
 }
 
 // CreateIssues uses the Reporters to create and save issues found in a crawl.
-func (r *ReportManager) CreateIssues(cid int64) {
+func (r *ReportManager) CreateIssues(crawl *models.Crawl) {
 	issueCount := 0
-	iStream := make(chan *Issue)
+	iStream := make(chan *issue.Issue)
 
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
@@ -88,10 +92,10 @@ func (r *ReportManager) CreateIssues(cid int64) {
 	}()
 
 	for _, c := range r.callbacks {
-		for p := range c.Callback(cid) {
-			i := &Issue{
+		for p := range c.Callback(crawl.Id) {
+			i := &issue.Issue{
 				PageReportId: p.Id,
-				CrawlId:      cid,
+				CrawlId:      crawl.Id,
 				ErrorType:    c.ErrorType,
 			}
 
@@ -105,5 +109,6 @@ func (r *ReportManager) CreateIssues(cid int64) {
 
 	wg.Wait()
 
-	r.store.SaveEndIssues(cid, time.Now(), issueCount)
+	r.store.SaveEndIssues(crawl.Id, time.Now(), issueCount)
+	r.cacheManager.BuildCrawlCache(crawl)
 }

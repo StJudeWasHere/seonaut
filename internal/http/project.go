@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
@@ -99,7 +99,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		project := &project.Project{
+		project := &models.Project{
 			URL:             parsedURL.String(),
 			IgnoreRobotsTxt: ignoreRobotsTxt,
 			FollowNofollow:  followNofollow,
@@ -182,7 +182,7 @@ func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := struct {
-		Project project.Project
+		Project models.Project
 		Error   bool
 	}{Project: p}
 

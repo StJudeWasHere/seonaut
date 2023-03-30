@@ -1,13 +1,13 @@
 package crawler
 
 import (
-	"database/sql"
 	"fmt"
+	"log"
 	"net/url"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/pagereport"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/cache_manager"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 )
 
@@ -26,59 +26,38 @@ type Config struct {
 }
 
 type Storage interface {
-	SaveCrawl(project.Project) (*Crawl, error)
-	SavePageReport(*pagereport.PageReport, int64)
-	SaveEndCrawl(*Crawl) (*Crawl, error)
-	DeletePreviousCrawl(int64)
-	GetLastCrawls(project.Project, int) []Crawl
+	SaveCrawl(models.Project) (*models.Crawl, error)
+	SavePageReport(*models.PageReport, int64)
+	SaveEndCrawl(*models.Crawl) (*models.Crawl, error)
+	GetLastCrawls(models.Project, int) []models.Crawl
+	GetPreviousCrawl(*models.Project) (*models.Crawl, error)
+	DeleteCrawl(c *models.Crawl)
 }
 
 type PageReportMessage struct {
-	PageReport *pagereport.PageReport
+	PageReport *models.PageReport
 	Crawled    int
 	Discovered int
 }
 
-type Crawl struct {
-	Id                    int64
-	ProjectId             int64
-	URL                   string
-	Start                 time.Time
-	End                   sql.NullTime
-	TotalIssues           int
-	TotalURLs             int
-	IssuesEnd             sql.NullTime
-	CriticalIssues        int
-	AlertIssues           int
-	WarningIssues         int
-	BlockedByRobotstxt    int // URLs blocked by robots.txt
-	Noindex               int // URLS with noindex attribute
-	SitemapExists         bool
-	RobotstxtExists       bool
-	InternalFollowLinks   int
-	InternalNoFollowLinks int
-	ExternalFollowLinks   int
-	ExternalNoFollowLinks int
-	SponsoredLinks        int
-	UGCLinks              int
-}
-
 type Service struct {
-	store  Storage
-	broker *pubsub.Broker
-	config *Config
+	store        Storage
+	broker       *pubsub.Broker
+	config       *Config
+	cacheManager *cache_manager.CacheManager
 }
 
-func NewService(s Storage, broker *pubsub.Broker, c *Config) *Service {
+func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.CacheManager) *Service {
 	return &Service{
-		store:  s,
-		broker: broker,
-		config: c,
+		store:        s,
+		broker:       broker,
+		config:       c,
+		cacheManager: cm,
 	}
 }
 
 // StartCrawler creates a new crawler and crawls the project's URL
-func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
+func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 	u, err := url.Parse(p.URL)
 	if err != nil {
 		return nil, err
@@ -159,18 +138,25 @@ func (s *Service) StartCrawler(p project.Project) (*Crawl, error) {
 	}
 
 	go func() {
-		s.store.DeletePreviousCrawl(p.Id)
+		previous, err := s.store.GetPreviousCrawl(&p)
+		if err != nil {
+			log.Printf("Crawler: PreviousCrawl: %v\n", err)
+			return
+		}
+
+		s.store.DeleteCrawl(previous)
+		s.cacheManager.RemoveCrawlCache(previous)
 	}()
 
 	return crawl, nil
 }
 
 // Get a slice with 'LastCrawlsLimit' number of the crawls
-func (s *Service) GetLastCrawls(p project.Project) []Crawl {
+func (s *Service) GetLastCrawls(p models.Project) []models.Crawl {
 	crawls := s.store.GetLastCrawls(p, LastCrawlsLimit)
 
 	for len(crawls) < LastCrawlsLimit {
-		crawls = append(crawls, Crawl{Start: time.Now()})
+		crawls = append(crawls, models.Crawl{Start: time.Now()})
 	}
 
 	return crawls

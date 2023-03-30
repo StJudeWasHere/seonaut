@@ -1,4 +1,4 @@
-package pagereport
+package html_parser
 
 import (
 	"bytes"
@@ -12,6 +12,8 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/stjudewashere/seonaut/internal/models"
+
 	"golang.org/x/net/html"
 	"golang.org/x/text/language"
 )
@@ -22,71 +24,8 @@ const (
 	maxBodySize = 10 * 1024 * 1024
 )
 
-type PageReport struct {
-	Id                 int
-	URL                string
-	ParsedURL          *url.URL
-	RedirectURL        string
-	Refresh            string
-	StatusCode         int
-	ContentType        string
-	MediaType          string
-	Lang               string
-	Title              string
-	Description        string
-	Robots             string
-	Noindex            bool
-	Nofollow           bool
-	Canonical          string
-	H1                 string
-	H2                 string
-	Links              []Link
-	ExternalLinks      []Link
-	Words              int
-	Hreflangs          []Hreflang
-	Size               int
-	Images             []Image
-	Scripts            []string
-	Styles             []string
-	Iframes            []string
-	Audios             []string
-	Videos             []string
-	ValidHeadings      bool
-	BlockedByRobotstxt bool
-	Crawled            bool
-	InSitemap          bool
-	InternalLinks      []InternalLink
-	ValidLang          bool
-}
-
-type Link struct {
-	URL       string
-	ParsedURL *url.URL
-	Rel       string
-	Text      string
-	External  bool
-	NoFollow  bool
-	Sponsored bool
-	UGC       bool
-}
-
-type InternalLink struct {
-	PageReport PageReport
-	Link       Link
-}
-
-type Hreflang struct {
-	URL  string
-	Lang string
-}
-
-type Image struct {
-	URL string
-	Alt string
-}
-
-// Create a new PageReport from an http.Response
-func NewPageReportFromHTTPResponse(r *http.Response) (*PageReport, error) {
+// Create a new PageReport from an http.Response.
+func NewFromHTTPResponse(r *http.Response) (*models.PageReport, error) {
 	defer r.Body.Close()
 
 	var bodyReader io.Reader = r.Body
@@ -94,20 +33,20 @@ func NewPageReportFromHTTPResponse(r *http.Response) (*PageReport, error) {
 
 	b, err := ioutil.ReadAll(bodyReader)
 	if err != nil {
-		return &PageReport{}, err
+		return &models.PageReport{}, err
 	}
 
-	return NewPageReport(r.Request.URL, r.StatusCode, &r.Header, b)
+	return New(r.Request.URL, r.StatusCode, &r.Header, b)
 }
 
 // Return a new PageReport.
-func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) (*PageReport, error) {
+func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.PageReport, error) {
 	parser, err := newParser(u, headers, body)
 	if err != nil {
 		return nil, err
 	}
 
-	pageReport := PageReport{
+	pageReport := models.PageReport{
 		URL:           u.String(),
 		ParsedURL:     u,
 		StatusCode:    status,
@@ -127,7 +66,7 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) (*
 		return &pageReport, nil
 	}
 
-	if pageReport.isHTML() {
+	if isHTML(&pageReport) {
 		pageReport.Lang = parser.lang()
 		pageReport.ValidLang = langIsValid(pageReport.Lang)
 		pageReport.Title = parser.htmlTitle()
@@ -170,16 +109,8 @@ func NewPageReport(u *url.URL, status int, headers *http.Header, body []byte) (*
 	return &pageReport, nil
 }
 
-// Converts size KB and returns a string
-func (p *PageReport) SizeInKB() string {
-	v := p.Size / (1 << 10)
-	r := p.Size % (1 << 10)
-
-	return fmt.Sprintf("%.2f", float64(v)+float64(r)/float64(1<<10))
-}
-
 // Returns true if ContentType is a valid HTML type
-func (p *PageReport) isHTML() bool {
+func isHTML(p *models.PageReport) bool {
 	validTypes := []string{"text/html", "application/xhtml+xml", "application/vnd.wap.xhtml+xml"}
 	for _, t := range validTypes {
 		if strings.Contains(p.ContentType, t) {
@@ -222,7 +153,7 @@ func countWords(n *html.Node) int {
 	return len(strings.Fields(t))
 }
 
-// Check if the H headings order is valid
+// Check if the H headings order is valid.
 func headingOrderIsValid(n *html.Node) bool {
 	headings := [6]string{"h1", "h2", "h3", "h4", "h5", "h6"}
 	current := 0
@@ -266,6 +197,7 @@ func headingOrderIsValid(n *html.Node) bool {
 	return correct
 }
 
+// Check if a language code provided by the Content-Language header or HTML lang attribute is valid.
 func langIsValid(s string) bool {
 	langs := strings.Split(s, ",")
 	for _, l := range langs {

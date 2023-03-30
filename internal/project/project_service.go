@@ -3,44 +3,33 @@ package project
 import (
 	"errors"
 	"net/url"
-	"time"
+
+	"github.com/stjudewashere/seonaut/internal/cache_manager"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 type Storage interface {
-	SaveProject(*Project, int)
-	DeleteProject(*Project)
-	UpdateProject(p *Project) error
-	FindProjectById(id int, uid int) (Project, error)
-}
-
-type Project struct {
-	Id              int64
-	URL             string
-	Host            string
-	IgnoreRobotsTxt bool
-	FollowNofollow  bool
-	IncludeNoindex  bool
-	Created         time.Time
-	CrawlSitemap    bool
-	AllowSubdomains bool
-	Deleting        bool
-	BasicAuth       bool
-	AuthUser        string
-	AuthPass        string
+	SaveProject(*models.Project, int)
+	DeleteProject(*models.Project)
+	GetLastCrawl(*models.Project) models.Crawl
+	UpdateProject(p *models.Project) error
+	FindProjectById(id int, uid int) (models.Project, error)
 }
 
 type Service struct {
-	storage Storage
+	storage      Storage
+	cacheManager *cache_manager.CacheManager
 }
 
-func NewService(s Storage) *Service {
+func NewService(s Storage, cm *cache_manager.CacheManager) *Service {
 	return &Service{
-		storage: s,
+		storage:      s,
+		cacheManager: cm,
 	}
 }
 
-// SaveProject stores a new project
-func (s *Service) SaveProject(project *Project, userId int) error {
+// SaveProject stores a new project.
+func (s *Service) SaveProject(project *models.Project, userId int) error {
 	parsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		return err
@@ -57,7 +46,7 @@ func (s *Service) SaveProject(project *Project, userId int) error {
 
 // Return a project specified by id and user.
 // It populates the Host field from the project's URL.
-func (s *Service) FindProject(id, uid int) (Project, error) {
+func (s *Service) FindProject(id, uid int) (models.Project, error) {
 	project, err := s.storage.FindProjectById(id, uid)
 	if err != nil {
 		return project, err
@@ -73,12 +62,14 @@ func (s *Service) FindProject(id, uid int) (Project, error) {
 	return project, nil
 }
 
-// Delete a project
-func (s *Service) DeleteProject(p *Project) {
+// Delete a project and remove any related data that has been cached.
+func (s *Service) DeleteProject(p *models.Project) {
+	last := s.storage.GetLastCrawl(p)
+	s.cacheManager.RemoveCrawlCache(&last)
 	s.storage.DeleteProject(p)
 }
 
-// Update project
-func (s *Service) UpdateProject(p *Project) error {
+// Update project details.
+func (s *Service) UpdateProject(p *models.Project) error {
 	return s.storage.UpdateProject(p)
 }

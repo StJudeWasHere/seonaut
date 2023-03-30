@@ -182,7 +182,7 @@
 
 					<div class="col">
 						<div class="content">
-							{{ if .Size }}{{ .SizeInKB }}KB{{ else }} - {{ end }}
+							{{ if .Size }}{{ to_kb .Size }}KB{{ else }} - {{ end }}
 						</div>
 					</div>
 				</div>

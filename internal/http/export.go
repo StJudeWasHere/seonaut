@@ -8,9 +8,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/encoding"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/models"
 
 	"github.com/turk/go-sitemap"
 )
@@ -41,7 +40,7 @@ func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	app.renderer.RenderTemplate(w, "export", &PageView{
-		Data:      struct{ Project project.Project }{Project: pv.Project},
+		Data:      struct{ Project models.Project }{Project: pv.Project},
 		User:      *user,
 		PageTitle: "EXPORT_VIEW",
 	})
@@ -144,7 +143,7 @@ func (app *App) serveExportResources(w http.ResponseWriter, r *http.Request) {
 
 	t := r.URL.Query().Get("t")
 
-	m := map[string]func(io.Writer, *crawler.Crawl){
+	m := map[string]func(io.Writer, *models.Crawl){
 		"internal":  app.exportService.ExportLinks,
 		"external":  app.exportService.ExportExternalLinks,
 		"images":    app.exportService.ExportImages,

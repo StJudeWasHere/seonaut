@@ -13,6 +13,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/renderer"
 	"github.com/stjudewashere/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/user"
 
 	"github.com/gorilla/securecookie"
@@ -35,7 +36,7 @@ type Services struct {
 	CrawlerService     *crawler.Service
 	IssueService       *issue.Service
 	ReportService      *report.Service
-	ReportManager      *issue.ReportManager
+	ReportManager      *report_manager.ReportManager
 	PubSubBroker       *pubsub.Broker
 	ExportService      *export.Exporter
 }
@@ -50,7 +51,7 @@ type App struct {
 	crawlerService     *crawler.Service
 	issueService       *issue.Service
 	reportService      *report.Service
-	reportManager      *issue.ReportManager
+	reportManager      *report_manager.ReportManager
 	projectViewService *projectview.Service
 	pubsubBroker       *pubsub.Broker
 	exportService      *export.Exporter

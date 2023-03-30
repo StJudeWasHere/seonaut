@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/stjudewashere/seonaut/internal/cache"
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/datastore"
 	"github.com/stjudewashere/seonaut/internal/http"
@@ -13,6 +14,7 @@ type Config struct {
 	Crawler    *crawler.Config        `mapstructure:"crawler"`
 	HTTPServer *http.HTTPServerConfig `mapstructure:"server"`
 	DB         *datastore.DBConfig    `mapstructure:"database"`
+	Cache      *cache.Config          `mapstructure:"redis"`
 }
 
 // NewConfig loads the configuration from the specified file and path.

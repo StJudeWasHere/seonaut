@@ -10,7 +10,7 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 
 	"github.com/gorilla/websocket"
@@ -94,13 +94,13 @@ func (app *App) serveCrawlAuth(w http.ResponseWriter, r *http.Request) {
 
 	pageView := &PageView{
 		PageTitle: "CRAWL_AUTH_VIEW",
-		Data:      struct{ Project project.Project }{Project: p},
+		Data:      struct{ Project models.Project }{Project: p},
 	}
 
 	app.renderer.RenderTemplate(w, "crawl_auth", pageView)
 }
 
-func (app *App) startCrawler(p project.Project) {
+func (app *App) startCrawler(p models.Project) {
 	log.Printf("Crawling %s\n", p.URL)
 	crawl, err := app.crawlerService.StartCrawler(p)
 	if err != nil {
@@ -111,7 +111,7 @@ func (app *App) startCrawler(p project.Project) {
 	log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
 
 	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
-	app.reportManager.CreateIssues(crawl.Id)
+	app.reportManager.CreateIssues(crawl)
 	app.issueService.SaveCrawlIssuesCount(crawl.Id)
 	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 }
@@ -150,7 +150,7 @@ func (app *App) serveCrawlLive(w http.ResponseWriter, r *http.Request) {
 
 	v := &PageView{
 		Data: struct {
-			Project project.Project
+			Project models.Project
 			Secure  bool
 		}{
 			Project: pv.Project,

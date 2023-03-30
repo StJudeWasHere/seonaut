@@ -49,6 +49,7 @@ func (r *Renderer) RenderTemplate(w io.Writer, t string, v interface{}) {
 			"trans":      r.trans,
 			"total_time": r.totalTime,
 			"add":        r.add,
+			"to_kb":      r.ToKByte,
 		}).ParseGlob(r.config.TemplatesFolder + "/*.html"))
 
 	err := templates.ExecuteTemplate(w, t+".html", v)
@@ -82,4 +83,12 @@ func (r *Renderer) add(i ...int) int {
 	}
 
 	return total
+}
+
+// Returns an int formated as KB.
+func (r *Renderer) ToKByte(b int) float64 {
+	v := b / (1 << 10)
+	i := b % (1 << 10)
+
+	return float64(v) + float64(i)/float64(1<<10)
 }

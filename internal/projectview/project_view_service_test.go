@@ -4,8 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
@@ -17,30 +16,30 @@ const (
 )
 
 type Storage interface {
-	FindProjectsByUser(int) []project.Project
-	FindProjectById(id int, uid int) (project.Project, error)
-	GetLastCrawl(*project.Project) crawler.Crawl
+	FindProjectsByUser(int) []models.Project
+	FindProjectById(id int, uid int) (models.Project, error)
+	GetLastCrawl(*models.Project) models.Crawl
 }
 
 type testStorage struct{}
 
-func (s *testStorage) FindProjectsByUser(uid int) []project.Project {
-	return []project.Project{
+func (s *testStorage) FindProjectsByUser(uid int) []models.Project {
+	return []models.Project{
 		{},
 		{},
 	}
 }
 
-func (s *testStorage) FindProjectById(id int, uid int) (project.Project, error) {
+func (s *testStorage) FindProjectById(id int, uid int) (models.Project, error) {
 	if id == test_pid && uid == test_uid {
-		return project.Project{Id: test_pid, URL: test_url}, nil
+		return models.Project{Id: test_pid, URL: test_url}, nil
 	}
 
-	return project.Project{}, errors.New("Test error")
+	return models.Project{}, errors.New("Test error")
 }
 
-func (s *testStorage) GetLastCrawl(*project.Project) crawler.Crawl {
-	return crawler.Crawl{Id: test_cid}
+func (s *testStorage) GetLastCrawl(*models.Project) models.Crawl {
+	return models.Crawl{Id: test_cid}
 }
 
 var projectviewService = projectview.NewService(&testStorage{})

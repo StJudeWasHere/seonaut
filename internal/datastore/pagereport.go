@@ -5,11 +5,11 @@ import (
 	"math"
 	"sort"
 
-	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report"
 )
 
-func (ds *Datastore) SavePageReport(r *pagereport.PageReport, cid int64) {
+func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) {
 	urlHash := Hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
@@ -260,8 +260,8 @@ func (ds *Datastore) SavePageReport(r *pagereport.PageReport, cid int64) {
 	}
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *pagereport.PageReport {
-	prStream := make(chan *pagereport.PageReport)
+func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageReport {
+	prStream := make(chan *models.PageReport)
 
 	go func() {
 		defer close(prStream)
@@ -299,7 +299,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *pagereport.P
 		}
 
 		for rows.Next() {
-			p := &pagereport.PageReport{}
+			p := &models.PageReport{}
 			err := rows.Scan(&p.Id,
 				&p.URL,
 				&p.RedirectURL,
@@ -335,8 +335,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *pagereport.P
 	return prStream
 }
 
-func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) <-chan *pagereport.PageReport {
-	prStream := make(chan *pagereport.PageReport)
+func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) <-chan *models.PageReport {
+	prStream := make(chan *models.PageReport)
 
 	go func() {
 		defer close(prStream)
@@ -381,7 +381,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 		}
 
 		for rows.Next() {
-			p := &pagereport.PageReport{}
+			p := &models.PageReport{}
 			err := rows.Scan(&p.Id,
 				&p.URL,
 				&p.RedirectURL,
@@ -417,7 +417,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 	return prStream
 }
 
-func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
+func (ds *Datastore) FindPageReportById(rid int) models.PageReport {
 	query := `
 		SELECT
 			id,
@@ -447,7 +447,7 @@ func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 
 	row := ds.db.QueryRow(query, rid)
 
-	p := pagereport.PageReport{}
+	p := models.PageReport{}
 	err := row.Scan(&p.Id,
 		&p.URL,
 		&p.RedirectURL,
@@ -481,7 +481,7 @@ func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 	}
 
 	for hrows.Next() {
-		h := pagereport.Hreflang{}
+		h := models.Hreflang{}
 		err = hrows.Scan(&h.URL, &h.Lang)
 		if err != nil {
 			log.Println(err)
@@ -497,7 +497,7 @@ func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 	}
 
 	for irows.Next() {
-		i := pagereport.Image{}
+		i := models.Image{}
 		err = irows.Scan(&i.URL, &i.Alt)
 		if err != nil {
 			log.Println(err)
@@ -590,10 +590,10 @@ func (ds *Datastore) FindPageReportById(rid int) pagereport.PageReport {
 	return p
 }
 
-func (ds *Datastore) FindLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.InternalLink {
+func (ds *Datastore) FindLinks(pageReport *models.PageReport, cid int64, p int) []models.InternalLink {
 	max := paginationMax
 	offset := max * (p - 1)
-	links := []pagereport.InternalLink{}
+	links := []models.InternalLink{}
 
 	query := `
 		SELECT
@@ -617,7 +617,7 @@ func (ds *Datastore) FindLinks(pageReport *pagereport.PageReport, cid int64, p i
 	}
 
 	for lrows.Next() {
-		l := pagereport.InternalLink{}
+		l := models.InternalLink{}
 		err = lrows.Scan(
 			&l.PageReport.Id,
 			&l.PageReport.URL,
@@ -639,10 +639,10 @@ func (ds *Datastore) FindLinks(pageReport *pagereport.PageReport, cid int64, p i
 	return links
 }
 
-func (ds *Datastore) FindExternalLinks(pageReport *pagereport.PageReport, cid int64, p int) []pagereport.Link {
+func (ds *Datastore) FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link {
 	max := paginationMax
 	offset := max * (p - 1)
-	links := []pagereport.Link{}
+	links := []models.Link{}
 
 	query := `
 		SELECT
@@ -663,7 +663,7 @@ func (ds *Datastore) FindExternalLinks(pageReport *pagereport.PageReport, cid in
 	}
 
 	for lrows.Next() {
-		l := pagereport.Link{}
+		l := models.Link{}
 		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.Sponsored, &l.UGC)
 		if err != nil {
 			log.Println(err)
@@ -676,8 +676,8 @@ func (ds *Datastore) FindExternalLinks(pageReport *pagereport.PageReport, cid in
 	return links
 }
 
-func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *pagereport.PageReport {
-	prStream := make(chan *pagereport.PageReport)
+func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *models.PageReport {
+	prStream := make(chan *models.PageReport)
 
 	go func() {
 		defer close(prStream)
@@ -695,7 +695,7 @@ func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *pagereport.PageRe
 		}
 
 		for rows.Next() {
-			p := &pagereport.PageReport{}
+			p := &models.PageReport{}
 			err := rows.Scan(&p.Id, &p.URL, &p.Title)
 			if err != nil {
 				log.Println(err)
@@ -709,7 +709,7 @@ func (ds *Datastore) FindSitemapPageReports(cid int64) <-chan *pagereport.PageRe
 	return prStream
 }
 
-func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []pagereport.PageReport {
+func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []models.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 
@@ -726,14 +726,14 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 			WHERE issue_types.type = ? AND crawl_id = ?
 		) ORDER BY url ASC LIMIT ?, ?`
 
-	var pageReports []pagereport.PageReport
+	var pageReports []models.PageReport
 	rows, err := ds.db.Query(query, errorType, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		p := pagereport.PageReport{}
+		p := models.PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
 			log.Println(err)
@@ -746,7 +746,7 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 	return pageReports
 }
 
-func (ds *Datastore) FindInLinks(s string, cid int64, p int) []pagereport.InternalLink {
+func (ds *Datastore) FindInLinks(s string, cid int64, p int) []models.InternalLink {
 	max := paginationMax
 	offset := max * (p - 1)
 
@@ -763,14 +763,14 @@ func (ds *Datastore) FindInLinks(s string, cid int64, p int) []pagereport.Intern
 		WHERE links.url_hash = ? AND pagereports.crawl_id = ? AND pagereports.crawled = 1
 		LIMIT ?,?`
 
-	var internalLinks []pagereport.InternalLink
+	var internalLinks []models.InternalLink
 	rows, err := ds.db.Query(query, hash, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		il := pagereport.InternalLink{}
+		il := models.InternalLink{}
 		err := rows.Scan(&il.PageReport.Id, &il.PageReport.URL, &il.PageReport.Title, &il.Link.NoFollow, &il.Link.Text)
 		if err != nil {
 			log.Println(err)
@@ -783,7 +783,7 @@ func (ds *Datastore) FindInLinks(s string, cid int64, p int) []pagereport.Intern
 	return internalLinks
 }
 
-func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int) []pagereport.PageReport {
+func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int) []models.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
 	uh := Hash(u)
@@ -796,14 +796,14 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int)
 		WHERE redirect_hash = ? AND crawl_id = ? AND crawled = 1
 		LIMIT ?,?`
 
-	var pageReports []pagereport.PageReport
+	var pageReports []models.PageReport
 	rows, err := ds.db.Query(query, uh, cid, offset, max)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for rows.Next() {
-		p := pagereport.PageReport{}
+		p := models.PageReport{}
 		err := rows.Scan(&p.Id, &p.URL, &p.Title)
 		if err != nil {
 			log.Println(err)
@@ -816,7 +816,7 @@ func (ds *Datastore) FindPageReportsRedirectingToURL(u string, cid int64, p int)
 	return pageReports
 }
 
-func (ds *Datastore) GetNumberOfPagesForLinks(pageReport *pagereport.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForLinks(pageReport *models.PageReport, cid int64) int {
 	query := `
 		SELECT
 			count(*)
@@ -833,7 +833,7 @@ func (ds *Datastore) GetNumberOfPagesForLinks(pageReport *pagereport.PageReport,
 	return int(math.Ceil(f))
 }
 
-func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *pagereport.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *models.PageReport, cid int64) int {
 	query := `
 		SELECT
 			count(*)
@@ -850,7 +850,7 @@ func (ds *Datastore) GetNumberOfPagesForExternalLinks(pageReport *pagereport.Pag
 	return int(math.Ceil(f))
 }
 
-func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *pagereport.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *models.PageReport, cid int64) int {
 	h := Hash(pageReport.URL)
 	query := `
 		SELECT 
@@ -869,7 +869,7 @@ func (ds *Datastore) GetNumberOfPagesForInlinks(pageReport *pagereport.PageRepor
 	return int(math.Ceil(f))
 }
 
-func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *pagereport.PageReport, cid int64) int {
+func (ds *Datastore) GetNumberOfPagesForRedirecting(pageReport *models.PageReport, cid int64) int {
 	h := Hash(pageReport.URL)
 	query := `
 		SELECT
@@ -998,7 +998,7 @@ func (ds *Datastore) CountScheme(cid int64) *report.SchemeCount {
 	return c
 }
 
-func (ds *Datastore) CountByMediaType(cid int64) report.CountList {
+func (ds *Datastore) CountByMediaType(cid int64) *report.CountList {
 	query := `
 		SELECT media_type, count(*)
 		FROM pagereports
@@ -1008,7 +1008,7 @@ func (ds *Datastore) CountByMediaType(cid int64) report.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *Datastore) CountByStatusCode(cid int64) report.CountList {
+func (ds *Datastore) CountByStatusCode(cid int64) *report.CountList {
 	query := `
 		SELECT
 			status_code,
@@ -1020,12 +1020,12 @@ func (ds *Datastore) CountByStatusCode(cid int64) report.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *Datastore) countListQuery(query string, cid int64) report.CountList {
+func (ds *Datastore) countListQuery(query string, cid int64) *report.CountList {
 	m := report.CountList{}
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
 		log.Println(err)
-		return m
+		return &m
 	}
 
 	for rows.Next() {
@@ -1040,5 +1040,5 @@ func (ds *Datastore) countListQuery(query string, cid int64) report.CountList {
 
 	sort.Sort(sort.Reverse(m))
 
-	return m
+	return &m
 }

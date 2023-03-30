@@ -3,12 +3,12 @@ package datastore
 import (
 	"log"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/export"
 )
 
 // Send all internal links through a read-only channel
-func (ds *Datastore) ExportLinks(crawl *crawler.Crawl) <-chan *export.Link {
+func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *export.Link {
 	lStream := make(chan *export.Link)
 
 	go func() {
@@ -44,7 +44,7 @@ func (ds *Datastore) ExportLinks(crawl *crawler.Crawl) <-chan *export.Link {
 }
 
 // Send all external links through a read-only channel
-func (ds *Datastore) ExportExternalLinks(crawl *crawler.Crawl) <-chan *export.Link {
+func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *export.Link {
 	lStream := make(chan *export.Link)
 
 	go func() {
@@ -80,7 +80,7 @@ func (ds *Datastore) ExportExternalLinks(crawl *crawler.Crawl) <-chan *export.Li
 }
 
 // Send all image URLs through a read-only channel
-func (ds *Datastore) ExportImages(crawl *crawler.Crawl) <-chan *export.Image {
+func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *export.Image {
 	iStream := make(chan *export.Image)
 
 	go func() {
@@ -116,7 +116,7 @@ func (ds *Datastore) ExportImages(crawl *crawler.Crawl) <-chan *export.Image {
 }
 
 // Send all scripts URLs through a read-only channel
-func (ds *Datastore) ExportScripts(crawl *crawler.Crawl) <-chan *export.Script {
+func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *export.Script {
 	sStream := make(chan *export.Script)
 
 	go func() {
@@ -151,7 +151,7 @@ func (ds *Datastore) ExportScripts(crawl *crawler.Crawl) <-chan *export.Script {
 }
 
 // Send all css style URLs through a read-only channel
-func (ds *Datastore) ExportStyles(crawl *crawler.Crawl) <-chan *export.Style {
+func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *export.Style {
 	sStream := make(chan *export.Style)
 
 	go func() {
@@ -186,7 +186,7 @@ func (ds *Datastore) ExportStyles(crawl *crawler.Crawl) <-chan *export.Style {
 }
 
 // Send all iframe URLs through a read-only channel
-func (ds *Datastore) ExportIframes(crawl *crawler.Crawl) <-chan *export.Iframe {
+func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *export.Iframe {
 	vStream := make(chan *export.Iframe)
 
 	go func() {
@@ -221,7 +221,7 @@ func (ds *Datastore) ExportIframes(crawl *crawler.Crawl) <-chan *export.Iframe {
 }
 
 // Send all audio URLs through a read-only channel
-func (ds *Datastore) ExportAudios(crawl *crawler.Crawl) <-chan *export.Audio {
+func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *export.Audio {
 	vStream := make(chan *export.Audio)
 
 	go func() {
@@ -256,7 +256,7 @@ func (ds *Datastore) ExportAudios(crawl *crawler.Crawl) <-chan *export.Audio {
 }
 
 // Send all video URLs through a read-only channel
-func (ds *Datastore) ExportVideos(crawl *crawler.Crawl) <-chan *export.Video {
+func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *export.Video {
 	vStream := make(chan *export.Video)
 
 	go func() {
@@ -291,7 +291,7 @@ func (ds *Datastore) ExportVideos(crawl *crawler.Crawl) <-chan *export.Video {
 }
 
 // Send all hreflang URLs and language through a read-only channel
-func (ds *Datastore) ExportHreflangs(crawl *crawler.Crawl) <-chan *export.Hreflang {
+func (ds *Datastore) ExportHreflangs(crawl *models.Crawl) <-chan *export.Hreflang {
 	vStream := make(chan *export.Hreflang)
 
 	go func() {

@@ -1,4 +1,4 @@
-package pagereport_test
+package html_parser_test
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/html_parser"
 )
 
 const (
@@ -29,7 +29,7 @@ func TestNewPageReport(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -66,7 +66,7 @@ func TestNewRedirectPageReport(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -96,7 +96,7 @@ func TestPageReportHTML(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, headers, body)
+	pageReport, err := html_parser.New(u, statusCode, headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -194,7 +194,7 @@ func TestNoindex(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -222,7 +222,7 @@ func TestContentLanguage(t *testing.T) {
 		"Content-Type":     []string{"text/html"},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -251,7 +251,7 @@ func TestHreflangHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -292,7 +292,7 @@ func TestCanonicalHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -314,7 +314,7 @@ func TestNoBodyTag(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}
@@ -338,7 +338,7 @@ func TestInvalidLang(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport, err := pagereport.NewPageReport(u, statusCode, &headers, body)
+	pageReport, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
 		t.Error(err)
 	}

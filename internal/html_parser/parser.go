@@ -1,4 +1,4 @@
-package pagereport
+package html_parser
 
 import (
 	"bytes"
@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/stjudewashere/seonaut/internal/models"
 
 	"github.com/antchfx/htmlquery"
 	"github.com/microcosm-cc/bluemonday"
@@ -78,7 +80,7 @@ func (p *Parser) canonical() string {
 // Returns the document hreflangs.
 // It first looks into the hreflang HTML tags, if empty it returns the hreflangs
 // defined in the HTTP headers.
-func (p *Parser) hreflangs() []Hreflang {
+func (p *Parser) hreflangs() []models.Hreflang {
 	hreflang := p.htmlHreflang()
 	if len(hreflang) == 0 {
 		return p.headersHreflangs()
@@ -206,8 +208,8 @@ func (p *Parser) htmlCanonical() string {
 
 // The a tags contain links to other pages we may want to crawl
 // ex. <a href="https://example.com/link1">link1</a>
-func (p *Parser) htmlLinks() []Link {
-	links := []Link{}
+func (p *Parser) htmlLinks() []models.Link {
+	links := []models.Link{}
 	htmlLinks, err := htmlquery.QueryAll(p.doc, "//a[@href]")
 	if err != nil {
 		return links
@@ -227,8 +229,8 @@ func (p *Parser) htmlLinks() []Link {
 
 // Extract hreflang urls so we can send them to the crawler
 // ex. <link rel="alternate" href="http://example.com" hreflang="am" />
-func (p *Parser) htmlHreflang() []Hreflang {
-	hreflangs := []Hreflang{}
+func (p *Parser) htmlHreflang() []models.Hreflang {
+	hreflangs := []models.Hreflang{}
 	hl, err := htmlquery.QueryAll(p.doc, "//link[@rel=\"alternate\"]")
 	if err != nil {
 		return hreflangs
@@ -241,7 +243,7 @@ func (p *Parser) htmlHreflang() []Hreflang {
 				continue
 			}
 
-			h := Hreflang{
+			h := models.Hreflang{
 				URL:  l.String(),
 				Lang: htmlquery.SelectAttr(n, "hreflang"),
 			}
@@ -254,8 +256,8 @@ func (p *Parser) htmlHreflang() []Hreflang {
 
 // Extract images to check alt text and crawl src and srcset urls
 // ex. <img src="logo.jpg" srcset="/files/16870/new-york-skyline-wide.jpg 3724w">
-func (p *Parser) htmlImages() []Image {
-	images := []Image{}
+func (p *Parser) htmlImages() []models.Image {
+	images := []models.Image{}
 	imgs := htmlquery.Find(p.doc, "//img")
 	for _, n := range imgs {
 		s := htmlquery.SelectAttr(n, "src")
@@ -269,7 +271,7 @@ func (p *Parser) htmlImages() []Image {
 		}
 
 		alt := htmlquery.SelectAttr(n, "alt")
-		i := Image{
+		i := models.Image{
 			URL: url.String(),
 			Alt: alt,
 		}
@@ -282,7 +284,7 @@ func (p *Parser) htmlImages() []Image {
 				continue
 			}
 
-			i := Image{
+			i := models.Image{
 				URL: url.String(),
 				Alt: alt,
 			}
@@ -325,8 +327,8 @@ func (p *Parser) htmlIframes() []string {
 //	<img src="/img/pic-narrow.png" alt="picture alt">
 //
 // </picture>
-func (p *Parser) htmlPictures() []Image {
-	pictures := []Image{}
+func (p *Parser) htmlPictures() []models.Image {
+	pictures := []models.Image{}
 	e := htmlquery.Find(p.doc, "//picture")
 	for _, n := range e {
 		images := htmlquery.Find(n, "//img")
@@ -344,7 +346,7 @@ func (p *Parser) htmlPictures() []Image {
 					continue
 				}
 
-				i := Image{
+				i := models.Image{
 					URL: url.String(),
 					Alt: alt,
 				}
@@ -486,8 +488,8 @@ func (p *Parser) headersCanonical() string {
 }
 
 // Parse hreflang links from the HTTP header
-func (p *Parser) headersHreflangs() []Hreflang {
-	hreflangs := []Hreflang{}
+func (p *Parser) headersHreflangs() []models.Hreflang {
+	hreflangs := []models.Hreflang{}
 	linkHeaderElements := strings.Split(p.Headers.Get("Link"), ",")
 	for _, lh := range linkHeaderElements {
 		attr := strings.Split(lh, ";")
@@ -510,7 +512,7 @@ func (p *Parser) headersHreflangs() []Hreflang {
 		}
 
 		if isAlternate == true && lang != "" {
-			h := Hreflang{
+			h := models.Hreflang{
 				URL:  url[1 : len(url)-1],
 				Lang: lang,
 			}
@@ -569,16 +571,16 @@ func (p *Parser) parseSrcSet(srcset string) []string {
 }
 
 // Build a new link from a node element
-func (p *Parser) newLink(n *html.Node) (Link, error) {
+func (p *Parser) newLink(n *html.Node) (models.Link, error) {
 	href := htmlquery.SelectAttr(n, "href")
 	u, err := p.absoluteURL(href)
 	if err != nil {
-		return Link{}, err
+		return models.Link{}, err
 	}
 
 	rel := strings.TrimSpace(htmlquery.SelectAttr(n, "rel"))
 
-	l := Link{
+	l := models.Link{
 		URL:       u.String(),
 		ParsedURL: u,
 		Rel:       rel,

@@ -10,5 +10,9 @@ user = "seonaut"
 password = "seonaut"
 database = "seonaut"
 
+[redis]
+server = "redis"
+port = 6379
+
 [crawler]
 agent = "SEOnaut Bot"

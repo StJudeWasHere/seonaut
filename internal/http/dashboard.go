@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/report"
 )
@@ -24,7 +24,7 @@ type DashboardView struct {
 	ProjectView    *projectview.ProjectView
 	MediaChart     Chart
 	StatusChart    Chart
-	Crawls         []crawler.Crawl
+	Crawls         []models.Crawl
 	CanonicalCount *report.CanonicalCount
 	AltCount       *report.AltCount
 	SchemeCount    *report.SchemeCount
@@ -75,15 +75,15 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 
 // Returns a Chart containing the keys and values from the CountList.
 // It limits the slice to the chartLimit value.
-func newChart(c report.CountList) Chart {
+func newChart(c *report.CountList) Chart {
 	chart := Chart{}
 	total := 0
 
-	for _, i := range c {
+	for _, i := range *c {
 		total = total + i.Value
 	}
 
-	for _, i := range c {
+	for _, i := range *c {
 		ci := ChartItem{
 			Key:   i.Key,
 			Value: i.Value,

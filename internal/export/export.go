@@ -4,7 +4,7 @@ import (
 	"encoding/csv"
 	"io"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 type Link struct {
@@ -52,15 +52,15 @@ type Hreflang struct {
 }
 
 type Store interface {
-	ExportLinks(*crawler.Crawl) <-chan *Link
-	ExportExternalLinks(*crawler.Crawl) <-chan *Link
-	ExportImages(crawl *crawler.Crawl) <-chan *Image
-	ExportScripts(crawl *crawler.Crawl) <-chan *Script
-	ExportStyles(crawl *crawler.Crawl) <-chan *Style
-	ExportIframes(crawl *crawler.Crawl) <-chan *Iframe
-	ExportAudios(crawl *crawler.Crawl) <-chan *Audio
-	ExportVideos(crawl *crawler.Crawl) <-chan *Video
-	ExportHreflangs(crawl *crawler.Crawl) <-chan *Hreflang
+	ExportLinks(*models.Crawl) <-chan *Link
+	ExportExternalLinks(*models.Crawl) <-chan *Link
+	ExportImages(crawl *models.Crawl) <-chan *Image
+	ExportScripts(crawl *models.Crawl) <-chan *Script
+	ExportStyles(crawl *models.Crawl) <-chan *Style
+	ExportIframes(crawl *models.Crawl) <-chan *Iframe
+	ExportAudios(crawl *models.Crawl) <-chan *Audio
+	ExportVideos(crawl *models.Crawl) <-chan *Video
+	ExportHreflangs(crawl *models.Crawl) <-chan *Hreflang
 }
 
 type Exporter struct {
@@ -74,7 +74,7 @@ func NewExporter(s Store) *Exporter {
 }
 
 // Export internal links as a CSV file
-func (e *Exporter) ExportLinks(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportLinks(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -97,7 +97,7 @@ func (e *Exporter) ExportLinks(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export internal links as a CSV file
-func (e *Exporter) ExportExternalLinks(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportExternalLinks(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -120,7 +120,7 @@ func (e *Exporter) ExportExternalLinks(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export all images as a CSV file
-func (e *Exporter) ExportImages(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportImages(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -143,7 +143,7 @@ func (e *Exporter) ExportImages(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export all scripts as a CSV file
-func (e *Exporter) ExportScripts(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportScripts(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -164,7 +164,7 @@ func (e *Exporter) ExportScripts(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export all CSS styles as a CSV file
-func (e *Exporter) ExportStyles(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportStyles(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -185,7 +185,7 @@ func (e *Exporter) ExportStyles(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export all CSS styles as a CSV file
-func (e *Exporter) ExportIframes(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportIframes(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -206,7 +206,7 @@ func (e *Exporter) ExportIframes(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export all audio as a CSV file
-func (e *Exporter) ExportAudios(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportAudios(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -227,7 +227,7 @@ func (e *Exporter) ExportAudios(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export all video as a CSV file
-func (e *Exporter) ExportVideos(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportVideos(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -248,7 +248,7 @@ func (e *Exporter) ExportVideos(f io.Writer, crawl *crawler.Crawl) {
 }
 
 // Export all hreflangs as a CSV file
-func (e *Exporter) ExportHreflangs(f io.Writer, crawl *crawler.Crawl) {
+func (e *Exporter) ExportHreflangs(f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{

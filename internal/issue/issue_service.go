@@ -2,8 +2,10 @@ package issue
 
 import (
 	"errors"
+	"fmt"
+	"log"
 
-	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 const (
@@ -12,9 +14,15 @@ const (
 	Warning
 )
 
+type Cache interface {
+	Set(key string, v interface{}) error
+	Get(key string, v interface{}) error
+	Delete(key string) error
+}
+
 type IssueStore interface {
 	GetNumberOfPagesForIssues(int64, string) int
-	FindPageReportIssues(int64, int, string) []pagereport.PageReport
+	FindPageReportIssues(int64, int, string) []models.PageReport
 	FindIssuesByPriority(int64, int) []IssueGroup
 	SaveIssuesCount(int64, int, int, int)
 }
@@ -27,6 +35,7 @@ type Issue struct {
 
 type Service struct {
 	store IssueStore
+	cache Cache
 }
 
 type IssueGroup struct {
@@ -50,45 +59,68 @@ type Paginator struct {
 
 type PaginatorView struct {
 	Paginator   Paginator
-	PageReports []pagereport.PageReport
+	PageReports []models.PageReport
 }
 
-func NewService(s IssueStore) *Service {
+func NewService(s IssueStore, c Cache) *Service {
 	return &Service{
 		store: s,
+		cache: c,
 	}
 }
 
+// GetIssuesCount returns an IssueCount with the number of issues by type.
+// It checks if the data has been cached, otherwise, it creates the IssueCount and adds it to the cache.
 func (s *Service) GetIssuesCount(crawlID int64) *IssueCount {
-	return &IssueCount{
+	key := fmt.Sprintf("crawl-%d", crawlID)
+	v := &IssueCount{}
+	err := s.cache.Get(key, v)
+	if err != nil {
+		v = &IssueCount{
+			CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
+			AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
+			WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
+		}
+
+		if err := s.cache.Set(key, v); err != nil {
+			log.Printf("GetIssuesCount: cacheSet: %v\n", err)
+		}
+	}
+
+	return v
+}
+
+// SaveCrawlIssuesCount stores the issue count in the storage and adds the IssueCount to the cache.
+func (s *Service) SaveCrawlIssuesCount(crawlID int64) {
+	key := fmt.Sprintf("crawl-%d", crawlID)
+	ic := &IssueCount{
 		CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
 		AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
 		WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
 	}
-}
 
-func (s *Service) SaveCrawlIssuesCount(crawlID int64) {
-	criticalIssues := s.store.FindIssuesByPriority(crawlID, Critical)
-	alertIssues := s.store.FindIssuesByPriority(crawlID, Alert)
-	warningIssues := s.store.FindIssuesByPriority(crawlID, Warning)
+	if err := s.cache.Set(key, ic); err != nil {
+		log.Printf("GetIssuesCount: cacheSet: %v\n", err)
+	}
 
 	var critical, alert, warning int
 
-	for _, v := range criticalIssues {
+	for _, v := range ic.CriticalIssues {
 		critical += v.Count
 	}
 
-	for _, v := range alertIssues {
+	for _, v := range ic.AlertIssues {
 		alert += v.Count
 	}
 
-	for _, v := range warningIssues {
+	for _, v := range ic.WarningIssues {
 		warning += v.Count
 	}
 
 	s.store.SaveIssuesCount(crawlID, critical, alert, warning)
 }
 
+// Returns a PaginatorView with the corresponding page reports.
 func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (PaginatorView, error) {
 	paginator := Paginator{
 		TotalPages:  s.store.GetNumberOfPagesForIssues(crawlId, issueId),
@@ -113,4 +145,23 @@ func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, iss
 	}
 
 	return paginatorView, nil
+}
+
+func (s *Service) BuildCrawlCache(crawl *models.Crawl) {
+	key := fmt.Sprintf("crawl-%d", crawl.Id)
+	ic := &IssueCount{
+		CriticalIssues: s.store.FindIssuesByPriority(crawl.Id, Critical),
+		AlertIssues:    s.store.FindIssuesByPriority(crawl.Id, Alert),
+		WarningIssues:  s.store.FindIssuesByPriority(crawl.Id, Warning),
+	}
+	if err := s.cache.Set(key, ic); err != nil {
+		log.Printf("GetIssuesCount: cacheSet: %v\n", err)
+	}
+}
+
+func (s *Service) RemoveCrawlCache(crawl *models.Crawl) {
+	key := fmt.Sprintf("crawl-%d", crawl.Id)
+	if err := s.cache.Delete(key); err != nil {
+		log.Printf("DeleteIssuesCache: %v\n", err)
+	}
 }

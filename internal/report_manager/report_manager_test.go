@@ -1,11 +1,13 @@
-package issue_test
+package report_manager_test
 
 import (
 	"testing"
 	"time"
 
+	"github.com/stjudewashere/seonaut/internal/cache_manager"
 	"github.com/stjudewashere/seonaut/internal/issue"
-	"github.com/stjudewashere/seonaut/internal/pagereport"
+	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 )
 
 const (
@@ -21,17 +23,17 @@ func (s *storage) SaveIssues(c <-chan *issue.Issue) {
 }
 func (s *storage) SaveEndIssues(crawlId int64, t time.Time, total int) {}
 
-var service = issue.NewReportManager(&storage{})
+var service = report_manager.NewReportManager(&storage{}, cache_manager.New())
 
 func TestCreateIssues(t *testing.T) {
-	pageReports := []pagereport.PageReport{
+	pageReports := []models.PageReport{
 		{Id: pageReportId},
 	}
 
 	total := 0
 
-	service.AddReporter(func(crawlId int64) <-chan *pagereport.PageReport {
-		prStream := make(chan *pagereport.PageReport)
+	service.AddReporter(func(crawlId int64) <-chan *models.PageReport {
+		prStream := make(chan *models.PageReport)
 		go func() {
 			defer close(prStream)
 			for _, v := range pageReports {
@@ -42,7 +44,7 @@ func TestCreateIssues(t *testing.T) {
 		return prStream
 	}, errorId)
 
-	service.CreateIssues(crawlId)
+	service.CreateIssues(&models.Crawl{Id: crawlId})
 	if total != 1 {
 		t.Errorf("CreateIsssues: %d != 1", total)
 	}

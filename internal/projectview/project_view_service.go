@@ -3,14 +3,13 @@ package projectview
 import (
 	"net/url"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
-	"github.com/stjudewashere/seonaut/internal/project"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 type Storage interface {
-	FindProjectsByUser(int) []project.Project
-	FindProjectById(id int, uid int) (project.Project, error)
-	GetLastCrawl(*project.Project) crawler.Crawl
+	FindProjectsByUser(int) []models.Project
+	FindProjectById(id int, uid int) (models.Project, error)
+	GetLastCrawl(*models.Project) models.Crawl
 }
 
 type Service struct {
@@ -18,8 +17,8 @@ type Service struct {
 }
 
 type ProjectView struct {
-	Project project.Project
-	Crawl   crawler.Crawl
+	Project models.Project
+	Crawl   models.Crawl
 }
 
 func NewService(s Storage) *Service {

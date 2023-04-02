@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   db:
-    image: mysql:latest
+    image: mysql:8.0
     container_name: "SEOnaut-db"
     ports:
       - "3306:3306"

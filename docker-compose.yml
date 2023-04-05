@@ -11,12 +11,16 @@ services:
       - MYSQL_DATABASE=seonaut
       - MYSQL_USER=seonaut
       - MYSQL_PASSWORD=seonaut
+    networks:
+    - seonaut_network
 
   redis:
     image: redis:6.2.11
     container_name: "SEOnaut-redis"
     ports:
       - "6379:6379"
+    networks:
+    - seonaut_network
 
   app:
     build: .
@@ -32,3 +36,9 @@ services:
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=30
       - WAIT_HOST_CONNECT_TIMEOUT=30
+    networks:
+    - seonaut_network
+
+networks:
+  seonaut_network:
+    driver: bridge

@@ -20,14 +20,12 @@ type Cache struct {
 }
 
 func New(config *Config) *Cache {
-	ring := redis.NewRing(&redis.RingOptions{
-		Addrs: map[string]string{
-			config.Server: fmt.Sprintf(":%d", config.Port),
-		},
+	rdb := redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%d", config.Server, config.Port),
 	})
 
 	cache := cache.New(&cache.Options{
-		Redis:      ring,
+		Redis:      rdb,
 		LocalCache: cache.NewTinyLFU(1000, time.Minute),
 	})
 

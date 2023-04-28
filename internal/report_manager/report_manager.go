@@ -48,21 +48,27 @@ const (
 )
 
 type Reporter func(int64) <-chan *models.PageReport
+type PageReporter func(*models.PageReport) bool
 
 type IssueCallback struct {
 	Callback  Reporter
 	ErrorType int
 }
+type PageIssueCallback struct {
+	Callback  PageReporter
+	ErrorType int
+}
 
 type ReportManager struct {
-	store        ReportManagerStore
-	callbacks    []IssueCallback
-	cacheManager *cache_manager.CacheManager
+	store         ReportManagerStore
+	callbacks     []IssueCallback
+	pageCallbacks []PageIssueCallback
+	cacheManager  *cache_manager.CacheManager
 }
 
 type ReportManagerStore interface {
 	SaveIssues(<-chan *issue.Issue)
-	SaveEndIssues(int64, time.Time, int)
+	SaveEndIssues(int64, time.Time)
 }
 
 func NewReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) *ReportManager {
@@ -76,6 +82,12 @@ func NewReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) *Rep
 // It will be used when creating the issues.
 func (r *ReportManager) AddReporter(c Reporter, t int) {
 	r.callbacks = append(r.callbacks, IssueCallback{Callback: c, ErrorType: t})
+}
+
+// Add an issue page reporter to the ReportManager.
+// It will be used to create issues on each crawled page.
+func (r *ReportManager) AddPageReporter(c PageReporter, t int) {
+	r.pageCallbacks = append(r.pageCallbacks, PageIssueCallback{Callback: c, ErrorType: t})
 }
 
 // CreateIssues uses the Reporters to create and save issues found in a crawl.
@@ -109,6 +121,34 @@ func (r *ReportManager) CreateIssues(crawl *models.Crawl) {
 
 	wg.Wait()
 
-	r.store.SaveEndIssues(crawl.Id, time.Now(), issueCount)
+	r.store.SaveEndIssues(crawl.Id, time.Now())
 	r.cacheManager.BuildCrawlCache(crawl)
+}
+
+// CreatePageIssues loops the page reporters calling the callback function
+// and creating the issues found in the PageReport.
+func (r *ReportManager) CreatePageIssues(p *models.PageReport, crawl *models.Crawl) {
+	iStream := make(chan *issue.Issue)
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+
+	go func() {
+		r.store.SaveIssues(iStream)
+		wg.Done()
+	}()
+
+	for _, c := range r.pageCallbacks {
+		result := c.Callback(p)
+		if result == true {
+			iStream <- &issue.Issue{
+				PageReportId: p.Id,
+				CrawlId:      crawl.Id,
+				ErrorType:    c.ErrorType,
+			}
+		}
+	}
+
+	close(iStream)
+
+	wg.Wait()
 }

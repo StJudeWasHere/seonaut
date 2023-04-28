@@ -6,91 +6,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-func (ds *Datastore) FindPageReportsWithEmptyTitle(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE (title = "" OR title IS NULL) AND media_type = "text/html"
-		AND status_code >=200 AND status_code < 300 AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) Find40xPageReports(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE status_code >= 400 AND status_code < 500 AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) Find30xPageReports(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE status_code >= 300 AND status_code < 400 AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) Find50xPageReports(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE status_code >= 500 AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithLittleContent(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE words < 200 AND status_code >= 200 AND status_code < 300 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithShortTitle(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE length(title) > 0 AND length(title) < 20 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithLongTitle(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE length(title) > 60 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
 func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
@@ -116,56 +31,6 @@ func (ds *Datastore) FindPageReportsWithDuplicatedTitle(cid int64) <-chan *model
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindPageReportsWithoutH1(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE (h1 = "" OR h1 IS NULL) AND media_type = "text/html"
-		AND status_code >= 200 AND status_code < 300 AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithEmptyDescription(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE (description = "" OR description IS NULL) AND media_type = "text/html"
-		AND status_code >= 200 AND status_code < 300 AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithShortDescription(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE length(description) > 0 AND length(description) < 80 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithLongDescription(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE length(description) > 160 AND media_type = "text/html" AND crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
 func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
@@ -189,49 +54,6 @@ func (ds *Datastore) FindPageReportsWithDuplicatedDescription(cid int64) <-chan 
 		AND status_code >= 200 AND status_code < 300 AND (canonical = "" OR canonical = url AND crawled = 1)`
 
 	return ds.pageReportsQuery(query, cid, cid)
-}
-
-func (ds *Datastore) FindImagesWithNoAlt(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		LEFT JOIN images ON images.pagereport_id = pagereports.id
-		WHERE images.alt = "" AND pagereports.crawl_id = ? AND pagereports.crawled = 1
-		GROUP BY pagereports.id`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithNoLangAttr(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		WHERE (pagereports.lang = "" OR pagereports.lang = null) and media_type = "text/html"
-		AND pagereports.crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindPageReportsWithHTTPLinks(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		LEFT JOIN links ON links.pagereport_id = pagereports.id
-		WHERE pagereports.scheme = "https" AND links.scheme = "http" AND crawled = 1
-		AND pagereports.crawl_id = ?
-		GROUP BY links.pagereport_id
-		HAVING count(links.pagereport_id) > 1`
-
-	return ds.pageReportsQuery(query, cid)
 }
 
 func (ds *Datastore) FindMissingHrelangReturnLinks(cid int64) <-chan *models.PageReport {
@@ -264,42 +86,6 @@ func (ds *Datastore) FindRedirectChains(cid int64) <-chan *models.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) TooManyLinks(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		INNER JOIN (
-			SELECT
-				pagereport_id,
-				count(distinct url_hash) as l
-				FROM links
-				WHERE crawl_id = ?
-				GROUP BY pagereport_id
-		) AS b ON pagereports.id = b.pagereport_id
-		WHERE pagereports.crawl_id = ? and l > 100 AND crawled = 1
-	`
-
-	return ds.pageReportsQuery(query, cid, cid)
-}
-
-func (ds *Datastore) InternalNoFollowLinks(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT pagereports.id, pagereports.url, pagereports.title
-		FROM pagereports 
-		INNER JOIN (
-			SELECT
-				DISTINCT links.pagereport_id
-			FROM links
-			WHERE links.nofollow = 1 AND links.crawl_id = ?
-		) AS b ON b.pagereport_id = pagereports.id
-		WHERE pagereports.crawl_id = ? AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid, cid)
-}
-
 func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
@@ -325,15 +111,6 @@ func (ds *Datastore) InternalNoFollowIndexableLinks(cid int64) <-chan *models.Pa
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) NoIndexable(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT pagereports.id, pagereports.url, pagereports.title
-		FROM pagereports 
-		WHERE pagereports.noindex = 1 AND pagereports.crawl_id = ?`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
 func (ds *Datastore) HreflangNoindexable(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
@@ -344,20 +121,6 @@ func (ds *Datastore) HreflangNoindexable(cid int64) <-chan *models.PageReport {
 			INNER JOIN pagereports ON hreflangs.pagereport_id = pagereports.id AND hreflangs.crawl_id = pagereports.crawl_id
 			WHERE hreflangs.crawl_id = ? and pagereports.noindex = 1 AND pagereports.crawled = 1
 		) AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-func (ds *Datastore) FindExternalLinkWitoutNoFollow(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		INNER JOIN external_links ON pagereports.id = external_links.pagereport_id
-		WHERE external_links.nofollow = 0 AND pagereports.crawl_id = ? AND pagereports.crawled = 1
-		GROUP BY pagereports.id`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -390,18 +153,6 @@ func (ds *Datastore) FindRedirectLoops(cid int64) <-chan *models.PageReport {
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindNotValidHeadingsOrder(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE crawl_id = ? AND valid_headings = 0 AND crawled = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
 func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
@@ -417,18 +168,6 @@ func (ds *Datastore) FindHreflangsToNonCanonical(cid int64) <-chan *models.PageR
 	return ds.pageReportsQuery(query, cid, cid)
 }
 
-func (ds *Datastore) FindBlockedByRobotstxt(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			id,
-			url,
-			title
-		FROM pagereports
-		WHERE crawl_id = ? AND robotstxt_blocked = 1 AND crawled = 0`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
 func (ds *Datastore) FindOrphanPages(cid int64) <-chan *models.PageReport {
 	query := `
 		SELECT
@@ -438,45 +177,6 @@ func (ds *Datastore) FindOrphanPages(cid int64) <-chan *models.PageReport {
 		FROM pagereports
 		LEFT JOIN links ON pagereports.url_hash = links.url_hash and pagereports.crawl_id = links.crawl_id
 		WHERE pagereports.media_type = "text/html" AND links.url IS NULL AND pagereports.crawl_id = ?`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-// Finds non-indexable pagereports that are included in the sitemap.
-func (ds *Datastore) FindNoIndexInSitemap(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		WHERE pagereports.crawl_id = ? AND pagereports.noindex = 1 AND pagereports.in_sitemap = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-// Finds pagereports that are blocked by robots.txt and are included in the sitemap.
-func (ds *Datastore) FindBlockedInSitemap(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		WHERE pagereports.crawl_id = ? AND pagereports.robotstxt_blocked = 1 AND pagereports.in_sitemap = 1`
-
-	return ds.pageReportsQuery(query, cid)
-}
-
-// Finds non-canonical pagereports that are included in the sitemap.
-func (ds *Datastore) FindNonCanonicalInSitemap(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports
-		WHERE pagereports.crawl_id = ? AND pagereports.canonical != "" AND pagereports.canonical != pagereports.url`
 
 	return ds.pageReportsQuery(query, cid)
 }
@@ -499,20 +199,6 @@ func (ds *Datastore) FindIncomingIndexNoIndex(cid int64) <-chan *models.PageRepo
 	`
 
 	return ds.pageReportsQuery(query, cid, cid)
-}
-
-// Finds pages with invalid lang attribute.
-func (ds *Datastore) FindInvalidLang(cid int64) <-chan *models.PageReport {
-	query := `
-		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
-		FROM pagereports WHERE crawl_id = ? AND lang <> ""
-			AND valid_lang = 0 AND media_type = "text/html" AND crawled = 1
-	`
-
-	return ds.pageReportsQuery(query, cid)
 }
 
 func (ds *Datastore) pageReportsQuery(query string, args ...interface{}) <-chan *models.PageReport {

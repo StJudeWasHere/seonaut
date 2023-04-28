@@ -8,10 +8,10 @@ import (
 	"github.com/stjudewashere/seonaut/internal/issue"
 )
 
-func (ds *Datastore) SaveEndIssues(cid int64, t time.Time, totalIssues int) {
-	stmt, _ := ds.db.Prepare("UPDATE crawls SET issues_end = ?, total_issues = ? WHERE id = ?")
+func (ds *Datastore) SaveEndIssues(cid int64, t time.Time) {
+	stmt, _ := ds.db.Prepare("UPDATE crawls SET issues_end = ? WHERE id = ?")
 	defer stmt.Close()
-	_, err := stmt.Exec(t, totalIssues, cid)
+	_, err := stmt.Exec(t, cid)
 	if err != nil {
 		log.Printf("saveEndIssues: %v\n", err)
 	}

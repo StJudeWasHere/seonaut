@@ -9,7 +9,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/report"
 )
 
-func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) {
+func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.PageReport, error) {
 	urlHash := Hash(r.URL)
 	var redirectHash string
 	if r.RedirectURL != "" {
@@ -48,8 +48,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) {
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
-		log.Printf("saveReport: %v\n", err)
-		return
+		return r, err
 	}
 	defer stmt.Close()
 
@@ -80,16 +79,13 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) {
 		r.InSitemap,
 		r.ValidLang,
 	)
-
 	if err != nil {
-		log.Printf("Error in SavePageReport\nCID: %v\n Report: %+v\nError: %+v\n", cid, r, err)
-		return
+		return r, err
 	}
 
 	lid, err := res.LastInsertId()
 	if err != nil {
-		log.Println(err)
-		return
+		return r, err
 	}
 
 	if len(r.Links) > 0 {
@@ -103,8 +99,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) {
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
 		if err != nil {
-			log.Printf("saveReport links: %v\n", err)
-			return
+			return r, err
 		}
 		defer stmt.Close()
 
@@ -124,8 +119,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) {
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
 		if err != nil {
-			log.Println(err)
-			return
+			return r, err
 		}
 		defer stmt.Close()
 
@@ -258,6 +252,10 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) {
 			log.Printf("savePageReport\nCID: %v\n Styles: %+v\nError: %+v\n", cid, v, err)
 		}
 	}
+
+	r.Id = lid
+
+	return r, nil
 }
 
 func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageReport {

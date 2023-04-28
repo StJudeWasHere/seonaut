@@ -9,6 +9,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/cache_manager"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 )
 
 const (
@@ -27,7 +28,7 @@ type Config struct {
 
 type Storage interface {
 	SaveCrawl(models.Project) (*models.Crawl, error)
-	SavePageReport(*models.PageReport, int64)
+	SavePageReport(*models.PageReport, int64) (*models.PageReport, error)
 	SaveEndCrawl(*models.Crawl) (*models.Crawl, error)
 	GetLastCrawls(models.Project, int) []models.Crawl
 	GetPreviousCrawl(*models.Project) (*models.Crawl, error)
@@ -41,18 +42,20 @@ type PageReportMessage struct {
 }
 
 type Service struct {
-	store        Storage
-	broker       *pubsub.Broker
-	config       *Config
-	cacheManager *cache_manager.CacheManager
+	store         Storage
+	broker        *pubsub.Broker
+	config        *Config
+	cacheManager  *cache_manager.CacheManager
+	reportManager *report_manager.ReportManager
 }
 
-func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.CacheManager) *Service {
+func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.CacheManager, rm *report_manager.ReportManager) *Service {
 	return &Service{
-		store:        s,
-		broker:       broker,
-		config:       c,
-		cacheManager: cm,
+		store:         s,
+		broker:        broker,
+		config:        c,
+		cacheManager:  cm,
+		reportManager: rm,
 	}
 }
 
@@ -125,7 +128,14 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 			}
 		}
 
-		s.store.SavePageReport(r.PageReport, crawl.Id)
+		r.PageReport, err = s.store.SavePageReport(r.PageReport, crawl.Id)
+		if err != nil {
+			log.Printf("SavePageReport: %v\n", err)
+			continue
+		}
+
+		s.reportManager.CreatePageIssues(r.PageReport, crawl)
+
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "PageReport", Data: r})
 	}
 

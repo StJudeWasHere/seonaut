@@ -305,12 +305,18 @@ func (ds *Datastore) GetLastCrawls(p models.Project, limit int) []models.Crawl {
 func (ds *Datastore) SaveIssuesCount(crawlId int64, critical, alert, warning int) {
 	query := `UPDATE
 		crawls
-		SET critical_issues = ?, alert_issues = ?, warning_issues = ?
+		SET 
+			critical_issues = ?,
+			alert_issues = ?,
+			warning_issues = ?,
+			total_issues = ?
 		WHERE id = ?`
 
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
-	_, err := stmt.Exec(critical, alert, warning, crawlId)
+
+	total := critical + alert + warning
+	_, err := stmt.Exec(critical, alert, warning, total, crawlId)
 	if err != nil {
 		log.Printf("SaveIssuesCount: %v\n", err)
 	}

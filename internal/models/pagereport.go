@@ -5,7 +5,7 @@ import (
 )
 
 type PageReport struct {
-	Id                 int
+	Id                 int64
 	URL                string
 	ParsedURL          *url.URL
 	RedirectURL        string

@@ -17,6 +17,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
@@ -53,13 +54,16 @@ func main() {
 	cacheManager.AddCrawlCacheHandler(issueService)
 	cacheManager.AddCrawlCacheHandler(reportService)
 
+	reportManager := newReportManager(ds, cacheManager)
+
+	// Start HTTP server.
 	services := &http.Services{
 		UserService:        user.NewService(ds),
 		ProjectService:     project.NewService(ds, cacheManager),
-		CrawlerService:     crawler.NewService(ds, broker, config.Crawler, cacheManager),
+		CrawlerService:     crawler.NewService(ds, broker, config.Crawler, cacheManager, reportManager),
 		IssueService:       issueService,
 		ReportService:      reportService,
-		ReportManager:      newReportManager(ds, cacheManager),
+		ReportManager:      reportManager,
 		ProjectViewService: projectview.NewService(ds),
 		PubSubBroker:       broker,
 		ExportService:      export.NewExporter(ds),
@@ -77,41 +81,59 @@ func main() {
 func newReportManager(ds *datastore.Datastore, cm *cache_manager.CacheManager) *report_manager.ReportManager {
 	rm := report_manager.NewReportManager(ds, cm)
 
-	rm.AddReporter(ds.Find30xPageReports, report_manager.Error30x)
-	rm.AddReporter(ds.Find40xPageReports, report_manager.Error40x)
-	rm.AddReporter(ds.Find50xPageReports, report_manager.Error50x)
 	rm.AddReporter(ds.FindPageReportsWithDuplicatedTitle, report_manager.ErrorDuplicatedTitle)
 	rm.AddReporter(ds.FindPageReportsWithDuplicatedDescription, report_manager.ErrorDuplicatedDescription)
-	rm.AddReporter(ds.FindPageReportsWithEmptyTitle, report_manager.ErrorEmptyTitle)
-	rm.AddReporter(ds.FindPageReportsWithShortTitle, report_manager.ErrorShortTitle)
-	rm.AddReporter(ds.FindPageReportsWithLongTitle, report_manager.ErrorLongTitle)
-	rm.AddReporter(ds.FindPageReportsWithEmptyDescription, report_manager.ErrorEmptyDescription)
-	rm.AddReporter(ds.FindPageReportsWithShortDescription, report_manager.ErrorShortDescription)
-	rm.AddReporter(ds.FindPageReportsWithLongDescription, report_manager.ErrorLongDescription)
-	rm.AddReporter(ds.FindPageReportsWithLittleContent, report_manager.ErrorLittleContent)
-	rm.AddReporter(ds.FindImagesWithNoAlt, report_manager.ErrorImagesWithNoAlt)
 	rm.AddReporter(ds.FindRedirectChains, report_manager.ErrorRedirectChain)
-	rm.AddReporter(ds.FindPageReportsWithoutH1, report_manager.ErrorNoH1)
-	rm.AddReporter(ds.FindPageReportsWithNoLangAttr, report_manager.ErrorNoLang)
-	rm.AddReporter(ds.FindPageReportsWithHTTPLinks, report_manager.ErrorHTTPLinks)
 	rm.AddReporter(ds.FindMissingHrelangReturnLinks, report_manager.ErrorHreflangsReturnLink)
-	rm.AddReporter(ds.TooManyLinks, report_manager.ErrorTooManyLinks)
-	rm.AddReporter(ds.InternalNoFollowLinks, report_manager.ErrorInternalNoFollow)
-	rm.AddReporter(ds.FindExternalLinkWitoutNoFollow, report_manager.ErrorExternalWithoutNoFollow)
 	rm.AddReporter(ds.FindCanonicalizedToNonCanonical, report_manager.ErrorCanonicalizedToNonCanonical)
 	rm.AddReporter(ds.FindRedirectLoops, report_manager.ErrorRedirectLoop)
-	rm.AddReporter(ds.FindNotValidHeadingsOrder, report_manager.ErrorNotValidHeadings)
 	rm.AddReporter(ds.FindHreflangsToNonCanonical, report_manager.HreflangToNonCanonical)
-	rm.AddReporter(ds.InternalNoFollowIndexableLinks, report_manager.ErrorInternalNoFollowIndexable)
-	rm.AddReporter(ds.NoIndexable, report_manager.ErrorNoIndexable)
-	rm.AddReporter(ds.HreflangNoindexable, report_manager.HreflangNoindexable)
-	rm.AddReporter(ds.FindBlockedByRobotstxt, report_manager.ErrorBlocked)
 	rm.AddReporter(ds.FindOrphanPages, report_manager.ErrorOrphan)
-	rm.AddReporter(ds.FindNoIndexInSitemap, report_manager.SitemapNoIndex)
-	rm.AddReporter(ds.FindBlockedInSitemap, report_manager.SitemapBlocked)
-	rm.AddReporter(ds.FindNonCanonicalInSitemap, report_manager.SitemapNonCanonical)
 	rm.AddReporter(ds.FindIncomingIndexNoIndex, report_manager.IncomingFollowNofollow)
-	rm.AddReporter(ds.FindInvalidLang, report_manager.InvalidLanguage)
+	rm.AddReporter(ds.HreflangNoindexable, report_manager.HreflangNoindexable)
+	rm.AddReporter(ds.InternalNoFollowIndexableLinks, report_manager.ErrorInternalNoFollowIndexable)
+
+	// Image issues
+	rm.AddPageReporter(reporters.NoAltText, report_manager.ErrorImagesWithNoAlt)
+
+	// Link issues
+	rm.AddPageReporter(reporters.HTTPLinks, report_manager.ErrorHTTPLinks)
+	rm.AddPageReporter(reporters.TooManyLinks, report_manager.ErrorTooManyLinks)
+	rm.AddPageReporter(reporters.InternalNoFollowLinks, report_manager.ErrorInternalNoFollow)
+	rm.AddPageReporter(reporters.ExternalLinkWitoutNoFollow, report_manager.ErrorExternalWithoutNoFollow)
+
+	// Status code issues
+	rm.AddPageReporter(reporters.Status30x, report_manager.Error30x)
+	rm.AddPageReporter(reporters.Status40x, report_manager.Error40x)
+	rm.AddPageReporter(reporters.Status50x, report_manager.Error40x)
+
+	// Title issues
+	rm.AddPageReporter(reporters.EmptyTitle, report_manager.ErrorEmptyTitle)
+	rm.AddPageReporter(reporters.ShortTitle, report_manager.ErrorShortTitle)
+	rm.AddPageReporter(reporters.LongTitle, report_manager.ErrorLongTitle)
+
+	// Description issues
+	rm.AddPageReporter(reporters.EmptyDescription, report_manager.ErrorEmptyDescription)
+	rm.AddPageReporter(reporters.ShortDescription, report_manager.ErrorShortDescription)
+	rm.AddPageReporter(reporters.LongDescription, report_manager.ErrorLongDescription)
+
+	// Indexability issues
+	rm.AddPageReporter(reporters.NoIndexable, report_manager.ErrorNoIndexable)
+	rm.AddPageReporter(reporters.BlockedByRobotstxt, report_manager.ErrorBlocked)
+	rm.AddPageReporter(reporters.NoIndexInSitemap, report_manager.SitemapNoIndex)
+	rm.AddPageReporter(reporters.SitemapAndBlocked, report_manager.SitemapBlocked)
+	rm.AddPageReporter(reporters.NonCanonicalInSitemap, report_manager.SitemapNonCanonical)
+
+	// Language issues
+	rm.AddPageReporter(reporters.InvalidLang, report_manager.InvalidLanguage)
+	rm.AddPageReporter(reporters.MissingLang, report_manager.ErrorNoLang)
+
+	// Content issues
+	rm.AddPageReporter(reporters.LittleContent, report_manager.ErrorLittleContent)
+
+	// Heading Issues
+	rm.AddPageReporter(reporters.NoH1, report_manager.ErrorNoH1)
+	rm.AddPageReporter(reporters.ValidHeadingsOrder, report_manager.ErrorNotValidHeadings)
 
 	return rm
 }

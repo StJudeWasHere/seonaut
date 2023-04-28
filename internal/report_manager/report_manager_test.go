@@ -21,7 +21,7 @@ type storage struct{}
 func (s *storage) SaveIssues(c <-chan *issue.Issue) {
 	<-c
 }
-func (s *storage) SaveEndIssues(crawlId int64, t time.Time, total int) {}
+func (s *storage) SaveEndIssues(crawlId int64, t time.Time) {}
 
 var service = report_manager.NewReportManager(&storage{}, cache_manager.New())
 

@@ -54,10 +54,12 @@ func TestEmptyDescriptionIssues(t *testing.T) {
 // The reporter should not report the issue.
 func TestShortDescriptionNoIssues(t *testing.T) {
 	pageReport := &models.PageReport{
-		Crawled:     true,
-		MediaType:   "text/html",
-		StatusCode:  200,
-		Description: "This test should return false if the pageReport description is not short. This test should return false if the pageReport description is not short",
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+		Description: `
+			This test should return false if the pageReport description is not short.
+			This test should return false if the pageReport description is not short`,
 	}
 
 	reporter := reporters.NewShortDescriptionReporter()
@@ -98,10 +100,12 @@ func TestShortDescriptionIssues(t *testing.T) {
 // The reporter should not report the issue.
 func TestLongDescriptionNoIssues(t *testing.T) {
 	pageReport := &models.PageReport{
-		Crawled:     true,
-		MediaType:   "text/html",
-		StatusCode:  200,
-		Description: "This test should return false if the pageReport description is not short. This test should return false if the pageReport description is not short",
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+		Description: `
+			This test should return false if the pageReport description is not short.
+			This test should return false if the pageReport description is not short`,
 	}
 
 	reporter := reporters.NewLongDescriptionReporter()
@@ -120,10 +124,14 @@ func TestLongDescriptionNoIssues(t *testing.T) {
 // The reporter should report the issue.
 func TestLongDescriptionIssues(t *testing.T) {
 	pageReport := &models.PageReport{
-		Crawled:     true,
-		MediaType:   "text/html",
-		StatusCode:  200,
-		Description: "This test should return false if the pageReport description is not short. This test should return false if the pageReport description is not short. This test should return false if the pageReport description is not short. This test should return false if the pageReport description is not short",
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+		Description: `
+			This test should return false if the pageReport description is not short.
+			This test should return false if the pageReport description is not short.
+			This test should return false if the pageReport description is not short.
+			This test should return false if the pageReport description is not short`,
 	}
 
 	reporter := reporters.NewLongDescriptionReporter()

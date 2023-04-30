@@ -34,7 +34,7 @@ func NewBlockedByRobotstxtReporter() *PageIssueReporter {
 // the pageReport is non-indexable and it is included in the sitemap.
 func NewNoIndexInSitemapReporter() *PageIssueReporter {
 	c := func(pageReport *models.PageReport) bool {
-		return pageReport.Noindex && pageReport.BlockedByRobotstxt
+		return pageReport.InSitemap && pageReport.Noindex
 	}
 
 	return &PageIssueReporter{

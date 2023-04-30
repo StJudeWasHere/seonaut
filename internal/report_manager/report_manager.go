@@ -93,7 +93,7 @@ func NewFullReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) 
 	// Content issues
 	rm.AddPageReporter(reporters.NewLittleContentReporter())
 
-	// Heading Issues
+	// Heading issues
 	rm.AddPageReporter(reporters.NewNoH1Reporter())
 	rm.AddPageReporter(reporters.NewValidHeadingsOrderReporter())
 

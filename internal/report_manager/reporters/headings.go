@@ -4,40 +4,58 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-// Report if a page has an empty or missing H1 tag.
-func NoH1(pageReport *models.PageReport) bool {
-	if pageReport.Crawled == false {
-		return false
+// Returns a PageIssueReporter with a callback function that returns true if
+// the media type is text/html, the status code is between 200 and 299 and the page's html
+// doesn't have any H1 tag.
+func NewNoH1Reporter() *PageIssueReporter {
+	c := func(pageReport *models.PageReport) bool {
+		if pageReport.Crawled == false {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+			return false
+		}
+
+		return pageReport.H1 == ""
 	}
 
-	if pageReport.MediaType != "text/html" {
-		return false
+	return &PageIssueReporter{
+		ErrorType: ErrorNoH1,
+		Callback:  c,
 	}
-
-	if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
-		return false
-	}
-
-	return pageReport.H1 == ""
 }
 
-// Returns true if HTML headings order is not valid
-func ValidHeadingsOrder(pageReport *models.PageReport) bool {
-	if pageReport.Crawled == false {
-		return false
+// Returns a PageIssueReporter with a callback function that returns true if
+// the media type is text/html, the status code is between 200 and 299 and the heading tags
+// in the page's html doesn't have the correct order.
+func NewValidHeadingsOrderReporter() *PageIssueReporter {
+	c := func(pageReport *models.PageReport) bool {
+		if pageReport.Crawled == false {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+			return false
+		}
+
+		if pageReport.ValidHeadings == true {
+			return false
+		}
+
+		return true
 	}
 
-	if pageReport.MediaType != "text/html" {
-		return false
+	return &PageIssueReporter{
+		ErrorType: ErrorNotValidHeadings,
+		Callback:  c,
 	}
-
-	if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
-		return false
-	}
-
-	if pageReport.ValidHeadings == true {
-		return false
-	}
-
-	return true
 }

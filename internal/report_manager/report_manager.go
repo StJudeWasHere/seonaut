@@ -7,75 +7,97 @@ import (
 	"github.com/stjudewashere/seonaut/internal/cache_manager"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
-const (
-	Error30x                         = iota + 1 // HTTP redirect
-	Error40x                                    // HTTP not found
-	Error50x                                    // HTTP internal error
-	ErrorDuplicatedTitle                        // Duplicate title
-	ErrorDuplicatedDescription                  // Duplicate description
-	ErrorEmptyTitle                             // Missing or empty title
-	ErrorShortTitle                             // Page title is too short
-	ErrorLongTitle                              // Page title is too long
-	ErrorEmptyDescription                       // Missing or empty meta description
-	ErrorShortDescription                       // Meta description is too short
-	ErrorLongDescription                        // Meta description is too long
-	ErrorLittleContent                          // Not enough content
-	ErrorImagesWithNoAlt                        // Images with no alt attribute
-	ErrorRedirectChain                          // Redirect chain
-	ErrorNoH1                                   // Missing or empy H1 tag
-	ErrorNoLang                                 // Missing or empty html lang attribute
-	ErrorHTTPLinks                              // Links using insecure http schema
-	ErrorHreflangsReturnLink                    // Hreflang is not bidirectional
-	ErrorTooManyLinks                           // Page contains too many links
-	ErrorInternalNoFollow                       // Page has internal links with nofollow attribute
-	ErrorExternalWithoutNoFollow                // Page has external follow links
-	ErrorCanonicalizedToNonCanonical            // Page canonicalized to a non canonical page
-	ErrorRedirectLoop                           // Redirect loop
-	ErrorNotValidHeadings                       // H1-H6 tags have wrong order
-	HreflangToNonCanonical                      // Hreflang to non canonical page
-	ErrorInternalNoFollowIndexable              // Nofollow links to indexable pages
-	ErrorNoIndexable                            // Page using the noindex attribute
-	HreflangNoindexable                         // Hreflang to a non indexable page
-	ErrorBlocked                                // Blocked by robots.txt
-	ErrorOrphan                                 // Orphan pages
-	SitemapNoIndex                              // No index pages included in the sitemap
-	SitemapBlocked                              // Pages included in the sitemap that are blocked in robots.txt
-	SitemapNonCanonical                         // Non canonical pages included in the sitemap
-	IncomingFollowNofollow                      // Pages with index and noindex incoming links
-	InvalidLanguage                             // Pages with invalid lang attribute
-)
-
-type Reporter func(int64) <-chan *models.PageReport
-type PageReporter func(*models.PageReport) bool
+type Reporter func(reporters.DatabaseReporter, *models.Crawl) <-chan *models.PageReport
 
 type IssueCallback struct {
 	Callback  Reporter
-	ErrorType int
-}
-type PageIssueCallback struct {
-	Callback  PageReporter
 	ErrorType int
 }
 
 type ReportManager struct {
 	store         ReportManagerStore
 	callbacks     []IssueCallback
-	pageCallbacks []PageIssueCallback
+	pageCallbacks []*reporters.PageIssueReporter
 	cacheManager  *cache_manager.CacheManager
 }
 
 type ReportManagerStore interface {
 	SaveIssues(<-chan *issue.Issue)
 	SaveEndIssues(int64, time.Time)
+	PageReportsQuery(query string, args ...interface{}) <-chan *models.PageReport
 }
 
+// Create a new ReportManager with no issue reporters.
 func NewReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) *ReportManager {
 	return &ReportManager{
 		store:        s,
 		cacheManager: cm,
 	}
+}
+
+// Create a new ReportManager with all available issue reporters.
+func NewFullReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) *ReportManager {
+	rm := NewReportManager(s, cm)
+
+	// Whole site issues
+	rm.AddReporter(reporters.FindPageReportsWithDuplicatedTitle, reporters.ErrorDuplicatedTitle)
+	rm.AddReporter(reporters.FindPageReportsWithDuplicatedDescription, reporters.ErrorDuplicatedDescription)
+	rm.AddReporter(reporters.FindRedirectChains, reporters.ErrorRedirectChain)
+	rm.AddReporter(reporters.FindMissingHrelangReturnLinks, reporters.ErrorHreflangsReturnLink)
+	rm.AddReporter(reporters.FindCanonicalizedToNonCanonical, reporters.ErrorCanonicalizedToNonCanonical)
+	rm.AddReporter(reporters.FindRedirectLoops, reporters.ErrorRedirectLoop)
+	rm.AddReporter(reporters.FindHreflangsToNonCanonical, reporters.HreflangToNonCanonical)
+	rm.AddReporter(reporters.FindOrphanPages, reporters.ErrorOrphan)
+	rm.AddReporter(reporters.FindIncomingIndexNoIndex, reporters.IncomingFollowNofollow)
+	rm.AddReporter(reporters.FindHreflangNoindexable, reporters.HreflangNoindexable)
+	rm.AddReporter(reporters.InternalNoFollowIndexableLinks, reporters.ErrorInternalNoFollowIndexable)
+
+	// Image issues
+	rm.AddPageReporter(reporters.NewAltTextReporter())
+
+	// Link issues
+	rm.AddPageReporter(reporters.NewTooManyLinksReporter())
+	rm.AddPageReporter(reporters.NewInternalNoFollowLinksReporter())
+	rm.AddPageReporter(reporters.NewExternalLinkWitoutNoFollowReporter())
+	rm.AddPageReporter(reporters.NewHTTPLinksReporter())
+
+	// Status code issues
+	rm.AddPageReporter(reporters.NewStatus30xReporter())
+	rm.AddPageReporter(reporters.NewStatus40xReporter())
+	rm.AddPageReporter(reporters.NewStatus50xReporter())
+
+	// Title issues
+	rm.AddPageReporter(reporters.NewEmptyTitleReporter())
+	rm.AddPageReporter(reporters.NewShortTitleReporter())
+	rm.AddPageReporter(reporters.NewShortTitleReporter())
+
+	// Description issues
+	rm.AddPageReporter(reporters.NewEmptyDescriptionReporter())
+	rm.AddPageReporter(reporters.NewShortDescriptionReporter())
+	rm.AddPageReporter(reporters.NewLongDescriptionReporter())
+
+	// Indexability issues
+	rm.AddPageReporter(reporters.NewNoIndexableReporter())
+	rm.AddPageReporter(reporters.NewBlockedByRobotstxtReporter())
+	rm.AddPageReporter(reporters.NewNoIndexInSitemapReporter())
+	rm.AddPageReporter(reporters.NewSitemapAndBlockedReporter())
+	rm.AddPageReporter(reporters.NewNonCanonicalInSitemapReporter())
+
+	// Language issues
+	rm.AddPageReporter(reporters.NewInvalidLangReporter())
+	rm.AddPageReporter(reporters.NewMissingLangReporter())
+
+	// Content issues
+	rm.AddPageReporter(reporters.NewLittleContentReporter())
+
+	// Heading Issues
+	rm.AddPageReporter(reporters.NewNoH1Reporter())
+	rm.AddPageReporter(reporters.NewValidHeadingsOrderReporter())
+
+	return rm
 }
 
 // Add an issue reporter to the ReportManager.
@@ -86,8 +108,8 @@ func (r *ReportManager) AddReporter(c Reporter, t int) {
 
 // Add an issue page reporter to the ReportManager.
 // It will be used to create issues on each crawled page.
-func (r *ReportManager) AddPageReporter(c PageReporter, t int) {
-	r.pageCallbacks = append(r.pageCallbacks, PageIssueCallback{Callback: c, ErrorType: t})
+func (r *ReportManager) AddPageReporter(reporter *reporters.PageIssueReporter) {
+	r.pageCallbacks = append(r.pageCallbacks, reporter)
 }
 
 // CreateIssues uses the Reporters to create and save issues found in a crawl.
@@ -104,7 +126,7 @@ func (r *ReportManager) CreateIssues(crawl *models.Crawl) {
 	}()
 
 	for _, c := range r.callbacks {
-		for p := range c.Callback(crawl.Id) {
+		for p := range c.Callback(r.store, crawl) {
 			i := &issue.Issue{
 				PageReportId: p.Id,
 				CrawlId:      crawl.Id,
@@ -138,8 +160,7 @@ func (r *ReportManager) CreatePageIssues(p *models.PageReport, crawl *models.Cra
 	}()
 
 	for _, c := range r.pageCallbacks {
-		result := c.Callback(p)
-		if result == true {
+		if c.Callback(p) == true {
 			iStream <- &issue.Issue{
 				PageReportId: p.Id,
 				CrawlId:      crawl.Id,

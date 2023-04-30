@@ -8,6 +8,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
 const (
@@ -22,6 +23,10 @@ func (s *storage) SaveIssues(c <-chan *issue.Issue) {
 	<-c
 }
 func (s *storage) SaveEndIssues(crawlId int64, t time.Time) {}
+func (s *storage) PageReportsQuery(query string, args ...interface{}) <-chan *models.PageReport {
+	prStream := make(chan *models.PageReport)
+	return prStream
+}
 
 var service = report_manager.NewReportManager(&storage{}, cache_manager.New())
 
@@ -32,7 +37,7 @@ func TestCreateIssues(t *testing.T) {
 
 	total := 0
 
-	service.AddReporter(func(crawlId int64) <-chan *models.PageReport {
+	service.AddReporter(func(reporters.DatabaseReporter, *models.Crawl) <-chan *models.PageReport {
 		prStream := make(chan *models.PageReport)
 		go func() {
 			defer close(prStream)

@@ -31,25 +31,19 @@ func (s *storage) PageReportsQuery(query string, args ...interface{}) <-chan *mo
 var service = report_manager.NewReportManager(&storage{}, cache_manager.New())
 
 func TestCreateIssues(t *testing.T) {
-	pageReports := []models.PageReport{
-		{Id: pageReportId},
-	}
-
+	pageReport := &models.PageReport{Id: pageReportId}
 	total := 0
 
-	service.AddReporter(func(reporters.DatabaseReporter, *models.Crawl) <-chan *models.PageReport {
-		prStream := make(chan *models.PageReport)
-		go func() {
-			defer close(prStream)
-			for _, v := range pageReports {
-				prStream <- &v
-				total++
-			}
-		}()
-		return prStream
-	}, errorId)
+	service.AddPageReporter(
+		&reporters.PageIssueReporter{
+			ErrorType: 1,
+			Callback: func(pageReport *models.PageReport) bool {
+				total = 1
+				return true
+			},
+		})
 
-	service.CreateIssues(&models.Crawl{Id: crawlId})
+	service.CreatePageIssues(pageReport, &models.Crawl{})
 	if total != 1 {
 		t.Errorf("CreateIsssues: %d != 1", total)
 	}

@@ -32,7 +32,7 @@ const (
 	HreflangToNonCanonical                      // Hreflang to non canonical page
 	ErrorInternalNoFollowIndexable              // Nofollow links to indexable pages
 	ErrorNoIndexable                            // Page using the noindex attribute
-	HreflangNoindexable                         // Hreflang to a non indexable page
+	ErrorHreflangNoindexable                    // Hreflang to a non indexable page
 	ErrorBlocked                                // Blocked by robots.txt
 	ErrorOrphan                                 // Orphan pages
 	SitemapNoIndex                              // No index pages included in the sitemap
@@ -42,7 +42,15 @@ const (
 	InvalidLanguage                             // Pages with invalid lang attribute
 )
 
+type MultipageCallback func(c *models.Crawl) *MultipageIssueReporter
+
 type PageIssueReporter struct {
 	Callback  func(*models.PageReport) bool
 	ErrorType int
+}
+
+type MultipageIssueReporter struct {
+	Query      string
+	Parameters []interface{}
+	ErrorType  int
 }

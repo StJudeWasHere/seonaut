@@ -10,18 +10,11 @@ import (
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
-type Reporter func(reporters.DatabaseReporter, *models.Crawl) <-chan *models.PageReport
-
-type IssueCallback struct {
-	Callback  Reporter
-	ErrorType int
-}
-
 type ReportManager struct {
-	store         ReportManagerStore
-	callbacks     []IssueCallback
-	pageCallbacks []*reporters.PageIssueReporter
-	cacheManager  *cache_manager.CacheManager
+	store              ReportManagerStore
+	pageCallbacks      []*reporters.PageIssueReporter
+	multipageCallbacks []reporters.MultipageCallback
+	cacheManager       *cache_manager.CacheManager
 }
 
 type ReportManagerStore interface {
@@ -39,74 +32,82 @@ func NewReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) *Rep
 }
 
 // Create a new ReportManager with all available issue reporters.
+// It includes both, page issue reporters and multi-page issue reporters.
 func NewFullReportManager(s ReportManagerStore, cm *cache_manager.CacheManager) *ReportManager {
 	rm := NewReportManager(s, cm)
 
-	// Whole site issues
-	rm.AddReporter(reporters.FindPageReportsWithDuplicatedTitle, reporters.ErrorDuplicatedTitle)
-	rm.AddReporter(reporters.FindPageReportsWithDuplicatedDescription, reporters.ErrorDuplicatedDescription)
-	rm.AddReporter(reporters.FindRedirectChains, reporters.ErrorRedirectChain)
-	rm.AddReporter(reporters.FindMissingHrelangReturnLinks, reporters.ErrorHreflangsReturnLink)
-	rm.AddReporter(reporters.FindCanonicalizedToNonCanonical, reporters.ErrorCanonicalizedToNonCanonical)
-	rm.AddReporter(reporters.FindRedirectLoops, reporters.ErrorRedirectLoop)
-	rm.AddReporter(reporters.FindHreflangsToNonCanonical, reporters.HreflangToNonCanonical)
-	rm.AddReporter(reporters.FindOrphanPages, reporters.ErrorOrphan)
-	rm.AddReporter(reporters.FindIncomingIndexNoIndex, reporters.IncomingFollowNofollow)
-	rm.AddReporter(reporters.FindHreflangNoindexable, reporters.HreflangNoindexable)
-	rm.AddReporter(reporters.InternalNoFollowIndexableLinks, reporters.ErrorInternalNoFollowIndexable)
-
-	// Image issues
-	rm.AddPageReporter(reporters.NewAltTextReporter())
-
-	// Link issues
-	rm.AddPageReporter(reporters.NewTooManyLinksReporter())
-	rm.AddPageReporter(reporters.NewInternalNoFollowLinksReporter())
-	rm.AddPageReporter(reporters.NewExternalLinkWitoutNoFollowReporter())
-	rm.AddPageReporter(reporters.NewHTTPLinksReporter())
-
-	// Status code issues
+	// Add status code issue reporters
 	rm.AddPageReporter(reporters.NewStatus30xReporter())
 	rm.AddPageReporter(reporters.NewStatus40xReporter())
 	rm.AddPageReporter(reporters.NewStatus50xReporter())
 
-	// Title issues
+	rm.AddMultipageReporter(reporters.RedirectChainsReporter)
+	rm.AddMultipageReporter(reporters.RedirectLoopsReporter)
+
+	// Add title issue reporters
 	rm.AddPageReporter(reporters.NewEmptyTitleReporter())
 	rm.AddPageReporter(reporters.NewShortTitleReporter())
 	rm.AddPageReporter(reporters.NewShortTitleReporter())
 
-	// Description issues
+	rm.AddMultipageReporter(reporters.DuplicatedTitleReporter)
+
+	// Add description issue reporters
 	rm.AddPageReporter(reporters.NewEmptyDescriptionReporter())
 	rm.AddPageReporter(reporters.NewShortDescriptionReporter())
 	rm.AddPageReporter(reporters.NewLongDescriptionReporter())
 
-	// Indexability issues
+	rm.AddMultipageReporter(reporters.DuplicatedDescriptionReporter)
+
+	// Add indexability issue reporters
 	rm.AddPageReporter(reporters.NewNoIndexableReporter())
 	rm.AddPageReporter(reporters.NewBlockedByRobotstxtReporter())
 	rm.AddPageReporter(reporters.NewNoIndexInSitemapReporter())
 	rm.AddPageReporter(reporters.NewSitemapAndBlockedReporter())
 	rm.AddPageReporter(reporters.NewNonCanonicalInSitemapReporter())
 
-	// Language issues
+	// Add link issue reporters
+	rm.AddPageReporter(reporters.NewTooManyLinksReporter())
+	rm.AddPageReporter(reporters.NewInternalNoFollowLinksReporter())
+	rm.AddPageReporter(reporters.NewExternalLinkWitoutNoFollowReporter())
+	rm.AddPageReporter(reporters.NewHTTPLinksReporter())
+
+	rm.AddMultipageReporter(reporters.OrphanPagesReporter)
+	rm.AddMultipageReporter(reporters.NoFollowIndexableReporter)
+	rm.AddMultipageReporter(reporters.FollowNoFollowReporter)
+
+	// Add image issue reporters
+	rm.AddPageReporter(reporters.NewAltTextReporter())
+
+	// Add language issue reporters
 	rm.AddPageReporter(reporters.NewInvalidLangReporter())
 	rm.AddPageReporter(reporters.NewMissingLangReporter())
 
-	// Content issues
-	rm.AddPageReporter(reporters.NewLittleContentReporter())
+	// Add hreflang reporters
+	rm.AddMultipageReporter(reporters.MissingHrelangReturnLinks)
+	rm.AddMultipageReporter(reporters.HreflangsToNonCanonical)
+	rm.AddMultipageReporter(reporters.HreflangNoindexable)
 
-	// Heading issues
+	// Add heading issue reporters
 	rm.AddPageReporter(reporters.NewNoH1Reporter())
 	rm.AddPageReporter(reporters.NewValidHeadingsOrderReporter())
+
+	// Add content issue reporters
+	rm.AddPageReporter(reporters.NewLittleContentReporter())
+
+	// Add canonical issue reporters
+	rm.AddMultipageReporter(reporters.CanonicalizedToNonCanonical)
 
 	return rm
 }
 
-// Add an issue reporter to the ReportManager.
-// It will be used when creating the issues.
-func (r *ReportManager) AddReporter(c Reporter, t int) {
-	r.callbacks = append(r.callbacks, IssueCallback{Callback: c, ErrorType: t})
+// Add a multi-page issue reporter to the ReportManager. Multi-page reporters are used to detect
+// issues that affect multiple pages. It will be used when creating the multi page issues once all
+// the pages have been crawled.
+func (r *ReportManager) AddMultipageReporter(reporter reporters.MultipageCallback) {
+	r.multipageCallbacks = append(r.multipageCallbacks, reporter)
 }
 
-// Add an issue page reporter to the ReportManager.
+// Add an page issue reporter to the ReportManager.
 // It will be used to create issues on each crawled page.
 func (r *ReportManager) AddPageReporter(reporter *reporters.PageIssueReporter) {
 	r.pageCallbacks = append(r.pageCallbacks, reporter)
@@ -125,15 +126,14 @@ func (r *ReportManager) CreateIssues(crawl *models.Crawl) {
 		wg.Done()
 	}()
 
-	for _, c := range r.callbacks {
-		for p := range c.Callback(r.store, crawl) {
-			i := &issue.Issue{
+	for _, callback := range r.multipageCallbacks {
+		reporter := callback(crawl)
+		for p := range r.store.PageReportsQuery(reporter.Query, reporter.Parameters...) {
+			iStream <- &issue.Issue{
 				PageReportId: p.Id,
 				CrawlId:      crawl.Id,
-				ErrorType:    c.ErrorType,
+				ErrorType:    reporter.ErrorType,
 			}
-
-			iStream <- i
 
 			issueCount++
 		}

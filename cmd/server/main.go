@@ -64,7 +64,9 @@ func main() {
 		reportManager.AddPageReporter(r)
 	}
 
-	for _, r := range sql_reporters.GetAllReporters() {
+	sqlReporters := sql_reporters.NewSqlReporter(ds.GetDatabaseConnection())
+
+	for _, r := range sqlReporters.GetAllReporters() {
 		reportManager.AddMultipageReporter(r)
 	}
 

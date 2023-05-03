@@ -71,6 +71,10 @@ func NewDataStore(config *DBConfig) (*Datastore, error) {
 	return &Datastore{db: db}, nil
 }
 
+func (ds *Datastore) GetDatabaseConnection() *sql.DB {
+	return ds.db
+}
+
 // Migrate is called when the app is launched to apply the database migrations.
 func (ds *Datastore) Migrate() error {
 	driver, err := mysql.WithInstance(ds.db, &mysql.Config{})

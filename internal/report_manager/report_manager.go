@@ -6,18 +6,23 @@ import (
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
-	"github.com/stjudewashere/seonaut/internal/report_manager/sql_reporters"
 )
+
+type MultipageCallback func(c *models.Crawl) *MultipageIssueReporter
+
+type MultipageIssueReporter struct {
+	Pstream   <-chan *models.PageReport
+	ErrorType int
+}
 
 type ReportManager struct {
 	store              ReportManagerStore
 	pageCallbacks      []*reporters.PageIssueReporter
-	multipageCallbacks []sql_reporters.MultipageCallback
+	multipageCallbacks []MultipageCallback
 }
 
 type ReportManagerStore interface {
 	SaveIssues(<-chan *issue.Issue)
-	PageReportsQuery(query string, args ...interface{}) <-chan *models.PageReport
 }
 
 // Create a new ReportManager with no issue reporters.
@@ -30,7 +35,7 @@ func NewReportManager(s ReportManagerStore) *ReportManager {
 // Add a multi-page issue reporter to the ReportManager. Multi-page reporters are used to detect
 // issues that affect multiple pages. It will be used when creating the multi page issues once all
 // the pages have been crawled.
-func (rm *ReportManager) AddMultipageReporter(reporter sql_reporters.MultipageCallback) {
+func (rm *ReportManager) AddMultipageReporter(reporter MultipageCallback) {
 	rm.multipageCallbacks = append(rm.multipageCallbacks, reporter)
 }
 
@@ -42,9 +47,7 @@ func (rm *ReportManager) AddPageReporter(reporter *reporters.PageIssueReporter) 
 
 // CreateIssues uses the Reporters to create and save issues found in a crawl.
 func (r *ReportManager) CreateIssues(crawl *models.Crawl) {
-	issueCount := 0
 	iStream := make(chan *issue.Issue)
-
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 
@@ -55,14 +58,12 @@ func (r *ReportManager) CreateIssues(crawl *models.Crawl) {
 
 	for _, callback := range r.multipageCallbacks {
 		reporter := callback(crawl)
-		for p := range r.store.PageReportsQuery(reporter.Query, reporter.Parameters...) {
+		for p := range reporter.Pstream {
 			iStream <- &issue.Issue{
 				PageReportId: p.Id,
 				CrawlId:      crawl.Id,
 				ErrorType:    reporter.ErrorType,
 			}
-
-			issueCount++
 		}
 	}
 

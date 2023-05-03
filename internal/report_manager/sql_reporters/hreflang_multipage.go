@@ -2,10 +2,11 @@ package sql_reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
-func MissingHrelangReturnLinks(c *models.Crawl) *MultipageIssueReporter {
+func (sr *SqlReporter) MissingHrelangReturnLinks(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
 			distinct pagereports.id,
@@ -18,14 +19,13 @@ func MissingHrelangReturnLinks(c *models.Crawl) *MultipageIssueReporter {
 		AND pagereports.status_code < 300 AND b.id IS NULL
 		AND (pagereports.canonical = "" OR pagereports.canonical = pagereports.URL) AND pagereports.crawled = 1`
 
-	return &MultipageIssueReporter{
-		Query:      query,
-		Parameters: []interface{}{c.Id},
-		ErrorType:  reporter_errors.ErrorHreflangsReturnLink,
+	return &report_manager.MultipageIssueReporter{
+		Pstream:   sr.pageReportsQuery(query, c.Id),
+		ErrorType: reporter_errors.ErrorHreflangsReturnLink,
 	}
 }
 
-func HreflangsToNonCanonical(c *models.Crawl) *MultipageIssueReporter {
+func (sr *SqlReporter) HreflangsToNonCanonical(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
 			pagereports.id,
@@ -37,14 +37,13 @@ func HreflangsToNonCanonical(c *models.Crawl) *MultipageIssueReporter {
 		AND (canonical IS NOT NULL AND canonical != "" AND canonical != url) AND pagereports.crawl_id = ?
 		AND hreflangs.id IS NOT NULL AND crawled = 1`
 
-	return &MultipageIssueReporter{
-		Query:      query,
-		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  reporter_errors.ErrorHreflangToNonCanonical,
+	return &report_manager.MultipageIssueReporter{
+		Pstream:   sr.pageReportsQuery(query, c.Id, c.Id),
+		ErrorType: reporter_errors.ErrorHreflangToNonCanonical,
 	}
 }
 
-func HreflangNoindexable(c *models.Crawl) *MultipageIssueReporter {
+func (sr *SqlReporter) HreflangNoindexable(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT pagereports.id, pagereports.url, pagereports.title
 		FROM pagereports
@@ -55,9 +54,8 @@ func HreflangNoindexable(c *models.Crawl) *MultipageIssueReporter {
 			WHERE hreflangs.crawl_id = ? and pagereports.noindex = 1 AND pagereports.crawled = 1
 		) AND crawled = 1`
 
-	return &MultipageIssueReporter{
-		Query:      query,
-		Parameters: []interface{}{c.Id},
-		ErrorType:  reporter_errors.ErrorHreflangNoindexable,
+	return &report_manager.MultipageIssueReporter{
+		Pstream:   sr.pageReportsQuery(query, c.Id),
+		ErrorType: reporter_errors.ErrorHreflangNoindexable,
 	}
 }

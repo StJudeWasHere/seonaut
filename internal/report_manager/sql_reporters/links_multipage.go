@@ -2,12 +2,13 @@ package sql_reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Creates a MultipageIssueReporter object that contains the SQL query to check for indexable pages
 // that are internally linked using the nofollow attribute.
-func NoFollowIndexableReporter(c *models.Crawl) *MultipageIssueReporter {
+func (sr *SqlReporter) NoFollowIndexableReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
 			pagereports.id,
@@ -28,16 +29,15 @@ func NoFollowIndexableReporter(c *models.Crawl) *MultipageIssueReporter {
 		) AS b
 		ON b.pagereport_id = pagereports.id`
 
-	return &MultipageIssueReporter{
-		Query:      query,
-		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  reporter_errors.ErrorInternalNoFollowIndexable,
+	return &report_manager.MultipageIssueReporter{
+		Pstream:   sr.pageReportsQuery(query, c.Id, c.Id),
+		ErrorType: reporter_errors.ErrorInternalNoFollowIndexable,
 	}
 }
 
 // Creates a MultipageIssueReporter object that contains the SQL query to check for pages
 // that are internally linked with and without the nofollow attribute.
-func FollowNoFollowReporter(c *models.Crawl) *MultipageIssueReporter {
+func (sr *SqlReporter) FollowNoFollowReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
 			pagereports.id,
@@ -52,9 +52,8 @@ func FollowNoFollowReporter(c *models.Crawl) *MultipageIssueReporter {
 			HAVING COUNT(DISTINCT nofollow) > 1
 			)`
 
-	return &MultipageIssueReporter{
-		Query:      query,
-		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  reporter_errors.ErrorIncomingFollowNofollow,
+	return &report_manager.MultipageIssueReporter{
+		Pstream:   sr.pageReportsQuery(query, c.Id, c.Id),
+		ErrorType: reporter_errors.ErrorIncomingFollowNofollow,
 	}
 }

@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function that checks if page has an empty little.
@@ -25,7 +26,7 @@ func NewEmptyTitleReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorEmptyTitle,
+		ErrorType: reporter_errors.ErrorEmptyTitle,
 		Callback:  c,
 	}
 }
@@ -47,7 +48,7 @@ func NewShortTitleReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorShortTitle,
+		ErrorType: reporter_errors.ErrorShortTitle,
 		Callback:  c,
 	}
 }
@@ -69,7 +70,7 @@ func NewLongTitleReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorLongTitle,
+		ErrorType: reporter_errors.ErrorLongTitle,
 		Callback:  c,
 	}
 }

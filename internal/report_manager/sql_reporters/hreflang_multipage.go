@@ -1,7 +1,8 @@
-package reporters
+package sql_reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 func MissingHrelangReturnLinks(c *models.Crawl) *MultipageIssueReporter {
@@ -20,7 +21,7 @@ func MissingHrelangReturnLinks(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id},
-		ErrorType:  ErrorHreflangsReturnLink,
+		ErrorType:  reporter_errors.ErrorHreflangsReturnLink,
 	}
 }
 
@@ -39,7 +40,7 @@ func HreflangsToNonCanonical(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  HreflangToNonCanonical,
+		ErrorType:  reporter_errors.ErrorHreflangToNonCanonical,
 	}
 }
 
@@ -57,6 +58,6 @@ func HreflangNoindexable(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id},
-		ErrorType:  ErrorHreflangNoindexable,
+		ErrorType:  reporter_errors.ErrorHreflangNoindexable,
 	}
 }

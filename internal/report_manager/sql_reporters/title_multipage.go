@@ -1,7 +1,8 @@
-package reporters
+package sql_reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Creates a MultipageIssueReporter object that contains the SQL query to check for pages with identical titles.
@@ -31,6 +32,6 @@ func DuplicatedTitleReporter(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  ErrorDuplicatedTitle,
+		ErrorType:  reporter_errors.ErrorDuplicatedTitle,
 	}
 }

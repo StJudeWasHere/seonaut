@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -18,7 +19,7 @@ func TestNoH1NoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewNoH1Reporter()
-	if reporter.ErrorType != reporters.ErrorNoH1 {
+	if reporter.ErrorType != reporter_errors.ErrorNoH1 {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -39,7 +40,7 @@ func TestNoH1Issues(t *testing.T) {
 	}
 
 	reporter := reporters.NewNoH1Reporter()
-	if reporter.ErrorType != reporters.ErrorNoH1 {
+	if reporter.ErrorType != reporter_errors.ErrorNoH1 {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -61,7 +62,7 @@ func TestValidHeadingsOrderNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewValidHeadingsOrderReporter()
-	if reporter.ErrorType != reporters.ErrorNotValidHeadings {
+	if reporter.ErrorType != reporter_errors.ErrorNotValidHeadings {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -82,7 +83,7 @@ func TestValidHeadingsOrderIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewValidHeadingsOrderReporter()
-	if reporter.ErrorType != reporters.ErrorNotValidHeadings {
+	if reporter.ErrorType != reporter_errors.ErrorNotValidHeadings {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

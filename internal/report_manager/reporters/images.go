@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function to check
@@ -27,7 +28,7 @@ func NewAltTextReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorImagesWithNoAlt,
+		ErrorType: reporter_errors.ErrorImagesWithNoAlt,
 		Callback:  c,
 	}
 }

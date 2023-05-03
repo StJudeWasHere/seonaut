@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -18,7 +19,7 @@ func TestEmptyDescriptionNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewEmptyDescriptionReporter()
-	if reporter.ErrorType != reporters.ErrorEmptyDescription {
+	if reporter.ErrorType != reporter_errors.ErrorEmptyDescription {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -39,7 +40,7 @@ func TestEmptyDescriptionIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewEmptyDescriptionReporter()
-	if reporter.ErrorType != reporters.ErrorEmptyDescription {
+	if reporter.ErrorType != reporter_errors.ErrorEmptyDescription {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -63,7 +64,7 @@ func TestShortDescriptionNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewShortDescriptionReporter()
-	if reporter.ErrorType != reporters.ErrorShortDescription {
+	if reporter.ErrorType != reporter_errors.ErrorShortDescription {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -85,7 +86,7 @@ func TestShortDescriptionIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewShortDescriptionReporter()
-	if reporter.ErrorType != reporters.ErrorShortDescription {
+	if reporter.ErrorType != reporter_errors.ErrorShortDescription {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -109,7 +110,7 @@ func TestLongDescriptionNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewLongDescriptionReporter()
-	if reporter.ErrorType != reporters.ErrorLongDescription {
+	if reporter.ErrorType != reporter_errors.ErrorLongDescription {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -135,7 +136,7 @@ func TestLongDescriptionIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewLongDescriptionReporter()
-	if reporter.ErrorType != reporters.ErrorLongDescription {
+	if reporter.ErrorType != reporter_errors.ErrorLongDescription {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function that returns true if
@@ -24,7 +25,7 @@ func NewInvalidLangReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: InvalidLanguage,
+		ErrorType: reporter_errors.ErrorInvalidLanguage,
 		Callback:  c,
 	}
 }
@@ -45,7 +46,7 @@ func NewMissingLangReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorNoLang,
+		ErrorType: reporter_errors.ErrorNoLang,
 		Callback:  c,
 	}
 }

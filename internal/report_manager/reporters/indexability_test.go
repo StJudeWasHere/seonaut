@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -13,7 +14,7 @@ func TestNoIndexableNoIssues(t *testing.T) {
 	pageReport := &models.PageReport{}
 
 	reporter := reporters.NewNoIndexableReporter()
-	if reporter.ErrorType != reporters.ErrorNoIndexable {
+	if reporter.ErrorType != reporter_errors.ErrorNoIndexable {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -32,7 +33,7 @@ func TestNoIndexableIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewNoIndexableReporter()
-	if reporter.ErrorType != reporters.ErrorNoIndexable {
+	if reporter.ErrorType != reporter_errors.ErrorNoIndexable {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -49,7 +50,7 @@ func TestBlockedByRobotstxtNoIssues(t *testing.T) {
 	pageReport := &models.PageReport{}
 
 	reporter := reporters.NewBlockedByRobotstxtReporter()
-	if reporter.ErrorType != reporters.ErrorBlocked {
+	if reporter.ErrorType != reporter_errors.ErrorBlocked {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -68,7 +69,7 @@ func TestBlockedByRobotstxtIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewBlockedByRobotstxtReporter()
-	if reporter.ErrorType != reporters.ErrorBlocked {
+	if reporter.ErrorType != reporter_errors.ErrorBlocked {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -87,7 +88,7 @@ func TestNoIndexInSitemapNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewNoIndexInSitemapReporter()
-	if reporter.ErrorType != reporters.SitemapNoIndex {
+	if reporter.ErrorType != reporter_errors.ErrorSitemapNoIndex {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -107,7 +108,7 @@ func TestNoIndexInSitemapIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewNoIndexInSitemapReporter()
-	if reporter.ErrorType != reporters.SitemapNoIndex {
+	if reporter.ErrorType != reporter_errors.ErrorSitemapNoIndex {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -126,7 +127,7 @@ func TestSitemapAndBlockedNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewSitemapAndBlockedReporter()
-	if reporter.ErrorType != reporters.SitemapBlocked {
+	if reporter.ErrorType != reporter_errors.ErrorSitemapBlocked {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -146,7 +147,7 @@ func TestSitemapAndBlockedIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewSitemapAndBlockedReporter()
-	if reporter.ErrorType != reporters.SitemapBlocked {
+	if reporter.ErrorType != reporter_errors.ErrorSitemapBlocked {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -167,7 +168,7 @@ func TestNonCanonicalInSitemapNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewNonCanonicalInSitemapReporter()
-	if reporter.ErrorType != reporters.SitemapNonCanonical {
+	if reporter.ErrorType != reporter_errors.ErrorSitemapNonCanonical {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -190,7 +191,7 @@ func TestNonCanonicalInSitemapIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewNonCanonicalInSitemapReporter()
-	if reporter.ErrorType != reporters.SitemapNonCanonical {
+	if reporter.ErrorType != reporter_errors.ErrorSitemapNonCanonical {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

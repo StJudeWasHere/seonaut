@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -22,7 +23,7 @@ func TestTooManyLinksNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewTooManyLinksReporter()
-	if reporter.ErrorType != reporters.ErrorTooManyLinks {
+	if reporter.ErrorType != reporter_errors.ErrorTooManyLinks {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -47,7 +48,7 @@ func TestTooManyLinksIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewTooManyLinksReporter()
-	if reporter.ErrorType != reporters.ErrorTooManyLinks {
+	if reporter.ErrorType != reporter_errors.ErrorTooManyLinks {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -70,7 +71,7 @@ func TestInternalNoFollowLinksNoIssues(t *testing.T) {
 	pageReport.Links = append(pageReport.Links, models.Link{})
 
 	reporter := reporters.NewInternalNoFollowLinksReporter()
-	if reporter.ErrorType != reporters.ErrorInternalNoFollow {
+	if reporter.ErrorType != reporter_errors.ErrorInternalNoFollow {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -93,7 +94,7 @@ func TestInternalNoFollowLinksIssues(t *testing.T) {
 	pageReport.Links = append(pageReport.Links, models.Link{NoFollow: true})
 
 	reporter := reporters.NewInternalNoFollowLinksReporter()
-	if reporter.ErrorType != reporters.ErrorInternalNoFollow {
+	if reporter.ErrorType != reporter_errors.ErrorInternalNoFollow {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -116,7 +117,7 @@ func TestExternalLinkWitoutNoFollowNoIssues(t *testing.T) {
 	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{NoFollow: true})
 
 	reporter := reporters.NewExternalLinkWitoutNoFollowReporter()
-	if reporter.ErrorType != reporters.ErrorExternalWithoutNoFollow {
+	if reporter.ErrorType != reporter_errors.ErrorExternalWithoutNoFollow {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -139,7 +140,7 @@ func TestExternalLinkWitoutNoFollowIssues(t *testing.T) {
 	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{})
 
 	reporter := reporters.NewExternalLinkWitoutNoFollowReporter()
-	if reporter.ErrorType != reporters.ErrorExternalWithoutNoFollow {
+	if reporter.ErrorType != reporter_errors.ErrorExternalWithoutNoFollow {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -174,7 +175,7 @@ func TestHTTPLinksNoIssues(t *testing.T) {
 	pageReport.Links = append(pageReport.Links, link)
 
 	reporter := reporters.NewHTTPLinksReporter()
-	if reporter.ErrorType != reporters.ErrorHTTPLinks {
+	if reporter.ErrorType != reporter_errors.ErrorHTTPLinks {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -209,7 +210,7 @@ func TestHTTPLinksIssues(t *testing.T) {
 	pageReport.Links = append(pageReport.Links, link)
 
 	reporter := reporters.NewHTTPLinksReporter()
-	if reporter.ErrorType != reporters.ErrorHTTPLinks {
+	if reporter.ErrorType != reporter_errors.ErrorHTTPLinks {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

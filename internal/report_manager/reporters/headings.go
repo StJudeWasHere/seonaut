@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function that returns true if
@@ -25,7 +26,7 @@ func NewNoH1Reporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorNoH1,
+		ErrorType: reporter_errors.ErrorNoH1,
 		Callback:  c,
 	}
 }
@@ -55,7 +56,7 @@ func NewValidHeadingsOrderReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorNotValidHeadings,
+		ErrorType: reporter_errors.ErrorNotValidHeadings,
 		Callback:  c,
 	}
 }

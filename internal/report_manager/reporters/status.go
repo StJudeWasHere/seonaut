@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a new PageIssueReporter with a callback function that
@@ -16,7 +17,7 @@ func NewStatus30xReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: Error30x,
+		ErrorType: reporter_errors.Error30x,
 		Callback:  c,
 	}
 }
@@ -33,7 +34,7 @@ func NewStatus40xReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: Error40x,
+		ErrorType: reporter_errors.Error40x,
 		Callback:  c,
 	}
 }
@@ -50,7 +51,7 @@ func NewStatus50xReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: Error50x,
+		ErrorType: reporter_errors.Error50x,
 		Callback:  c,
 	}
 }

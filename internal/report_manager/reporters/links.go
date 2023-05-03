@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function that returns true if
@@ -25,7 +26,7 @@ func NewTooManyLinksReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorTooManyLinks,
+		ErrorType: reporter_errors.ErrorTooManyLinks,
 		Callback:  c,
 	}
 }
@@ -57,7 +58,7 @@ func NewInternalNoFollowLinksReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorInternalNoFollow,
+		ErrorType: reporter_errors.ErrorInternalNoFollow,
 		Callback:  c,
 	}
 }
@@ -89,7 +90,7 @@ func NewExternalLinkWitoutNoFollowReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorExternalWithoutNoFollow,
+		ErrorType: reporter_errors.ErrorExternalWithoutNoFollow,
 		Callback:  c,
 	}
 }
@@ -121,7 +122,7 @@ func NewHTTPLinksReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorHTTPLinks,
+		ErrorType: reporter_errors.ErrorHTTPLinks,
 		Callback:  c,
 	}
 }

@@ -112,7 +112,8 @@ func (app *App) startCrawler(p models.Project) {
 
 	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
 	app.reportManager.CreateIssues(crawl)
-	app.issueService.SaveCrawlIssuesCount(crawl.Id)
+	app.issueService.SaveCrawlIssuesCount(crawl)
+	app.reportService.RemoveCrawlCache(crawl)
 	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 }
 

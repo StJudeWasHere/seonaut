@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -18,7 +19,7 @@ func TestEmptyTitleNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewEmptyTitleReporter()
-	if reporter.ErrorType != reporters.ErrorEmptyTitle {
+	if reporter.ErrorType != reporter_errors.ErrorEmptyTitle {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -39,7 +40,7 @@ func TestEmptyTitleIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewEmptyTitleReporter()
-	if reporter.ErrorType != reporters.ErrorEmptyTitle {
+	if reporter.ErrorType != reporter_errors.ErrorEmptyTitle {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -63,7 +64,7 @@ func TestShortTitleNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewShortTitleReporter()
-	if reporter.ErrorType != reporters.ErrorShortTitle {
+	if reporter.ErrorType != reporter_errors.ErrorShortTitle {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -85,7 +86,7 @@ func TestShortTitleIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewShortTitleReporter()
-	if reporter.ErrorType != reporters.ErrorShortTitle {
+	if reporter.ErrorType != reporter_errors.ErrorShortTitle {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -107,7 +108,7 @@ func TestLongTitleNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewLongTitleReporter()
-	if reporter.ErrorType != reporters.ErrorLongTitle {
+	if reporter.ErrorType != reporter_errors.ErrorLongTitle {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -133,7 +134,7 @@ func TestLongTitleIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewLongTitleReporter()
-	if reporter.ErrorType != reporters.ErrorLongTitle {
+	if reporter.ErrorType != reporter_errors.ErrorLongTitle {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

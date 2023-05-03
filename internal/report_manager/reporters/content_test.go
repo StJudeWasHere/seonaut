@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -18,7 +19,7 @@ func TestLittelContentNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewLittleContentReporter()
-	if reporter.ErrorType != reporters.ErrorLittleContent {
+	if reporter.ErrorType != reporter_errors.ErrorLittleContent {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -40,7 +41,7 @@ func TestLittleContentIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewLittleContentReporter()
-	if reporter.ErrorType != reporters.ErrorLittleContent {
+	if reporter.ErrorType != reporter_errors.ErrorLittleContent {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function that checks if a page has
@@ -25,7 +26,7 @@ func NewEmptyDescriptionReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorEmptyDescription,
+		ErrorType: reporter_errors.ErrorEmptyDescription,
 		Callback:  c,
 	}
 }
@@ -51,7 +52,7 @@ func NewShortDescriptionReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorShortDescription,
+		ErrorType: reporter_errors.ErrorShortDescription,
 		Callback:  c,
 	}
 }
@@ -77,7 +78,7 @@ func NewLongDescriptionReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorLongDescription,
+		ErrorType: reporter_errors.ErrorLongDescription,
 		Callback:  c,
 	}
 }

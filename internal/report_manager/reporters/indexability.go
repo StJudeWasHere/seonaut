@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function that returns true if
@@ -12,7 +13,7 @@ func NewNoIndexableReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorNoIndexable,
+		ErrorType: reporter_errors.ErrorNoIndexable,
 		Callback:  c,
 	}
 }
@@ -25,7 +26,7 @@ func NewBlockedByRobotstxtReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorBlocked,
+		ErrorType: reporter_errors.ErrorBlocked,
 		Callback:  c,
 	}
 }
@@ -38,7 +39,7 @@ func NewNoIndexInSitemapReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: SitemapNoIndex,
+		ErrorType: reporter_errors.ErrorSitemapNoIndex,
 		Callback:  c,
 	}
 }
@@ -51,7 +52,7 @@ func NewSitemapAndBlockedReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: SitemapBlocked,
+		ErrorType: reporter_errors.ErrorSitemapBlocked,
 		Callback:  c,
 	}
 }
@@ -76,7 +77,7 @@ func NewNonCanonicalInSitemapReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: SitemapNonCanonical,
+		ErrorType: reporter_errors.ErrorSitemapNonCanonical,
 		Callback:  c,
 	}
 }

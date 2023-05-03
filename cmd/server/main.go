@@ -17,6 +17,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
+	"github.com/stjudewashere/seonaut/internal/report_manager/sql_reporters"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
@@ -57,7 +59,14 @@ func main() {
 	cacheManager.AddCrawlCacheHandler(issueService)
 	cacheManager.AddCrawlCacheHandler(reportService)
 
-	reportManager := report_manager.NewFullReportManager(ds, cacheManager)
+	reportManager := report_manager.NewReportManager(ds)
+	for _, r := range reporters.GetAllReporters() {
+		reportManager.AddPageReporter(r)
+	}
+
+	for _, r := range sql_reporters.GetAllReporters() {
+		reportManager.AddMultipageReporter(r)
+	}
 
 	// Start HTTP server.
 	services := &http.Services{

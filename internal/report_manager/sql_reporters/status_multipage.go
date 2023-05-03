@@ -1,7 +1,8 @@
-package reporters
+package sql_reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Creates a MultipageIssueReporter object that contains the SQL query to check for pages
@@ -20,7 +21,7 @@ func RedirectChainsReporter(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  ErrorRedirectChain,
+		ErrorType:  reporter_errors.ErrorRedirectChain,
 	}
 }
 
@@ -40,6 +41,6 @@ func RedirectLoopsReporter(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  ErrorRedirectLoop,
+		ErrorType:  reporter_errors.ErrorRedirectLoop,
 	}
 }

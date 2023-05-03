@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -25,6 +26,7 @@ type IssueStore interface {
 	FindPageReportIssues(int64, int, string) []models.PageReport
 	FindIssuesByPriority(int64, int) []IssueGroup
 	SaveIssuesCount(int64, int, int, int)
+	SaveEndIssues(int64, time.Time)
 }
 
 type Issue struct {
@@ -91,12 +93,15 @@ func (s *Service) GetIssuesCount(crawlID int64) *IssueCount {
 }
 
 // SaveCrawlIssuesCount stores the issue count in the storage and adds the IssueCount to the cache.
-func (s *Service) SaveCrawlIssuesCount(crawlID int64) {
-	key := fmt.Sprintf("crawl-%d", crawlID)
+func (s *Service) SaveCrawlIssuesCount(crawl *models.Crawl) {
+
+	s.store.SaveEndIssues(crawl.Id, time.Now())
+
+	key := fmt.Sprintf("crawl-%d", crawl.Id)
 	ic := &IssueCount{
-		CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
-		AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
-		WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
+		CriticalIssues: s.store.FindIssuesByPriority(crawl.Id, Critical),
+		AlertIssues:    s.store.FindIssuesByPriority(crawl.Id, Alert),
+		WarningIssues:  s.store.FindIssuesByPriority(crawl.Id, Warning),
 	}
 
 	if err := s.cache.Set(key, ic); err != nil {
@@ -117,7 +122,8 @@ func (s *Service) SaveCrawlIssuesCount(crawlID int64) {
 		warning += v.Count
 	}
 
-	s.store.SaveIssuesCount(crawlID, critical, alert, warning)
+	s.store.SaveIssuesCount(crawl.Id, critical, alert, warning)
+	s.BuildCrawlCache(crawl)
 }
 
 // Returns a PaginatorView with the corresponding page reports.

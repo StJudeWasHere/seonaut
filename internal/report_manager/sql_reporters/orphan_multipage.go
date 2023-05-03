@@ -1,7 +1,8 @@
-package reporters
+package sql_reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Creates a MultipageIssueReporter object that contains the SQL query to check for orphan pages.
@@ -19,6 +20,6 @@ func OrphanPagesReporter(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id},
-		ErrorType:  ErrorOrphan,
+		ErrorType:  reporter_errors.ErrorOrphan,
 	}
 }

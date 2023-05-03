@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -21,7 +22,7 @@ func TestAltTextReporterNoIssues(t *testing.T) {
 	})
 
 	reporter := reporters.NewAltTextReporter()
-	if reporter.ErrorType != reporters.ErrorImagesWithNoAlt {
+	if reporter.ErrorType != reporter_errors.ErrorImagesWithNoAlt {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -44,7 +45,7 @@ func TestAltTextReporterIssues(t *testing.T) {
 	pageReport.Images = append(pageReport.Images, models.Image{})
 
 	reporter := reporters.NewAltTextReporter()
-	if reporter.ErrorType != reporters.ErrorImagesWithNoAlt {
+	if reporter.ErrorType != reporter_errors.ErrorImagesWithNoAlt {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

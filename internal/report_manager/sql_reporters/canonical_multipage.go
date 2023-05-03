@@ -1,7 +1,8 @@
-package reporters
+package sql_reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Creates a MultipageIssueReporter object that contains the SQL query to check for pages
@@ -20,6 +21,6 @@ func CanonicalizedToNonCanonical(c *models.Crawl) *MultipageIssueReporter {
 	return &MultipageIssueReporter{
 		Query:      query,
 		Parameters: []interface{}{c.Id, c.Id},
-		ErrorType:  ErrorCanonicalizedToNonCanonical,
+		ErrorType:  reporter_errors.ErrorCanonicalizedToNonCanonical,
 	}
 }

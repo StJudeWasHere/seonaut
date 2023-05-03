@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -16,7 +17,7 @@ func TestStatus30xNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewStatus30xReporter()
-	if reporter.ErrorType != reporters.Error30x {
+	if reporter.ErrorType != reporter_errors.Error30x {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -36,7 +37,7 @@ func TestStatus30xIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewStatus30xReporter()
-	if reporter.ErrorType != reporters.Error30x {
+	if reporter.ErrorType != reporter_errors.Error30x {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -56,7 +57,7 @@ func TestStatus40xNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewStatus40xReporter()
-	if reporter.ErrorType != reporters.Error40x {
+	if reporter.ErrorType != reporter_errors.Error40x {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -76,7 +77,7 @@ func TestStatus40xIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewStatus40xReporter()
-	if reporter.ErrorType != reporters.Error40x {
+	if reporter.ErrorType != reporter_errors.Error40x {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -96,7 +97,7 @@ func TestStatus50xNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewStatus50xReporter()
-	if reporter.ErrorType != reporters.Error50x {
+	if reporter.ErrorType != reporter_errors.Error50x {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -116,7 +117,7 @@ func TestStatus50xIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewStatus50xReporter()
-	if reporter.ErrorType != reporters.Error50x {
+	if reporter.ErrorType != reporter_errors.Error50x {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

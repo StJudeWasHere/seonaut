@@ -4,7 +4,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/cache_manager"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
@@ -28,7 +27,7 @@ func (s *storage) PageReportsQuery(query string, args ...interface{}) <-chan *mo
 	return prStream
 }
 
-var service = report_manager.NewReportManager(&storage{}, cache_manager.New())
+var service = report_manager.NewReportManager(&storage{})
 
 func TestCreateIssues(t *testing.T) {
 	pageReport := &models.PageReport{Id: pageReportId}

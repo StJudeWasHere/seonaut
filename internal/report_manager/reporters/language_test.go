@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 )
 
@@ -17,7 +18,7 @@ func TestInvalidLangNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewInvalidLangReporter()
-	if reporter.ErrorType != reporters.InvalidLanguage {
+	if reporter.ErrorType != reporter_errors.ErrorInvalidLanguage {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -37,7 +38,7 @@ func TestInvalidLangIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewInvalidLangReporter()
-	if reporter.ErrorType != reporters.InvalidLanguage {
+	if reporter.ErrorType != reporter_errors.ErrorInvalidLanguage {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -58,7 +59,7 @@ func TestMissingLangNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewMissingLangReporter()
-	if reporter.ErrorType != reporters.ErrorNoLang {
+	if reporter.ErrorType != reporter_errors.ErrorNoLang {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
@@ -78,7 +79,7 @@ func TestMissingLangIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewMissingLangReporter()
-	if reporter.ErrorType != reporters.ErrorNoLang {
+	if reporter.ErrorType != reporter_errors.ErrorNoLang {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 

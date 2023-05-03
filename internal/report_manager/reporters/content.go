@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
 // Returns a PageIssueReporter with a callback function that
@@ -25,7 +26,7 @@ func NewLittleContentReporter() *PageIssueReporter {
 	}
 
 	return &PageIssueReporter{
-		ErrorType: ErrorLittleContent,
+		ErrorType: reporter_errors.ErrorLittleContent,
 		Callback:  c,
 	}
 }

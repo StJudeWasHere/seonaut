@@ -1,17 +1,12 @@
 package reporters
 
 import (
-	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 )
 
-type PageIssueReporter struct {
-	Callback  func(*models.PageReport) bool
-	ErrorType int
-}
-
-// Returns an slice with all available PageIssueReporters.
-func GetAllReporters() []*PageIssueReporter {
-	return []*PageIssueReporter{
+// Returns an slice with all available report_manager.PageIssueReporters.
+func GetAllReporters() []*report_manager.PageIssueReporter {
+	return []*report_manager.PageIssueReporter{
 		// Add status code issue reporters
 		NewStatus30xReporter(),
 		NewStatus40xReporter(),

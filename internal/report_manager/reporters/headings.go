@@ -2,13 +2,14 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
-// Returns a PageIssueReporter with a callback function that returns true if
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // doesn't have any H1 tag.
-func NewNoH1Reporter() *PageIssueReporter {
+func NewNoH1Reporter() *report_manager.PageIssueReporter {
 	c := func(pageReport *models.PageReport) bool {
 		if pageReport.Crawled == false {
 			return false
@@ -25,16 +26,16 @@ func NewNoH1Reporter() *PageIssueReporter {
 		return pageReport.H1 == ""
 	}
 
-	return &PageIssueReporter{
+	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorNoH1,
 		Callback:  c,
 	}
 }
 
-// Returns a PageIssueReporter with a callback function that returns true if
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the media type is text/html, the status code is between 200 and 299 and the heading tags
 // in the page's html doesn't have the correct order.
-func NewValidHeadingsOrderReporter() *PageIssueReporter {
+func NewValidHeadingsOrderReporter() *report_manager.PageIssueReporter {
 	c := func(pageReport *models.PageReport) bool {
 		if pageReport.Crawled == false {
 			return false
@@ -55,7 +56,7 @@ func NewValidHeadingsOrderReporter() *PageIssueReporter {
 		return true
 	}
 
-	return &PageIssueReporter{
+	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorNotValidHeadings,
 		Callback:  c,
 	}

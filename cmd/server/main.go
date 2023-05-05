@@ -30,25 +30,28 @@ func main() {
 	flag.StringVar(&path, "p", ".", "Specify config path. Default is current directory")
 	flag.Parse()
 
-	// Load config file
+	// Load config file.
 	config, err := config.NewConfig(path, fname)
 	if err != nil {
 		log.Fatalf("Error loading config: %v\n", err)
 	}
 
-	// Create database data store
-	ds, err := datastore.NewDataStore(config.DB)
+	// Create the sql database connection.
+	db, err := datastore.SqlConnect(config.DB)
 	if err != nil {
 		log.Fatalf("Error creating new datastore: %v\n", err)
 	}
 
-	// Run database migrations
+	// Create database data store.
+	ds := datastore.NewDataStore(db)
+
+	// Run database migrations.
 	err = ds.Migrate()
 	if err != nil {
 		log.Fatalf("Error running migrations: %v\n", err)
 	}
 
-	// Build services
+	// Build services.
 	broker := pubsub.New()
 	cache := cache.New(config.Cache)
 
@@ -64,8 +67,8 @@ func main() {
 		reportManager.AddPageReporter(r)
 	}
 
-	sqlReporters := sql_reporters.NewSqlReporter(ds.GetDatabaseConnection())
-
+	// Create the sql multipage reporters and add them all to the reporterManager.
+	sqlReporters := sql_reporters.NewSqlReporter(db)
 	for _, r := range sqlReporters.GetAllReporters() {
 		reportManager.AddMultipageReporter(r)
 	}

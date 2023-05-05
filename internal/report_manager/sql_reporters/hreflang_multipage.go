@@ -6,6 +6,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
+// Creates a MultipageIssueReporter object that contains the SQL query to check for pages that have missing
+// hreflang return links.
 func (sr *SqlReporter) MissingHrelangReturnLinks(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
@@ -25,12 +27,12 @@ func (sr *SqlReporter) MissingHrelangReturnLinks(c *models.Crawl) *report_manage
 	}
 }
 
+// Creates a MultipageIssueReporter object that contains the SQL query to check for pages that have hreflang
+// links to non-canonical pages.
 func (sr *SqlReporter) HreflangsToNonCanonical(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
+			pagereports.id
 		FROM pagereports
 		LEFT JOIN hreflangs ON hreflangs.to_hash = pagereports.url_hash AND hreflangs.crawl_id = ?
 		WHERE media_type = "text/html" AND status_code >= 200 AND status_code < 300
@@ -43,12 +45,16 @@ func (sr *SqlReporter) HreflangsToNonCanonical(c *models.Crawl) *report_manager.
 	}
 }
 
+// Creates a MultipageIssueReporter object that contains the SQL query to check for pages that have hreflang
+// links to non-indexable pages.
 func (sr *SqlReporter) HreflangNoindexable(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
-		SELECT pagereports.id, pagereports.url, pagereports.title
+		SELECT
+			pagereports.id
 		FROM pagereports
 		WHERE id IN (
-			SELECT DISTINCT hreflangs.pagereport_id
+			SELECT
+				DISTINCT hreflangs.pagereport_id
 			FROM hreflangs 
 			INNER JOIN pagereports ON hreflangs.pagereport_id = pagereports.id AND hreflangs.crawl_id = pagereports.crawl_id
 			WHERE hreflangs.crawl_id = ? and pagereports.noindex = 1 AND pagereports.crawled = 1

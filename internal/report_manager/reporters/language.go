@@ -2,12 +2,13 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
-// Returns a PageIssueReporter with a callback function that returns true if
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the status code media type is text/html and the page's html language is not valid.
-func NewInvalidLangReporter() *PageIssueReporter {
+func NewInvalidLangReporter() *report_manager.PageIssueReporter {
 	c := func(pageReport *models.PageReport) bool {
 		if pageReport.Crawled == false {
 			return false
@@ -24,15 +25,15 @@ func NewInvalidLangReporter() *PageIssueReporter {
 		return true
 	}
 
-	return &PageIssueReporter{
+	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorInvalidLanguage,
 		Callback:  c,
 	}
 }
 
-// Returns a PageIssueReporter with a callback function that returns true if
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the status code media type is text/html and the page's html language is missing or empty.
-func NewMissingLangReporter() *PageIssueReporter {
+func NewMissingLangReporter() *report_manager.PageIssueReporter {
 	c := func(pageReport *models.PageReport) bool {
 		if pageReport.Crawled == false {
 			return false
@@ -45,7 +46,7 @@ func NewMissingLangReporter() *PageIssueReporter {
 		return pageReport.Lang == ""
 	}
 
-	return &PageIssueReporter{
+	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorNoLang,
 		Callback:  c,
 	}

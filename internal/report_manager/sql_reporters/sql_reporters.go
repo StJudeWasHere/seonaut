@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 )
 
@@ -47,9 +46,10 @@ func (sr *SqlReporter) GetAllReporters() []report_manager.MultipageCallback {
 	}
 }
 
-// pageReportsQuery executes a SQL query and returns a channel of *models.PageReport.
-func (sr *SqlReporter) pageReportsQuery(query string, args ...interface{}) <-chan *models.PageReport {
-	prStream := make(chan *models.PageReport)
+// pageReportsQuery executes a SQL query and returns a channel of int64 which is used to send
+// the PageReport ids through.
+func (sr *SqlReporter) pageReportsQuery(query string, args ...interface{}) <-chan int64 {
+	prStream := make(chan int64)
 
 	go func() {
 		defer close(prStream)
@@ -60,14 +60,14 @@ func (sr *SqlReporter) pageReportsQuery(query string, args ...interface{}) <-cha
 		}
 
 		for rows.Next() {
-			p := &models.PageReport{}
-			err := rows.Scan(&p.Id, &p.URL, &p.Title)
+			var pid int64
+			err := rows.Scan(&pid)
 			if err != nil {
 				log.Println(err)
 				continue
 			}
 
-			prStream <- p
+			prStream <- pid
 		}
 	}()
 

@@ -11,9 +11,7 @@ import (
 func (sr *SqlReporter) RedirectChainsReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			a.id,
-			a.url,
-			a.title
+			a.id
 		FROM pagereports AS a
 		LEFT JOIN pagereports AS b ON a.redirect_hash = b.url_hash
 		WHERE a.redirect_hash != "" AND b.redirect_hash  != "" AND a.crawl_id = ? AND b.crawl_id = ?
@@ -30,9 +28,7 @@ func (sr *SqlReporter) RedirectChainsReporter(c *models.Crawl) *report_manager.M
 func (sr *SqlReporter) RedirectLoopsReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			a.id,
-			a.url,
-			a.title
+			a.id
 		FROM pagereports AS a
 		INNER JOIN pagereports AS b ON a.redirect_hash = b.url_hash AND b.redirect_hash = a.url_hash
 		WHERE a.crawl_id = ? AND b.crawl_id = ?

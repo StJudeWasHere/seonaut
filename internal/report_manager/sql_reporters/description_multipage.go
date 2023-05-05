@@ -11,9 +11,7 @@ import (
 func (sr *SqlReporter) DuplicatedDescriptionReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			y.id,
-			y.url,
-			y.title
+			y.id
 		FROM pagereports y
 		INNER JOIN (
 			SELECT

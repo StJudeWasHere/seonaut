@@ -11,9 +11,7 @@ import (
 func (sr *SqlReporter) NoFollowIndexableReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
+			pagereports.id
 		FROM pagereports
 		INNER JOIN (
 			SELECT
@@ -40,9 +38,7 @@ func (sr *SqlReporter) NoFollowIndexableReporter(c *models.Crawl) *report_manage
 func (sr *SqlReporter) FollowNoFollowReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
+			pagereports.id
 		FROM pagereports WHERE crawl_id = ? and url_hash in (
 			SELECT
 				url_hash

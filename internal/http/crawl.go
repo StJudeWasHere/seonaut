@@ -111,7 +111,7 @@ func (app *App) startCrawler(p models.Project) {
 	log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
 
 	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
-	app.reportManager.CreateIssues(crawl)
+	app.reportManager.CreateMultipageIssues(crawl)
 	app.issueService.SaveCrawlIssuesCount(crawl)
 	app.reportService.RemoveCrawlCache(crawl)
 	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})

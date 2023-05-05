@@ -11,9 +11,7 @@ import (
 func (sr *SqlReporter) CanonicalizedToNonCanonical(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			a.id,
-			a.url,
-			a.title
+			a.id
 		FROM pagereports AS a
 		INNER JOIN pagereports AS b ON a.url = b.canonical
 		WHERE a.crawl_id = ? AND b.crawl_id = ? AND a.canonical != "" AND a.canonical != a.url

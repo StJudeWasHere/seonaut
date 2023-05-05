@@ -2,13 +2,14 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
-// Returns a PageIssueReporter with a callback function to check
+// Returns a report_manager.PageIssueReporter with a callback function to check
 // if a page has images with no alt attribute. The callback returns true in case
 // the page is text/html and contains images with empty or missing alt attribute.
-func NewAltTextReporter() *PageIssueReporter {
+func NewAltTextReporter() *report_manager.PageIssueReporter {
 	c := func(pageReport *models.PageReport) bool {
 		if pageReport.Crawled == false {
 			return false
@@ -27,7 +28,7 @@ func NewAltTextReporter() *PageIssueReporter {
 		return false
 	}
 
-	return &PageIssueReporter{
+	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorImagesWithNoAlt,
 		Callback:  c,
 	}

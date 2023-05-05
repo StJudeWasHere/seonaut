@@ -2,13 +2,14 @@ package reporters
 
 import (
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 )
 
-// Returns a PageIssueReporter with a callback function that
+// Returns a report_manager.PageIssueReporter with a callback function that
 // checks if a page has little content. The callback returns true if the page is text/html,
 // has a 20x status code and less than a specified amount of words.
-func NewLittleContentReporter() *PageIssueReporter {
+func NewLittleContentReporter() *report_manager.PageIssueReporter {
 	c := func(pageReport *models.PageReport) bool {
 		if pageReport.Crawled == false {
 			return false
@@ -25,7 +26,7 @@ func NewLittleContentReporter() *PageIssueReporter {
 		return pageReport.Words < 200
 	}
 
-	return &PageIssueReporter{
+	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorLittleContent,
 		Callback:  c,
 	}

@@ -11,9 +11,7 @@ import (
 func (sr *SqlReporter) OrphanPagesReporter(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			pagereports.id,
-			pagereports.url,
-			pagereports.title
+			pagereports.id
 		FROM pagereports
 		LEFT JOIN links ON pagereports.url_hash = links.url_hash and pagereports.crawl_id = links.crawl_id
 		WHERE pagereports.media_type = "text/html" AND links.url IS NULL AND pagereports.crawl_id = ?`

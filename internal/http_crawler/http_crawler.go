@@ -60,7 +60,7 @@ func (c *HttpCrawler) Crawl(ctx context.Context) <-chan *ResponseMessage {
 	return c.rStream
 }
 
-// Consumer gets URLs from the urlStream until the context is cancelled
+// Consumer gets URLs from the urlStream until the context is cancelled.
 // It adds a random delay between client calls.
 func (c *HttpCrawler) consumer(ctx context.Context) {
 	for {

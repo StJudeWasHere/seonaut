@@ -45,4 +45,5 @@ const (
 	ErrorIncomingFollowNofollow                 // Pages with follow and nofollow incoming links
 	ErrorInvalidLanguage                        // Pages with invalid lang attribute
 	ErrorHTTPScheme                             // Pages using http scheme instead of https
+	ErrorDeadend                                // Pages with no outgoing internal or external links
 )

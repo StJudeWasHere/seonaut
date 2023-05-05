@@ -127,3 +127,29 @@ func NewHTTPLinksReporter() *report_manager.PageIssueReporter {
 		Callback:  c,
 	}
 }
+
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
+// the media type is text/html, the status code is between 200 and 299 and the page's html
+// contains no internal or external links.
+func NewDeadendReporter() *report_manager.PageIssueReporter {
+	c := func(pageReport *models.PageReport) bool {
+		if pageReport.Crawled == false {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
+			return false
+		}
+
+		return len(pageReport.Links)+len(pageReport.ExternalLinks) == 0
+	}
+
+	return &report_manager.PageIssueReporter{
+		ErrorType: reporter_errors.ErrorDeadend,
+		Callback:  c,
+	}
+}

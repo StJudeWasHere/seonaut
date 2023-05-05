@@ -128,4 +128,7 @@ INVALID_LANG: Pages with invalid lang attribute
 INVALID_LANG_DESC: Pages with an invalid lang attribute can cause problems for both search engines and users. Search engines may have trouble identifying the language of the content, while users may struggle with understanding it or using assistive technologies.
 
 HTTP_SCHEME: Pages using the HTTP scheme
-HTTP_SCHEME_DESC: Pages using HTTP instead of HTTPS. using HTTPS is important as it can provide a more secure and trustworthy website, which can lead to improved user engagement and search engine rankings.
+HTTP_SCHEME_DESC: Pages using HTTP instead of HTTPS. Using HTTPS is important as it can provide a more secure and trustworthy website, which can lead to improved user engagement and search engine rankings.
+
+DEAD_END: Dead-end pages
+DEAD_END_DESC: A dead-end page is a webpage that doesn't have any links pointing to other pages. This means that users and search engines have no way to navigate beyond the current page, making it difficult to explore the site and affecting both user experience and site crawlability.

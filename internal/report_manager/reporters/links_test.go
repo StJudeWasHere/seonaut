@@ -220,3 +220,59 @@ func TestHTTPLinksIssues(t *testing.T) {
 		t.Errorf("TestHTTPLinksIssues: reportsIssue should be true")
 	}
 }
+
+// Test the Deadend reporter with a pageReport that has links.
+// The reporter should not report the issue.
+func TestDeadendNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	u := "https://example.com"
+
+	parsedURL, err := url.Parse(u)
+	if err != nil {
+		t.Errorf("%v", err)
+	}
+
+	link := models.Link{
+		URL:       u,
+		ParsedURL: parsedURL,
+	}
+
+	pageReport.Links = append(pageReport.Links, link)
+
+	reporter := reporters.NewDeadendReporter()
+	if reporter.ErrorType != reporter_errors.ErrorDeadend {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport)
+
+	if reportsIssue == true {
+		t.Errorf("TestHTTPLinksIssues: reportsIssue should be false")
+	}
+}
+
+// Test the Deadend reporter with a pageReport that does not have links.
+// The reporter should not report the issue.
+func TestDeadendIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	reporter := reporters.NewDeadendReporter()
+	if reporter.ErrorType != reporter_errors.ErrorDeadend {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport)
+
+	if reportsIssue == false {
+		t.Errorf("TestHTTPLinksIssues: reportsIssue should be true")
+	}
+}

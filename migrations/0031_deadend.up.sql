@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(37, "DEAD_END", 3);

@@ -9,7 +9,6 @@ package report_manager
 import (
 	"sync"
 
-	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
@@ -31,7 +30,7 @@ type MultipageIssueReporter struct {
 type MultipageCallback func(c *models.Crawl) *MultipageIssueReporter
 
 type ReportManagerStore interface {
-	SaveIssues(<-chan *issue.Issue)
+	SaveIssues(<-chan *models.Issue)
 }
 
 type ReportManager struct {
@@ -63,7 +62,7 @@ func (rm *ReportManager) AddMultipageReporter(reporter MultipageCallback) {
 // CreatePageIssues loops the page reporters calling the callback function
 // and creating the issues found in the PageReport.
 func (r *ReportManager) CreatePageIssues(p *models.PageReport, crawl *models.Crawl) {
-	iStream := make(chan *issue.Issue)
+	iStream := make(chan *models.Issue)
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 
@@ -74,7 +73,7 @@ func (r *ReportManager) CreatePageIssues(p *models.PageReport, crawl *models.Cra
 
 	for _, c := range r.pageCallbacks {
 		if c.Callback(p) == true {
-			iStream <- &issue.Issue{
+			iStream <- &models.Issue{
 				PageReportId: p.Id,
 				CrawlId:      crawl.Id,
 				ErrorType:    c.ErrorType,
@@ -89,7 +88,7 @@ func (r *ReportManager) CreatePageIssues(p *models.PageReport, crawl *models.Cra
 
 // CreateMultipageIssues uses the Reporters to create and save issues found in a crawl.
 func (r *ReportManager) CreateMultipageIssues(crawl *models.Crawl) {
-	iStream := make(chan *issue.Issue)
+	iStream := make(chan *models.Issue)
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
 
@@ -101,7 +100,7 @@ func (r *ReportManager) CreateMultipageIssues(crawl *models.Crawl) {
 	for _, callback := range r.multipageCallbacks {
 		reporter := callback(crawl)
 		for pid := range reporter.Pstream {
-			iStream <- &issue.Issue{
+			iStream <- &models.Issue{
 				PageReportId: pid,
 				CrawlId:      crawl.Id,
 				ErrorType:    reporter.ErrorType,

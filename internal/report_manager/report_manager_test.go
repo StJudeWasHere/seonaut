@@ -3,7 +3,6 @@ package report_manager_test
 import (
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 )
@@ -16,11 +15,11 @@ const (
 
 // Mock storage contains an Issues slice so we can test if issues are being received.
 type mockStorage struct {
-	Issues []*issue.Issue
+	Issues []*models.Issue
 }
 
 // SaveIssues appends the issue to the Issues slice.
-func (s *mockStorage) SaveIssues(c <-chan *issue.Issue) {
+func (s *mockStorage) SaveIssues(c <-chan *models.Issue) {
 	for i := range c {
 		s.Issues = append(s.Issues, i)
 	}

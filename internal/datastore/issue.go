@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 func (ds *Datastore) SaveEndIssues(cid int64, t time.Time) {
@@ -17,7 +18,7 @@ func (ds *Datastore) SaveEndIssues(cid int64, t time.Time) {
 	}
 }
 
-func (ds *Datastore) SaveIssues(iStream <-chan *issue.Issue) {
+func (ds *Datastore) SaveIssues(iStream <-chan *models.Issue) {
 	query := "INSERT INTO issues (pagereport_id, crawl_id, issue_type_id) VALUES "
 	sqlString := ""
 	v := []interface{}{}

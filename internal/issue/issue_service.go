@@ -29,12 +29,6 @@ type IssueStore interface {
 	SaveEndIssues(int64, time.Time)
 }
 
-type Issue struct {
-	PageReportId int64
-	CrawlId      int64
-	ErrorType    int
-}
-
 type Service struct {
 	store IssueStore
 	cache Cache

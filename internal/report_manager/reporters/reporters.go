@@ -48,5 +48,8 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 
 		// Add content issue reporters
 		NewLittleContentReporter(),
+
+		// Add scheme issue reporters
+		NewHTTPSchemeReporter(),
 	}
 }

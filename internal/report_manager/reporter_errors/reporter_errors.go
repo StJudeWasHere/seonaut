@@ -44,4 +44,5 @@ const (
 	ErrorSitemapNonCanonical                    // Non canonical pages included in the sitemap
 	ErrorIncomingFollowNofollow                 // Pages with follow and nofollow incoming links
 	ErrorInvalidLanguage                        // Pages with invalid lang attribute
+	ErrorHTTPScheme                             // Pages using http scheme instead of https
 )

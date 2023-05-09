@@ -15,4 +15,4 @@ server = "redis"
 port = 6379
 
 [crawler]
-agent = "SEOnaut Bot"
+agent = "Mozilla/5.0 (compatible; SEOnautBot/1.0; +https://seonaut.org/bot)"

@@ -132,3 +132,6 @@ HTTP_SCHEME_DESC: Pages using HTTP instead of HTTPS. Using HTTPS is important as
 
 DEAD_END: Dead-end pages
 DEAD_END_DESC: A dead-end page is a webpage that doesn't have any links pointing to other pages. This means that users and search engines have no way to navigate beyond the current page, making it difficult to explore the site and affecting both user experience and site crawlability.
+
+ERROR_CANONICALIZED_NON_INDEXABLE: Canonicalized to non-indexable
+ERROR_CANONICALIZED_NON_INDEXABLE_DESC: Pages canonicalized to other non-indexable pages. This essentially tells search engines that the non-indexable page is the preferred version of the content, which can lead to confusion and make the content less likely to be discovered by users.

@@ -46,4 +46,5 @@ const (
 	ErrorInvalidLanguage                        // Pages with invalid lang attribute
 	ErrorHTTPScheme                             // Pages using http scheme instead of https
 	ErrorDeadend                                // Pages with no outgoing internal or external links
+	ErrorCanonicalizedToNonIndexable            // Pages that are canonicalized to non-indexable pages
 )

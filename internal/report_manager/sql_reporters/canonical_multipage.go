@@ -22,3 +22,24 @@ func (sr *SqlReporter) CanonicalizedToNonCanonical(c *models.Crawl) *report_mana
 		ErrorType: reporter_errors.ErrorCanonicalizedToNonCanonical,
 	}
 }
+
+// Creates a MultipageIssueReporter object that contains the SQL query to check for pages
+// that are canonicalized to non-indexable pages.
+func (sr *SqlReporter) CanonicalizedToNonIndexable(c *models.Crawl) *report_manager.MultipageIssueReporter {
+	query := `
+		SELECT id
+		FROM pagereports
+		WHERE
+			crawl_id = ? AND noindex = 1
+		AND canonical IN (
+			SELECT url
+			FROM pagereports
+			WHERE 
+			crawl_id = ? AND canonical != "" AND canonical != url
+		)`
+
+	return &report_manager.MultipageIssueReporter{
+		Pstream:   sr.pageReportsQuery(query, c.Id, c.Id),
+		ErrorType: reporter_errors.ErrorCanonicalizedToNonIndexable,
+	}
+}

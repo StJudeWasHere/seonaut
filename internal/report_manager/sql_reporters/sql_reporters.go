@@ -43,6 +43,7 @@ func (sr *SqlReporter) GetAllReporters() []report_manager.MultipageCallback {
 
 		// Add canonical issue reporters
 		sr.CanonicalizedToNonCanonical,
+		sr.CanonicalizedToNonIndexable,
 	}
 }
 

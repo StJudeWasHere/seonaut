@@ -135,3 +135,15 @@ DEAD_END_DESC: A dead-end page is a webpage that doesn't have any links pointing
 
 ERROR_CANONICALIZED_NON_INDEXABLE: Canonicalized to non-indexable
 ERROR_CANONICALIZED_NON_INDEXABLE_DESC: Pages canonicalized to other non-indexable pages. This essentially tells search engines that the non-indexable page is the preferred version of the content, which can lead to confusion and make the content less likely to be discovered by users.
+
+ERROR_HREFLANG_REDIRECT: Hreflang to redirect
+ERROR_HREFLANG_REDIRECT_DESC: Pages that have hreflang links to pages that are redirected with status codes in the 30x range. This it can create confusion for search engines that may have difficulty understanding the relationship between the original page and the redirected page.
+
+ERROR_CANONICAL_REDIRECT: Canonicalized to redirect
+ERROR_CANONICAL_REDIRECT_DESC: Pages that are canonicalized to redirected URLs instead of pointing to the actual preferred version of the page. This can confuse search engines trying to navigate and understand your website.
+
+ERROR_HREFLANG_ERROR: Hreflang to error
+ERROR_HREFLANG_ERROR_DESC: Pages that have hreflang tags pointing to URLs that are throwing errors with status codes in the 40x or 50x range. This makes it impossible for search engines to properly index different versions of your page, which may affect your ranking in search engines.
+
+ERROR_CANONICAL_ERROR: Canonicalized to error
+ERROR_CANONICAL_ERROR_DESC: Pages that are canonicalized to URLs that are throwing errors with status codes in the 40x or 50x range. This can confuse search engines that will not be able to crawl your preferred version of the page.

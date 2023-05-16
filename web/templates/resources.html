@@ -9,9 +9,13 @@
 	<div class="box box-first">
 		<div class="col col-main">
 			<div class="content">
-				<a href="/issues?pid={{ .ProjectView.Project.Id }}">Issues</a> 
-				/ 
-				<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a>
+				{{ if .Eid }}
+					<a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a> 
+					/ 
+					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a>
+				{{ else if .Ep }}
+				<a href="/explorer?pid={{ .ProjectView.Project.Id }}&p={{ .Ep }}">Page Details</a>
+				{{ end }}
 			</div>
 		</div>
 

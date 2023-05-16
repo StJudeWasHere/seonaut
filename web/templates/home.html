@@ -83,8 +83,9 @@
 			{{ if gt .Crawl.TotalURLs 0 }}
 				{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
 					<a href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
-					<a href="/issues?pid={{ .Project.Id }}">Issues</a>
-					<a href="/export?pid={{ .Project.Id }}">Export</a>
+					<a href="/issues?pid={{ .Project.Id }}">Site Issues</a>
+					<a href="/explorer?pid={{ .Project.Id }}">Page Details</a>
+					<a href="/export?pid={{ .Project.Id }}">Data Export</a>
 				{{ end }}
 			{{ end }}
 

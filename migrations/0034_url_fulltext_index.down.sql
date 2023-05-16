@@ -1,0 +1,1 @@
+ALTER TABLE pagereports DROP INDEX url_fulltext_idx;

@@ -1,0 +1,1 @@
+ALTER TABLE pagereports ADD FULLTEXT INDEX url_fulltext_idx (url);

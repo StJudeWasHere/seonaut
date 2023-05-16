@@ -744,6 +744,76 @@ func (ds *Datastore) FindPageReportIssues(cid int64, p int, errorType string) []
 	return pageReports
 }
 
+func (ds *Datastore) FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport {
+	max := paginationMax
+	offset := max * (p - 1)
+	args := []interface{}{term, cid}
+	var pageReports []models.PageReport
+
+	query := `
+		SELECT
+			id,
+			url,
+			title,
+			(CASE WHEN url = ? THEN 1 ELSE 0 END) AS exact_match
+		FROM pagereports
+		WHERE crawl_id = ?
+			AND crawled = 1`
+
+	if term != "" {
+		query += ` AND MATCH (url) AGAINST (? IN NATURAL LANGUAGE MODE)`
+		args = append(args, term)
+	}
+
+	query += `
+		ORDER BY exact_match DESC, url ASC
+		LIMIT ?, ?`
+
+	args = append(args, offset, max)
+
+	rows, err := ds.db.Query(query, args...)
+	if err != nil {
+		log.Println(err)
+		return pageReports
+	}
+
+	for rows.Next() {
+		var e bool
+		p := models.PageReport{}
+		err := rows.Scan(&p.Id, &p.URL, &p.Title, &e)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		pageReports = append(pageReports, p)
+	}
+
+	return pageReports
+}
+
+func (ds *Datastore) GetNumberOfPagesForPageReport(cid int64, term string) int {
+	query := `
+		SELECT count(id)
+		FROM pagereports
+		WHERE crawl_id  = ?
+			AND crawled = 1`
+
+	args := []interface{}{cid}
+	if term != "" {
+		query += ` AND MATCH (url) AGAINST (? IN NATURAL LANGUAGE MODE)`
+		args = append(args, term)
+	}
+
+	row := ds.db.QueryRow(query, args...)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("GetNumberOfPagesForPageReport: %v\n", err)
+	}
+	var f float64 = float64(c) / float64(paginationMax)
+	return int(math.Ceil(f))
+}
+
 func (ds *Datastore) FindInLinks(s string, cid int64, p int) []models.InternalLink {
 	max := paginationMax
 	offset := max * (p - 1)

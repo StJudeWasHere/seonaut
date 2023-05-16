@@ -117,6 +117,14 @@ func (s *storage) FindSitemapPageReports(id int64) <-chan *models.PageReport {
 	return prStream
 }
 
+func (s *storage) FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport {
+	return []models.PageReport{}
+}
+
+func (s *storage) GetNumberOfPagesForPageReport(cid int64, term string) int {
+	return 0
+}
+
 type cache struct{}
 
 func (c *cache) Set(key string, v interface{}) error {

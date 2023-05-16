@@ -14,6 +14,7 @@ type ResourcesView struct {
 	PageReportView *report.PageReportView
 	ProjectView    *projectview.ProjectView
 	Eid            string
+	Ep             string
 	Tab            string
 }
 
@@ -35,8 +36,9 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	}
 
 	eid := r.URL.Query().Get("eid")
-	if eid == "" {
-		log.Println("serveResourcesView: eid parameter missing")
+	ep := r.URL.Query().Get("ep")
+	if eid == "" && ep == "" {
+		log.Println("serveResourcesView: no eid or ep parameter set")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -69,6 +71,7 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 	rv := ResourcesView{
 		ProjectView:    pv,
 		Eid:            eid,
+		Ep:             ep,
 		Tab:            tab,
 		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
 	}

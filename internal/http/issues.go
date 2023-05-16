@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
@@ -16,7 +17,7 @@ type IssuesGroupView struct {
 type IssuesView struct {
 	ProjectView   *projectview.ProjectView
 	Eid           string
-	PaginatorView issue.PaginatorView
+	PaginatorView models.PaginatorView
 }
 
 func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {

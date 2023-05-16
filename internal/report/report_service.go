@@ -1,6 +1,7 @@
 package report
 
 import (
+	"errors"
 	"fmt"
 	"log"
 
@@ -23,7 +24,9 @@ type ReportStore interface {
 	FindSitemapPageReports(int64) <-chan *models.PageReport
 	FindLinks(pageReport *models.PageReport, cid int64, page int) []models.InternalLink
 	FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link
+	FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport
 
+	GetNumberOfPagesForPageReport(cid int64, term string) int
 	GetNumberOfPagesForInlinks(*models.PageReport, int64) int
 	GetNumberOfPagesForRedirecting(*models.PageReport, int64) int
 	GetNumberOfPagesForLinks(*models.PageReport, int64) int
@@ -63,14 +66,7 @@ type PageReportView struct {
 	ErrorTypes []string
 	InLinks    []models.InternalLink
 	Redirects  []models.PageReport
-	Paginator  Paginator
-}
-
-type Paginator struct {
-	CurrentPage  int
-	NextPage     int
-	PreviousPage int
-	TotalPages   int
+	Paginator  models.Paginator
 }
 
 func NewService(store ReportStore, cache Cache) *Service {
@@ -83,7 +79,7 @@ func NewService(store ReportStore, cache Cache) *Service {
 // Returns a PageReportView by PageReport Id and Crawl Id.
 // It also loads the data specified in the tab paramater.
 func (s *Service) GetPageReport(rid int, crawlId int64, tab string, page int) *PageReportView {
-	paginator := Paginator{
+	paginator := models.Paginator{
 		CurrentPage: page,
 	}
 
@@ -131,6 +127,33 @@ func (s *Service) GetPageReporsByIssueType(crawlId int64, eid string) <-chan *mo
 	}
 
 	return s.store.FindAllPageReportsByCrawlId(crawlId)
+}
+
+// Returns a PaginatorView with the corresponding page reports.
+func (s *Service) GetPaginatedReports(crawlId int64, currentPage int, term string) (models.PaginatorView, error) {
+	paginator := models.Paginator{
+		TotalPages:  s.store.GetNumberOfPagesForPageReport(crawlId, term),
+		CurrentPage: currentPage,
+	}
+
+	if currentPage < 1 || (paginator.TotalPages > 0 && currentPage > paginator.TotalPages) {
+		return models.PaginatorView{}, errors.New("Page out of bounds")
+	}
+
+	if currentPage < paginator.TotalPages {
+		paginator.NextPage = currentPage + 1
+	}
+
+	if currentPage > 1 {
+		paginator.PreviousPage = currentPage - 1
+	}
+
+	paginatorView := models.PaginatorView{
+		Paginator:   paginator,
+		PageReports: s.store.FindPaginatedPageReports(crawlId, currentPage, term),
+	}
+
+	return paginatorView, nil
 }
 
 // Returns a channel of crawlable PageReports that can be included in a sitemap.

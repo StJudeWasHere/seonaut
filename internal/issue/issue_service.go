@@ -46,18 +46,6 @@ type IssueCount struct {
 	WarningIssues  []IssueGroup
 }
 
-type Paginator struct {
-	CurrentPage  int
-	NextPage     int
-	PreviousPage int
-	TotalPages   int
-}
-
-type PaginatorView struct {
-	Paginator   Paginator
-	PageReports []models.PageReport
-}
-
 func NewService(s IssueStore, c Cache) *Service {
 	return &Service{
 		store: s,
@@ -121,14 +109,14 @@ func (s *Service) SaveCrawlIssuesCount(crawl *models.Crawl) {
 }
 
 // Returns a PaginatorView with the corresponding page reports.
-func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (PaginatorView, error) {
-	paginator := Paginator{
+func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (models.PaginatorView, error) {
+	paginator := models.Paginator{
 		TotalPages:  s.store.GetNumberOfPagesForIssues(crawlId, issueId),
 		CurrentPage: currentPage,
 	}
 
 	if currentPage < 1 || currentPage > paginator.TotalPages {
-		return PaginatorView{}, errors.New("Page out of bounds")
+		return models.PaginatorView{}, errors.New("Page out of bounds")
 	}
 
 	if currentPage < paginator.TotalPages {
@@ -139,7 +127,7 @@ func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, iss
 		paginator.PreviousPage = currentPage - 1
 	}
 
-	paginatorView := PaginatorView{
+	paginatorView := models.PaginatorView{
 		Paginator:   paginator,
 		PageReports: s.store.FindPageReportIssues(crawlId, currentPage, issueId),
 	}

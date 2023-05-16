@@ -86,9 +86,12 @@ func (r *Renderer) add(i ...int) int {
 }
 
 // Returns an int formated as KB.
-func (r *Renderer) ToKByte(b int) float64 {
+func (r *Renderer) ToKByte(b int) string {
 	v := b / (1 << 10)
 	i := b % (1 << 10)
 
-	return float64(v) + float64(i)/float64(1<<10)
+	kb := float64(v) + float64(i)/float64(1<<10)
+	formatted := fmt.Sprintf("%.2f", kb)
+
+	return formatted
 }

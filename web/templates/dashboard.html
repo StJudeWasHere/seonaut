@@ -178,10 +178,36 @@
 		</div>
 	</div>
 
-	<div class="box box-highlight">
-		<div class="col col-main">
+	<div class="box box-highlight soft">
+		<div class="col">
 			<div class="content">
-				<a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a>
+			<h2>Next Actions</h2>
+		</div>
+		</div>
+	</div>
+
+	<div class="box box-highlight">
+		<div class="col">
+			<div class="content">
+				<h2>Explore Site Issues</h2>
+				<p>Uncover issues impacting your website's performance. </p>
+				<p><a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a></p>
+			</div>
+		</div>
+
+		<div class="col">
+			<div class="content">
+				<h2>Dive into Page Details</h2>
+				<p>Get detailed insights into specific URLs.</p>
+				<p><a href="/explorer?pid={{ .ProjectView.Project.Id }}">Page Details</a></p>
+			</div>
+		</div>
+
+		<div class="col">
+			<div class="content">
+				<h2>Analyze Raw Data</h2>
+				<p>Export your data for further analysis and reporting.</p>
+				<p><a href="/export?pid={{ .ProjectView.Project.Id }}">Data Export</a></p>
 			</div>
 		</div>
 	</div>

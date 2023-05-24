@@ -126,18 +126,24 @@ button {
 }
 
 summary {
-	padding-right: 1.5rem;
+	background: var(--secondary-color);
+	border-top: 1px solid var(--primary-color);
+	border-left: 1px solid var(--primary-color);
+	border-bottom: 2px solid var(--primary-color);
+	border-right: 2px solid var(--primary-color);
 	cursor: pointer;
-	border-bottom: 1px dotted var(--primary-color);
+    padding: 1rem 1.5rem;
 	width: 15rem;
 }
 
 summary:hover {
+    background-color: var(--highlight-color);
 	border-bottom-style: solid;
+	box-shadow: 2px 2px 0 black;
 }
 
 details[open] > summary {
-		border-color: transparent;
+		border-bottom-color: transparent;
 }
 
 details {

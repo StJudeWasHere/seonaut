@@ -5,43 +5,42 @@ import (
 	"net/http"
 )
 
-func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
-	var email string
-
-	pageData := &struct {
+// handleSignup handles the signup functionality for the application.
+// It allows users to sign up by providing their email and password.
+// Upon successful signup, the user is automatically signed in and redirected to the home page.
+//
+// The function handles both GET and POST HTTP methods.
+// GET: Renders the signup form.
+// POST: Processes the signup form data, performs signup, signs the user in, and redirects to the home page.
+func (app *App) handleSignup(w http.ResponseWriter, r *http.Request) {
+	data := &struct {
 		Email string
 		Error bool
 	}{}
 
 	pageView := &PageView{
 		PageTitle: "SIGNUP_VIEW",
-		Data:      pageData}
+		Data:      data,
+	}
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			log.Printf("serveSignup ParseForm: %v\n", err)
+			log.Printf("serveSignup ParseForm: %v", err)
 			http.Redirect(w, r, "/signup", http.StatusSeeOther)
 
 			return
 		}
 
-		email = r.FormValue("email")
+		data.Email = r.FormValue("email")
 		password := r.FormValue("password")
 
-		pageData.Email = email
-
-		err = app.userService.SignUp(email, password)
+		u, err := app.userService.SignUp(data.Email, password)
 		if err != nil {
-			log.Printf("serveSignup SignUp: %v\n", err)
-			pageData.Error = true
+			log.Printf("serveSignup SignUp: %v", err)
+			data.Error = true
 			app.renderer.RenderTemplate(w, "signup", pageView)
-			return
-		}
 
-		u, err := app.userService.SignIn(email, password)
-		if err != nil {
-			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}
 
@@ -51,15 +50,28 @@ func (app *App) serveSignup(w http.ResponseWriter, r *http.Request) {
 		session.Save(r, w)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	app.renderer.RenderTemplate(w, "signup", pageView)
 }
 
-func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
-	var e bool
-	var email string
+// handleSignin handles the HTTP GET and POST requests for the sign-in functionality.
+//
+// The function handles both GET and POST HTTP methods.
+// GET: it renders the sign-in page with the appropriate data.
+// POST: it validates the user's credentials and creates a session if the sign-in is successful.
+func (app *App) handleSignin(w http.ResponseWriter, r *http.Request) {
+	data := &struct {
+		Email string
+		Error bool
+	}{}
+
+	pageView := &PageView{
+		PageTitle: "SIGNIN_VIEW",
+		Data:      data,
+	}
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
@@ -70,10 +82,10 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		email = r.FormValue("email")
+		data.Email = r.FormValue("email")
 		password := r.FormValue("password")
 
-		u, err := app.userService.SignIn(email, password)
+		u, err := app.userService.SignIn(data.Email, password)
 		if err == nil {
 			session, _ := app.cookie.Get(r, "SESSION_ID")
 			session.Values["authenticated"] = true
@@ -81,40 +93,47 @@ func (app *App) serveSignin(w http.ResponseWriter, r *http.Request) {
 			session.Save(r, w)
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
+
 			return
 		}
 
 		log.Printf("serveSignin SignIn: %v\n", err)
-		e = true
+		data.Error = true
 	}
 
-	v := &PageView{
-		PageTitle: "SIGNIN_VIEW",
-		Data: struct {
-			Email string
-			Error bool
-		}{Email: email, Error: e},
-	}
-
-	app.renderer.RenderTemplate(w, "signin", v)
+	app.renderer.RenderTemplate(w, "signin", pageView)
 }
 
-func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
-	data := struct {
+// handleAccount handles the HTTP POST and GET requests for the account management functionality.
+//
+// The function handles both GET and POST HTTP methods.
+// POST: it allows users to change their credentials by verifying the current password and
+// updating the password with a new one.
+// GET: it renders the account management form with the appropriate data.
+func (app *App) handleAccount(w http.ResponseWriter, r *http.Request) {
+	user, ok := app.userService.GetUserFromContext(r.Context())
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
+		return
+	}
+
+	data := &struct {
 		Error        bool
 		ErrorMessage string
 	}{}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
-		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-		return
+	pageView := &PageView{
+		PageTitle: "ACCOUNT_VIEW",
+		Data:      data,
+		User:      *user,
 	}
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+
 			return
 		}
 
@@ -126,12 +145,8 @@ func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
 			data.Error = true
 			data.ErrorMessage = "Current password is not correct."
 
-			v := &PageView{
-				PageTitle: "ACCOUNT_VIEW",
-				Data:      data,
-			}
+			app.renderer.RenderTemplate(w, "account", pageView)
 
-			app.renderer.RenderTemplate(w, "account", v)
 			return
 		}
 
@@ -140,28 +155,22 @@ func (app *App) serveAccount(w http.ResponseWriter, r *http.Request) {
 			data.Error = true
 			data.ErrorMessage = "New password is not valid."
 
-			v := &PageView{
-				PageTitle: "ACCOUNT_VIEW",
-				Data:      data,
-			}
+			app.renderer.RenderTemplate(w, "account", pageView)
 
-			app.renderer.RenderTemplate(w, "account", v)
 			return
 		}
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
-	v := &PageView{
-		PageTitle: "ACCOUNT_VIEW",
-		Data:      data,
-	}
-
-	app.renderer.RenderTemplate(w, "account", v)
+	app.renderer.RenderTemplate(w, "account", pageView)
 }
 
-func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {
+// handleSignout is a handler function that handles the user's signout request.
+// It clears the session data related to authenticated user.
+func (app *App) handleSignout(w http.ResponseWriter, r *http.Request) {
 	session, _ := app.cookie.Get(r, "SESSION_ID")
 	session.Values["authenticated"] = false
 	session.Values["uid"] = nil
@@ -170,6 +179,8 @@ func (app *App) serveSignout(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
+// requireAuth is a middleware function that wraps the provided handler function and enforces authentication.
+// It checks if the user is authenticated based on the session data.
 func (app *App) requireAuth(f func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, _ := app.cookie.Get(r, "SESSION_ID")

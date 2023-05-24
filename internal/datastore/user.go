@@ -6,15 +6,22 @@ import (
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
-func (ds *Datastore) UserSignup(user, password string) {
+// UserSignup inserts a new user with the provided email and password into the database.
+// It returns the inserted user and an error if the user could not be inserted.
+func (ds *Datastore) UserSignup(user, password string) (*user.User, error) {
 	query := `INSERT INTO users (email, password, created) VALUES (?, ?, NOW())`
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
 
 	_, err := stmt.Exec(user, password)
 	if err != nil {
-		log.Printf("UserSignup: %v\n", err)
+		return nil, err
 	}
+
+	// Retrieve the inserted user
+	u := ds.FindUserByEmail(user)
+
+	return u, nil
 }
 
 func (ds *Datastore) FindUserByEmail(email string) *user.User {

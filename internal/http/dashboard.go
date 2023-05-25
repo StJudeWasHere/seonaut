@@ -30,31 +30,37 @@ type DashboardView struct {
 	SchemeCount    *report.SchemeCount
 }
 
-func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
+// handleDashboard handles the dashboard of a project.
+// It expects a query parameter "pid" containing the project ID.
+func (app *App) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	if pv.Crawl.TotalURLs == 0 {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
-	ig := DashboardView{
+	data := DashboardView{
 		ProjectView:    pv,
 		MediaChart:     newChart(app.reportService.GetMediaCount(pv.Crawl.Id)),
 		StatusChart:    newChart(app.reportService.GetStatusCount(pv.Crawl.Id)),
@@ -64,13 +70,13 @@ func (app *App) serveDashboard(w http.ResponseWriter, r *http.Request) {
 		SchemeCount:    app.reportService.GetSchemeCount(pv.Crawl.Id),
 	}
 
-	v := &PageView{
-		Data:      ig,
+	pageView := &PageView{
+		Data:      data,
 		User:      *user,
 		PageTitle: "PROJECT_DASHBOARD",
 	}
 
-	app.renderer.RenderTemplate(w, "dashboard", v)
+	app.renderer.RenderTemplate(w, "dashboard", pageView)
 }
 
 // Returns a Chart containing the keys and values from the CountList.

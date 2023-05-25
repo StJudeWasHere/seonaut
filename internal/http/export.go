@@ -3,7 +3,6 @@ package http
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -14,8 +13,8 @@ import (
 	"github.com/turk/go-sitemap"
 )
 
-// serveExport handles the export request and renders the the export template
-func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
+// handleExport handles the export request and renders the the export template.
+func (app *App) handleExport(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -46,10 +45,10 @@ func (app *App) serveExport(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
+// handleDownloadCSV exports the pagereports of a specific project as a CSV file by issue type.
+func (app *App) handleDownloadCSV(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveDownloadCSV pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -58,6 +57,7 @@ func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
@@ -84,10 +84,10 @@ func (app *App) serveDownloadCSV(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
+// handleSitemap exports the crawled urls of a specific project as a sitemap.xml file.
+func (app *App) handleSitemap(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveSitemap pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -96,6 +96,7 @@ func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
@@ -120,24 +121,27 @@ func (app *App) serveSitemap(w http.ResponseWriter, r *http.Request) {
 	s.Write()
 }
 
-// serveExportResources exports the resources of a specific project.
+// handleExportResources exports the resources of a specific project.
 // The URL query parameter t specifys the type of resources to be exported.
-func (app *App) serveExportResources(w http.ResponseWriter, r *http.Request) {
+func (app *App) handleExportResources(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
@@ -158,6 +162,7 @@ func (app *App) serveExportResources(w http.ResponseWriter, r *http.Request) {
 	e, ok := m[t]
 	if !ok {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 

@@ -14,8 +14,12 @@ type ExplorerView struct {
 	PaginatorView models.PaginatorView
 }
 
-// Handles the URL explorer request.
-func (app *App) serveExplorer(w http.ResponseWriter, r *http.Request) {
+// handleExplorer handles the URL explorer request.
+// It performas a search of pagereports based on the "term" parameter. In case the "term" parameter
+// is empty, it loads all the pagereports.
+// It expects a query parameter "pid" containing the project ID, the "p" parameter containing the current
+// page in the paginator, and the "term" parameter used to perform the pagereport search.
+func (app *App) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	// Get user from the request's context
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {

@@ -10,15 +10,23 @@ import (
 	"github.com/stjudewashere/seonaut/internal/report"
 )
 
-type ResourcesView struct {
-	PageReportView *report.PageReportView
-	ProjectView    *projectview.ProjectView
-	Eid            string
-	Ep             string
-	Tab            string
-}
+// handleResourcesView handles the HTTP request for the resources view page.
+//
+// It expects the following query parameters:
+// - "pid" containing the project ID.
+// - "rid" the ID of the resource to be loaded.
+// - "eid" the ID of the issue type from wich the user loaded this resource.
+// - "ep" the explorer page number from which the user loaded this resource.
+// - "t" the tab to be loaded, which defaults to the details tab.
+// - "p" the number of page to be loaded, in case the resource page has pagination.
+func (app *App) handleResourcesView(w http.ResponseWriter, r *http.Request) {
+	user, ok := app.userService.GetUserFromContext(r.Context())
+	if ok == false {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
-func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
+		return
+	}
+
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		log.Printf("serveResourcesView pid: %v\n", err)
@@ -54,12 +62,6 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
-		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-		return
-	}
-
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Printf("serveResourcesView GetProjectView: %v\n", err)
@@ -68,7 +70,13 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rv := ResourcesView{
+	data := &struct {
+		PageReportView *report.PageReportView
+		ProjectView    *projectview.ProjectView
+		Eid            string
+		Ep             string
+		Tab            string
+	}{
 		ProjectView:    pv,
 		Eid:            eid,
 		Ep:             ep,
@@ -76,11 +84,11 @@ func (app *App) serveResourcesView(w http.ResponseWriter, r *http.Request) {
 		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
 	}
 
-	v := &PageView{
-		Data:      rv,
+	pageView := &PageView{
+		Data:      data,
 		User:      *user,
 		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab),
 	}
 
-	app.renderer.RenderTemplate(w, "resources", v)
+	app.renderer.RenderTemplate(w, "resources", pageView)
 }

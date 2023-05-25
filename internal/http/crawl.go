@@ -22,11 +22,13 @@ const (
 	pingPeriod = (pongWait * 9) / 10
 )
 
-// Start crawling a project
-func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
+// handleCrawl handles the crawling of a project.
+// It expects a query parameter "pid" containing the project ID to be crawled.
+// In case the project requieres BasicAuth it will redirect the user to the BasicAuth
+// credentials URL. Otherwise, it starts a new crawler.
+func (app *App) handleCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveCrawl pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
@@ -35,17 +37,20 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	p, err := app.projectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	if p.BasicAuth == true {
 		http.Redirect(w, r, "/crawl-auth?id="+strconv.Itoa(pid), http.StatusSeeOther)
+
 		return
 	}
 
@@ -54,30 +59,39 @@ func (app *App) serveCrawl(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 }
 
-func (app *App) serveCrawlAuth(w http.ResponseWriter, r *http.Request) {
+// handleCrawlAuth handles the crawling of a project with BasicAuth.
+// It expects a query parameter "pid" containing the project ID to be crawled.
+// A form will be presented to the user to input the BasicAuth credentials, once the
+// form is submitted a crawler with BasicAuth is started.
+//
+// The function handles both GET and POST HTTP methods.
+// GET: Renders the auth form.
+// POST: Processes the auth form data and starts the crawler.
+func (app *App) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveCrawl pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	p, err := app.projectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			log.Printf("serveCrawlAuth ParseForm: %v\n", err)
 			http.Redirect(w, r, "/crawl-auth", http.StatusSeeOther)
 
 			return
@@ -100,24 +114,9 @@ func (app *App) serveCrawlAuth(w http.ResponseWriter, r *http.Request) {
 	app.renderer.RenderTemplate(w, "crawl_auth", pageView)
 }
 
-func (app *App) startCrawler(p models.Project) {
-	log.Printf("Crawling %s\n", p.URL)
-	crawl, err := app.crawlerService.StartCrawler(p)
-	if err != nil {
-		log.Printf("StartCrawler: %s %v\n", p.URL, err)
-		return
-	}
-
-	log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
-
-	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
-	app.reportManager.CreateMultipageIssues(crawl)
-	app.issueService.SaveCrawlIssuesCount(crawl)
-	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
-}
-
-// Start crawling a project
-func (app *App) serveCrawlLive(w http.ResponseWriter, r *http.Request) {
+// handleCrawlLive handles the request for the live crawling of a project.
+// It expects a query parameter "pid" containing the project ID to be crawled.
+func (app *App) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -128,23 +127,27 @@ func (app *App) serveCrawlLive(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	if pv.Crawl.IssuesEnd.Valid {
 		http.Redirect(w, r, "/dashboard?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+
 		return
 	}
 
 	configURL, err := url.Parse(app.config.URL)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
@@ -163,23 +166,28 @@ func (app *App) serveCrawlLive(w http.ResponseWriter, r *http.Request) {
 	app.renderer.RenderTemplate(w, "crawl_live", v)
 }
 
-// Handle the crawler's websocket connection
-func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
+// handleCrawlWs handles the live crawling of a project using websockets.
+// It expects a query parameter "pid" containing the project ID.
+// It upgrades the connection to websockets and sends the crawler messages through it.
+func (app *App) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+
 		return
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		w.WriteHeader(http.StatusUnauthorized)
+
 		return
 	}
 
 	p, err := app.projectService.FindProject(pid, user.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
+
 		return
 	}
 
@@ -189,6 +197,7 @@ func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
 		WriteBufferSize: 1024,
 		CheckOrigin: func(r *http.Request) bool {
 			origin := r.Header.Get("Origin")
+
 			return origin == app.config.URL
 		},
 	}
@@ -196,6 +205,7 @@ func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
+
 		return
 	}
 	defer conn.Close()
@@ -267,4 +277,22 @@ func (app *App) serveCrawlWs(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
+}
+
+// Helper function to start crawling a project.
+func (app *App) startCrawler(p models.Project) {
+	log.Printf("Crawling %s\n", p.URL)
+	crawl, err := app.crawlerService.StartCrawler(p)
+	if err != nil {
+		log.Printf("StartCrawler: %s %v\n", p.URL, err)
+
+		return
+	}
+
+	log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
+
+	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
+	app.reportManager.CreateMultipageIssues(crawl)
+	app.issueService.SaveCrawlIssuesCount(crawl)
+	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 }

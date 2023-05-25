@@ -30,8 +30,6 @@ func NewService(s Storage) *Service {
 // GetProjectView returns a new ProjectView with the specified project
 // and the project's last crawl.
 func (s *Service) GetProjectView(id, uid int) (*ProjectView, error) {
-	v := &ProjectView{}
-
 	project, err := s.storage.FindProjectById(id, uid)
 	if err != nil {
 		return nil, err
@@ -46,8 +44,10 @@ func (s *Service) GetProjectView(id, uid int) (*ProjectView, error) {
 
 	c := s.storage.GetLastCrawl(&project)
 
-	v.Project = project
-	v.Crawl = c
+	v := &ProjectView{
+		Project: project,
+		Crawl:   c,
+	}
 
 	return v, nil
 }
@@ -55,9 +55,9 @@ func (s *Service) GetProjectView(id, uid int) (*ProjectView, error) {
 // GetProjectViews returns a slice of ProjectViews with all of the user's
 // projects and its last crawls.
 func (s *Service) GetProjectViews(uid int) []ProjectView {
-	projects := s.storage.FindProjectsByUser(uid)
-
 	var views []ProjectView
+
+	projects := s.storage.FindProjectsByUser(uid)
 	for _, p := range projects {
 		pv := ProjectView{
 			Project: p,

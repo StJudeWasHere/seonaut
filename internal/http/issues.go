@@ -20,27 +20,33 @@ type IssuesView struct {
 	PaginatorView models.PaginatorView
 }
 
-func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
+// handleIssues handles the issues view of a project.
+// It expects a query parameter "pid" containing the project ID.
+func (app *App) handleIssues(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	if pv.Crawl.TotalURLs == 0 {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
@@ -58,22 +64,28 @@ func (app *App) serveIssues(w http.ResponseWriter, r *http.Request) {
 	app.renderer.RenderTemplate(w, "issues", v)
 }
 
-func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
+// handleIssuesView handles the view of project's specific issue type.
+// It expects a query parameter "pid" containing the project ID and an "eid" parameter
+// containing the issue type.
+func (app *App) handleIssuesView(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	eid := r.URL.Query().Get("eid")
 	if eid == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
@@ -85,23 +97,25 @@ func (app *App) serveIssuesView(w http.ResponseWriter, r *http.Request) {
 	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
 	paginatorView, err := app.issueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
-	view := IssuesView{
+	data := IssuesView{
 		ProjectView:   pv,
 		Eid:           eid,
 		PaginatorView: paginatorView,
 	}
 
 	v := &PageView{
-		Data:      view,
+		Data:      data,
 		User:      *user,
 		PageTitle: "ISSUES_DETAIL",
 	}

@@ -9,25 +9,28 @@ import (
 )
 
 const (
-	test_uid = 1
-	test_pid = 1
-	test_cid = 1
-	test_url = "https://example.org"
+	test_uid          = 1
+	test_pid          = 1
+	test_cid          = 1
+	test_url          = "https://example.org"
+	test_total_models = 2
 )
 
-type Storage interface {
-	FindProjectsByUser(int) []models.Project
-	FindProjectById(id int, uid int) (models.Project, error)
-	GetLastCrawl(*models.Project) models.Crawl
-}
-
+// Create a mock storage for the projectview service.
 type testStorage struct{}
 
 func (s *testStorage) FindProjectsByUser(uid int) []models.Project {
-	return []models.Project{
-		{},
-		{},
+	m := []models.Project{}
+
+	if uid != test_uid {
+		return m
 	}
+
+	for i := 0; i < test_total_models; i++ {
+		m = append(m, models.Project{})
+	}
+
+	return m
 }
 
 func (s *testStorage) FindProjectById(id int, uid int) (models.Project, error) {
@@ -44,10 +47,13 @@ func (s *testStorage) GetLastCrawl(*models.Project) models.Crawl {
 
 var projectviewService = projectview.NewService(&testStorage{})
 
-func TestGetProjectView(t *testing.T) {
+// TestGetProjectView tests the GetProjectView function of the projectview service.
+// It verifies the behavior of the GetProjectView function with an existing projectview.
+func TestGetProjectView_ProjectViewExists(t *testing.T) {
 	pv, err := projectviewService.GetProjectView(test_pid, test_uid)
 	if err != nil {
 		t.Errorf("%v", err)
+
 		return
 	}
 
@@ -58,17 +64,32 @@ func TestGetProjectView(t *testing.T) {
 	if pv.Crawl.Id != test_cid {
 		t.Errorf("Crawl Id != %d", test_cid)
 	}
+}
 
-	// Should return error
-	_, err = projectviewService.GetProjectView(test_pid+1, test_uid+1)
+// TestGetProjectView tests the GetProjectView function of the projectview service.
+// It verifies the behavior of the GetProjectView function with a non-existing projectview.
+func TestGetProjectView_ProjectViewDoesNotExists(t *testing.T) {
+	_, err := projectviewService.GetProjectView(test_pid+1, test_uid+1) // Should return error
 	if err == nil {
 		t.Error("No error returned in GetProjectView", err)
 	}
 }
 
-func TestGetProjectViews(t *testing.T) {
-	pv := projectviewService.GetProjectViews(1)
-	if len(pv) != 2 {
-		t.Error("len(pv) != 2")
+// TestGetProjectViews tests the GetProjectViews function of the projectview service.
+// It verifies the behavior of the GetProjectViews with existing projectviews.
+func TestGetProjectViews_ProjectViewsExist(t *testing.T) {
+	pv := projectviewService.GetProjectViews(test_uid)
+	if len(pv) != test_total_models {
+		t.Errorf("GetProjectViews should return an slice with %d elements", test_total_models)
+	}
+}
+
+// TestGetProjectViews tests the GetProjectViews function of the projectview service.
+// It verifies the behavior of the GetProjectViews with a non-existing projectviews.
+func TestGetProjectViews_ProjectViewsDoNotExist(t *testing.T) {
+	EmptyUid := 9999
+	pv := projectviewService.GetProjectViews(EmptyUid)
+	if len(pv) != 0 {
+		t.Error("GetProjectViews should return an empty slice")
 	}
 }

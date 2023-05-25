@@ -11,7 +11,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
-func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
+// Handles the user homepage request and lists all the user's projects.
+func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
@@ -39,12 +40,21 @@ func (app *App) serveHome(w http.ResponseWriter, r *http.Request) {
 	app.renderer.RenderTemplate(w, "home", v)
 }
 
-// Manage the form for adding new projects
-func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
+// handleProjectAdd handles the form for adding a new project.
+func (app *App) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
+	}
+
+	data := &struct{ Error bool }{}
+
+	pageView := &PageView{
+		User:      *user,
+		PageTitle: "ADD_PROJECT",
+		Data:      data,
 	}
 
 	if r.Method == http.MethodPost {
@@ -52,6 +62,7 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("serveProjectAdd ParseForm: %v\n", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
+
 			return
 		}
 
@@ -89,13 +100,9 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 
 		parsedURL, err := url.ParseRequestURI(strings.TrimSpace(u))
 		if err != nil {
-			v := &PageView{
-				User:      *user,
-				PageTitle: "ADD_PROJECT",
-				Data:      struct{ Error bool }{Error: true},
-			}
+			data.Error = true
+			app.renderer.RenderTemplate(w, "project_add", pageView)
 
-			app.renderer.RenderTemplate(w, "project_add", v)
 			return
 		}
 
@@ -111,13 +118,9 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 
 		err = app.projectService.SaveProject(project, user.Id)
 		if err != nil {
-			v := &PageView{
-				User:      *user,
-				PageTitle: "ADD_PROJECT",
-				Data:      struct{ Error bool }{Error: true},
-			}
+			data.Error = true
+			app.renderer.RenderTemplate(w, "project_add", pageView)
 
-			app.renderer.RenderTemplate(w, "project_add", v)
 			return
 		}
 
@@ -125,17 +128,12 @@ func (app *App) serveProjectAdd(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	v := &PageView{
-		User:      *user,
-		PageTitle: "ADD_PROJECT",
-		Data:      struct{ Error bool }{Error: false},
-	}
-
-	app.renderer.RenderTemplate(w, "project_add", v)
+	app.renderer.RenderTemplate(w, "project_add", pageView)
 }
 
-// Delete a project
-func (app *App) serveDeleteProject(w http.ResponseWriter, r *http.Request) {
+// handleDeleteProject handles the deletion of a project.
+// It expects a query parameter "pid" containing the project ID to be deleted.
+func (app *App) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -146,12 +144,14 @@ func (app *App) serveDeleteProject(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	p, err := app.projectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
@@ -160,8 +160,9 @@ func (app *App) serveDeleteProject(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// Edit project
-func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
+// handleProjectEdit handles the edition of a project.
+// It expects a query parameter "pid" containing the project ID to be edited.
+func (app *App) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -172,19 +173,29 @@ func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
 	if ok == false {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
 		return
 	}
 
 	p, err := app.projectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
-	data := struct {
+	data := &struct {
 		Project models.Project
 		Error   bool
-	}{Project: p}
+	}{
+		Project: p,
+	}
+
+	pageView := &PageView{
+		User:      *user,
+		PageTitle: "EDIT_PROJECT",
+		Data:      data,
+	}
 
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
@@ -227,25 +238,15 @@ func (app *App) serveProjectEdit(w http.ResponseWriter, r *http.Request) {
 		err = app.projectService.UpdateProject(&p)
 		if err != nil {
 			data.Error = true
-			v := &PageView{
-				User:      *user,
-				PageTitle: "EDIT_PROJECT",
-				Data:      data,
-			}
+			app.renderer.RenderTemplate(w, "project_edit", pageView)
 
-			app.renderer.RenderTemplate(w, "project_edit", v)
 			return
 		}
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 		return
 	}
 
-	v := &PageView{
-		User:      *user,
-		PageTitle: "EDIT_PROJECT",
-		Data:      data,
-	}
-
-	app.renderer.RenderTemplate(w, "project_edit", v)
+	app.renderer.RenderTemplate(w, "project_edit", pageView)
 }

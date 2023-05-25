@@ -3,6 +3,7 @@
 {{ with .Data }}
 <a name="menu"></a>
 
+{{ $parameters := printf "?pid=%d&rid=%d" .ProjectView.Project.Id .PageReportView.PageReport.Id }}
 
 <div class="panel">
 
@@ -13,9 +14,13 @@
 					<a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a> 
 					/ 
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a>
+					{{ $parameters = printf "%s&eid=%s" $parameters .Eid }}
 				{{ else if .Ep }}
-				<a href="/explorer?pid={{ .ProjectView.Project.Id }}&p={{ .Ep }}">Page Details</a>
+					<a href="/explorer?pid={{ .ProjectView.Project.Id }}">Page Details</a>
+					{{ $parameters = printf "%s&ep=%s" $parameters .Ep }}
 				{{ end }}
+
+				{{ $parameters = printf "%s&rid=%d" $parameters .PageReportView.PageReport.Id }}
 			</div>
 		</div>
 
@@ -59,47 +64,47 @@
 
 					<ul>
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=details">Details</a>
+							<a href="/resources{{ printf "%s&t=details" $parameters }}">Details</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks">Inlinks</a>
+							<a href="/resources{{ printf "%s&t=inlinks" $parameters }}">Inlinks</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal">Internal links</a>
+							<a href="/resources{{ printf "%s&t=internal" $parameters }}">Internal links</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external">External links</a>
+							<a href="/resources{{ printf "%s&t=external" $parameters }}">External links</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections">Redirections</a>
+							<a href="/resources{{ printf "%s&t=redirections" $parameters }}">Redirections</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=audios">Audios</a>
+							<a href="/resources{{ printf "%s&t=audios" $parameters }}">Audios</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=videos">Videos</a>
+							<a href="/resources{{ printf "%s&t=videos" $parameters }}">Videos</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=images">Images</a>
+							<a href="/resources{{ printf "%s&t=images" $parameters }}">Images</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=iframes">Iframes</a>
+							<a href="/resources{{ printf "%s&t=iframes" $parameters }}">Iframes</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=scripts">Scripts</a>
+							<a href="/resources{{ printf "%s&t=scripts" $parameters }}">Scripts</a>
 						</li>
 
 						<li>
-							<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=styles">Styles</a>
+							<a href="/resources{{ printf "%s&t=styles" $parameters }}">Styles</a>
 						</li>
 					</ul>
 				</details>
@@ -112,6 +117,7 @@
 	{{ $pid := .ProjectView.Project.Id }}
 	{{ $crawlSitemap := .ProjectView.Project.CrawlSitemap }}
 	{{ $eid := .Eid }}
+	{{ $parameters = printf "%s&t=%s" $parameters .Tab }}
 
 	{{ if eq .Tab "details" }}
 		{{ $errorTypes := .PageReportView.ErrorTypes }}
@@ -390,7 +396,7 @@
 						<div class="content">
 							{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
 							{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
-							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="url">
+							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
 								{{ .PageReport.URL }}
 							</a>
 							{{ if .Link.NoFollow }}<p><span class="alert">nofollow</span></p>{{ end }}
@@ -398,7 +404,7 @@
 					</div>
 
 					<div class="col col-actions">
-						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="highlight">
+						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
 							View details
 						</a>
 					</div>
@@ -412,7 +418,7 @@
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
 					{{ else }}
 						← prev
 					{{ end }}
@@ -428,7 +434,7 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=inlinks&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
 					{{ else }}
 						next →
 					{{ end }}
@@ -444,12 +450,12 @@
 					<div class="col col-main">
 						<div class="content">
 						{{ if .Title }}{{ .Title }}<br/>{{ end }}
-							<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}" class="url">{{ .URL }}</a>
+							<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&ep=1" class="url">{{ .URL }}</a>
 						</div>
 					</div>
 
 					<div class="col col-actions">
-						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">View Details</a>
+						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&ep=1">View Details</a>
 					</div>
 				</div>
 			{{ end }}
@@ -463,7 +469,7 @@
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+					<a href="/resources?{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
 					{{ else }}
 						← prev
 					{{ end }}
@@ -475,7 +481,7 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=redirections&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
 					{{ else }}
 						next →
 					{{ end }}
@@ -492,7 +498,7 @@
 								<div class="content">
 								{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
 								{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
-								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="url">
+								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
 									{{ .Link.URL }}
 								</a>
 								{{ if .Link.NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
@@ -501,7 +507,7 @@
 
 							{{ if .PageReport.Crawled }}
 							<div class="col col-actions">
-								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&eid={{ $eid }}" class="highlight">
+								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
 									View details
 								</a>
 							</div>
@@ -520,7 +526,7 @@
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
 					{{ else }}
 						← prev
 					{{ end }}
@@ -536,7 +542,7 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-						<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=internal&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
 					{{ else }}
 						next →
 					{{ end }}
@@ -568,7 +574,7 @@
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external&p={{ .PageReportView.Paginator.PreviousPage }}">← prev</a>
+					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
 					{{ else }}
 						← prev
 					{{ end }}
@@ -580,7 +586,7 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}&t=external&p={{ .PageReportView.Paginator.NextPage }}">next →</a>
+					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
 					{{ else }}
 						next →
 					{{ end }}

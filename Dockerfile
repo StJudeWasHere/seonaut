@@ -1,4 +1,4 @@
-FROM golang:1.18-alpine3.16 AS builder
+FROM golang:1.20-alpine3.18 AS builder
 
 RUN mkdir /app
 ADD . /app
@@ -6,7 +6,7 @@ WORKDIR /app
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o seonaut cmd/server/main.go
 
-FROM node:18-alpine3.16 AS front
+FROM node:20-alpine3.17 AS front
 WORKDIR /home/node
 COPY --from=builder /app ./app/
 RUN npm install esbuild && ./node_modules/esbuild/bin/esbuild ./app/web/css/style.css \

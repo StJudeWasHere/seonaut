@@ -6,10 +6,10 @@ WORKDIR /app
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o seonaut cmd/server/main.go
 
-FROM node:20-alpine3.17 AS front
+FROM node:18-alpine3.18 AS front
 WORKDIR /home/node
 COPY --from=builder /app ./app/
-RUN npm install esbuild && ./node_modules/esbuild/bin/esbuild ./app/web/css/style.css \
+RUN npm install --save-exact esbuild && ./node_modules/esbuild/bin/esbuild ./app/web/css/style.css \
 	--bundle \
 	--minify \
 	--outdir=./app/web/static \

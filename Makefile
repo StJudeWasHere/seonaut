@@ -25,7 +25,7 @@ clean:
 
 # Run docker compose
 docker:
-	docker-compose up -d --build
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 .PHONY: docker
 
 # Watch frontend files to run esbuild on any change

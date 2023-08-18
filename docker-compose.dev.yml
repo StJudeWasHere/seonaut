@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  redis:
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    extends:
+      file: docker-compose.yml
+      service: redis
+
+  db:
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    extends:
+      file: docker-compose.yml
+      service: db
+

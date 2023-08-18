@@ -4,8 +4,6 @@ services:
   db:
     image: mysql:8.0
     container_name: "SEOnaut-db"
-    ports:
-      - "3306:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=seonaut
@@ -17,8 +15,6 @@ services:
   redis:
     image: redis:6.2.11
     container_name: "SEOnaut-redis"
-    ports:
-      - "6379:6379"
     networks:
     - seonaut_network
 
@@ -26,7 +22,7 @@ services:
     build: .
     container_name: "SEOnaut-app"
     ports:
-      - "9000:9000"
+      - "${SEONAUT_PORT:-9000}:9000"
     depends_on:
       - db
       - redis

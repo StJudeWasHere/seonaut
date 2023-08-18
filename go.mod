@@ -17,9 +17,9 @@ require (
 	github.com/spf13/viper v1.16.0
 	github.com/temoto/robotstxt v1.1.2
 	github.com/turk/go-sitemap v0.0.0-20210912154218-82ad01095e30
-	golang.org/x/crypto v0.11.0
-	golang.org/x/net v0.12.0
-	golang.org/x/text v0.11.0
+	golang.org/x/crypto v0.12.0
+	golang.org/x/net v0.14.0
+	golang.org/x/text v0.12.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
@@ -33,6 +33,7 @@ require (
 	github.com/pelletier/go-toml/v2 v2.0.9 // indirect
 	github.com/spf13/afero v1.9.5 // indirect
 	github.com/spf13/cast v1.5.1 // indirect
+	github.com/subosito/gotenv v1.6.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.3.5 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	golang.org/x/sync v0.3.0 // indirect

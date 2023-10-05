@@ -2,19 +2,22 @@ package crawler
 
 import (
 	"errors"
-	"net/http"
 	"sync"
+
+	"github.com/stjudewashere/seonaut/internal/http_crawler"
 
 	"github.com/oxffaa/gopher-parse-sitemap"
 )
 
 type SitemapChecker struct {
-	limit int
+	limit  int
+	client *http_crawler.Client
 }
 
-func NewSitemapChecker(limit int) *SitemapChecker {
+func NewSitemapChecker(client *http_crawler.Client, limit int) *SitemapChecker {
 	return &SitemapChecker{
-		limit: limit,
+		limit:  limit,
+		client: client,
 	}
 }
 
@@ -31,7 +34,7 @@ func (sc *SitemapChecker) SitemapExists(URLs []string) bool {
 
 // Check if a URL exists by checking its status code
 func (sc *SitemapChecker) urlExists(URL string) bool {
-	resp, err := http.Head(URL)
+	resp, err := sc.client.Head(URL)
 	if err != nil {
 		return false
 	}
@@ -54,7 +57,13 @@ func (sc *SitemapChecker) ParseSitemaps(URLs []string, callback func(u string)) 
 			// Each sitemap is parsed in its own Go routine
 			// If the sitemap limit is hit the parser function returns an error to stop the process
 			go func(s string) {
-				sitemap.ParseFromSite(s, func(e sitemap.Entry) error {
+				resp, err := sc.client.Get(s)
+				if err != nil {
+					return
+				}
+				defer resp.Body.Close()
+
+				sitemap.Parse(resp.Body, func(e sitemap.Entry) error {
 					callback(e.GetLocation())
 
 					lock.Lock()

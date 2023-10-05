@@ -6,7 +6,7 @@ import (
 )
 
 type Client struct {
-	options *ClientOptions
+	Options *ClientOptions
 	client  *http.Client
 }
 
@@ -27,21 +27,21 @@ func NewClient(options *ClientOptions) *Client {
 
 	return &Client{
 		client:  httpClient,
-		options: options,
+		Options: options,
 	}
 }
 
-// Makes a GET request to an URL and returns the http response or an error.
+// Makes a request with the specified method.
 // It sets the client's User-Agent as well as the BasicAuth details if they are available.
-func (c *Client) Get(u string) (*http.Response, error) {
-	req, err := http.NewRequest(http.MethodGet, u, nil)
+func (c *Client) request(m, u string) (*http.Response, error) {
+	req, err := http.NewRequest(m, u, nil)
 	if err != nil {
 		return &http.Response{}, err
 	}
 
-	req.Header.Set("User-Agent", c.options.UserAgent)
-	if c.options.BasicAuth {
-		req.SetBasicAuth(c.options.AuthUser, c.options.AuthPass)
+	req.Header.Set("User-Agent", c.Options.UserAgent)
+	if c.Options.BasicAuth {
+		req.SetBasicAuth(c.Options.AuthUser, c.Options.AuthPass)
 	}
 
 	resp, err := c.client.Do(req)
@@ -50,4 +50,14 @@ func (c *Client) Get(u string) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+// Makes a GET request to an URL and returns the http response or an error.
+func (c *Client) Get(u string) (*http.Response, error) {
+	return c.request(http.MethodGet, u)
+}
+
+// Makes a HEAD request to an URL and returns the http response or an error.
+func (c *Client) Head(u string) (*http.Response, error) {
+	return c.request(http.MethodHead, u)
 }

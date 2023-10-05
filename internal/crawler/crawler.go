@@ -59,14 +59,21 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	q := queue.New(ctx)
 	q.Push(url.String())
 
-	robotsChecker := NewRobotsChecker(options.UserAgent)
+	httpClient := http_crawler.NewClient(&http_crawler.ClientOptions{
+		UserAgent: options.UserAgent,
+		BasicAuth: options.BasicAuth,
+		AuthUser:  options.AuthUser,
+		AuthPass:  options.AuthPass,
+	})
+
+	robotsChecker := NewRobotsChecker(httpClient)
 
 	sitemaps := robotsChecker.GetSitemaps(url)
 	if len(sitemaps) == 0 {
 		sitemaps = []string{url.Scheme + "://" + url.Host + "/sitemap.xml"}
 	}
 
-	sitemapChecker := NewSitemapChecker(options.MaxPageReports)
+	sitemapChecker := NewSitemapChecker(httpClient, options.MaxPageReports)
 	qStream := make(chan string)
 
 	c := &Crawler{
@@ -83,15 +90,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		allowedDomains:  map[string]bool{mainDomain: true, "www." + mainDomain: true},
 		prStream:        make(chan *PageReportMessage),
 		qStream:         qStream,
-		httpCrawler: http_crawler.New(
-			http_crawler.NewClient(&http_crawler.ClientOptions{
-				UserAgent: options.UserAgent,
-				BasicAuth: options.BasicAuth,
-				AuthUser:  options.AuthUser,
-				AuthPass:  options.AuthPass,
-			}),
-			qStream,
-		),
+		httpCrawler:     http_crawler.New(httpClient, qStream),
 	}
 
 	go c.queueStreamer(ctx)

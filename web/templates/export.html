@@ -4,16 +4,18 @@
 
 <div class="panel">
 
-	<div class="box box-first"> 
+	<div class="box box-highlight box-first"> 
 		<div class="col col-main">
-			<div class="content content-centered">
+			<div class="content">
 				<h2>Data Export</h2>
 			</div>
 		</div>
 			
 		<div class="col col-actions-l">
 			<div class="main-action">
-				<a href="/dashboard?pid={{ .Project.Id }}">{{ .Project.Host }}</a>
+				<div class="content">
+					<a href="/dashboard?pid={{ .Project.Id }}">{{ .Project.Host }}</a>
+				</div>
 			</div>
 		</div>
 	</div>

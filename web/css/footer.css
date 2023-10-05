@@ -1,10 +1,10 @@
 #footer {
-	padding: 3rem 0;
+	padding: calc(var(--line-height) * 2) 0;
 }
 
 #footer a {
 	border: 0;
-	margin-right: 1.5rem;
+	margin-right: var(--line-height);
 }
 
 @media only screen and (max-width: 820px) {
@@ -14,6 +14,6 @@
 
 	#footer a {
 		display: block;
-		margin: 1.5rem 0;
+		margin: var(--line-height) 0;
 	}
 }

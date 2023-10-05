@@ -4,11 +4,13 @@
 	font-size: 1rem;
 	font-weight: 600;
 	letter-spacing: .1rem;
-	line-height: 2rem;
-	margin: 0;
+	display: inline;
+	line-height: 1rem;
+	margin-top: -.5rem;
 	padding: .5rem 6rem .5rem .5rem;
 	text-decoration: none;
 }
+
 .logo a {
 	color: var(--secondary-color);
 	text-decoration: none;

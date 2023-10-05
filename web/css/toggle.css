@@ -1,6 +1,6 @@
 .toggle-container {
 	display:flex;
-	margin-top: 1.5rem;
+	margin-top: var(--line-height);
 }
 .toggle-container:first-child {
 	margin-top: 0;

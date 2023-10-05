@@ -4,13 +4,21 @@
 	margin: 0 auto;
 }
 
+.box .content {
+	padding: calc(calc(var(--line-height) * 2) - 1px) 3rem calc(var(--line-height) * 2) 3rem;
+}
+
 .content {
 	box-sizing: border-box;
-	padding: 3rem;
+	padding: calc(var(--line-height) * 2) 3rem;
+}
+
+.box .content-s {
+	padding: calc(var(--line-height) - 1px) 3rem var(--line-height) 3rem;
 }
 
 .content-s {
-	padding: 1rem 3rem;
+	padding: var(--line-height) 3rem;
 }
 
 .inline {
@@ -24,14 +32,14 @@
 }
 
 .panel {
-	min-height: 45rem;
+	min-height: 48.75rem;
 	overflow: hidden;
 }
 
 .project-title {
 	display: flex;
 	align-items: center;
-	padding: 3rem 3rem 0 3rem;
+	padding: calc(var(--line-height) * 2) 3rem 0 3rem;
 }
 
 .project-title h2 {
@@ -60,7 +68,7 @@
 
 .action {
 	padding-bottom: 5rem ;
-	line-height: 3rem;
+	line-height: calc(var(--line-height) * 2);
 	font-size: 1.4rem;
 	background-color: var(--main-bg-color);
 }
@@ -77,7 +85,6 @@
 
 .menu {
 	float: right;
-	line-height: 2rem;
 }
 
 .menu a {
@@ -87,7 +94,7 @@
 }
 
 .col-actions a.project-crawl {
-	padding: 3rem 1.5rem;
+	padding: calc(calc(var(--line-height) * 2) - 1px) 1.5rem calc(var(--line-height) * 2) 1.5rem;
 	background-color: var(--secondary-color);
 	border-bottom: none;
 	flex: 1;
@@ -95,14 +102,13 @@
 
 .col-actions a.main {
 	box-sizing: border-box;
-	padding: 2rem 0;	
+	padding: var(--line-height) 0;	
 	flex-grow: 1;
 }
 
 .main-action {
 	background-color: var(--main-section-color);
 	height: 100%;
-	padding: 3rem;
 	box-sizing: border-box;
 	text-align: center;
 }
@@ -133,7 +139,6 @@
 .crawler-item {
 	display: flex;
 	align-items: center;
-	height: 24px;
 }
 
 .crawler-item span {
@@ -162,7 +167,7 @@ p.error {
 }
 
 h2.title {
-	margin-bottom:1.5rem;
+	margin-bottom:var(--line-height);
 }
 
 @media only screen and (max-width: 820px) {
@@ -171,8 +176,12 @@ h2.title {
 		width: 100%;
 	}
 
+	.box .content {
+		padding: calc(var(--line-height) - 1px) 1rem var(--line-height) 1rem;
+	}
+
 	.content {
-		padding: 1.5rem 1rem;
+		padding: var(--line-height) 1rem;
 	}
 
 	.status-column {
@@ -181,7 +190,7 @@ h2.title {
 	
 	.main-action {
 		border-top: 1px dotted var(--primary-color);
-		padding: 1.5rem 1rem;
+		padding: var(--line-height) 1rem;
 		box-sizing: border-box;
 		text-align: left;
 	}
@@ -194,11 +203,11 @@ h2.title {
 	.menu a {
 		display: block;
 		border-bottom: none;
-		margin: 1.5rem 0 0 0;
+		margin: var(--line-height) 0 0 0;
 	}
 
 	.project-title {
-		padding: 1.5rem 1rem;
+		padding: var(--line-height) 1rem;
 	}
 
 	.project-title svg {

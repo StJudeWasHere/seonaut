@@ -1,26 +1,26 @@
 .chart {
-	margin-top: 1.5rem;
+	margin-top: var(--line-height);
 	width:100%;
-	height: 20rem;
+	height: calc(var(--line-height) * 13);
 }
 
 .links-chart,
 .follow-chart {
 	width: 100%;
-	height: 25rem;
+	height: calc(var(--line-height) * 16);
 }
 
 .issues-chart {
 	width: 100%;
-	height: 25rem;
+	height: calc(var(--line-height) * 16);
 }
 
 .crawl-chart {
 	width: 100%;
-	height: 20rem;
+	height: calc(var(--line-height) * 13);
 }
 
 .issues-timeline-chart {
 	width: 100%;
-	height: 20rem;
+	height: calc(var(--line-height) * 13);
 }

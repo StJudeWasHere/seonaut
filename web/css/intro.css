@@ -1,5 +1,5 @@
-.intro {
-	padding: 9rem 0;
+.box .content.intro {
+	padding: calc(calc(var(--line-height) * 6) - 1px) 0 calc(var(--line-height) * 6) 0;
 	font-size: 1.5rem;
 	font-weight:300;
 }
@@ -11,11 +11,11 @@
 
 .intro p {
 	font-size: 1rem;
-	margin-top: .5rem;
+	margin-top: var(--line-height);
 }
 
 @media only screen and (max-width: 820px) {
-	.intro {
-		padding: 6rem .5rem;
+	.box .content.intro {
+		padding: calc(calc(var(--line-height) * 2) - 1px) 0 calc(var(--line-height) * 2) 0;
 	}
 }

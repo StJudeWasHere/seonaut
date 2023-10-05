@@ -16,8 +16,14 @@
 <body>
 <div id="main">
 	<div id="header">
+		<div class="box borderless">
+			<div class="col borderless">
+				<div class="content">
+					<div class="logo"><a href="/">SEOnaut</a></div>
+				</div>
+			</div>
+			<div class="col">
 		<div class="content">
-			<span class="logo"><a href="/">SEOnaut</a></span>
 			{{ if .User.Id }}
 				<span class="menu">
 					<a href="/">Projects</a>
@@ -26,5 +32,9 @@
 				</span>
 			{{ end }}
 		</div>
+
+			</div>
+		</div>
+
 	</div>
 {{ end }}

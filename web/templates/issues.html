@@ -6,7 +6,7 @@
 
 	<div class="box box-first">
 		<div class="col col-main">
-			<div class="content content-centered">
+			<div class="content">
 				<div>
 					<h2>Site Issues</h2>
 				</div>
@@ -15,7 +15,9 @@
 
 		<div class="col col-actions-l">
 			<div class="main-action">
-				<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a>
+				<div class="content">
+					<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a>
+				</div>
 			</div>
 		</div>
 	</div>

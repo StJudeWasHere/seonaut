@@ -4,7 +4,7 @@
 
 	<div class="box box-first box-highlight">
 		<div class="col col-main">
-			<div class="content content-centered">
+			<div class="content">
 				<div>
 					<h2>Welcome to SEOnaut</h2>
 					<p>
@@ -23,10 +23,12 @@
 
 		<div class="col col-actions-l">
 			<div class="main-action">
-				<a class="icon-text borderless" href="/new-project">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg>
-					<span>Add Project</span>
-				</a>
+				<div class="content">
+					<a class="icon-text borderless" href="/new-project">
+						<p class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg></p>
+						<p>Add Project</p>
+					</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -54,6 +56,7 @@
 						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
 						<h2>{{ .Project.URL }}</h2>
 					</div>
+
 					<div class="content">
 						{{ if .Project.Deleting }}
 							<p>Deleting project.<br> This can take a few minutes, please wait...</p>
@@ -63,13 +66,14 @@
 							{{ end }}
 						{{ end }}
 					</div>
+
 				</div>
 
 				<div class="col col-right">
 					<div class="content">
 					{{ if (and (not .Project.Deleting) (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid))) }}
 						<a href="/edit-project?pid={{ .Project.Id }}" class="icon-link borderless">
-							<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.071 21.586l-7.071 1.414 1.414-7.071 14.929-14.929 5.657 5.657-14.929 14.929zm-.493-.921l-4.243-4.243-1.06 5.303 5.303-1.06zm9.765-18.251l-13.3 13.301 4.242 4.242 13.301-13.3-4.243-4.243z"/></svg>
+							<p><svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.071 21.586l-7.071 1.414 1.414-7.071 14.929-14.929 5.657 5.657-14.929 14.929zm-.493-.921l-4.243-4.243-1.06 5.303 5.303-1.06zm9.765-18.251l-13.3 13.301 4.242 4.242 13.301-13.3-4.243-4.243z"/></svg></p>
 						</a>
 					{{ end }}
 					</div>
@@ -91,8 +95,8 @@
 
 			{{ if (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid)) }}
 				<a class="icon-text project-crawl " href="{{ if .Project.BasicAuth }}/crawl-auth?pid={{ .Project.Id }}{{ else }}/crawl?pid={{ .Project.Id }}{{ end }}">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg>
-					<span>Crawl Now</span>
+					<p class="icon"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg></p>
+					<p>Crawl Now</p>
 				</a>
 			{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
 				<a href="/crawl-live?pid={{ .Project.Id }}">Crawling...</a>

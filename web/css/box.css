@@ -4,6 +4,7 @@
 	display: flex;
 	font-weight: 300;
 	max-width: 100%;
+
 }
 
 .box-first {
@@ -60,10 +61,13 @@
 .col-actions a {
 	display: block;
 	border-bottom: 1px dotted var(--primary-color);
-	padding: 1rem 1.5rem;
+	padding: calc(var(--line-height) / 2) 1.5rem;
 	text-align: center;
+	line-height: calc(var(--line-height) - 1px);
 }
-
+.col-actions a.main {
+	line-height: calc(var(--line-height) - 1px);
+}
 .col-actions a:hover,
 .col-actions a.highlight:hover {
 	background-color: var(--highlight-color);

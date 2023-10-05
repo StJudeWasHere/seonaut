@@ -24,4 +24,6 @@
 
 	--main-fontfamily: 'Fira Code', monospace, monospace;
 	--secondary-fontfamily: "Raleway", Helvetica, Arial, sans-serif;
+	
+	--line-height: 1.625rem;
 }

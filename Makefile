@@ -36,6 +36,7 @@ watch:
 		--public-path=/resources \
 		--loader:.woff=file \
 		--loader:.woff2=file \
+		--loader:.png=file \
 		--watch
 .PHONY: watch
 
@@ -47,5 +48,6 @@ front:
 		--outdir=./web/static \
 		--public-path=/resources \
 		--loader:.woff=file \
-		--loader:.woff2=file
+		--loader:.woff2=file \
+		--loader:.png=file
 .PHONY: front

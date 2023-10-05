@@ -16,8 +16,8 @@
 		display: block;
 	}
 	.crawler-item {
-		margin-bottom: 1rem;
+		margin-bottom: var(--line-height);
 		height: auto;
-		padding: .5rem 0;
+		padding: calc(var(--line-height) / 2) 0;
 	}
 }

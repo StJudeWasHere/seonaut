@@ -5,7 +5,7 @@ html, body {
 body {
 	font-display: fallback;
 	font-family: var(--main-fontfamily);
-	line-height: 1.6rem;
+	line-height: var(--line-height);
 	font-size: 1rem;
 	padding: 0;
 	background-color: var(--main-bg-color);
@@ -15,7 +15,8 @@ body {
 }
 
 p {
-	margin-top: .2rem;
+	margin-top: 0;
+	margin-bottom: var(--line-height);
 }
 
 p:last-child {
@@ -33,7 +34,7 @@ ul {
 }
 
 ul li {
-	margin-bottom: 1rem;
+	margin-bottom: var(--line-height);
 }
 
 ul li:last-child {
@@ -53,10 +54,21 @@ a:hover {
 
 a.icon-link {
 	opacity: .5;
+	display: inline-block;
+	height: var(--line-height);
 }
 
 a.icon-link:hover {
 	opacity: 1;
+}
+
+a.icon-link svg {
+	height: 24px;
+	width: 24px;
+}
+
+a.icon-link p {
+	height: var(--line-height);
 }
 
 a.borderless {
@@ -68,15 +80,15 @@ input {
 	font-size: inherit;
 	font-weight: 300;
 	border: 1px solid var(--primary-color);
-	padding: .5rem;
+	padding: calc(var(--line-height) / 2) .5rem;
 	display: block;
-	margin-bottom: 1rem;
+	margin-bottom: var(--line-height);
 	width: 25rem;
 	max-width: 100%;
 	box-sizing: border-box;
 	background-color: var(--light-bg-color);
 	border-radius: 0;
-	line-height: 1.5rem;
+	line-height: calc(var(--line-height) - 2px);
 }
 
 input[type="submit"] {
@@ -90,11 +102,12 @@ input[type="submit"] {
 	cursor: pointer;
 	font-weight: normal;
 	margin-left: 0;
-	margin-top: 1.5rem;
+	margin-top: var(--line-height);
 	width: auto;
-	padding: .5rem 1.5rem;
+	padding: calc(var(--line-height) / 2) 1.5rem;
 	text-align: center;
 	min-width: 10rem;
+	line-height: calc(var(--line-height) - 3px);
 }
 
 input[type="submit"]:hover {
@@ -115,7 +128,7 @@ label.checkbox {
 h2 {
 	font-size: 1.2rem;
 	font-weight: normal;
-	line-height: 1.6rem;
+	line-height: var(--line-height);
 	margin: 0;
 }
 
@@ -132,8 +145,9 @@ summary {
 	border-bottom: 2px solid var(--primary-color);
 	border-right: 2px solid var(--primary-color);
 	cursor: pointer;
-    padding: 1rem 1.5rem;
+	padding: calc(var(--line-height) / 2) 1.5rem;
 	width: 15rem;
+	line-height: calc(var(--line-height) - 2px);
 }
 
 summary:hover {
@@ -166,7 +180,7 @@ details ul li {
 
 details ul li a {
 	display: block;
-	padding: .5rem 1.5rem;
+	padding: calc(var(--line-height) / 2) 1.5rem;
 	border: none;
 }
 
@@ -180,7 +194,7 @@ select {
     border: 1px solid var(--primary-color);
     display: inline-block;
     font: inherit;
-    line-height: 1.5em;
+    line-height: 1.625em;
     padding: 0.5em 3.5em 0.5em 1em;
     margin: 0;      
     -webkit-box-sizing: border-box;

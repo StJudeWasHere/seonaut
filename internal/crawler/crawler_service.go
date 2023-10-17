@@ -34,13 +34,6 @@ type Storage interface {
 	GetPreviousCrawl(*models.Project) (*models.Crawl, error)
 	DeleteCrawl(c *models.Crawl)
 }
-
-type PageReportMessage struct {
-	PageReport *models.PageReport
-	Crawled    int
-	Discovered int
-}
-
 type Service struct {
 	store         Storage
 	broker        *pubsub.Broker

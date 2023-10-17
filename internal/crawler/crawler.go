@@ -38,7 +38,7 @@ type Crawler struct {
 	robotstxtExists bool
 	responseCounter int
 	robotsChecker   *RobotsChecker
-	prStream        chan *PageReportMessage
+	prStream        chan *models.PageReportMessage
 	allowedDomains  map[string]bool
 	httpCrawler     *http_crawler.HttpCrawler
 	qStream         chan string
@@ -88,7 +88,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		robotsChecker:   robotsChecker,
 		robotstxtExists: robotsChecker.Exists(url),
 		allowedDomains:  map[string]bool{mainDomain: true, "www." + mainDomain: true},
-		prStream:        make(chan *PageReportMessage),
+		prStream:        make(chan *models.PageReportMessage),
 		qStream:         qStream,
 		httpCrawler:     http_crawler.New(httpClient, qStream),
 	}
@@ -104,7 +104,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 
 // Returns the PageReportMessage channel that streams all generated PageReports
 // into a PageReportMessage struct.
-func (c *Crawler) Stream() <-chan *PageReportMessage {
+func (c *Crawler) Stream() <-chan *models.PageReportMessage {
 	return c.prStream
 }
 
@@ -198,7 +198,7 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 		c.storage.Add(t.String())
 
 		if c.options.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(t) {
-			c.prStream <- &PageReportMessage{
+			c.prStream <- &models.PageReportMessage{
 				Crawled:    c.responseCounter,
 				Discovered: c.queue.Count(),
 				PageReport: &models.PageReport{
@@ -216,7 +216,7 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 	}
 
 	if pageReport.Noindex == false || c.options.IncludeNoindex == true {
-		c.prStream <- &PageReportMessage{
+		c.prStream <- &models.PageReportMessage{
 			PageReport: pageReport,
 			Crawled:    c.responseCounter,
 			Discovered: c.queue.Count(),

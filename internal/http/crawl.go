@@ -9,7 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 
@@ -225,7 +224,7 @@ func (app *App) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if pubsubMessage.Name == "PageReport" {
-			msg := pubsubMessage.Data.(*crawler.PageReportMessage)
+			msg := pubsubMessage.Data.(*models.PageReportMessage)
 			wsMessage.Data = struct {
 				StatusCode int
 				URL        string

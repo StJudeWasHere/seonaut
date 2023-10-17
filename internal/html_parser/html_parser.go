@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"mime"
 	"net/http"
@@ -31,7 +30,7 @@ func NewFromHTTPResponse(r *http.Response) (*models.PageReport, error) {
 	var bodyReader io.Reader = r.Body
 	bodyReader = io.LimitReader(bodyReader, int64(maxBodySize))
 
-	b, err := ioutil.ReadAll(bodyReader)
+	b, err := io.ReadAll(bodyReader)
 	if err != nil {
 		return &models.PageReport{}, err
 	}

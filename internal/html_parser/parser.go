@@ -484,8 +484,13 @@ func (p *Parser) headersCanonical() string {
 	for _, lh := range linkHeaderElements {
 		attr := strings.Split(lh, ";")
 		if len(attr) == 2 && strings.Contains(attr[1], `rel="canonical"`) {
-			url := strings.TrimSpace(attr[0])
-			return url[1 : len(url)-1]
+			canonicalString := strings.TrimSpace(attr[0])
+			cu, err := p.absoluteURL(canonicalString[1 : len(canonicalString)-1])
+			if err != nil {
+				return ""
+			}
+
+			return cu.String()
 		}
 	}
 

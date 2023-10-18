@@ -302,6 +302,35 @@ func TestCanonicalHeaders(t *testing.T) {
 	}
 }
 
+func TestRelativeCanonicalHeaders(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	linkHeader := `
+		</canonical>; rel="canonical",
+		<https://de-ch.example.com/file.pdf>; rel="alternate"; hreflang="de-ch",
+		<https://de.example.com/file.pdf>; rel="alternate"; hreflang="de"
+	`
+
+	body := []byte("<html>")
+	statusCode := 200
+	headers := http.Header{
+		"Link":         []string{linkHeader},
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if pageReport.Canonical != "https://example.com/canonical" {
+		t.Errorf("Canonical headers: %s != https://example.com/canonical", pageReport.Canonical)
+	}
+}
+
 func TestNoBodyTag(t *testing.T) {
 	u, err := url.Parse(testURL)
 	if err != nil {

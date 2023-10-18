@@ -6,6 +6,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
+
+	"golang.org/x/net/html"
 )
 
 // Test the EmptyTitle reporter with a pageReport that has description.
@@ -23,7 +25,7 @@ func TestEmptyTitleNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestEmptyTitleNoIssues: reportsIssue should be false")
@@ -44,7 +46,7 @@ func TestEmptyTitleIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestEmptyTitleIssues: reportsIssue should be true")
@@ -68,7 +70,7 @@ func TestShortTitleNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestShortTitleNoIssues: reportsIssue should be false")
@@ -90,7 +92,7 @@ func TestShortTitleIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestShortTitleIssues: reportsIssue should be true")
@@ -112,7 +114,7 @@ func TestLongTitleNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestLongTitleNoIssues: reportsIssue should be false")
@@ -138,7 +140,7 @@ func TestLongTitleIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestLongTitleIssues: reportsIssue should be true")

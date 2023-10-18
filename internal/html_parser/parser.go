@@ -41,6 +41,11 @@ func newParser(url *url.URL, headers *http.Header, body []byte) (*Parser, error)
 	}, nil
 }
 
+// Returns the parsed body.
+func (p *Parser) getHtmlNode() *html.Node {
+	return p.doc
+}
+
 // Returns the document language.
 // Returns the language defined in the HTML lang attribute if it is not empty
 // otherwise it returns the language defined in the Content-Language headers.
@@ -511,7 +516,7 @@ func (p *Parser) headersHreflangs() []models.Hreflang {
 			}
 		}
 
-		if isAlternate == true && lang != "" {
+		if isAlternate && lang != "" {
 			h := models.Hreflang{
 				URL:  url[1 : len(url)-1],
 				Lang: lang,
@@ -609,7 +614,7 @@ func (p *Parser) absoluteURL(s string) (*url.URL, error) {
 	}
 
 	if a.Scheme != "http" && a.Scheme != "https" {
-		return &url.URL{}, errors.New("Protocol not supported")
+		return &url.URL{}, errors.New("protocol not supported")
 	}
 
 	return a, nil

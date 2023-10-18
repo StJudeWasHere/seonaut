@@ -6,6 +6,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
+
+	"golang.org/x/net/html"
 )
 
 // Test the AltText reporter with a pageReport that does not
@@ -26,7 +28,7 @@ func TestAltTextReporterNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestAltTextReporterNoIssues: reportsIssue should be false")
@@ -49,7 +51,7 @@ func TestAltTextReporterIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestAltTextReporterIssues: reportsIssue should be true")

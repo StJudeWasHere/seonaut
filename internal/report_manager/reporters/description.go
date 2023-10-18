@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"golang.org/x/net/html"
+
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -10,8 +12,8 @@ import (
 // an empty or missing description. It returns true if the status code is between
 // 200 and 299, the media type is text/html and the description is not set.
 func NewEmptyDescriptionReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -36,8 +38,8 @@ func NewEmptyDescriptionReporter() *report_manager.PageIssueReporter {
 // The callback function returns true if the page is text/html, has a status code between 200 and 299,
 // and has a description of less than an specified amount of letters.
 func NewShortDescriptionReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -62,8 +64,8 @@ func NewShortDescriptionReporter() *report_manager.PageIssueReporter {
 // The callback function returns true if the page is text/html, has a status code between 200 and 299,
 // and has a description of more than an specified amount of letters.
 func NewLongDescriptionReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 

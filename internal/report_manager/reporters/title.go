@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"golang.org/x/net/html"
+
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -10,8 +12,8 @@ import (
 // The callback function returns true if the page is text/html, has a 20x status code
 // and has an empty or missing title.
 func NewEmptyTitleReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -36,8 +38,8 @@ func NewEmptyTitleReporter() *report_manager.PageIssueReporter {
 // The callback returns true if the page is text/html and has a page title shorter than an specified
 // amount of letters.
 func NewShortTitleReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -58,8 +60,8 @@ func NewShortTitleReporter() *report_manager.PageIssueReporter {
 // The callback function returns true if the page is text/html and has a page title longer than an
 // specified amount of letters.
 func NewLongTitleReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 

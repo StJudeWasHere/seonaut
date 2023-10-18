@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"golang.org/x/net/html"
+
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -10,8 +12,8 @@ import (
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // contains too many links.
 func NewTooManyLinksReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -36,8 +38,8 @@ func NewTooManyLinksReporter() *report_manager.PageIssueReporter {
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // contains internal links with the nofollow attribute.
 func NewInternalNoFollowLinksReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -50,7 +52,7 @@ func NewInternalNoFollowLinksReporter() *report_manager.PageIssueReporter {
 		}
 
 		for _, l := range pageReport.Links {
-			if l.NoFollow == true {
+			if l.NoFollow {
 				return true
 			}
 		}
@@ -68,8 +70,8 @@ func NewInternalNoFollowLinksReporter() *report_manager.PageIssueReporter {
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // contains external links without the nofollow attribute.
 func NewExternalLinkWitoutNoFollowReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -82,7 +84,7 @@ func NewExternalLinkWitoutNoFollowReporter() *report_manager.PageIssueReporter {
 		}
 
 		for _, l := range pageReport.ExternalLinks {
-			if l.NoFollow == false {
+			if !l.NoFollow {
 				return true
 			}
 		}
@@ -100,8 +102,8 @@ func NewExternalLinkWitoutNoFollowReporter() *report_manager.PageIssueReporter {
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // contains internal links with the http scheme instead of https.
 func NewHTTPLinksReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -132,8 +134,8 @@ func NewHTTPLinksReporter() *report_manager.PageIssueReporter {
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // contains no internal or external links.
 func NewDeadendReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 

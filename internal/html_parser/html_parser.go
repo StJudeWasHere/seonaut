@@ -24,7 +24,7 @@ const (
 )
 
 // Create a new PageReport from an http.Response.
-func NewFromHTTPResponse(r *http.Response) (*models.PageReport, error) {
+func NewFromHTTPResponse(r *http.Response) (*models.PageReport, *html.Node, error) {
 	defer r.Body.Close()
 
 	var bodyReader io.Reader = r.Body
@@ -32,17 +32,17 @@ func NewFromHTTPResponse(r *http.Response) (*models.PageReport, error) {
 
 	b, err := io.ReadAll(bodyReader)
 	if err != nil {
-		return &models.PageReport{}, err
+		return &models.PageReport{}, nil, err
 	}
 
 	return New(r.Request.URL, r.StatusCode, &r.Header, b)
 }
 
 // Return a new PageReport.
-func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.PageReport, error) {
+func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.PageReport, *html.Node, error) {
 	parser, err := newParser(u, headers, body)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	pageReport := models.PageReport{
@@ -62,7 +62,7 @@ func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.Pag
 	if pageReport.StatusCode >= http.StatusMultipleChoices && pageReport.StatusCode < http.StatusBadRequest {
 		pageReport.RedirectURL = parser.headersLocation()
 
-		return &pageReport, nil
+		return &pageReport, parser.getHtmlNode(), nil
 	}
 
 	if isHTML(&pageReport) {
@@ -105,7 +105,7 @@ func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.Pag
 		}
 	}
 
-	return &pageReport, nil
+	return &pageReport, parser.getHtmlNode(), nil
 }
 
 // Returns true if ContentType is a valid HTML type
@@ -182,7 +182,7 @@ func headingOrderIsValid(n *html.Node) bool {
 
 		for child := n.FirstChild; child != nil; child = child.NextSibling {
 			if child.Type == html.ElementNode {
-				if output(child) == false {
+				if !output(child) {
 					return false
 				}
 			}

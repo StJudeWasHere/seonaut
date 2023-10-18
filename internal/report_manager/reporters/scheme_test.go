@@ -7,6 +7,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
+
+	"golang.org/x/net/html"
 )
 
 // Test the HTTPScheme reporter with a PageReport uses the https scheme.
@@ -34,7 +36,7 @@ func TestHTTPSchemeNoIssues(t *testing.T) {
 	}
 
 	// Run the reporter callback with the PageReport.
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	// The reporter should not found any issue.
 	if reportsIssue == true {
@@ -67,7 +69,7 @@ func TestHTTPSchemeIssues(t *testing.T) {
 	}
 
 	// Run the reporter callback with the PageReport.
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	// The reporter should found an issue.
 	if reportsIssue == false {

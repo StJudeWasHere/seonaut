@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"golang.org/x/net/html"
+
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -10,8 +12,8 @@ import (
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // doesn't have any H1 tag.
 func NewNoH1Reporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -36,8 +38,8 @@ func NewNoH1Reporter() *report_manager.PageIssueReporter {
 // the media type is text/html, the status code is between 200 and 299 and the heading tags
 // in the page's html doesn't have the correct order.
 func NewValidHeadingsOrderReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 
@@ -49,7 +51,7 @@ func NewValidHeadingsOrderReporter() *report_manager.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.ValidHeadings == true {
+		if pageReport.ValidHeadings {
 			return false
 		}
 

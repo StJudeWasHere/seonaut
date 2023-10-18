@@ -6,6 +6,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
+
+	"golang.org/x/net/html"
 )
 
 // Test the LittleContent reporter with a pageReport that does not
@@ -23,7 +25,7 @@ func TestLittelContentNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestLittelContentNoIssues: reportsIssue should be false")
@@ -45,7 +47,7 @@ func TestLittleContentIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestLittleContentIssues: reportsIssue should be true")

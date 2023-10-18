@@ -6,6 +6,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
+
+	"golang.org/x/net/html"
 )
 
 // Test the Status30x reporter with a PageReport that has an status code in the 20x range.
@@ -21,7 +23,7 @@ func TestStatus30xNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestStatus30xNoIssues: reportsIssue should be false")
@@ -41,7 +43,7 @@ func TestStatus30xIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestStatus30xIssues: reportsIssue should be true")
@@ -61,7 +63,7 @@ func TestStatus40xNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestStatus40xNoIssues: reportsIssue should be false")
@@ -81,7 +83,7 @@ func TestStatus40xIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestStatus40xIssues: reportsIssue should be true")
@@ -101,7 +103,7 @@ func TestStatus50xNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestStatus50xNoIssues: reportsIssue should be false")
@@ -121,7 +123,7 @@ func TestStatus50xIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestStatus50xIssues: reportsIssue should be true")

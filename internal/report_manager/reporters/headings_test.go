@@ -6,6 +6,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
+
+	"golang.org/x/net/html"
 )
 
 // Test the NoH1 reporter with a pageReport that has an H1 heading.
@@ -23,7 +25,7 @@ func TestNoH1NoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestNoH1NoIssues: reportsIssue should be false")
@@ -44,7 +46,7 @@ func TestNoH1Issues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestNoH1Issues: reportsIssue should be true")
@@ -66,7 +68,7 @@ func TestValidHeadingsOrderNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == true {
 		t.Errorf("TestValidHeadingsOrderNoIssues: reportsIssue should be false")
@@ -87,7 +89,7 @@ func TestValidHeadingsOrderIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{})
 
 	if reportsIssue == false {
 		t.Errorf("TestValidHeadingsOrderIssues: reportsIssue should be true")

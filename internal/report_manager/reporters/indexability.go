@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"golang.org/x/net/html"
+
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -9,7 +11,7 @@ import (
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the page is not indexable by search engines.
 func NewNoIndexableReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
 		return pageReport.Noindex
 	}
 
@@ -22,7 +24,7 @@ func NewNoIndexableReporter() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the page is blocked by the robots.txt file.
 func NewBlockedByRobotstxtReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
 		return pageReport.BlockedByRobotstxt
 	}
 
@@ -35,7 +37,7 @@ func NewBlockedByRobotstxtReporter() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the pageReport is non-indexable and it is included in the sitemap.
 func NewNoIndexInSitemapReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
 		return pageReport.InSitemap && pageReport.Noindex
 	}
 
@@ -48,7 +50,7 @@ func NewNoIndexInSitemapReporter() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the page is included in the sitemap and it is also blocked by the robots.txt file.
 func NewSitemapAndBlockedReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
 		return pageReport.InSitemap && pageReport.BlockedByRobotstxt
 	}
 
@@ -61,8 +63,8 @@ func NewSitemapAndBlockedReporter() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the page is non canonical and it is included in the sitemap.
 func NewNonCanonicalInSitemapReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport) bool {
-		if pageReport.Crawled == false {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+		if !pageReport.Crawled {
 			return false
 		}
 

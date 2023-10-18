@@ -140,12 +140,12 @@ func (c *Crawler) crawl(ctx context.Context) {
 			log.Printf("handleResponse %s: Error %v", rm.URL, err)
 		}
 
-		if c.queue.Active() == false && c.options.CrawlSitemap && sitemapLoaded == false {
+		if !c.queue.Active() && c.options.CrawlSitemap && !sitemapLoaded {
 			c.queueSitemapURLs()
 			sitemapLoaded = true
 		}
 
-		if c.queue.Active() == false || c.responseCounter >= c.options.MaxPageReports {
+		if !c.queue.Active() || c.responseCounter >= c.options.MaxPageReports {
 			break
 		}
 	}
@@ -159,7 +159,7 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 		return r.Error
 	}
 
-	pageReport, err := html_parser.NewFromHTTPResponse(r.Response)
+	pageReport, htmlNode, err := html_parser.NewFromHTTPResponse(r.Response)
 	if err != nil {
 		return err
 	}
@@ -172,7 +172,7 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 	pageReport.BlockedByRobotstxt = c.robotsChecker.IsBlocked(parsedURL)
 	pageReport.InSitemap = c.sitemapStorage.Seen(r.URL)
 
-	if pageReport.Nofollow == true && c.options.FollowNofollow == false {
+	if pageReport.Nofollow && !c.options.FollowNofollow {
 		return nil
 	}
 
@@ -191,16 +191,18 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 	}
 
 	for _, t := range urls {
-		if c.storage.Seen(t.String()) == true {
+		if c.storage.Seen(t.String()) {
 			continue
 		}
 
 		c.storage.Add(t.String())
 
-		if c.options.IgnoreRobotsTxt == false && c.robotsChecker.IsBlocked(t) {
+		if !c.options.IgnoreRobotsTxt && c.robotsChecker.IsBlocked(t) {
 			c.prStream <- &models.PageReportMessage{
 				Crawled:    c.responseCounter,
 				Discovered: c.queue.Count(),
+				HtmlNode:   htmlNode,
+				Response:   r.Response,
 				PageReport: &models.PageReport{
 					URL:                t.String(),
 					ParsedURL:          t,
@@ -215,9 +217,11 @@ func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
 		c.queue.Push(t.String())
 	}
 
-	if pageReport.Noindex == false || c.options.IncludeNoindex == true {
+	if !pageReport.Noindex || c.options.IncludeNoindex {
 		c.prStream <- &models.PageReportMessage{
 			PageReport: pageReport,
+			HtmlNode:   htmlNode,
+			Response:   r.Response,
 			Crawled:    c.responseCounter,
 			Discovered: c.queue.Count(),
 		}
@@ -259,7 +263,7 @@ func (c *Crawler) loadSitemapURLs(u string) {
 // queueSitemapURLs loops through the sitemap's URLs, adding any unseen URLs to the crawler's queue.
 func (c *Crawler) queueSitemapURLs() {
 	c.sitemapStorage.Iterate(func(v string) {
-		if c.storage.Seen(v) == false {
+		if !c.storage.Seen(v) {
 			c.storage.Add(v)
 			c.queue.Push(v)
 		}
@@ -330,9 +334,7 @@ func (c *Crawler) getCrawlableURLs(p *models.PageReport) []*url.URL {
 		resources = append(resources, l.URL)
 	}
 
-	for _, l := range p.Iframes {
-		resources = append(resources, l)
-	}
+	resources = append(resources, p.Iframes...)
 
 	if p.RedirectURL != "" {
 		resources = append(resources, p.RedirectURL)

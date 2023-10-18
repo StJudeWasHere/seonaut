@@ -197,12 +197,12 @@ func (p *Parser) htmlH2() string {
 // Canonical link defines the main version for duplicate and similar pages
 // ex. <link rel="canonical" href="http://example.com/canonical/" />
 func (p *Parser) htmlCanonical() string {
-	canonical, err := htmlquery.Query(p.doc, "//link[@rel=\"canonical\"]/@href")
-	if err != nil || canonical == nil {
+	canonical, err := htmlquery.QueryAll(p.doc, "//head/link[@rel=\"canonical\"]/@href")
+	if err != nil || canonical == nil || len(canonical) > 1 {
 		return ""
 	}
 
-	cu, err := p.absoluteURL(htmlquery.SelectAttr(canonical, "href"))
+	cu, err := p.absoluteURL(htmlquery.SelectAttr(canonical[0], "href"))
 	if err != nil {
 		return ""
 

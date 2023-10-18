@@ -181,6 +181,62 @@ func TestPageReportHTML(t *testing.T) {
 	}
 }
 
+func TestMultipleCanonicalTags(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	statusCode := 200
+	headers := http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+	body := []byte(`
+		<html>
+			<head>
+				<link rel="canonical" href="/canonical-1/" />
+				<link rel="canonical" href="/canonical-2/" />
+			</head>
+		`)
+
+	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if pageReport.Canonical != "" {
+		t.Error("Multiple canonical tags should be ignored ")
+	}
+}
+
+func TestCanonicalTagInBody(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	statusCode := 200
+	headers := http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+	body := []byte(`
+		<html>
+			<head></head>
+			<body>
+				<link rel="canonical" href="/canonical-1/" />
+			</body>
+		`)
+
+	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
+	if err != nil {
+		t.Error(err)
+	}
+
+	if pageReport.Canonical != "" {
+		t.Error("Canonical tags in body should be ignored ")
+	}
+}
+
 func TestNoindex(t *testing.T) {
 	u, err := url.Parse(testURL)
 	if err != nil {

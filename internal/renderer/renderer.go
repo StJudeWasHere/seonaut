@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"log"
+	"os"
 	"time"
 
 	"gopkg.in/yaml.v3"
@@ -23,7 +23,7 @@ type Renderer struct {
 
 // NewRenderer will load a translation file and return a new template renderer.
 func NewRenderer(config *RendererConfig) (*Renderer, error) {
-	translation, err := ioutil.ReadFile(config.TranslationsFile)
+	translation, err := os.ReadFile(config.TranslationsFile)
 	if err != nil {
 		return nil, err
 	}

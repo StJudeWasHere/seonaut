@@ -2,10 +2,10 @@ package html_parser_test
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/html_parser"
@@ -91,7 +91,7 @@ func TestPageReportHTML(t *testing.T) {
 	headers := &http.Header{
 		"Content-Type": []string{contentType},
 	}
-	body, err := ioutil.ReadFile("./testdata/test.html")
+	body, err := os.ReadFile("./testdata/test.html")
 	if err != nil {
 		log.Fatal(err)
 	}

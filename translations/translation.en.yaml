@@ -148,3 +148,9 @@ ERROR_HREFLANG_ERROR_DESC: Pages that have hreflang tags pointing to URLs that a
 
 ERROR_CANONICAL_ERROR: Canonicalized to error
 ERROR_CANONICAL_ERROR_DESC: Pages that are canonicalized to URLs that are throwing errors with status codes in the 40x or 50x range. This can confuse search engines that will not be able to crawl your preferred version of the page.
+
+ERROR_MULTIPLE_CANONICAL_TAGS: Multiple canonical tags
+ERROR_MULTIPLE_CANONICAL_TAGS_DESC: Pages that contain more than one canonical tag in the header section. Having more than one canonical confuses search engines about the preferred version of the page, leading to potential indexing and ranking issues.
+
+ERROR_RELATIVE_CANONICAL_URL: Canonical with relative URL
+ERROR_RELATIVE_CANONICAL_URL_DESC: Pages that are using relative URLs in the canonical tag. Even though relative paths are supported by some search engines, they can cause problems in the long run such as improper page indexing and ranking. Consider using absolute URLs for a better practice.

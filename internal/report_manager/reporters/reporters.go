@@ -28,6 +28,8 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 		NewNoIndexInSitemapReporter(),
 		NewSitemapAndBlockedReporter(),
 		NewNonCanonicalInSitemapReporter(),
+		NewCanonicalMultipleTagsReporter(),
+		NewCanonicalRelativeURLReporter(),
 
 		// Add link issue reporters
 		NewTooManyLinksReporter(),

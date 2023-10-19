@@ -60,10 +60,11 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	q.Push(url.String())
 
 	httpClient := http_crawler.NewClient(&http_crawler.ClientOptions{
-		UserAgent: options.UserAgent,
-		BasicAuth: options.BasicAuth,
-		AuthUser:  options.AuthUser,
-		AuthPass:  options.AuthPass,
+		UserAgent:        options.UserAgent,
+		BasicAuth:        options.BasicAuth,
+		BasicAuthDomains: []string{mainDomain, "www." + mainDomain},
+		AuthUser:         options.AuthUser,
+		AuthPass:         options.AuthPass,
 	})
 
 	robotsChecker := NewRobotsChecker(httpClient)

@@ -2,6 +2,7 @@ package http_crawler
 
 import (
 	"net/http"
+	"net/url"
 	"time"
 )
 
@@ -11,10 +12,11 @@ type Client struct {
 }
 
 type ClientOptions struct {
-	UserAgent string
-	BasicAuth bool
-	AuthUser  string
-	AuthPass  string
+	UserAgent        string
+	BasicAuth        bool
+	BasicAuthDomains []string
+	AuthUser         string
+	AuthPass         string
 }
 
 func NewClient(options *ClientOptions) *Client {
@@ -40,7 +42,13 @@ func (c *Client) request(m, u string) (*http.Response, error) {
 	}
 
 	req.Header.Set("User-Agent", c.Options.UserAgent)
-	if c.Options.BasicAuth {
+
+	domain, err := url.Parse(u)
+	if err != nil {
+		return &http.Response{}, err
+	}
+
+	if c.Options.BasicAuth && c.isBasicAuthDomain(domain.Host) {
 		req.SetBasicAuth(c.Options.AuthUser, c.Options.AuthPass)
 	}
 
@@ -50,6 +58,17 @@ func (c *Client) request(m, u string) (*http.Response, error) {
 	}
 
 	return resp, nil
+}
+
+// Returns true if the domain exists in the BasicAutDomains slice.
+func (c *Client) isBasicAuthDomain(domain string) bool {
+	for _, element := range c.Options.BasicAuthDomains {
+		if element == domain {
+			return true
+		}
+	}
+
+	return false
 }
 
 // Makes a GET request to an URL and returns the http response or an error.

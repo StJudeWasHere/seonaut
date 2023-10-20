@@ -154,3 +154,15 @@ ERROR_MULTIPLE_CANONICAL_TAGS_DESC: Pages that contain more than one canonical t
 
 ERROR_RELATIVE_CANONICAL_URL: Canonical with relative URL
 ERROR_RELATIVE_CANONICAL_URL_DESC: Pages that are using relative URLs in the canonical tag. Even though relative paths are supported by some search engines, they can cause problems in the long run such as improper page indexing and ranking. Consider using absolute URLs for a better practice.
+
+ERROR_HREFLANG_XDEFAULT: Missing default language tag
+ERROR_HREFLANG_XDEFAULT_DESC: Pages missing the "x-default" hreflang value. Indicating the default language or region of a page, ensures proper indexing for users who don't match any specific hreflang tag value.
+
+ERROR_HREFLANG_SELF_REFERENCE: Missing hreflang self-reference
+ERROR_HREFLANG_SELF_REFERENCE_DESC: Including a self-reference in hreflang tags is crucial to specify the language or region of the current page, preventing potential confusion for search engines.
+
+ERROR_HREFLANG_MISMATCHING_LANG: Mismatching language
+ERROR_HREFLANG_MISMATCHING_LANG_DESC: Using different language codes in the HTML lang attribute and the hreflang self-referencing value can confuse search engines and negatively impact SEO by misinterpreting the language or region of the page.
+
+ERROR_HREFLANG_RELATIVE_URL: Hreflang values with relative URLs
+ERROR_HREFLANG_RELATIVE_URL_DESC: Pages that are using relative URLs in the hreflang values. Alternate URLs in the hreflang tags must be absolute. Replace them to avoid crawlabality issues and improper language detection of the page.

@@ -236,7 +236,7 @@ func (p *Parser) htmlLinks() []models.Link {
 // ex. <link rel="alternate" href="http://example.com" hreflang="am" />
 func (p *Parser) htmlHreflang() []models.Hreflang {
 	hreflangs := []models.Hreflang{}
-	hl, err := htmlquery.QueryAll(p.doc, "//link[@rel=\"alternate\"]")
+	hl, err := htmlquery.QueryAll(p.doc, "//head/link[@rel=\"alternate\"]")
 	if err != nil {
 		return hreflangs
 	}

@@ -44,6 +44,10 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 		// Add language issue reporters
 		NewInvalidLangReporter(),
 		NewMissingLangReporter(),
+		NewHreflangXDefaultMissing(),
+		NewHreflangMissingSelfReference(),
+		NewHreflangMismatchingLang(),
+		NewHreflangRelativeURL(),
 
 		// Add heading issue reporters
 		NewNoH1Reporter(),

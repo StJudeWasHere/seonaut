@@ -127,7 +127,7 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 			continue
 		}
 
-		s.reportManager.CreatePageIssues(r.PageReport, r.HtmlNode, crawl)
+		s.reportManager.CreatePageIssues(r.PageReport, r.HtmlNode, r.Header, crawl)
 
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "PageReport", Data: r})
 	}

@@ -1,6 +1,7 @@
 package reporters_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -25,7 +26,7 @@ func TestEmptyDescriptionNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestEmptyDescriptionNoIssues: reportsIssue should be false")
@@ -46,7 +47,7 @@ func TestEmptyDescriptionIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestEmptyDescriptionIssues: reportsIssue should be true")
@@ -70,7 +71,7 @@ func TestShortDescriptionNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestShortDescriptionNoIssues: reportsIssue should be false")
@@ -92,7 +93,7 @@ func TestShortDescriptionIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestShortDescriptionIssues: reportsIssue should be true")
@@ -116,7 +117,7 @@ func TestLongDescriptionNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestLongDescriptionNoIssues: reportsIssue should be false")
@@ -142,7 +143,7 @@ func TestLongDescriptionIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestLongDescriptionIssues: reportsIssue should be true")

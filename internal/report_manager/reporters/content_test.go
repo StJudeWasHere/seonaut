@@ -1,6 +1,7 @@
 package reporters_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -25,7 +26,7 @@ func TestLittelContentNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestLittelContentNoIssues: reportsIssue should be false")
@@ -47,7 +48,7 @@ func TestLittleContentIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestLittleContentIssues: reportsIssue should be true")

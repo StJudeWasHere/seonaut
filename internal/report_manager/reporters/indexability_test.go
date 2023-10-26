@@ -1,6 +1,7 @@
 package reporters_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -20,7 +21,7 @@ func TestNoIndexableNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestNoIndexableNoIssues: reportsIssue should be false")
@@ -39,7 +40,7 @@ func TestNoIndexableIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestNoIndexableIssues: reportsIssue should be true")
@@ -56,7 +57,7 @@ func TestBlockedByRobotstxtNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestBlockedByRobotstxtNoIssues: reportsIssue should be false")
@@ -75,7 +76,7 @@ func TestBlockedByRobotstxtIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestBlockedByRobotstxtIssues: reportsIssue should be true")
@@ -94,7 +95,7 @@ func TestNoIndexInSitemapNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestNoIndexInSitemapNoIssues: reportsIssue should be false")
@@ -114,7 +115,7 @@ func TestNoIndexInSitemapIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestNoIndexInSitemapIssues: reportsIssue should be true")
@@ -133,7 +134,7 @@ func TestSitemapAndBlockedNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestSitemapAndBlockedNoIssues: reportsIssue should be false")
@@ -153,7 +154,7 @@ func TestSitemapAndBlockedIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestSitemapAndBlockedIssues: reportsIssue should be true")
@@ -174,7 +175,7 @@ func TestNonCanonicalInSitemapNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestNonCanonicalInSitemapNoIssues: reportsIssue should be false")
@@ -197,7 +198,7 @@ func TestNonCanonicalInSitemapIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestNonCanonicalInSitemapIssues: reportsIssue should be true")

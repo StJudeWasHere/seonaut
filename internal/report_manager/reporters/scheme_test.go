@@ -1,6 +1,7 @@
 package reporters_test
 
 import (
+	"net/http"
 	"net/url"
 	"testing"
 
@@ -36,7 +37,7 @@ func TestHTTPSchemeNoIssues(t *testing.T) {
 	}
 
 	// Run the reporter callback with the PageReport.
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	// The reporter should not found any issue.
 	if reportsIssue == true {
@@ -69,7 +70,7 @@ func TestHTTPSchemeIssues(t *testing.T) {
 	}
 
 	// Run the reporter callback with the PageReport.
-	reportsIssue := reporter.Callback(pageReport, &html.Node{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	// The reporter should found an issue.
 	if reportsIssue == false {

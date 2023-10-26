@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"net/http"
+
 	"golang.org/x/net/html"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -12,7 +14,7 @@ import (
 // if a page has images with no alt attribute. The callback returns true in case
 // the page is text/html and contains images with empty or missing alt attribute.
 func NewAltTextReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}

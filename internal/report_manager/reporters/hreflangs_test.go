@@ -1,6 +1,7 @@
 package reporters_test
 
 import (
+	"net/http"
 	"strings"
 	"testing"
 
@@ -35,7 +36,7 @@ func TestHreflangXDefaultMissingNoIssues(t *testing.T) {
 		t.Errorf("HreflangXDefaultMissing: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("HreflangXDefaultMissing: reportsIssue should be false")
@@ -66,7 +67,7 @@ func TestHreflangXDefaultMissingIssues(t *testing.T) {
 		t.Errorf("HreflangXDefaultMissing: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("HreflangXDefaultMissing: reportsIssue should be true")
@@ -98,7 +99,7 @@ func TestHreflangMissingSelfReferenceNoIssues(t *testing.T) {
 		t.Errorf("HreflangMissingSelfReference: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("HreflangMissingSelfReference: reportsIssue should be false")
@@ -130,7 +131,7 @@ func TestHreflangMissingSelfReferenceIssues(t *testing.T) {
 		t.Errorf("HreflangMissingSelfReference: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("HreflangMissingSelfReference: reportsIssue should be true")
@@ -163,7 +164,7 @@ func TestHreflangMismatchingLangNoIssues(t *testing.T) {
 		t.Errorf("HreflangMismatchingLang: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("HreflangMismatchingLang: reportsIssue should be false")
@@ -196,7 +197,7 @@ func TestHreflangMismatchingLangIssues(t *testing.T) {
 		t.Errorf("HreflangMismatchingLang: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("HreflangMismatchingLang: reportsIssue should be true")
@@ -232,7 +233,7 @@ func TestHreflangRelativeURLNoIssues(t *testing.T) {
 		t.Errorf("HreflangRelativeURL: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("HreflangRelativeURL: reportsIssue should be false")
@@ -268,7 +269,7 @@ func TestHreflangRelativeURLIssues(t *testing.T) {
 		t.Errorf("HreflangRelativeURL: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("HreflangRelativeURL: reportsIssue should be true")

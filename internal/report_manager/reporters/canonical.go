@@ -1,6 +1,7 @@
 package reporters
 
 import (
+	"net/http"
 	"net/url"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -15,7 +16,7 @@ import (
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // head contains more than one canonical tag.
 func NewCanonicalMultipleTagsReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}
@@ -46,7 +47,7 @@ func NewCanonicalMultipleTagsReporter() *report_manager.PageIssueReporter {
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // canonical tag is using a relative URL.
 func NewCanonicalRelativeURLReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}

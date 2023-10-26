@@ -7,6 +7,7 @@
 package report_manager
 
 import (
+	"net/http"
 	"sync"
 
 	"golang.org/x/net/html"
@@ -17,7 +18,7 @@ import (
 // The PageIssueReporter struct contains a callback function and an error type.
 // Each PageIssueReporter callback will be called and an issue will be created if it returns true.
 type PageIssueReporter struct {
-	Callback  func(*models.PageReport, *html.Node) bool
+	Callback  func(*models.PageReport, *html.Node, *http.Header) bool
 	ErrorType int
 }
 
@@ -63,7 +64,7 @@ func (rm *ReportManager) AddMultipageReporter(reporter MultipageCallback) {
 
 // CreatePageIssues loops the page reporters calling the callback function
 // and creating the issues found in the PageReport.
-func (r *ReportManager) CreatePageIssues(p *models.PageReport, htmlNode *html.Node, crawl *models.Crawl) {
+func (r *ReportManager) CreatePageIssues(p *models.PageReport, htmlNode *html.Node, header *http.Header, crawl *models.Crawl) {
 	iStream := make(chan *models.Issue)
 	wg := new(sync.WaitGroup)
 	wg.Add(1)
@@ -74,7 +75,7 @@ func (r *ReportManager) CreatePageIssues(p *models.PageReport, htmlNode *html.No
 	}()
 
 	for _, c := range r.pageCallbacks {
-		if c.Callback(p, htmlNode) {
+		if c.Callback(p, htmlNode, header) {
 			iStream <- &models.Issue{
 				PageReportId: p.Id,
 				CrawlId:      crawl.Id,

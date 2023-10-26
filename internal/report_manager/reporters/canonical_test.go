@@ -1,6 +1,7 @@
 package reporters_test
 
 import (
+	"net/http"
 	"strings"
 	"testing"
 
@@ -37,7 +38,7 @@ func TestMultipleCanonicalTagsNoIssues(t *testing.T) {
 		t.Errorf("CanonicalMultipleTags: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("CanonicalMultipleTags: reportsIssue should be false")
@@ -71,7 +72,7 @@ func TestMultipleCanonicalTagsIssues(t *testing.T) {
 		t.Errorf("CanonicalMultipleTags: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("CanonicalMultipleTags: reportsIssue should be true")
@@ -105,7 +106,7 @@ func TestCanonicalTagsRelativeURLNoIssues(t *testing.T) {
 		t.Errorf("CanonicalTagsRelative: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("CanonicalTagsRelative: reportsIssue should be false")
@@ -139,7 +140,7 @@ func TestCanonicalTagsRelativeURLIssues(t *testing.T) {
 		t.Errorf("CanonicalTagsRelative: Error parsing html source")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, doc)
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("CanonicalTagsRelative: reportsIssue should be true")

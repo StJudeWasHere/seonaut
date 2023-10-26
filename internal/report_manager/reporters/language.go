@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"net/http"
+
 	"golang.org/x/net/html"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -11,7 +13,7 @@ import (
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the status code media type is text/html and the page's html language is not valid.
 func NewInvalidLangReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}
@@ -36,7 +38,7 @@ func NewInvalidLangReporter() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the status code media type is text/html and the page's html language is missing or empty.
 func NewMissingLangReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}

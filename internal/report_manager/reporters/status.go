@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"net/http"
+
 	"golang.org/x/net/html"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -11,7 +13,7 @@ import (
 // Returns a new report_manager.PageIssueReporter with a callback function that
 // checks if the status code is in the 30x range.
 func NewStatus30xReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}
@@ -28,7 +30,7 @@ func NewStatus30xReporter() *report_manager.PageIssueReporter {
 // Returns a new report_manager.PageIssueReporter with a callback function that
 // checks if the status code is in the 40x range.
 func NewStatus40xReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}
@@ -45,7 +47,7 @@ func NewStatus40xReporter() *report_manager.PageIssueReporter {
 // Returns a new report_manager.PageIssueReporter with a callback function that
 // checks if the status code is greater or equal than 500.
 func NewStatus50xReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}

@@ -1,6 +1,7 @@
 package reporters
 
 import (
+	"net/http"
 	"net/url"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -14,7 +15,7 @@ import (
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the hreflang values do not include an x-default option.
 func NewHreflangXDefaultMissing() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}
@@ -45,7 +46,7 @@ func NewHreflangXDefaultMissing() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the hreflang values don't include a self-referencing link.
 func NewHreflangMissingSelfReference() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}
@@ -76,7 +77,7 @@ func NewHreflangMissingSelfReference() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the self-referencing hreflang lang doesn't match the page's lang.
 func NewHreflangMismatchingLang() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}
@@ -107,7 +108,7 @@ func NewHreflangMismatchingLang() *report_manager.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the hreflang URLs are relative.
 func NewHreflangRelativeURL() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}

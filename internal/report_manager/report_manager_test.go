@@ -1,6 +1,7 @@
 package report_manager_test
 
 import (
+	"net/http"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -38,7 +39,7 @@ func TestCreatePageIssuesCreatesIssue(t *testing.T) {
 	service.AddPageReporter(
 		&report_manager.PageIssueReporter{
 			ErrorType: errorType,
-			Callback: func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+			Callback: func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 				return true
 			},
 		})
@@ -50,7 +51,7 @@ func TestCreatePageIssuesCreatesIssue(t *testing.T) {
 	// Create the PageIssues should run the PageIssueReporter that returns true
 	// indicating an issue was found, so a new issue should be created and added
 	// to the mockStorage.
-	service.CreatePageIssues(pageReport, &html.Node{}, crawl)
+	service.CreatePageIssues(pageReport, &html.Node{}, &http.Header{}, crawl)
 
 	// The storage should contain exactly one issue.
 	if len(storage.Issues) != 1 {
@@ -84,7 +85,7 @@ func TestCreatePageIssuesDoesNotCreateIssue(t *testing.T) {
 	service.AddPageReporter(
 		&report_manager.PageIssueReporter{
 			ErrorType: errorType,
-			Callback: func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+			Callback: func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 				return false
 			},
 		})
@@ -95,7 +96,7 @@ func TestCreatePageIssuesDoesNotCreateIssue(t *testing.T) {
 
 	// Create the PageIssues should run the PageIssueReporter that returns false
 	// indicating an issue was not found and will not be created.
-	service.CreatePageIssues(pageReport, &html.Node{}, crawl)
+	service.CreatePageIssues(pageReport, &html.Node{}, &http.Header{}, crawl)
 
 	// The storage issues slice should be empty.
 	if len(storage.Issues) != 0 {

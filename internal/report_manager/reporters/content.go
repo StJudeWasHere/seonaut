@@ -1,6 +1,8 @@
 package reporters
 
 import (
+	"net/http"
+
 	"golang.org/x/net/html"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -12,7 +14,7 @@ import (
 // checks if a page has little content. The callback returns true if the page is text/html,
 // has a 20x status code and less than a specified amount of words.
 func NewLittleContentReporter() *report_manager.PageIssueReporter {
-	c := func(pageReport *models.PageReport, htmlNode *html.Node) bool {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
 		}

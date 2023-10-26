@@ -3,6 +3,7 @@ package reporters
 import (
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
@@ -75,6 +76,53 @@ func NewCanonicalRelativeURLReporter() *report_manager.PageIssueReporter {
 
 	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorRelativeCanonicalURL,
+		Callback:  c,
+	}
+}
+
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
+// the media type is text/html, the status code is between 200 and 299 and the page's html
+// head canonical tag and the canonical header don't match.
+func NewCanonicalMismatch() *report_manager.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+			return false
+		}
+
+		link, err := htmlquery.Query(htmlNode, "//head/link[@rel=\"canonical\"]/@href")
+		if err != nil || link == nil {
+			return false
+		}
+
+		tagCanonical := htmlquery.SelectAttr(link, "href")
+
+		headerCanonical := ""
+		linkHeaderElements := strings.Split(header.Get("Link"), ",")
+		for _, lh := range linkHeaderElements {
+			attr := strings.Split(lh, ";")
+			if len(attr) == 2 && strings.Contains(attr[1], `rel="canonical"`) {
+				canonicalString := strings.TrimSpace(attr[0])
+				headerCanonical = canonicalString[1 : len(canonicalString)-1]
+			}
+		}
+
+		if headerCanonical == "" {
+			return false
+		}
+
+		return tagCanonical != headerCanonical
+	}
+
+	return &report_manager.PageIssueReporter{
+		ErrorType: reporter_errors.ErrorCanonicalMismatch,
 		Callback:  c,
 	}
 }

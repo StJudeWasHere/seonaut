@@ -146,3 +146,77 @@ func TestCanonicalTagsRelativeURLIssues(t *testing.T) {
 		t.Errorf("CanonicalTagsRelative: reportsIssue should be true")
 	}
 }
+
+// Test the CanonicalMismatch reporter with an html source code that has the
+// same canonical tags in the HTML code and in the HTTP header.
+// The reporter should not report the issue.
+func TestCanonicalMismatchNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	source := `
+		<html>
+			<head>
+				<link rel="canonical" href="https://example.com/home" />
+			</head>
+		</html>`
+
+	reporter := reporters.NewCanonicalMismatch()
+	if reporter.ErrorType != reporter_errors.ErrorCanonicalMismatch {
+		t.Errorf("CanonicalTagsRelative: error type is not correct")
+	}
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("CanonicalTagsRelative: Error parsing html source")
+	}
+
+	header := &http.Header{}
+	header.Set("Link", "<https://example.com/home>; rel=\"canonical\"")
+
+	reportsIssue := reporter.Callback(pageReport, doc, header)
+
+	if reportsIssue == true {
+		t.Errorf("CanonicalTagsRelative: reportsIssue should be false")
+	}
+}
+
+// Test the CanonicalMismatch reporter with an html source code that has different
+// canonical tags in the HTML code and in the HTTP header.
+// The reporter should report the issue.
+func TestCanonicalMismatchIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	source := `
+		<html>
+			<head>
+				<link rel="canonical" href="https://example.com/home" />
+			</head>
+		</html>`
+
+	reporter := reporters.NewCanonicalMismatch()
+	if reporter.ErrorType != reporter_errors.ErrorCanonicalMismatch {
+		t.Errorf("CanonicalTagsRelative: error type is not correct")
+	}
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("CanonicalTagsRelative: Error parsing html source")
+	}
+
+	header := &http.Header{}
+	header.Set("Link", "<https://example.com/home-2>; rel=\"canonical\"")
+
+	reportsIssue := reporter.Callback(pageReport, doc, header)
+
+	if reportsIssue == false {
+		t.Errorf("CanonicalTagsRelative: reportsIssue should be true")
+	}
+}

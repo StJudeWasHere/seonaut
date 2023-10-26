@@ -166,3 +166,6 @@ ERROR_HREFLANG_MISMATCHING_LANG_DESC: Using different language codes in the HTML
 
 ERROR_HREFLANG_RELATIVE_URL: Hreflang values with relative URLs
 ERROR_HREFLANG_RELATIVE_URL_DESC: Pages that are using relative URLs in the hreflang values. Alternate URLs in the hreflang tags must be absolute. Replace them to avoid crawlabality issues and improper language detection of the page.
+
+ERROR_CANONICAL_MISMATCH: Canonical mismatch
+ERROR_CANONICAL_MISMATCH_DESC: Pages with different canonical URLs in the HTML code and HTTP headers. Setting different canonical URLs in the HTML code and HTTP headers creates inconsistency and can confuse search engines, which may result in reduced search engine rankings and visibility.

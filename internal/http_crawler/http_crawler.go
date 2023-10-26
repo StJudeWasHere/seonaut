@@ -17,10 +17,15 @@ const (
 	consumerThreads = 2
 )
 
+type Client interface {
+	Get(u string) (*http.Response, error)
+	Head(u string) (*http.Response, error)
+}
+
 type HttpCrawler struct {
 	urlStream <-chan string
 	rStream   chan *ResponseMessage
-	client    *Client
+	client    Client
 }
 
 type ResponseMessage struct {
@@ -29,7 +34,7 @@ type ResponseMessage struct {
 	Error    error
 }
 
-func New(client *Client, urlStream <-chan string) *HttpCrawler {
+func New(client Client, urlStream <-chan string) *HttpCrawler {
 	return &HttpCrawler{
 		urlStream: urlStream,
 		rStream:   make(chan *ResponseMessage),

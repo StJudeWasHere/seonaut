@@ -1,20 +1,18 @@
-package crawler
+package http_crawler
 
 import (
 	"errors"
 	"sync"
 
-	"github.com/stjudewashere/seonaut/internal/http_crawler"
-
-	"github.com/oxffaa/gopher-parse-sitemap"
+	sitemap "github.com/oxffaa/gopher-parse-sitemap"
 )
 
 type SitemapChecker struct {
 	limit  int
-	client *http_crawler.Client
+	client Client
 }
 
-func NewSitemapChecker(client *http_crawler.Client, limit int) *SitemapChecker {
+func NewSitemapChecker(client Client, limit int) *SitemapChecker {
 	return &SitemapChecker{
 		limit:  limit,
 		client: client,
@@ -24,7 +22,7 @@ func NewSitemapChecker(client *http_crawler.Client, limit int) *SitemapChecker {
 // Check if any of the sitemap URLs provided exist
 func (sc *SitemapChecker) SitemapExists(URLs []string) bool {
 	for _, s := range URLs {
-		if sc.urlExists(s) == true {
+		if sc.urlExists(s) {
 			return true
 		}
 	}

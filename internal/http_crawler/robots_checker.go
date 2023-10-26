@@ -1,11 +1,9 @@
-package crawler
+package http_crawler
 
 import (
 	"errors"
 	"net/url"
 	"sync"
-
-	"github.com/stjudewashere/seonaut/internal/http_crawler"
 
 	"github.com/temoto/robotstxt"
 )
@@ -13,14 +11,16 @@ import (
 type RobotsChecker struct {
 	robotsMap map[string]*robotstxt.RobotsData
 	rlock     *sync.RWMutex
-	client    *http_crawler.Client
+	client    Client
+	userAgent string
 }
 
-func NewRobotsChecker(client *http_crawler.Client) *RobotsChecker {
+func NewRobotsChecker(client Client, ua string) *RobotsChecker {
 	return &RobotsChecker{
 		robotsMap: make(map[string]*robotstxt.RobotsData),
 		rlock:     &sync.RWMutex{},
 		client:    client,
+		userAgent: ua,
 	}
 }
 
@@ -36,7 +36,7 @@ func (r *RobotsChecker) IsBlocked(u *url.URL) bool {
 		path += "?" + u.Query().Encode()
 	}
 
-	return !robot.TestAgent(path, r.client.Options.UserAgent)
+	return !robot.TestAgent(path, r.userAgent)
 }
 
 // Returns true if the robots.txt file exists and is valid
@@ -85,7 +85,7 @@ func (r *RobotsChecker) getRobotsMap(u *url.URL) (*robotstxt.RobotsData, error) 
 			r.robotsMap[u.Host] = nil
 			r.rlock.Unlock()
 
-			return nil, errors.New("Robots.txt file does not exist")
+			return nil, errors.New("robots.txt file does not exist")
 		}
 
 		robot, err = robotstxt.FromResponse(resp)

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-type Client struct {
+type BasicAuthClient struct {
 	Options *ClientOptions
 	client  *http.Client
 }
@@ -19,7 +19,7 @@ type ClientOptions struct {
 	AuthPass         string
 }
 
-func NewClient(options *ClientOptions) *Client {
+func NewClient(options *ClientOptions) *BasicAuthClient {
 	httpClient := &http.Client{
 		Timeout: 10 * time.Second,
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
@@ -27,7 +27,7 @@ func NewClient(options *ClientOptions) *Client {
 		},
 	}
 
-	return &Client{
+	return &BasicAuthClient{
 		client:  httpClient,
 		Options: options,
 	}
@@ -35,7 +35,7 @@ func NewClient(options *ClientOptions) *Client {
 
 // Makes a request with the specified method.
 // It sets the client's User-Agent as well as the BasicAuth details if they are available.
-func (c *Client) request(m, u string) (*http.Response, error) {
+func (c *BasicAuthClient) request(m, u string) (*http.Response, error) {
 	req, err := http.NewRequest(m, u, nil)
 	if err != nil {
 		return &http.Response{}, err
@@ -61,7 +61,7 @@ func (c *Client) request(m, u string) (*http.Response, error) {
 }
 
 // Returns true if the domain exists in the BasicAutDomains slice.
-func (c *Client) isBasicAuthDomain(domain string) bool {
+func (c *BasicAuthClient) isBasicAuthDomain(domain string) bool {
 	for _, element := range c.Options.BasicAuthDomains {
 		if element == domain {
 			return true
@@ -72,11 +72,11 @@ func (c *Client) isBasicAuthDomain(domain string) bool {
 }
 
 // Makes a GET request to an URL and returns the http response or an error.
-func (c *Client) Get(u string) (*http.Response, error) {
+func (c *BasicAuthClient) Get(u string) (*http.Response, error) {
 	return c.request(http.MethodGet, u)
 }
 
 // Makes a HEAD request to an URL and returns the http response or an error.
-func (c *Client) Head(u string) (*http.Response, error) {
+func (c *BasicAuthClient) Head(u string) (*http.Response, error) {
 	return c.request(http.MethodHead, u)
 }

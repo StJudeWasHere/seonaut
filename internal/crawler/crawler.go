@@ -32,12 +32,12 @@ type Crawler struct {
 	queue           *queue.Queue
 	storage         *urlstorage.URLStorage
 	sitemapStorage  *urlstorage.URLStorage
-	sitemapChecker  *SitemapChecker
+	sitemapChecker  *http_crawler.SitemapChecker
 	sitemapExists   bool
 	sitemaps        []string
 	robotstxtExists bool
 	responseCounter int
-	robotsChecker   *RobotsChecker
+	robotsChecker   *http_crawler.RobotsChecker
 	prStream        chan *models.PageReportMessage
 	allowedDomains  map[string]bool
 	mainDomain      string
@@ -68,14 +68,14 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		AuthPass:         options.AuthPass,
 	})
 
-	robotsChecker := NewRobotsChecker(httpClient)
+	robotsChecker := http_crawler.NewRobotsChecker(httpClient, options.UserAgent)
 
 	sitemaps := robotsChecker.GetSitemaps(url)
 	if len(sitemaps) == 0 {
 		sitemaps = []string{url.Scheme + "://" + url.Host + "/sitemap.xml"}
 	}
 
-	sitemapChecker := NewSitemapChecker(httpClient, options.MaxPageReports)
+	sitemapChecker := http_crawler.NewSitemapChecker(httpClient, options.MaxPageReports)
 	qStream := make(chan string)
 
 	c := &Crawler{

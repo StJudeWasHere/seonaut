@@ -59,5 +59,8 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 
 		// Add scheme issue reporters
 		NewHTTPSchemeReporter(),
+
+		// Add security issue reporters
+		NewMissingHSTSHeaderReporter(),
 	}
 }

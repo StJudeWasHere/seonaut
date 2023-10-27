@@ -169,3 +169,6 @@ ERROR_HREFLANG_RELATIVE_URL_DESC: Pages that are using relative URLs in the href
 
 ERROR_CANONICAL_MISMATCH: Canonical mismatch
 ERROR_CANONICAL_MISMATCH_DESC: Pages with different canonical URLs in the HTML code and HTTP headers. Setting different canonical URLs in the HTML code and HTTP headers creates inconsistency and can confuse search engines, which may result in reduced search engine rankings and visibility.
+
+ERROR_MISSING_HSTS: Missing HSTS header
+ERROR_MISSING_HSTS_DESC: Pages without HSTS header. Missing HTTP Strict Transport Security header makes sites more vulnerable to security threats which may impact SEO in terms of user security and trustworthiness.

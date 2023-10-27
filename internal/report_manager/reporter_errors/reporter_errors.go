@@ -58,4 +58,5 @@ const (
 	ErrorHreflangMismatchLang                    // Pages with hreflang and mismatching lang in self-reference
 	ErrorHreflangRelativeURL                     // Pages using relative urls hreflang links
 	ErrorCanonicalMismatch                       // Pages with different canonical URLs in the HTML and HTTP headers
+	ErrorMissingHSTSHeader                       // Pages with missing HSTS header
 )

@@ -73,6 +73,10 @@ func NewMissingCSPReporter() *report_manager.PageIssueReporter {
 // The callback returns true if the header does not exist.
 func NewMissingContentTypeOptionsReporter() *report_manager.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
 		contentTypeOptions := header.Get("X-Content-Type-Options")
 
 		return contentTypeOptions != "nosniff"

@@ -155,6 +155,12 @@ func TestMissingCSPIssues(t *testing.T) {
 // Test the MissingHSTSHeader reporter with X-Content-Type-Options header.
 // The reporter should not report the issue.
 func TestMissingContentTypeOptionsNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
 	reporter := reporters.NewMissingContentTypeOptionsReporter()
 	if reporter.ErrorType != reporter_errors.ErrorContentTypeOptions {
 		t.Errorf("error type is not correct")
@@ -164,7 +170,7 @@ func TestMissingContentTypeOptionsNoIssues(t *testing.T) {
 	header.Set("X-Content-Type-Options", "nosniff")
 
 	// Run the reporter callback with the PageReport.
-	reportsIssue := reporter.Callback(&models.PageReport{}, &html.Node{}, header)
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, header)
 
 	// The reporter should not found any issue.
 	if reportsIssue == true {
@@ -175,13 +181,19 @@ func TestMissingContentTypeOptionsNoIssues(t *testing.T) {
 // Test the MissingHSTSHeader reporter without the X-Content-Type-Options header.
 // The reporter should report the issue.
 func TestMissingContentTypeOptionsIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
 	reporter := reporters.NewMissingContentTypeOptionsReporter()
 	if reporter.ErrorType != reporter_errors.ErrorContentTypeOptions {
 		t.Errorf("error type is not correct")
 	}
 
 	// Run the reporter callback with the PageReport.
-	reportsIssue := reporter.Callback(&models.PageReport{}, &html.Node{}, &http.Header{})
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 
 	// The reporter should not found any issue.
 	if reportsIssue == false {

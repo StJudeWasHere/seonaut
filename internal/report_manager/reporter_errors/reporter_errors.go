@@ -59,4 +59,5 @@ const (
 	ErrorHreflangRelativeURL                     // Pages using relative urls hreflang links
 	ErrorCanonicalMismatch                       // Pages with different canonical URLs in the HTML and HTTP headers
 	ErrorMissingHSTSHeader                       // Pages with missing HSTS header
+	ErrorMissingCSP                              // Pages with missing content security policy
 )

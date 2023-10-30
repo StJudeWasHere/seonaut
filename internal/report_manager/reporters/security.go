@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"strings"
 
-	"golang.org/x/net/html"
-
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
+
+	"github.com/antchfx/htmlquery"
+	"golang.org/x/net/html"
 )
 
 // Returns a report_manager.PageIssueReporter with a callback function that
@@ -38,6 +39,31 @@ func NewMissingHSTSHeaderReporter() *report_manager.PageIssueReporter {
 
 	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorMissingHSTSHeader,
+		Callback:  c,
+	}
+}
+
+// Returns a report_manager.PageIssueReporter with a callback function that
+// reports if the page's CSP (Content Security Policy) is missing by looking both in the Headers and meta tags.
+// The callback returns true if the CSP does not exist.
+func NewMissingCSPReporter() *report_manager.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		cspTag, err := htmlquery.QueryAll(htmlNode, "//head/meta[@http-equiv=\"Content-Security-Policy\"]")
+		if err != nil {
+			return false
+		}
+
+		CSPHeader := header.Get("Content-Security-Policy")
+
+		return cspTag == nil && CSPHeader == ""
+	}
+
+	return &report_manager.PageIssueReporter{
+		ErrorType: reporter_errors.ErrorMissingCSP,
 		Callback:  c,
 	}
 }

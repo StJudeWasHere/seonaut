@@ -62,5 +62,6 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 
 		// Add security issue reporters
 		NewMissingHSTSHeaderReporter(),
+		NewMissingCSPReporter(),
 	}
 }

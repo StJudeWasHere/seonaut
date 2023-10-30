@@ -60,4 +60,5 @@ const (
 	ErrorCanonicalMismatch                       // Pages with different canonical URLs in the HTML and HTTP headers
 	ErrorMissingHSTSHeader                       // Pages with missing HSTS header
 	ErrorMissingCSP                              // Pages with missing content security policy
+	ErrorContentTypeOptions                      // Pages missing the X-Content-Type-Options header
 )

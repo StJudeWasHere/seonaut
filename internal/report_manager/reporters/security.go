@@ -67,3 +67,19 @@ func NewMissingCSPReporter() *report_manager.PageIssueReporter {
 		Callback:  c,
 	}
 }
+
+// Returns a report_manager.PageIssueReporter with a callback function that
+// reports if the page's X-Content-Type-Options header is missing.
+// The callback returns true if the header does not exist.
+func NewMissingContentTypeOptionsReporter() *report_manager.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		contentTypeOptions := header.Get("X-Content-Type-Options")
+
+		return contentTypeOptions != "nosniff"
+	}
+
+	return &report_manager.PageIssueReporter{
+		ErrorType: reporter_errors.ErrorContentTypeOptions,
+		Callback:  c,
+	}
+}

@@ -173,5 +173,8 @@ ERROR_CANONICAL_MISMATCH_DESC: Pages with different canonical URLs in the HTML c
 ERROR_MISSING_HSTS: Missing HSTS header
 ERROR_MISSING_HSTS_DESC: Pages without HSTS header. Missing HTTP Strict Transport Security header makes sites more vulnerable to security threats which may impact SEO in terms of user security and trustworthiness.
 
-ERROR_MISSING_CSP: Missing Content Security Policy
+ERROR_MISSING_CSP: Missing content security policy
 ERROR_MISSING_CSP_DESC: Pages missing the CSP (Content Security Policy) HTML meta tag or HTTP header increase vulnerability to security threats, potentially leading to malicious content or compromised user experiences, which search engines may penalize.
+
+ERROR_CONTENT_TYPE_OPTIONS: Missing content type options
+ERROR_CONTENT_TYPE_OPTIONS_DESC: Pages missing X-Content-Type-Options header exposing the website to content type security risks, leading to potential SEO penalties and unsafe user experiences.

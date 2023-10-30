@@ -2,6 +2,7 @@ package reporters
 
 import (
 	"net/http"
+	"strings"
 
 	"golang.org/x/net/html"
 
@@ -34,6 +35,19 @@ func NewAltTextReporter() *report_manager.PageIssueReporter {
 
 	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorImagesWithNoAlt,
+		Callback:  c,
+	}
+}
+
+// Returns a report_manager.PageIssueReporter with a callback function to check
+// if the page report is a large image, in wich case it will return true.
+func NewLargeImageReporter() *report_manager.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		return strings.HasPrefix(pageReport.MediaType, "image") && pageReport.Size > 500000
+	}
+
+	return &report_manager.PageIssueReporter{
+		ErrorType: reporter_errors.ErrorLargeImage,
 		Callback:  c,
 	}
 }

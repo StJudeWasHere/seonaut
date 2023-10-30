@@ -178,3 +178,6 @@ ERROR_MISSING_CSP_DESC: Pages missing the CSP (Content Security Policy) HTML met
 
 ERROR_CONTENT_TYPE_OPTIONS: Missing content type options
 ERROR_CONTENT_TYPE_OPTIONS_DESC: Pages missing X-Content-Type-Options header exposing the website to content type security risks, leading to potential SEO penalties and unsafe user experiences.
+
+ERROR_LARGE_IMAGE: Large images
+ERROR_LARGE_IMAGE_DESC: Large images can slow down a web page's loading speed, negatively affecting the user experience and SEO rankings due to increased load times. Consider using large images only when essential and optimize them to a reasonable size.

@@ -61,4 +61,5 @@ const (
 	ErrorMissingHSTSHeader                       // Pages with missing HSTS header
 	ErrorMissingCSP                              // Pages with missing content security policy
 	ErrorContentTypeOptions                      // Pages missing the X-Content-Type-Options header
+	ErrorLargeImage                              // Large images
 )

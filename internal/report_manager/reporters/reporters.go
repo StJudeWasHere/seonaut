@@ -41,6 +41,7 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 
 		// Add image issue reporters
 		NewAltTextReporter(),
+		NewLargeImageReporter(),
 
 		// Add language issue reporters
 		NewInvalidLangReporter(),

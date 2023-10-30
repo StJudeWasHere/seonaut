@@ -58,3 +58,45 @@ func TestAltTextReporterIssues(t *testing.T) {
 		t.Errorf("TestAltTextReporterIssues: reportsIssue should be true")
 	}
 }
+
+// Test the LargeImage reporter with an image that is not too large.
+// The reporter should not report the issue.
+func TestLargeImageReporterNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "image/jpeg",
+		Size:      300000,
+	}
+
+	reporter := reporters.NewLargeImageReporter()
+	if reporter.ErrorType != reporter_errors.ErrorLargeImage {
+		t.Errorf("error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
+	}
+}
+
+// Test the LargeImage reporter with a large image.
+// The reporter should report the issue.
+func TestLargeImageReporterIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "image/jpeg",
+		Size:      700000,
+	}
+
+	reporter := reporters.NewLargeImageReporter()
+	if reporter.ErrorType != reporter_errors.ErrorLargeImage {
+		t.Errorf("error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+}

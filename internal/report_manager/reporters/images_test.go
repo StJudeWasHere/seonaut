@@ -59,6 +59,56 @@ func TestAltTextReporterIssues(t *testing.T) {
 	}
 }
 
+// Test the LongAltText reporter with a pageReport that does not
+// have any image with long Alt text. The reporter should not report the issue.
+func TestLongAltTextReporterNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+	}
+
+	// Add an image with alt text
+	pageReport.Images = append(pageReport.Images, models.Image{
+		Alt: "Image alt text",
+	})
+
+	reporter := reporters.NewLongAltTextReporter()
+	if reporter.ErrorType != reporter_errors.ErrorLongAltText {
+		t.Errorf("error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
+	}
+}
+
+// Test the LongAltText reporter with a pageReport that does
+// have images with long Alt text. The reporter should report the issue.
+func TestLongAltTextReporterIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+	}
+
+	// Add an image with alt text
+	pageReport.Images = append(pageReport.Images, models.Image{
+		Alt: "This is a long alt text. This is a long alt text. This is a long alt text. This is a long alt text. This is a long alt text.",
+	})
+
+	reporter := reporters.NewLongAltTextReporter()
+	if reporter.ErrorType != reporter_errors.ErrorLongAltText {
+		t.Errorf("error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+}
+
 // Test the LargeImage reporter with an image that is not too large.
 // The reporter should not report the issue.
 func TestLargeImageReporterNoIssues(t *testing.T) {

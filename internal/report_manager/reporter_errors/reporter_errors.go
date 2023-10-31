@@ -62,4 +62,5 @@ const (
 	ErrorMissingCSP                              // Pages with missing content security policy
 	ErrorContentTypeOptions                      // Pages missing the X-Content-Type-Options header
 	ErrorLargeImage                              // Large images
+	ErrorLongAltText                             // Pages with images that have a long alt text
 )

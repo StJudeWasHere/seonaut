@@ -181,3 +181,6 @@ ERROR_CONTENT_TYPE_OPTIONS_DESC: Pages missing X-Content-Type-Options header exp
 
 ERROR_LARGE_IMAGE: Large images
 ERROR_LARGE_IMAGE_DESC: Large images can slow down a web page's loading speed, negatively affecting the user experience and SEO rankings due to increased load times. Consider using large images only when essential and optimize them to a reasonable size.
+
+ERROR_LONG_ALT_TEXT: Images with long Alt text
+ERROR_LONG_ALT_TEXT_DESC: Pages that have images with long text in the alt attribute. Having a long text in the alt attribute of an image can make it harder to understand the image's content and purpose. Try to keep the alt text short and to the point.

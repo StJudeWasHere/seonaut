@@ -157,12 +157,12 @@ func (c *Crawler) crawl(ctx context.Context) {
 // handleResponse handles the crawler response messages.
 // It creates a new PageReport and adds the new URLs to the crawler queue.
 func (c *Crawler) handleResponse(r *http_crawler.ResponseMessage) error {
-	defer r.Response.Body.Close()
-
 	c.queue.Ack(r.URL)
 	if r.Error != nil {
 		return r.Error
 	}
+
+	defer r.Response.Body.Close()
 
 	pageReport, htmlNode, err := html_parser.NewFromHTTPResponse(r.Response)
 	if err != nil {

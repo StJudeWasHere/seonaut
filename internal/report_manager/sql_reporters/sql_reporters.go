@@ -57,14 +57,14 @@ func (sr *SqlReporter) pageReportsQuery(query string, args ...interface{}) <-cha
 
 		rows, err := sr.db.Query(query, args...)
 		if err != nil {
-			log.Println(err)
+			log.Printf("Error executing query: %s, Args: %v, Error: %v", query, args, err)
 		}
 
 		for rows.Next() {
 			var pid int64
 			err := rows.Scan(&pid)
 			if err != nil {
-				log.Println(err)
+				log.Printf("Error scanning results for query: %s, Args: %v, Error: %v", query, args, err)
 				continue
 			}
 

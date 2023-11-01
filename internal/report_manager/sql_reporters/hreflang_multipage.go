@@ -11,9 +11,7 @@ import (
 func (sr *SqlReporter) MissingHrelangReturnLinks(c *models.Crawl) *report_manager.MultipageIssueReporter {
 	query := `
 		SELECT
-			distinct pagereports.id,
-			pagereports.URL,
-			pagereports.Title
+			distinct pagereports.id
 		FROM hreflangs
 		LEFT JOIN hreflangs b ON hreflangs.crawl_id = b.crawl_id and hreflangs.from_hash = b.to_hash
 		LEFT JOIN pagereports ON hreflangs.pagereport_id = pagereports.id

@@ -48,3 +48,13 @@ func Hash(s string) string {
 
 	return hex.EncodeToString(hash[:])
 }
+
+// Truncate a string to the requiered length.
+func Truncate(s string, length int) string {
+	text := []rune(s)
+	if len(text) > length {
+		s = string(text[:length-3]) + "..."
+	}
+
+	return s
+}

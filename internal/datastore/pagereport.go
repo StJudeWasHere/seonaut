@@ -64,13 +64,13 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 		r.ContentType,
 		r.MediaType,
 		r.Lang,
-		r.Title,
-		r.Description,
+		Truncate(r.Title, 2048),
+		Truncate(r.Description, 2048),
 		r.Robots,
 		r.Noindex,
 		r.Canonical,
-		r.H1,
-		r.H2,
+		Truncate(r.H1, 1024),
+		Truncate(r.H2, 1024),
 		r.Words,
 		r.Size,
 		r.ValidHeadings,
@@ -94,7 +94,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 		for _, l := range r.Links {
 			hash := Hash(l.URL)
 			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.ParsedURL.Scheme, l.Rel, l.NoFollow, l.Text, hash)
+			v = append(v, lid, cid, l.URL, l.ParsedURL.Scheme, l.Rel, l.NoFollow, Truncate(l.Text, 1024), hash)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
@@ -114,7 +114,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 		v := []interface{}{}
 		for _, l := range r.ExternalLinks {
 			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.Rel, l.NoFollow, l.Text, l.Sponsored, l.UGC)
+			v = append(v, lid, cid, l.URL, l.Rel, l.NoFollow, Truncate(l.Text, 1024), l.Sponsored, l.UGC)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
@@ -151,7 +151,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 		v := []interface{}{}
 		for _, i := range r.Images {
 			sqlString += "(?, ?, ?, ?),"
-			v = append(v, lid, i.URL, i.Alt, cid)
+			v = append(v, lid, i.URL, Truncate(i.Alt, 1024), cid)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, _ = ds.db.Prepare(sqlString)

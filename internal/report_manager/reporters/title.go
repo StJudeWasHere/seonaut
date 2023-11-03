@@ -5,6 +5,7 @@ import (
 
 	"golang.org/x/net/html"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -76,6 +77,34 @@ func NewLongTitleReporter() *report_manager.PageIssueReporter {
 
 	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorLongTitle,
+		Callback:  c,
+	}
+}
+
+// Returns a report_manager.PageIssueReporter with a callback function that checks if the page has more
+// than one title tag in the header section.
+// The callback returns true if the page is text/html and has more than one title in the header section.
+func NewMultipleTitleTagsReporter() *report_manager.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		tags, err := htmlquery.QueryAll(htmlNode, "//head/title")
+		if err != nil {
+			return false
+		}
+
+		return len(tags) > 1
+
+	}
+
+	return &report_manager.PageIssueReporter{
+		ErrorType: reporter_errors.ErrorMultipleTitleTags,
 		Callback:  c,
 	}
 }

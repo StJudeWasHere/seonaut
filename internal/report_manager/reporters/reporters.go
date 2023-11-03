@@ -15,12 +15,14 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 		// Add title issue reporters
 		NewEmptyTitleReporter(),
 		NewShortTitleReporter(),
-		NewShortTitleReporter(),
+		NewLongTitleReporter(),
+		NewMultipleTitleTagsReporter(),
 
 		// Add description issue reporters
 		NewEmptyDescriptionReporter(),
 		NewShortDescriptionReporter(),
 		NewLongDescriptionReporter(),
+		NewMultipleDescriptionTagsReporter(),
 
 		// Add indexability issue reporters
 		NewNoIndexableReporter(),

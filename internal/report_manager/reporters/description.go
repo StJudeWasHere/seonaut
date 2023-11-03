@@ -5,6 +5,7 @@ import (
 
 	"golang.org/x/net/html"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -84,6 +85,33 @@ func NewLongDescriptionReporter() *report_manager.PageIssueReporter {
 
 	return &report_manager.PageIssueReporter{
 		ErrorType: reporter_errors.ErrorLongDescription,
+		Callback:  c,
+	}
+}
+
+// Returns a report_manager.PageIssueReporter with a callback function that checks if the page has more
+// than one description meta tag in the header section.
+// The callback returns true if the page is text/html and has more than one description in the header section.
+func NewMultipleDescriptionTagsReporter() *report_manager.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		tags, err := htmlquery.QueryAll(htmlNode, "//head//meta[@name=\"description\"]")
+		if err != nil {
+			return false
+		}
+
+		return len(tags) > 1
+	}
+
+	return &report_manager.PageIssueReporter{
+		ErrorType: reporter_errors.ErrorMultipleTitleTags,
 		Callback:  c,
 	}
 }

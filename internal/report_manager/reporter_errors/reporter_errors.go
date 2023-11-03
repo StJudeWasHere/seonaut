@@ -63,4 +63,5 @@ const (
 	ErrorContentTypeOptions                      // Pages missing the X-Content-Type-Options header
 	ErrorLargeImage                              // Large images
 	ErrorLongAltText                             // Pages with images that have a long alt text
+	ErrorMultipleTitleTags                       // Pages with more than one title tag in the header
 )

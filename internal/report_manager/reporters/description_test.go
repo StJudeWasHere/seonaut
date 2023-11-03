@@ -2,6 +2,7 @@ package reporters_test
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -147,5 +148,76 @@ func TestLongDescriptionIssues(t *testing.T) {
 
 	if reportsIssue == false {
 		t.Errorf("TestLongDescriptionIssues: reportsIssue should be true")
+	}
+}
+
+// Test the MultipleDescriptionTags reporter with a page that has one description tag.
+// The reporter should not report any issue.
+func TestMultipleDescriptionTagsNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	reporter := reporters.NewMultipleDescriptionTagsReporter()
+	if reporter.ErrorType != reporter_errors.ErrorMultipleTitleTags {
+		t.Errorf("error type is not correct")
+	}
+
+	source := `
+	<html>
+		<head>
+			<meta name="description" content="Test Page Description" />
+		</head>
+		<body></body>
+	</html>
+	`
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
+	}
+}
+
+// Test the MultipleDescriptionTags reporter with a page that has more than one description tag.
+// The reporter should report an issue.
+func TestMultipleDescriptionTagsIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	reporter := reporters.NewMultipleDescriptionTagsReporter()
+	if reporter.ErrorType != reporter_errors.ErrorMultipleTitleTags {
+		t.Errorf("error type is not correct")
+	}
+
+	source := `
+	<html>
+		<head>
+			<meta name="description" content="Test Page Description 1" />
+			<meta name="description" content="Test Page Description 2" />
+		</head>
+		<body></body>
+	</html>
+	`
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
 	}
 }

@@ -184,3 +184,9 @@ ERROR_LARGE_IMAGE_DESC: Large images can slow down a web page's loading speed, n
 
 ERROR_LONG_ALT_TEXT: Images with long Alt text
 ERROR_LONG_ALT_TEXT_DESC: Pages that have images with long text in the alt attribute. Having a long text in the alt attribute of an image can make it harder to understand the image's content and purpose. Try to keep the alt text short and to the point.
+
+ERROR_MULTIPLE_TITLES: Multiple title tags
+ERROR_MULTIPLE_TITLES_DESC: Pages with more than one title tag in the header section. Having multiple title tags in the HTML header can hurt SEO by confusing search engines, as it can make it more difficult to understand the page's content.
+
+ERROR_MULTIPLE_DESCRIPTIONS: Multiple description meta tags
+ERROR_MULTIPLE_DESCRIPTIONS_DESC: Pages with more than one description meta tag in the header section. Having multiple description meta tags in the HTML header can hurt SEO by confusing search engines, as it can make it more difficult to understand the page's content.

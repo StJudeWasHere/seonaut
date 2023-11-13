@@ -1,4 +1,4 @@
-package http_crawler
+package httpcrawler
 
 import (
 	"context"
@@ -71,6 +71,7 @@ func (c *HttpCrawler) consumer(ctx context.Context) {
 	for {
 		select {
 		case u := <-c.urlStream:
+			// Add random delay to avoid overwhelming the servers with requests.
 			time.Sleep(time.Duration(rand.Intn(randomDelay)) * time.Millisecond)
 
 			rm := &ResponseMessage{URL: u}

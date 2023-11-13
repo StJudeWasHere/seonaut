@@ -1,9 +1,14 @@
-package http_crawler
+package httpcrawler
 
 import (
 	"net/http"
 	"net/url"
 	"time"
+)
+
+const (
+	// HTTP client timeout in seconds.
+	clientTimeOut = 10
 )
 
 type BasicAuthClient struct {
@@ -21,7 +26,7 @@ type ClientOptions struct {
 
 func NewClient(options *ClientOptions) *BasicAuthClient {
 	httpClient := &http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: clientTimeOut * time.Second,
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
@@ -35,8 +40,8 @@ func NewClient(options *ClientOptions) *BasicAuthClient {
 
 // Makes a request with the specified method.
 // It sets the client's User-Agent as well as the BasicAuth details if they are available.
-func (c *BasicAuthClient) request(m, u string) (*http.Response, error) {
-	req, err := http.NewRequest(m, u, nil)
+func (c *BasicAuthClient) request(method, u string) (*http.Response, error) {
+	req, err := http.NewRequest(method, u, nil)
 	if err != nil {
 		return &http.Response{}, err
 	}

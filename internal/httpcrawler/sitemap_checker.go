@@ -1,4 +1,4 @@
-package http_crawler
+package httpcrawler
 
 import (
 	"errors"

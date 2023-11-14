@@ -2,11 +2,13 @@ package queue
 
 import (
 	"context"
+
+	"github.com/stjudewashere/seonaut/internal/httpcrawler"
 )
 
 type Queue struct {
-	in     chan string
-	out    chan string
+	in     chan *httpcrawler.RequestMessage
+	out    chan *httpcrawler.RequestMessage
 	ack    chan string
 	count  chan int
 	active chan bool
@@ -14,8 +16,8 @@ type Queue struct {
 
 func New(ctx context.Context) *Queue {
 	q := Queue{
-		in:     make(chan string),
-		out:    make(chan string),
+		in:     make(chan *httpcrawler.RequestMessage),
+		out:    make(chan *httpcrawler.RequestMessage),
 		ack:    make(chan string),
 		count:  make(chan int),
 		active: make(chan bool),
@@ -36,20 +38,20 @@ func (q *Queue) manage(ctx context.Context) {
 		close(q.active)
 	}()
 
-	queue := []string{}
+	queue := []*httpcrawler.RequestMessage{}
 	active := make(map[string]bool)
 
-	var first string
-	var out chan string
+	var first *httpcrawler.RequestMessage
+	var out chan *httpcrawler.RequestMessage
 
 	for {
-		if first == "" && len(queue) > 0 {
+		if first == nil && len(queue) > 0 {
 			first = queue[0]
-			active[first] = true
+			active[first.URL] = true
 			queue = queue[1:]
 		}
 
-		if first == "" {
+		if first == nil {
 			out = nil
 		} else {
 			out = q.out
@@ -63,7 +65,7 @@ func (q *Queue) manage(ctx context.Context) {
 		case v := <-q.in:
 			queue = append(queue, v)
 		case out <- first:
-			first = ""
+			first = nil
 		case v := <-q.ack:
 			delete(active, v)
 		}
@@ -71,12 +73,12 @@ func (q *Queue) manage(ctx context.Context) {
 }
 
 // Adds a new value to the queue's end.
-func (q *Queue) Push(value string) {
+func (q *Queue) Push(value *httpcrawler.RequestMessage) {
 	q.in <- value
 }
 
 // Returns the first element in the queue.
-func (q *Queue) Poll() string {
+func (q *Queue) Poll() *httpcrawler.RequestMessage {
 	return <-q.out
 }
 

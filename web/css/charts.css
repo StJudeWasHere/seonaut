@@ -4,6 +4,12 @@
 	height: calc(var(--line-height) * 13);
 }
 
+.status-depth-chart {
+	margin-top: var(--line-height);
+	width:100%;
+	height: calc(var(--line-height) * 16);
+}
+
 .links-chart,
 .follow-chart {
 	width: 100%;

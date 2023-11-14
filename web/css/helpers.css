@@ -166,6 +166,10 @@ p.error {
 	border-bottom: 1px dotted var(--primary-color);
 }
 
+.status-by-depth-box {
+	border-bottom: 1px solid var(--primary-color);
+}
+
 h2.title {
 	margin-bottom:var(--line-height);
 }

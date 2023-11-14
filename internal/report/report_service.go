@@ -39,6 +39,7 @@ type ReportStore interface {
 	CountImagesAlt(int64) *AltCount
 	CountScheme(int64) *SchemeCount
 	CountByNonCanonical(int64) int
+	GetStatusCodeByDepth(crawlId int64) []StatusCodeByDepth
 }
 
 type CanonicalCount struct {
@@ -54,6 +55,15 @@ type SchemeCount struct {
 type AltCount struct {
 	Alt    int
 	NonAlt int
+}
+
+type StatusCodeByDepth struct {
+	Depth         int
+	StatusCode100 int
+	StatusCode200 int
+	StatusCode300 int
+	StatusCode400 int
+	StatusCode500 int
 }
 
 type Service struct {
@@ -137,7 +147,7 @@ func (s *Service) GetPaginatedReports(crawlId int64, currentPage int, term strin
 	}
 
 	if currentPage < 1 || (paginator.TotalPages > 0 && currentPage > paginator.TotalPages) {
-		return models.PaginatorView{}, errors.New("Page out of bounds")
+		return models.PaginatorView{}, errors.New("page out of bounds")
 	}
 
 	if currentPage < paginator.TotalPages {
@@ -282,4 +292,17 @@ func (s *Service) RemoveCrawlCache(crawl *models.Crawl) {
 	if err := s.cache.Delete(fmt.Sprintf("canonical-%d", crawl.Id)); err != nil {
 		log.Printf("DeleteDashboardCache: Canonical: %v\n", err)
 	}
+}
+
+func (s *Service) GetStatusCodeByDepth(crawlId int64) []StatusCodeByDepth {
+	key := fmt.Sprintf("status-by-depth-%d", crawlId)
+	v := []StatusCodeByDepth{}
+	if err := s.cache.Get(key, v); err != nil {
+		v = s.store.GetStatusCodeByDepth(crawlId)
+		if err := s.cache.Set(key, v); err != nil {
+			log.Printf("GetStatusCodeByDepth: cacheSet: %v\n", err)
+		}
+	}
+
+	return v
 }

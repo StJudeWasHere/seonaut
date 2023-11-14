@@ -125,6 +125,10 @@ func (s *storage) GetNumberOfPagesForPageReport(cid int64, term string) int {
 	return 0
 }
 
+func (s *storage) GetStatusCodeByDepth(crawlId int64) []report.StatusCodeByDepth {
+	return []report.StatusCodeByDepth{}
+}
+
 type cache struct{}
 
 func (c *cache) Set(key string, v interface{}) error {

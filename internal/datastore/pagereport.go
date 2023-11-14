@@ -42,9 +42,10 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 			robotstxt_blocked,
 			crawled,
 			in_sitemap,
-			valid_lang
+			valid_lang,
+			depth
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -78,6 +79,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 		r.Crawled,
 		r.InSitemap,
 		r.ValidLang,
+		r.Depth,
 	)
 	if err != nil {
 		return r, err
@@ -287,7 +289,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageR
 				robotstxt_blocked,
 				crawled,
 				in_sitemap,
-				valid_lang
+				valid_lang,
+				depth
 			FROM pagereports
 			WHERE crawl_id = ?`
 
@@ -320,6 +323,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageR
 				&p.Crawled,
 				&p.InSitemap,
 				&p.ValidLang,
+				&p.Depth,
 			)
 			if err != nil {
 				log.Println(err)
@@ -362,7 +366,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				robotstxt_blocked,
 				crawled,
 				in_sitemap,
-				valid_lang
+				valid_lang,
+				depth
 			FROM pagereports
 			WHERE crawl_id = ?
 			AND id IN (
@@ -402,6 +407,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				&p.Crawled,
 				&p.InSitemap,
 				&p.ValidLang,
+				&p.Depth,
 			)
 			if err != nil {
 				log.Println(err)
@@ -439,7 +445,8 @@ func (ds *Datastore) FindPageReportById(rid int) models.PageReport {
 			robotstxt_blocked,
 			crawled,
 			in_sitemap,
-			valid_lang
+			valid_lang,
+			depth
 		FROM pagereports
 		WHERE id = ?`
 
@@ -468,6 +475,7 @@ func (ds *Datastore) FindPageReportById(rid int) models.PageReport {
 		&p.Crawled,
 		&p.InSitemap,
 		&p.ValidLang,
+		&p.Depth,
 	)
 	if err != nil {
 		log.Println(err)
@@ -1109,4 +1117,48 @@ func (ds *Datastore) countListQuery(query string, cid int64) *report.CountList {
 	sort.Sort(sort.Reverse(m))
 
 	return &m
+}
+
+func (ds *Datastore) GetStatusCodeByDepth(cid int64) []report.StatusCodeByDepth {
+	query := `
+	SELECT
+		d.depth,
+		COALESCE(SUM(CASE WHEN pr.status_code BETWEEN 0 AND 199 THEN 1 ELSE 0 END), 0) AS status_0_to_199,
+		COALESCE(SUM(CASE WHEN pr.status_code BETWEEN 200 AND 299 THEN 1 ELSE 0 END), 0) AS status_200_to_299,
+		COALESCE(SUM(CASE WHEN pr.status_code BETWEEN 300 AND 399 THEN 1 ELSE 0 END), 0) AS status_300_to_399,
+		COALESCE(SUM(CASE WHEN pr.status_code BETWEEN 400 AND 499 THEN 1 ELSE 0 END), 0) AS status_400_to_499,
+		COALESCE(SUM(CASE WHEN pr.status_code >= 500 THEN 1 ELSE 0 END), 0) AS status_500_and_above
+	FROM
+		(SELECT 1 AS depth
+		UNION SELECT 2
+		UNION SELECT 3
+		UNION SELECT 4
+		UNION SELECT 5
+		UNION SELECT 6
+		UNION SELECT 7
+		UNION SELECT 8) d
+	LEFT JOIN pagereports pr ON pr.depth = d.depth AND pr.crawl_id = ?
+	GROUP BY d.depth
+	ORDER BY d.depth;
+	`
+
+	s := []report.StatusCodeByDepth{}
+
+	rows, err := ds.db.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return s
+	}
+
+	for rows.Next() {
+		c := report.StatusCodeByDepth{}
+		err := rows.Scan(&c.Depth, &c.StatusCode100, &c.StatusCode200, &c.StatusCode300, &c.StatusCode400, &c.StatusCode500)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		s = append(s, c)
+	}
+
+	return s
 }

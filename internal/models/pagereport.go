@@ -39,4 +39,5 @@ type PageReport struct {
 	InSitemap          bool
 	InternalLinks      []InternalLink
 	ValidLang          bool
+	Depth              int
 }

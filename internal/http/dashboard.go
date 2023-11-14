@@ -21,13 +21,14 @@ type ChartItem struct {
 type Chart []ChartItem
 
 type DashboardView struct {
-	ProjectView    *projectview.ProjectView
-	MediaChart     Chart
-	StatusChart    Chart
-	Crawls         []models.Crawl
-	CanonicalCount *report.CanonicalCount
-	AltCount       *report.AltCount
-	SchemeCount    *report.SchemeCount
+	ProjectView       *projectview.ProjectView
+	MediaChart        Chart
+	StatusChart       Chart
+	Crawls            []models.Crawl
+	CanonicalCount    *report.CanonicalCount
+	AltCount          *report.AltCount
+	SchemeCount       *report.SchemeCount
+	StatusCodeByDepth []report.StatusCodeByDepth
 }
 
 // handleDashboard handles the dashboard of a project.
@@ -61,13 +62,14 @@ func (app *App) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data := DashboardView{
-		ProjectView:    pv,
-		MediaChart:     newChart(app.reportService.GetMediaCount(pv.Crawl.Id)),
-		StatusChart:    newChart(app.reportService.GetStatusCount(pv.Crawl.Id)),
-		Crawls:         app.crawlerService.GetLastCrawls(pv.Project),
-		CanonicalCount: app.reportService.GetCanonicalCount(pv.Crawl.Id),
-		AltCount:       app.reportService.GetImageAltCount(pv.Crawl.Id),
-		SchemeCount:    app.reportService.GetSchemeCount(pv.Crawl.Id),
+		ProjectView:       pv,
+		MediaChart:        newChart(app.reportService.GetMediaCount(pv.Crawl.Id)),
+		StatusChart:       newChart(app.reportService.GetStatusCount(pv.Crawl.Id)),
+		Crawls:            app.crawlerService.GetLastCrawls(pv.Project),
+		CanonicalCount:    app.reportService.GetCanonicalCount(pv.Crawl.Id),
+		AltCount:          app.reportService.GetImageAltCount(pv.Crawl.Id),
+		SchemeCount:       app.reportService.GetSchemeCount(pv.Crawl.Id),
+		StatusCodeByDepth: app.reportService.GetStatusCodeByDepth(pv.Crawl.Id),
 	}
 
 	pageView := &PageView{

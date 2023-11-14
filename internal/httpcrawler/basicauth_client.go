@@ -39,14 +39,11 @@ func NewClient(options *ClientOptions) *BasicAuthClient {
 }
 
 // Makes a request with the specified method.
-// It sets the client's User-Agent as well as the BasicAuth details if they are available.
 func (c *BasicAuthClient) request(method, u string) (*http.Response, error) {
 	req, err := http.NewRequest(method, u, nil)
 	if err != nil {
 		return &http.Response{}, err
 	}
-
-	req.Header.Set("User-Agent", c.Options.UserAgent)
 
 	domain, err := url.Parse(u)
 	if err != nil {
@@ -57,12 +54,7 @@ func (c *BasicAuthClient) request(method, u string) (*http.Response, error) {
 		req.SetBasicAuth(c.Options.AuthUser, c.Options.AuthPass)
 	}
 
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return resp, err
-	}
-
-	return resp, nil
+	return c.Do(req)
 }
 
 // Returns true if the domain exists in the BasicAutDomains slice.
@@ -84,4 +76,17 @@ func (c *BasicAuthClient) Get(u string) (*http.Response, error) {
 // Makes a HEAD request to an URL and returns the http response or an error.
 func (c *BasicAuthClient) Head(u string) (*http.Response, error) {
 	return c.request(http.MethodHead, u)
+}
+
+// Does a request and returns its response and error.
+// It sets the client's User-Agent as well as the BasicAuth details if they are available.
+func (c *BasicAuthClient) Do(req *http.Request) (*http.Response, error) {
+	req.Header.Set("User-Agent", c.Options.UserAgent)
+
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }

@@ -42,7 +42,7 @@ type Crawler struct {
 	allowedDomains  map[string]bool
 	mainDomain      string
 	httpCrawler     *httpcrawler.HttpCrawler
-	qStream         chan string
+	qStream         chan *httpcrawler.RequestMessage
 }
 
 func NewCrawler(url *url.URL, options *Options) *Crawler {
@@ -58,7 +58,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	q := queue.New(ctx)
-	q.Push(url.String())
+	q.Push(&httpcrawler.RequestMessage{URL: url.String()})
 
 	httpClient := httpcrawler.NewClient(&httpcrawler.ClientOptions{
 		UserAgent:        options.UserAgent,
@@ -76,7 +76,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	}
 
 	sitemapChecker := httpcrawler.NewSitemapChecker(httpClient, options.MaxPageReports)
-	qStream := make(chan string)
+	qStream := make(chan *httpcrawler.RequestMessage)
 
 	c := &Crawler{
 		url:             url,
@@ -175,6 +175,7 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 		return err
 	}
 
+	pageReport.Depth = r.Depth
 	pageReport.BlockedByRobotstxt = c.robotsChecker.IsBlocked(parsedURL)
 	pageReport.InSitemap = c.sitemapStorage.Seen(r.URL)
 
@@ -220,7 +221,7 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 			continue
 		}
 
-		c.queue.Push(t.String())
+		c.queue.Push(&httpcrawler.RequestMessage{URL: t.String(), Depth: pageReport.Depth + 1})
 	}
 
 	if !pageReport.Noindex || c.options.IncludeNoindex {
@@ -271,7 +272,7 @@ func (c *Crawler) queueSitemapURLs() {
 	c.sitemapStorage.Iterate(func(v string) {
 		if !c.storage.Seen(v) {
 			c.storage.Add(v)
-			c.queue.Push(v)
+			c.queue.Push(&httpcrawler.RequestMessage{URL: v})
 		}
 	})
 }

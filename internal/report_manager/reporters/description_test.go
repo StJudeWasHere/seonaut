@@ -161,7 +161,7 @@ func TestMultipleDescriptionTagsNoIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewMultipleDescriptionTagsReporter()
-	if reporter.ErrorType != reporter_errors.ErrorMultipleTitleTags {
+	if reporter.ErrorType != reporter_errors.ErrorMultipleDescriptionTags {
 		t.Errorf("error type is not correct")
 	}
 
@@ -196,7 +196,7 @@ func TestMultipleDescriptionTagsIssues(t *testing.T) {
 	}
 
 	reporter := reporters.NewMultipleDescriptionTagsReporter()
-	if reporter.ErrorType != reporter_errors.ErrorMultipleTitleTags {
+	if reporter.ErrorType != reporter_errors.ErrorMultipleDescriptionTags {
 		t.Errorf("error type is not correct")
 	}
 

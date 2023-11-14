@@ -111,7 +111,7 @@ func NewMultipleDescriptionTagsReporter() *report_manager.PageIssueReporter {
 	}
 
 	return &report_manager.PageIssueReporter{
-		ErrorType: reporter_errors.ErrorMultipleTitleTags,
+		ErrorType: reporter_errors.ErrorMultipleDescriptionTags,
 		Callback:  c,
 	}
 }

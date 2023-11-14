@@ -64,4 +64,6 @@ const (
 	ErrorLargeImage                              // Large images
 	ErrorLongAltText                             // Pages with images that have a long alt text
 	ErrorMultipleTitleTags                       // Pages with more than one title tag in the header
+	ErrorMultipleDescriptionTags                 // Pages with more than one meta description tag
+	ErrorDepth                                   // Pages with high depth
 )

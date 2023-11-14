@@ -33,6 +33,7 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 		NewCanonicalMultipleTagsReporter(),
 		NewCanonicalRelativeURLReporter(),
 		NewCanonicalMismatch(),
+		NewDepthReporter(),
 
 		// Add link issue reporters
 		NewTooManyLinksReporter(),

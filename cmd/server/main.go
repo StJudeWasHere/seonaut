@@ -51,6 +51,10 @@ func main() {
 		log.Fatalf("Error running migrations: %v\n", err)
 	}
 
+	// Delete any unfinished crawls.
+	unfinishedCrawls := ds.DeleteUnfinishedCrawls()
+	log.Printf("Deleted %d unfinished crawls.", unfinishedCrawls)
+
 	// Build services.
 	broker := pubsub.New()
 	cache := cache.New(config.Cache)

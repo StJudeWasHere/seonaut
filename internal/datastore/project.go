@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -471,4 +472,51 @@ func (ds *Datastore) DeleteCrawls(p *models.Project) {
 
 		ds.DeleteCrawl(c)
 	}
+}
+
+// Deletes all crawls that are unfinished and have the issues_end field set to null.
+// It cleans up the crawl data for each unfinished crawl before deleting it.
+func (ds *Datastore) DeleteUnfinishedCrawls() int {
+	query := `
+		SELECT
+			crawls.id
+		FROM crawls
+		WHERE crawls.issues_end IS NULL
+	`
+	count := 0
+
+	rows, err := ds.db.Query(query)
+	if err != nil {
+		log.Println(err)
+		return count
+	}
+
+	ids := []any{}
+	placeholders := []string{}
+	for rows.Next() {
+		c := &models.Crawl{}
+		err := rows.Scan(&c.Id)
+		if err != nil {
+			log.Printf("DeleteUnfinishedCrawls: %v\n", err)
+			continue
+		}
+
+		count++
+		ds.DeleteCrawl(c)
+		ids = append(ids, c.Id)
+		placeholders = append(placeholders, "?")
+	}
+
+	if len(ids) == 0 {
+		return count
+	}
+
+	placeholdersStr := strings.Join(placeholders, ",")
+	deleteQuery := fmt.Sprintf("DELETE FROM crawls WHERE id IN (%s)", placeholdersStr)
+	_, err = ds.db.Exec(deleteQuery, ids...)
+	if err != nil {
+		log.Printf("DeleteUnfinishedCrawls: %v", err)
+	}
+
+	return count
 }

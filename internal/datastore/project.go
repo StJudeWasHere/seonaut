@@ -332,7 +332,7 @@ func (ds *Datastore) DeleteProject(p *models.Project) {
 	}
 
 	go func(p models.Project) {
-		ds.DeleteCrawls(&p)
+		ds.DeleteProjectCrawls(&p)
 
 		query := `DELETE FROM projects WHERE id = ?`
 		_, err := ds.db.Exec(query, p.Id)
@@ -414,13 +414,13 @@ func (ds *Datastore) GetPreviousCrawl(p *models.Project) (*models.Crawl, error) 
 	return crawl, nil
 }
 
-func (ds *Datastore) DeleteCrawl(crawl *models.Crawl) {
+func (ds *Datastore) DeleteCrawlData(crawl *models.Crawl) {
 	var deleteFunc func(cid int64, table string)
 	deleteFunc = func(cid int64, table string) {
 		query := fmt.Sprintf("DELETE FROM %s WHERE crawl_id = ? ORDER BY id DESC LIMIT 1000", table)
 		_, err := ds.db.Exec(query, cid)
 		if err != nil {
-			log.Printf("DeleteCrawl: cid %d table %s %v\n", cid, table, err)
+			log.Printf("DeleteCrawlData: cid %d table %s %v\n", cid, table, err)
 			return
 		}
 
@@ -428,7 +428,7 @@ func (ds *Datastore) DeleteCrawl(crawl *models.Crawl) {
 		row := ds.db.QueryRow(query, cid)
 		var c int
 		if err := row.Scan(&c); err != nil {
-			log.Printf("DeleteCrawl count: pid %d table %s %v\n", cid, table, err)
+			log.Printf("DeleteCrawlData count: pid %d table %s %v\n", cid, table, err)
 		}
 
 		if c > 0 {
@@ -450,8 +450,8 @@ func (ds *Datastore) DeleteCrawl(crawl *models.Crawl) {
 	deleteFunc(crawl.Id, "pagereports")
 }
 
-// DeleteCrawls deletes the project's crawl data
-func (ds *Datastore) DeleteCrawls(p *models.Project) {
+// DeleteProjectCrawls deletes the project's crawl data
+func (ds *Datastore) DeleteProjectCrawls(p *models.Project) {
 	query := `
 		SELECT
 			id
@@ -461,16 +461,23 @@ func (ds *Datastore) DeleteCrawls(p *models.Project) {
 
 	rows, err := ds.db.Query(query, p.Id)
 	if err != nil {
-		log.Printf("DeleteCrawls Query: %v\n", err)
+		log.Printf("DeleteProjectCrawls Query: %v\n", err)
 	}
 
 	for rows.Next() {
 		c := &models.Crawl{}
 		if err := rows.Scan(&c.Id); err != nil {
-			log.Printf("DeleteCrawls: %v\n", err)
+			log.Printf("DeleteProjectCrawls: %v\n", err)
 		}
 
-		ds.DeleteCrawl(c)
+		ds.DeleteCrawlData(c)
+	}
+
+	query = `DELETE FROM crawls WHERE project_id = ?`
+	_, err = ds.db.Exec(query, p.Id)
+	if err != nil {
+		log.Printf("deleting crawls for project %d: %v", p.Id, err)
+		return
 	}
 }
 
@@ -502,7 +509,7 @@ func (ds *Datastore) DeleteUnfinishedCrawls() int {
 		}
 
 		count++
-		ds.DeleteCrawl(c)
+		ds.DeleteCrawlData(c)
 		ids = append(ids, c.Id)
 		placeholders = append(placeholders, "?")
 	}

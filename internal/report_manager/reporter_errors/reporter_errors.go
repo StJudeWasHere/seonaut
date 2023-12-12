@@ -66,4 +66,5 @@ const (
 	ErrorMultipleTitleTags                       // Pages with more than one title tag in the header
 	ErrorMultipleDescriptionTags                 // Pages with more than one meta description tag
 	ErrorDepth                                   // Pages with high depth
+	ErrorMultipleLangReference                   // Pages referenced with multiple languages in hreflangs
 )

@@ -40,6 +40,7 @@ func (sr *SqlReporter) GetAllReporters() []report_manager.MultipageCallback {
 		sr.MissingHrelangReturnLinks,
 		sr.HreflangsToNonCanonical,
 		sr.HreflangNoindexable,
+		sr.MultipleLangReference,
 
 		// Add canonical issue reporters
 		sr.CanonicalizedToNonCanonical,

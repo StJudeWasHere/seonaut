@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(58, "ERROR_MULTIPLE_LANG_REFERENCE", 2);

@@ -110,3 +110,21 @@ func (sr *SqlReporter) HreflangToError(c *models.Crawl) *report_manager.Multipag
 		ErrorType: reporter_errors.ErrorHreflangToError,
 	}
 }
+
+// Creates a MultipageIssueReporter object that contains the SQL query to check for pages
+// that are referenced from hreflang with more than one language.
+func (sr *SqlReporter) MultipleLangReference(c *models.Crawl) *report_manager.MultipageIssueReporter {
+	query := `
+		SELECT pagereports.id
+		FROM hreflangs 
+		LEFT JOIN pagereports
+			ON to_hash = pagereports.url_hash AND hreflangs.crawl_id = ?
+		WHERE pagereports.crawl_id = ? AND hreflangs.to_lang != "x-default" 
+		GROUP BY to_hash, pagereports.id
+		HAVING count(distinct to_lang) > 1`
+
+	return &report_manager.MultipageIssueReporter{
+		Pstream:   sr.pageReportsQuery(query, c.Id, c.Id),
+		ErrorType: reporter_errors.ErrorMultipleLangReference,
+	}
+}

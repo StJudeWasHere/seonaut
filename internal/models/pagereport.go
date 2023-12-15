@@ -40,4 +40,5 @@ type PageReport struct {
 	InternalLinks      []InternalLink
 	ValidLang          bool
 	Depth              int
+	BodyHash           string
 }

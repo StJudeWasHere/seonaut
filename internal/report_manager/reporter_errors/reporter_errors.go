@@ -67,4 +67,5 @@ const (
 	ErrorMultipleDescriptionTags                 // Pages with more than one meta description tag
 	ErrorDepth                                   // Pages with high depth
 	ErrorMultipleLangReference                   // Pages referenced with multiple languages in hreflangs
+	ErrorDuplicatedContent                       // Pages with the same exact content
 )

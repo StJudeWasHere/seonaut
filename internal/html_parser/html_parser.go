@@ -2,6 +2,8 @@ package html_parser
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"log"
@@ -102,6 +104,11 @@ func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.Pag
 		if bnode != nil {
 			pageReport.Words = countWords(bnode)
 			pageReport.ValidHeadings = headingOrderIsValid(bnode)
+		}
+
+		pageReport.BodyHash, err = hashString(body)
+		if err != nil {
+			log.Printf("body hashString URL: %s\nError %v", u.String(), err)
 		}
 	}
 
@@ -207,4 +214,18 @@ func langIsValid(s string) bool {
 	}
 
 	return true
+}
+
+// Hash a string using sha256 and returns is hex representation as a string.
+func hashString(input []byte) (string, error) {
+	hasher := sha256.New()
+	_, err := hasher.Write(input)
+	if err != nil {
+		return "", err
+	}
+
+	hashSum := hasher.Sum(nil)
+	hashString := hex.EncodeToString(hashSum)
+
+	return hashString, nil
 }

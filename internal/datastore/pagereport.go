@@ -43,9 +43,10 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 			crawled,
 			in_sitemap,
 			valid_lang,
-			depth
+			depth,
+			body_hash
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -80,6 +81,7 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 		r.InSitemap,
 		r.ValidLang,
 		r.Depth,
+		r.BodyHash,
 	)
 	if err != nil {
 		return r, err
@@ -290,7 +292,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageR
 				crawled,
 				in_sitemap,
 				valid_lang,
-				depth
+				depth,
+				body_hash
 			FROM pagereports
 			WHERE crawl_id = ?`
 
@@ -324,6 +327,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageR
 				&p.InSitemap,
 				&p.ValidLang,
 				&p.Depth,
+				&p.BodyHash,
 			)
 			if err != nil {
 				log.Println(err)
@@ -367,7 +371,8 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				crawled,
 				in_sitemap,
 				valid_lang,
-				depth
+				depth,
+				body_hash
 			FROM pagereports
 			WHERE crawl_id = ?
 			AND id IN (
@@ -408,6 +413,7 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				&p.InSitemap,
 				&p.ValidLang,
 				&p.Depth,
+				&p.BodyHash,
 			)
 			if err != nil {
 				log.Println(err)
@@ -446,7 +452,8 @@ func (ds *Datastore) FindPageReportById(rid int) models.PageReport {
 			crawled,
 			in_sitemap,
 			valid_lang,
-			depth
+			depth,
+			body_hash
 		FROM pagereports
 		WHERE id = ?`
 
@@ -476,6 +483,7 @@ func (ds *Datastore) FindPageReportById(rid int) models.PageReport {
 		&p.InSitemap,
 		&p.ValidLang,
 		&p.Depth,
+		&p.BodyHash,
 	)
 	if err != nil {
 		log.Println(err)

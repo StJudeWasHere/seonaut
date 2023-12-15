@@ -21,6 +21,9 @@ func NewSqlReporter(db *sql.DB) *SqlReporter {
 // GetAllReporters returns a slice of all the implemented reporters in the SqlReporter.
 func (sr *SqlReporter) GetAllReporters() []report_manager.MultipageCallback {
 	return []report_manager.MultipageCallback{
+		// Add content issue reporters
+		sr.DuplicatedContent,
+
 		// Add status code issue reporters
 		sr.RedirectChainsReporter,
 		sr.RedirectLoopsReporter,

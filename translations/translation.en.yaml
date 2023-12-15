@@ -196,3 +196,6 @@ ERROR_PAGE_DEPTH_DESC: Pages with high depth can negatively impact SEO and user 
 
 ERROR_MULTIPLE_LANG_REFERENCE: Pages reference with multiple languages
 ERROR_MULTIPLE_LANG_REFERENCE_DESC: Pages with multiple languages referenced in hreflang tags can confuse search engines, leading to incorrect language indexing, which can negatively impact SEO and user experience.
+
+ERROR_DUPLICATED_CONTENT: Duplicated content
+ERROR_DUPLICATED_CONTENT_DESC: Pages with the exact same content may confuse search engines and make them struggle to determine the most relevant page, leading to indexing issues, diluted ranking, and a waste of crawl budget.

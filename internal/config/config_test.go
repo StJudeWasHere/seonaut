@@ -9,7 +9,7 @@ import (
 func TestLoadConfig(t *testing.T) {
 	config, err := config.NewConfig("./testdata", "config")
 	if err != nil {
-		t.Errorf("Error loading config file: %v\n", err)
+		t.Fatalf("Error loading config file: %v", err)
 	}
 
 	pm := []struct {

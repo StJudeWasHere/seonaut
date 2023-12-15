@@ -191,10 +191,10 @@ ERROR_MULTIPLE_TITLES_DESC: Pages with more than one title tag in the header sec
 ERROR_MULTIPLE_DESCRIPTIONS: Multiple description meta tags
 ERROR_MULTIPLE_DESCRIPTIONS_DESC: Pages with more than one description meta tag in the header section. Having multiple description meta tags in the HTML header can hurt SEO by confusing search engines, as it can make it more difficult to understand the page's content.
 
-ERROR_PAGE_DEPTH: Pages with high depth
+ERROR_PAGE_DEPTH: High depth
 ERROR_PAGE_DEPTH_DESC: Pages with high depth can negatively impact SEO and user experience because they are challenging for both search engines and users to access, potentially leading to decreased visibility in search results and a less intuitive browsing experience.
 
-ERROR_MULTIPLE_LANG_REFERENCE: Pages reference with multiple languages
+ERROR_MULTIPLE_LANG_REFERENCE: Multiple languages reference
 ERROR_MULTIPLE_LANG_REFERENCE_DESC: Pages with multiple languages referenced in hreflang tags can confuse search engines, leading to incorrect language indexing, which can negatively impact SEO and user experience.
 
 ERROR_DUPLICATED_CONTENT: Duplicated content

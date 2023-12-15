@@ -13,7 +13,7 @@ func TestRenderer(t *testing.T) {
 		TranslationsFile: "./testdata/translations.test.yaml",
 	})
 	if err != nil {
-		t.Errorf("%v", err)
+		t.Fatalf("%v", err)
 	}
 
 	eb := new(bytes.Buffer)

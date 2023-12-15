@@ -47,12 +47,12 @@ func (b *Broker) NewSubscriber(topic string, c func(*Message) error) *Subscriber
 // Unsubscribes a subscriber.
 func (b *Broker) Unsubscribe(s *Subscriber) {
 	b.lock.RLock()
+	defer b.lock.RUnlock()
+
 	subscribers := b.subscribers[s.Topic]
-	b.lock.RUnlock()
 
 	for i, v := range subscribers {
 		if v.Id == s.Id {
-			b.lock.Lock()
 			subs := b.subscribers[s.Topic]
 			r := make([]*Subscriber, 0)
 			r = append(r, subs[:i]...)
@@ -64,7 +64,6 @@ func (b *Broker) Unsubscribe(s *Subscriber) {
 			if len(b.subscribers[s.Topic]) == 0 {
 				delete(b.subscribers, s.Topic)
 			}
-			b.lock.Unlock()
 
 			break
 		}

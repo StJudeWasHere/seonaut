@@ -31,7 +31,7 @@ func TestNewPageReport(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.URL != testURL {
@@ -68,7 +68,7 @@ func TestNewRedirectPageReport(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.RedirectURL != redirectURL {
@@ -98,7 +98,7 @@ func TestPageReportHTML(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	itable := []struct {
@@ -201,7 +201,7 @@ func TestMultipleCanonicalTags(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.Canonical != "" {
@@ -229,7 +229,7 @@ func TestCanonicalTagInBody(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.Canonical != "" {
@@ -252,7 +252,7 @@ func TestNoindex(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.Nofollow == false {
@@ -280,7 +280,7 @@ func TestContentLanguage(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.Lang != contentLanguage {
@@ -309,7 +309,7 @@ func TestHreflangHeaders(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if len(pageReport.Hreflangs) != 3 {
@@ -350,7 +350,7 @@ func TestCanonicalHeaders(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.Canonical != "https://example.com/canonical" {
@@ -379,7 +379,7 @@ func TestRelativeCanonicalHeaders(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.Canonical != "https://example.com/canonical" {
@@ -401,7 +401,7 @@ func TestNoBodyTag(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.Words != 0 {
@@ -425,7 +425,7 @@ func TestInvalidLang(t *testing.T) {
 
 	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	if pageReport.ValidLang == true {

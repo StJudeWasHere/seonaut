@@ -574,7 +574,10 @@ func (p *Parser) parseSrcSet(srcset string) []string {
 	imageSet := strings.Split(srcset, ",")
 	for _, s := range imageSet {
 		i := strings.Split(s, " ")
-		imageURLs = append(imageURLs, strings.TrimSpace(i[0]))
+
+		if len(i) > 0 {
+			imageURLs = append(imageURLs, strings.TrimSpace(i[0]))
+		}
 	}
 
 	return imageURLs

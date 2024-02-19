@@ -91,7 +91,7 @@ func NewHreflangMismatchingLang() *report_manager.PageIssueReporter {
 		}
 
 		for _, hl := range pageReport.Hreflangs {
-			if hl.URL == pageReport.URL && hl.Lang != pageReport.Lang {
+			if hl.URL == pageReport.URL && hl.Lang != "x-default" && hl.Lang != pageReport.Lang {
 				return true
 			}
 		}

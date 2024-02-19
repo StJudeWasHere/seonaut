@@ -150,6 +150,7 @@ func TestHreflangMismatchingLangNoIssues(t *testing.T) {
 		URL:        "http://example.com",
 		Hreflangs: []models.Hreflang{
 			{URL: "http://example.com", Lang: "en"},
+			{URL: "http://example.com", Lang: "x-default"},
 			{URL: "http://example.com/fr", Lang: "fr"},
 		},
 	}
@@ -183,6 +184,7 @@ func TestHreflangMismatchingLangIssues(t *testing.T) {
 		URL:        "http://example.com",
 		Hreflangs: []models.Hreflang{
 			{URL: "http://example.com", Lang: "en"},
+			{URL: "http://example.com", Lang: "x-default"},
 			{URL: "http://example.com/fr", Lang: "fr"},
 		},
 	}

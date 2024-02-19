@@ -108,7 +108,7 @@ func TestPageReportHTML(t *testing.T) {
 		{want: 6, got: len(pageReport.Links)},
 		{want: 1, got: len(pageReport.ExternalLinks)},
 		{want: 10, got: pageReport.Words},
-		{want: 1, got: len(pageReport.Hreflangs)},
+		{want: 2, got: len(pageReport.Hreflangs)},
 		{want: 7, got: len(pageReport.Images)},
 		{want: 1, got: len(pageReport.Scripts)},
 		{want: 1, got: len(pageReport.Styles)},

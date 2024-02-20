@@ -159,7 +159,6 @@ func TestPageReportHTML(t *testing.T) {
 		{want: true, got: pageReport.Noindex},
 		{want: true, got: pageReport.ExternalLinks[0].Sponsored},
 		{want: true, got: pageReport.ExternalLinks[0].UGC},
-		{want: true, got: pageReport.ValidLang},
 	}
 
 	for _, v := range itable {
@@ -406,29 +405,5 @@ func TestNoBodyTag(t *testing.T) {
 
 	if pageReport.Words != 0 {
 		t.Errorf("NoBody: %d != 0", pageReport.Words)
-	}
-}
-
-func TestInvalidLang(t *testing.T) {
-	u, err := url.Parse(testURL)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	contentType := "text/html"
-	statusCode := 200
-	body := []byte("<html lang=\"es-invalid-lang\">")
-
-	headers := http.Header{
-		"Content-Type": []string{contentType},
-	}
-
-	pageReport, _, err := html_parser.New(u, statusCode, &headers, body)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if pageReport.ValidLang == true {
-		t.Error("ValidLang != false")
 	}
 }

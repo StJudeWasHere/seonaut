@@ -16,7 +16,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 
 	"golang.org/x/net/html"
-	"golang.org/x/text/language"
 )
 
 const (
@@ -69,7 +68,6 @@ func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.Pag
 
 	if isHTML(&pageReport) {
 		pageReport.Lang = parser.lang()
-		pageReport.ValidLang = langIsValid(pageReport.Lang)
 		pageReport.Title = parser.htmlTitle()
 		pageReport.Description = parser.htmlMetaDescription()
 		pageReport.Refresh = parser.htmlMetaRefresh()
@@ -201,19 +199,6 @@ func headingOrderIsValid(n *html.Node) bool {
 	correct := output(n)
 
 	return correct
-}
-
-// Check if a language code provided by the Content-Language header or HTML lang attribute is valid.
-func langIsValid(s string) bool {
-	langs := strings.Split(s, ",")
-	for _, l := range langs {
-		_, err := language.Parse(l)
-		if err != nil {
-			return false
-		}
-	}
-
-	return true
 }
 
 // Hash a string using sha256 and returns is hex representation as a string.

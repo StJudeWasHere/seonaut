@@ -17,7 +17,7 @@ func TestInvalidLangNoIssues(t *testing.T) {
 	pageReport := &models.PageReport{
 		Crawled:   true,
 		MediaType: "text/html",
-		ValidLang: true,
+		Lang:      "en",
 	}
 
 	reporter := reporters.NewInvalidLangReporter()
@@ -38,6 +38,7 @@ func TestInvalidLangIssues(t *testing.T) {
 	pageReport := &models.PageReport{
 		Crawled:   true,
 		MediaType: "text/html",
+		Lang:      "InvalidLangCode",
 	}
 
 	reporter := reporters.NewInvalidLangReporter()

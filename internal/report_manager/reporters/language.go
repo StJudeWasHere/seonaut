@@ -2,8 +2,10 @@ package reporters
 
 import (
 	"net/http"
+	"strings"
 
 	"golang.org/x/net/html"
+	"golang.org/x/text/language"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
@@ -22,11 +24,19 @@ func NewInvalidLangReporter() *report_manager.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.ValidLang {
+		if pageReport.Lang == "" {
 			return false
 		}
 
-		return true
+		langs := strings.Split(pageReport.Lang, ",")
+		for _, l := range langs {
+			_, err := language.Parse(l)
+			if err != nil {
+				return true
+			}
+		}
+
+		return false
 	}
 
 	return &report_manager.PageIssueReporter{

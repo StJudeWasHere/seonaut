@@ -38,7 +38,6 @@ type PageReport struct {
 	Crawled            bool
 	InSitemap          bool
 	InternalLinks      []InternalLink
-	ValidLang          bool
 	Depth              int
 	BodyHash           string
 }

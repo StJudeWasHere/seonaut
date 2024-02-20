@@ -55,11 +55,6 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	storage := urlstorage.New()
 	storage.Add(url.String())
 
-	ctx, cancel := context.WithCancel(context.Background())
-
-	q := queue.New(ctx)
-	q.Push(&httpcrawler.RequestMessage{URL: url.String()})
-
 	httpClient := httpcrawler.NewClient(&httpcrawler.ClientOptions{
 		UserAgent:        options.UserAgent,
 		BasicAuth:        options.BasicAuth,
@@ -69,6 +64,12 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	})
 
 	robotsChecker := httpcrawler.NewRobotsChecker(httpClient, options.UserAgent)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	q := queue.New(ctx)
+	if !robotsChecker.IsBlocked(url) || options.IgnoreRobotsTxt {
+		q.Push(&httpcrawler.RequestMessage{URL: url.String()})
+	}
 
 	sitemaps := robotsChecker.GetSitemaps(url)
 	if len(sitemaps) == 0 {
@@ -137,6 +138,14 @@ func (c *Crawler) crawl(ctx context.Context) {
 	}
 
 	sitemapLoaded := false
+	if !c.queue.Active() && c.options.CrawlSitemap {
+		c.queueSitemapURLs()
+		sitemapLoaded = true
+	}
+
+	if !c.queue.Active() {
+		return
+	}
 
 	for rm := range c.httpCrawler.Crawl(ctx) {
 		err := c.handleResponse(rm)

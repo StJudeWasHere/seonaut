@@ -91,7 +91,9 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 			crawl.BlockedByRobotstxt++
 		} else if r.PageReport.Noindex {
 			crawl.Noindex++
-		} else {
+		}
+
+		if r.PageReport.Crawled {
 			crawl.TotalURLs++
 		}
 

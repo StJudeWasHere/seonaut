@@ -356,7 +356,7 @@
 
 	var crawlChart = echarts.init(document.getElementById('crawl-chart'));
 	option = {
-		color: ["#2C7D91", "#FD7B6A", "#EAB791"],
+		color: ["#2C7D91", "#EAB791", "#FD7B6A"],
 		textStyle: {
 			fontFamily: "Fira Code",
 			fontSize: "1rem",
@@ -411,7 +411,7 @@
 		}],
 		series: [
 			{
-				name: 'Crawled',
+				name: 'Index',
 				type: 'bar',
 				barGap: 0,
 				stack: 'total',
@@ -420,20 +420,7 @@
 				},
 				data: [
 					{{ range .Crawls }}
-					{{ .TotalURLs }},
-					{{ end }}
-				]
-			},
-			{
-				name: 'Blocked',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .Crawls }}
-						{{ .BlockedByRobotstxt }},
+					({{ .TotalURLs }} - {{ .BlockedByRobotstxt }} - {{ .Noindex }}),
 					{{ end }}
 				]
 			},
@@ -447,6 +434,19 @@
 				data: [
 					{{ range .Crawls }}
 						{{ .Noindex }},
+					{{ end }}
+				]
+			},
+			{
+				name: 'Blocked',
+				type: 'bar',
+				stack: 'total',
+				emphasis: {
+					focus: 'series'
+				},
+				data: [
+					{{ range .Crawls }}
+						{{ .BlockedByRobotstxt }},
 					{{ end }}
 				]
 			},

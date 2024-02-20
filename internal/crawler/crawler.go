@@ -63,10 +63,10 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		AuthPass:         options.AuthPass,
 	})
 
-	robotsChecker := httpcrawler.NewRobotsChecker(httpClient, options.UserAgent)
-
 	ctx, cancel := context.WithCancel(context.Background())
 	q := queue.New(ctx)
+
+	robotsChecker := httpcrawler.NewRobotsChecker(httpClient, options.UserAgent)
 	if !robotsChecker.IsBlocked(url) || options.IgnoreRobotsTxt {
 		q.Push(&httpcrawler.RequestMessage{URL: url.String()})
 	}

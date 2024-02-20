@@ -56,7 +56,7 @@ func (r *RobotsChecker) Exists(u *url.URL) bool {
 // Returns a list of sitemaps found in the robots.txt file
 func (r *RobotsChecker) GetSitemaps(u *url.URL) []string {
 	robot, err := r.getRobotsMap(u)
-	if err != nil {
+	if err != nil || robot == nil {
 		return []string{}
 	}
 
@@ -65,42 +65,33 @@ func (r *RobotsChecker) GetSitemaps(u *url.URL) []string {
 
 // Returns a RobotsData checking if it has already been created and stored in the robotsMap
 func (r *RobotsChecker) getRobotsMap(u *url.URL) (*robotstxt.RobotsData, error) {
-	r.rlock.RLock()
+	r.rlock.Lock()
+	defer r.rlock.Unlock()
+
 	robot, ok := r.robotsMap[u.Host]
-	r.rlock.RUnlock()
-
-	if !ok {
-		resp, err := r.client.Get(u.Scheme + "://" + u.Host + "/robots.txt")
-		if err != nil {
-			r.rlock.Lock()
-			r.robotsMap[u.Host] = nil
-			r.rlock.Unlock()
-
-			return nil, err
-		}
-		defer resp.Body.Close()
-
-		if resp.StatusCode != 200 {
-			r.rlock.Lock()
-			r.robotsMap[u.Host] = nil
-			r.rlock.Unlock()
-
-			return nil, errors.New("robots.txt file does not exist")
-		}
-
-		robot, err = robotstxt.FromResponse(resp)
-		if err != nil {
-			r.rlock.Lock()
-			r.robotsMap[u.Host] = nil
-			r.rlock.Unlock()
-
-			return nil, err
-		}
-
-		r.rlock.Lock()
-		r.robotsMap[u.Host] = robot
-		r.rlock.Unlock()
+	if ok {
+		return robot, nil
 	}
+
+	resp, err := r.client.Get(u.Scheme + "://" + u.Host + "/robots.txt")
+	if err != nil {
+		r.robotsMap[u.Host] = nil
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		r.robotsMap[u.Host] = nil
+		return nil, errors.New("robots.txt file does not exist")
+	}
+
+	robot, err = robotstxt.FromResponse(resp)
+	if err != nil {
+		r.robotsMap[u.Host] = nil
+		return nil, err
+	}
+
+	r.robotsMap[u.Host] = robot
 
 	return robot, nil
 }

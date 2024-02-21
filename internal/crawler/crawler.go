@@ -27,22 +27,23 @@ type Options struct {
 }
 
 type Crawler struct {
-	url             *url.URL
-	options         *Options
-	queue           *queue.Queue
-	storage         *urlstorage.URLStorage
-	sitemapStorage  *urlstorage.URLStorage
-	sitemapChecker  *httpcrawler.SitemapChecker
-	sitemapExists   bool
-	sitemaps        []string
-	robotstxtExists bool
-	responseCounter int
-	robotsChecker   *httpcrawler.RobotsChecker
-	prStream        chan *models.PageReportMessage
-	allowedDomains  map[string]bool
-	mainDomain      string
-	httpCrawler     *httpcrawler.HttpCrawler
-	qStream         chan *httpcrawler.RequestMessage
+	url              *url.URL
+	options          *Options
+	queue            *queue.Queue
+	storage          *urlstorage.URLStorage
+	sitemapStorage   *urlstorage.URLStorage
+	sitemapChecker   *httpcrawler.SitemapChecker
+	sitemapExists    bool
+	sitemapIsBlocked bool
+	sitemaps         []string
+	robotstxtExists  bool
+	responseCounter  int
+	robotsChecker    *httpcrawler.RobotsChecker
+	prStream         chan *models.PageReportMessage
+	allowedDomains   map[string]bool
+	mainDomain       string
+	httpCrawler      *httpcrawler.HttpCrawler
+	qStream          chan *httpcrawler.RequestMessage
 }
 
 func NewCrawler(url *url.URL, options *Options) *Crawler {
@@ -72,29 +73,50 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	}
 
 	sitemaps := robotsChecker.GetSitemaps(url)
+	nonBlockedSitemaps := []string{}
 	if len(sitemaps) == 0 {
 		sitemaps = []string{url.Scheme + "://" + url.Host + "/sitemap.xml"}
 	}
+
+	sitemapIsBlocked := false
+	for _, sm := range sitemaps {
+		parsedSm, err := url.Parse(sm)
+		if err != nil {
+			continue
+		}
+
+		if robotsChecker.IsBlocked(parsedSm) {
+			sitemapIsBlocked = true
+			if !options.IgnoreRobotsTxt {
+				continue
+			}
+		}
+
+		nonBlockedSitemaps = append(nonBlockedSitemaps, sm)
+	}
+
+	sitemaps = nonBlockedSitemaps
 
 	sitemapChecker := httpcrawler.NewSitemapChecker(httpClient, options.MaxPageReports)
 	qStream := make(chan *httpcrawler.RequestMessage)
 
 	c := &Crawler{
-		url:             url,
-		options:         options,
-		queue:           q,
-		storage:         storage,
-		sitemapStorage:  urlstorage.New(),
-		sitemapChecker:  sitemapChecker,
-		sitemapExists:   sitemapChecker.SitemapExists(sitemaps),
-		sitemaps:        sitemaps,
-		robotsChecker:   robotsChecker,
-		robotstxtExists: robotsChecker.Exists(url),
-		allowedDomains:  map[string]bool{mainDomain: true, "www." + mainDomain: true},
-		mainDomain:      mainDomain,
-		prStream:        make(chan *models.PageReportMessage),
-		qStream:         qStream,
-		httpCrawler:     httpcrawler.New(httpClient, qStream),
+		url:              url,
+		options:          options,
+		queue:            q,
+		storage:          storage,
+		sitemapStorage:   urlstorage.New(),
+		sitemapChecker:   sitemapChecker,
+		sitemapExists:    sitemapChecker.SitemapExists(sitemaps),
+		sitemapIsBlocked: sitemapIsBlocked,
+		sitemaps:         sitemaps,
+		robotsChecker:    robotsChecker,
+		robotstxtExists:  robotsChecker.Exists(url),
+		allowedDomains:   map[string]bool{mainDomain: true, "www." + mainDomain: true},
+		mainDomain:       mainDomain,
+		prStream:         make(chan *models.PageReportMessage),
+		qStream:          qStream,
+		httpCrawler:      httpcrawler.New(httpClient, qStream),
 	}
 
 	go func() {
@@ -292,6 +314,11 @@ func (c *Crawler) SitemapExists() bool {
 // Returns true if the robots.txt file exists
 func (c *Crawler) RobotstxtExists() bool {
 	return c.robotstxtExists
+}
+
+// Returns true if any of the website's sitemaps is blocked in the robots.txt file
+func (c *Crawler) SitemapIsBlocked() bool {
+	return c.sitemapIsBlocked
 }
 
 // Returns a slice with all the crawlable Links from the PageReport's links.

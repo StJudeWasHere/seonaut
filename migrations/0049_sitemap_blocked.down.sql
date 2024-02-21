@@ -1,0 +1,1 @@
+ALTER TABLE `crawls` DROP COLUMN `sitemap_blocked`;

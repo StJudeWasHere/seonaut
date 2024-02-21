@@ -20,6 +20,7 @@ type Crawl struct {
 	BlockedByRobotstxt    int // URLs blocked by robots.txt
 	Noindex               int // URLS with noindex attribute
 	SitemapExists         bool
+	SitemapIsBlocked      bool
 	RobotstxtExists       bool
 	InternalFollowLinks   int
 	InternalNoFollowLinks int

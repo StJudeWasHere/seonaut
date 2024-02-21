@@ -134,6 +134,7 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 
 	crawl.RobotstxtExists = c.RobotstxtExists()
 	crawl.SitemapExists = c.SitemapExists()
+	crawl.SitemapIsBlocked = c.SitemapIsBlocked()
 
 	crawl, err = s.store.SaveEndCrawl(crawl)
 	if err != nil {

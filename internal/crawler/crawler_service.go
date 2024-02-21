@@ -93,9 +93,7 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 			crawl.Noindex++
 		}
 
-		if r.PageReport.Crawled {
-			crawl.TotalURLs++
-		}
+		crawl.TotalURLs++
 
 		// Count total internal follow and nofollow links.
 		for _, l := range r.PageReport.Links {

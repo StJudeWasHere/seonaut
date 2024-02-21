@@ -187,23 +187,21 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 	pageReport.Depth = r.Depth
 	pageReport.BlockedByRobotstxt = c.robotsChecker.IsBlocked(parsedURL)
 	pageReport.InSitemap = c.sitemapStorage.Seen(r.URL)
-
-	if pageReport.Nofollow && !c.options.FollowNofollow {
-		return nil
-	}
-
 	pageReport.Crawled = true
+
 	c.responseCounter++
 
-	crawlable := [][]*url.URL{
-		c.getCrawlableLinks(pageReport),
-		c.getResourceURLs(pageReport),
-		c.getCrawlableURLs(pageReport),
-	}
-
 	urls := []*url.URL{}
-	for _, c := range crawlable {
-		urls = append(urls, c...)
+	if c.options.FollowNofollow || !pageReport.Nofollow {
+		crawlable := [][]*url.URL{
+			c.getCrawlableLinks(pageReport),
+			c.getResourceURLs(pageReport),
+			c.getCrawlableURLs(pageReport),
+		}
+
+		for _, c := range crawlable {
+			urls = append(urls, c...)
+		}
 	}
 
 	for _, t := range urls {

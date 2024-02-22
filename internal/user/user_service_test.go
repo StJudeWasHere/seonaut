@@ -47,6 +47,7 @@ func (s *storage) FindUserByEmail(e string) *user.User {
 
 	return &user.User{}
 }
+func (s *storage) DeleteUser(uid int) {}
 
 var service = user.NewService(&storage{})
 

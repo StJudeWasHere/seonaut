@@ -133,6 +133,7 @@ func (app *App) Run() {
 	http.HandleFunc("/resources", app.requireAuth(app.handleResourcesView))
 	http.HandleFunc("/signout", app.requireAuth(app.handleSignout))
 	http.HandleFunc("/account", app.requireAuth(app.handleAccount))
+	http.HandleFunc("/delete-account", app.requireAuth((app.handleDeleteUser)))
 	http.HandleFunc("/explorer", app.requireAuth(app.handleExplorer))
 	http.HandleFunc("/signup", app.handleSignup)
 	http.HandleFunc("/signin", app.handleSignin)

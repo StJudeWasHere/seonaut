@@ -13,6 +13,7 @@ type UserStore interface {
 	UserSignup(string, string) (*User, error)
 	FindUserByEmail(string) *User
 	UserUpdatePassword(email, hashedPassword string) error
+	DeleteUser(int)
 }
 
 type Service struct {
@@ -109,4 +110,9 @@ func (s *Service) GetUserFromContext(c context.Context) (*User, bool) {
 // user value set.
 func (s *Service) SetUserToContext(user *User, c context.Context) context.Context {
 	return context.WithValue(c, "user", user)
+}
+
+// Delete a User and all its associated projects and crawl data.
+func (s *Service) DeleteUser(user *User) {
+	s.store.DeleteUser(user.Id)
 }

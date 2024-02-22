@@ -1,0 +1,37 @@
+{{ template "head" . }}
+
+<div class="panel">
+
+	<div class="box box-first box-highlight">
+		<div class="col col-main">
+			<div class="content content-centered">
+				<div>
+					<h2>Delete Account</h2>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="box box-highlight">
+		<div class="col col-main">
+			<div class="content">
+				<p>By deleting your user account, you'll also be saying goodbye to all your projects data and crawl history.</p>
+				<p><strong>This action is permanent</strong>, so once it's done, there's no turning back.</p>
+				<p>Are you sure you want to proceed?</p>
+			</div>
+		</div>
+	</div>
+
+	<div class="box bg-alert">
+		<div class="col col-main">
+			<div class="content-s">
+				<form method="POST">
+					<input type="submit" value="Delete" class="inline"> or <a href="/">cancel</a>.
+				</form>
+			</div>
+		</div>	
+	</div>
+
+</div>
+
+{{ template "footer" . }}

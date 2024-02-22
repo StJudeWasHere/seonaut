@@ -32,7 +32,7 @@ func (ds *Datastore) FindUserByEmail(email string) *user.User {
 			email,
 			password
 		FROM users
-		WHERE email = ?`
+		WHERE email = ? AND deleting = 0`
 
 	row := ds.db.QueryRow(query, email)
 	err := row.Scan(&u.Id, &u.Email, &u.Password)
@@ -52,7 +52,7 @@ func (ds *Datastore) FindUserById(id int) *user.User {
 			email,
 			password
 		FROM users
-		WHERE id = ?`
+		WHERE id = ? AND deleting = 0`
 
 	row := ds.db.QueryRow(query, id)
 	err := row.Scan(&u.Id, &u.Email, &u.Password)
@@ -74,4 +74,27 @@ func (ds *Datastore) UserUpdatePassword(email, hashedPassword string) error {
 	_, err := ds.db.Exec(query, hashedPassword, email)
 
 	return err
+}
+
+// DeleteUser deletes an existing user and all its associated projects and crawl data.
+// It first updates the user to set the deleting field to 1. Once all the user data has
+// been removed it proceeds to actually delete the user.
+func (ds *Datastore) DeleteUser(uid int) {
+	query := `UPDATE users SET deleting=1 WHERE id = ?`
+	_, err := ds.db.Exec(query, uid)
+	if err != nil {
+		log.Printf("DeleteUser: update: pid %d %v\n", uid, err)
+		return
+	}
+
+	projects := ds.FindProjectsByUser(uid)
+	for _, p := range projects {
+		ds.DeleteProject(&p)
+	}
+
+	deleteQuery := "DELETE FROM users WHERE id = ?"
+	_, err = ds.db.Exec(deleteQuery, uid)
+	if err != nil {
+		log.Printf("DeleteUser: %v", err)
+	}
 }

@@ -57,6 +57,40 @@ func (app *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 	app.renderer.RenderTemplate(w, "signup", pageView)
 }
 
+// handleDeleteUser handles the HTTP GET and POST requests for the delete user account functionality.
+//
+// The function handles both GET and POST HTTP methods.
+// GET: it renders the delete page with the appropriate data.
+// POST: it sign's out the user and deletes the account including all its associated data.
+func (app *App) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	user, ok := app.userService.GetUserFromContext(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		session, _ := app.cookie.Get(r, "SESSION_ID")
+		session.Values["authenticated"] = false
+		session.Values["uid"] = nil
+		session.Save(r, w)
+
+		app.userService.DeleteUser(user)
+
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	pageView := &PageView{
+		PageTitle: "DELETE_ACCOUNT_VIEW",
+		User:      *user,
+	}
+
+	app.renderer.RenderTemplate(w, "delete_account", pageView)
+}
+
 // handleSignin handles the HTTP GET and POST requests for the sign-in functionality.
 //
 // The function handles both GET and POST HTTP methods.

@@ -70,6 +70,25 @@ func (app *App) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	data := &struct {
+		Crawling bool
+	}{}
+
+	pageView := &PageView{
+		PageTitle: "DELETE_ACCOUNT_VIEW",
+		User:      *user,
+		Data:      data,
+	}
+
+	pv := app.projectViewService.GetProjectViews((user.Id))
+	for _, v := range pv {
+		if !v.Crawl.IssuesEnd.Valid || v.Project.Deleting {
+			data.Crawling = true
+			app.renderer.RenderTemplate(w, "delete_account", pageView)
+			return
+		}
+	}
+
 	if r.Method == http.MethodPost {
 		session, _ := app.cookie.Get(r, "SESSION_ID")
 		session.Values["authenticated"] = false
@@ -81,11 +100,6 @@ func (app *App) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
-	}
-
-	pageView := &PageView{
-		PageTitle: "DELETE_ACCOUNT_VIEW",
-		User:      *user,
 	}
 
 	app.renderer.RenderTemplate(w, "delete_account", pageView)

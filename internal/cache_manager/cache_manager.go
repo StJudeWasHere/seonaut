@@ -9,8 +9,6 @@ type CrawlCacheHandler interface {
 	RemoveCrawlCache(crawl *models.Crawl)
 }
 
-type crawlCacheCallback func(*models.Crawl)
-
 type CacheManager struct {
 	handlers []CrawlCacheHandler
 }

@@ -411,11 +411,7 @@ func (ds *Datastore) GetPreviousCrawl(p *models.Project) (*models.Crawl, error) 
 		&crawl.Noindex,
 	)
 
-	if err != nil {
-		return crawl, err
-	}
-
-	return crawl, nil
+	return crawl, err
 }
 
 func (ds *Datastore) DeleteCrawlData(crawl *models.Crawl) {

@@ -21,7 +21,7 @@ import (
 // - "p" the number of page to be loaded, in case the resource page has pagination.
 func (app *App) handleResourcesView(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return

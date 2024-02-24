@@ -8,6 +8,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type contextKey string
+
+const UserKey contextKey = "user"
+
 type UserStore interface {
 	FindUserById(int) *User
 	UserSignup(string, string) (*User, error)
@@ -100,7 +104,7 @@ func (s *Service) UpdatePassword(email, password string) error {
 
 // GetUserFromContext takes a context as input and retrieves the associated User value from it, if present.
 func (s *Service) GetUserFromContext(c context.Context) (*User, bool) {
-	v := c.Value("user")
+	v := c.Value(UserKey)
 	user, ok := v.(*User)
 
 	return user, ok
@@ -109,7 +113,7 @@ func (s *Service) GetUserFromContext(c context.Context) (*User, bool) {
 // SetUserToContext takes a User and a context as input and returns a new context with the given
 // user value set.
 func (s *Service) SetUserToContext(user *User, c context.Context) context.Context {
-	return context.WithValue(c, "user", user)
+	return context.WithValue(c, UserKey, user)
 }
 
 // Delete a User and all its associated projects and crawl data.

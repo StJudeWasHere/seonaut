@@ -34,7 +34,7 @@ func (app *App) handleCrawl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
@@ -47,7 +47,7 @@ func (app *App) handleCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if p.BasicAuth == true {
+	if p.BasicAuth {
 		http.Redirect(w, r, "/crawl-auth?id="+strconv.Itoa(pid), http.StatusSeeOther)
 
 		return
@@ -75,7 +75,7 @@ func (app *App) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
@@ -124,7 +124,7 @@ func (app *App) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
@@ -177,7 +177,7 @@ func (app *App) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 
 		return
@@ -256,16 +256,13 @@ func (app *App) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 		ticker := time.NewTicker(pingPeriod)
 		defer ticker.Stop()
 
-		for {
-			select {
-			case <-ticker.C:
-				connLock.Lock()
-				conn.SetWriteDeadline(time.Now().Add(writeWait))
-				if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
-					return
-				}
-				connLock.Unlock()
+		for range ticker.C {
+			connLock.Lock()
+			conn.SetWriteDeadline(time.Now().Add(writeWait))
+			if err := conn.WriteMessage(websocket.PingMessage, nil); err != nil {
+				return
 			}
+			connLock.Unlock()
 		}
 	}()
 

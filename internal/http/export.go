@@ -22,7 +22,7 @@ func (app *App) handleExport(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}
@@ -55,7 +55,7 @@ func (app *App) handleDownloadCSV(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
@@ -94,7 +94,7 @@ func (app *App) handleSitemap(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
@@ -132,7 +132,7 @@ func (app *App) handleExportResources(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return

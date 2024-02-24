@@ -22,7 +22,7 @@ type ExplorerView struct {
 func (app *App) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	// Get user from the request's context
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}

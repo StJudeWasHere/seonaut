@@ -7,6 +7,8 @@ import (
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
+type contextKey string
+
 const (
 	id       = 1
 	email    = "user@example.com"
@@ -123,7 +125,7 @@ func TestSetUserToContext(t *testing.T) {
 	ctx := context.Background()
 	newCtx := service.SetUserToContext(testUser, ctx)
 
-	resultUser, ok := newCtx.Value("user").(*user.User)
+	resultUser, ok := newCtx.Value(user.UserKey).(*user.User)
 
 	if !ok || resultUser != testUser {
 		t.Errorf("SetUserToContext did not set the user correctly, got %v, expected %v", resultUser, testUser)
@@ -133,7 +135,7 @@ func TestSetUserToContext(t *testing.T) {
 // TestGetUserFromContext_UserExists verifies the behavior of the GetUserFromContext function
 // in the user service when a user exists in the context.
 func TestGetUserFromContext_UserExists(t *testing.T) {
-	ctx := context.WithValue(context.Background(), "user", testUser)
+	ctx := context.WithValue(context.Background(), user.UserKey, testUser)
 
 	resultUser, ok := service.GetUserFromContext(ctx)
 

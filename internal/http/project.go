@@ -14,7 +14,7 @@ import (
 // Handles the user homepage request and lists all the user's projects.
 func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}
@@ -23,7 +23,7 @@ func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 
 	var refresh bool
 	for _, v := range views {
-		if v.Crawl.Id > 0 && (v.Crawl.IssuesEnd.Valid == false || v.Project.Deleting) {
+		if v.Crawl.Id > 0 && (!v.Crawl.IssuesEnd.Valid || v.Project.Deleting) {
 			refresh = true
 		}
 	}
@@ -43,7 +43,7 @@ func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 // handleProjectAdd handles the form for adding a new project.
 func (app *App) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
@@ -142,7 +142,7 @@ func (app *App) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
@@ -171,7 +171,7 @@ func (app *App) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return

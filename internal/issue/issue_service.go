@@ -116,7 +116,7 @@ func (s *Service) GetPaginatedReportsByIssue(crawlId int64, currentPage int, iss
 	}
 
 	if currentPage < 1 || currentPage > paginator.TotalPages {
-		return models.PaginatorView{}, errors.New("Page out of bounds")
+		return models.PaginatorView{}, errors.New("page out of bounds")
 	}
 
 	if currentPage < paginator.TotalPages {

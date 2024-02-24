@@ -160,7 +160,7 @@ func (app *App) handleSignin(w http.ResponseWriter, r *http.Request) {
 // GET: it renders the account management form with the appropriate data.
 func (app *App) handleAccount(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return

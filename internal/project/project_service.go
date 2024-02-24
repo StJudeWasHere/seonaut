@@ -36,7 +36,7 @@ func (s *Service) SaveProject(project *models.Project, userId int) error {
 	}
 
 	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-		return errors.New("Protocol not supported")
+		return errors.New("protocol not supported")
 	}
 
 	s.storage.SaveProject(project, userId)

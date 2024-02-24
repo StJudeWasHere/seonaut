@@ -35,7 +35,7 @@ type DashboardView struct {
 // It expects a query parameter "pid" containing the project ID.
 func (app *App) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	user, ok := app.userService.GetUserFromContext(r.Context())
-	if ok == false {
+	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return

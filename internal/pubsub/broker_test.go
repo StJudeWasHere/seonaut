@@ -1,6 +1,8 @@
 package pubsub_test
 
 import (
+	"sync"
+	"sync/atomic"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/pubsub"
@@ -43,5 +45,41 @@ func TestPubSubUnsusbscribe(t *testing.T) {
 
 	if counter != expected {
 		t.Errorf("%v= %v\n", counter, expected)
+	}
+}
+
+// Test PubSub concurrency.
+func TestPubSubConcurrent(t *testing.T) {
+	const numSubscribers = 10
+	const numMessages = 1000
+
+	broker := pubsub.New()
+
+	var receivedMessages int32
+	var wg sync.WaitGroup
+	for i := 0; i < numSubscribers; i++ {
+		wg.Add(1)
+		go func(id int) {
+			defer wg.Done()
+			broker.NewSubscriber("channel", func(m *pubsub.Message) error {
+				atomic.AddInt32(&receivedMessages, 1)
+				return nil
+			})
+		}(i)
+	}
+	wg.Wait()
+
+	wg.Add(numMessages)
+	for i := 0; i < numMessages; i++ {
+		go func(msgID int) {
+			defer wg.Done()
+			broker.Publish("channel", &pubsub.Message{})
+		}(i)
+	}
+	wg.Wait()
+
+	expectedMessages := numSubscribers * numMessages
+	if int(receivedMessages) != expectedMessages {
+		t.Errorf("Expected %d messages, but received %d", expectedMessages, receivedMessages)
 	}
 }

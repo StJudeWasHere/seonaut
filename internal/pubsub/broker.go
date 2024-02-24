@@ -31,34 +31,30 @@ func New() *Broker {
 
 // Returns a new subsciber to the topic.
 func (b *Broker) NewSubscriber(topic string, c func(*Message) error) *Subscriber {
+	b.lock.Lock()
+	defer b.lock.Unlock()
+
 	s := &Subscriber{
 		Id:       uuid.New(),
 		Topic:    topic,
 		Callback: c,
 	}
 
-	b.lock.Lock()
 	b.subscribers[topic] = append(b.subscribers[topic], s)
-	b.lock.Unlock()
 
 	return s
 }
 
 // Unsubscribes a subscriber.
 func (b *Broker) Unsubscribe(s *Subscriber) {
-	b.lock.RLock()
-	defer b.lock.RUnlock()
+	b.lock.Lock()
+	defer b.lock.Unlock()
 
 	subscribers := b.subscribers[s.Topic]
 
 	for i, v := range subscribers {
 		if v.Id == s.Id {
-			subs := b.subscribers[s.Topic]
-			r := make([]*Subscriber, 0)
-			r = append(r, subs[:i]...)
-			r = append(r, subs[i+1:]...)
-
-			b.subscribers[s.Topic] = r
+			b.subscribers[s.Topic] = append(subscribers[:i], subscribers[i+1:]...)
 
 			// The topic is removed once there are no more subscribers.
 			if len(b.subscribers[s.Topic]) == 0 {
@@ -72,14 +68,19 @@ func (b *Broker) Unsubscribe(s *Subscriber) {
 
 // Publishes a message to all subscribers of a topic.
 func (b *Broker) Publish(topic string, m *Message) {
-	b.lock.RLock()
-	subscribers := b.subscribers[topic]
-	b.lock.RUnlock()
+	b.lock.Lock()
+	defer b.lock.Unlock()
 
-	for _, v := range subscribers {
+	subscribers := b.subscribers[topic]
+
+	for i, v := range subscribers {
 		err := v.Callback(m)
 		if err != nil {
-			b.Unsubscribe(v)
+			b.subscribers[topic] = append(subscribers[:i], subscribers[i+1:]...)
 		}
+	}
+
+	if len(b.subscribers[topic]) == 0 {
+		delete(b.subscribers, topic)
 	}
 }

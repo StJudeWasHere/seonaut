@@ -7,8 +7,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
-type contextKey string
-
 const (
 	id       = 1
 	email    = "user@example.com"

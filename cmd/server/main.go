@@ -57,7 +57,7 @@ func main() {
 
 	// Build services.
 	broker := pubsub.New()
-	cache := cache.New(config.Cache)
+	cache := cache.NewMemCache()
 
 	issueService := issue.NewService(ds, cache)
 	reportService := report.NewService(ds, cache)

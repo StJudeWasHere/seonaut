@@ -297,9 +297,9 @@ func (s *Service) RemoveCrawlCache(crawl *models.Crawl) {
 func (s *Service) GetStatusCodeByDepth(crawlId int64) []StatusCodeByDepth {
 	key := fmt.Sprintf("status-by-depth-%d", crawlId)
 	v := []StatusCodeByDepth{}
-	if err := s.cache.Get(key, v); err != nil {
+	if err := s.cache.Get(key, &v); err != nil {
 		v = s.store.GetStatusCodeByDepth(crawlId)
-		if err := s.cache.Set(key, v); err != nil {
+		if err := s.cache.Set(key, &v); err != nil {
 			log.Printf("GetStatusCodeByDepth: cacheSet: %v\n", err)
 		}
 	}

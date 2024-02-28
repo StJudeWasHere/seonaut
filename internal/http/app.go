@@ -120,6 +120,7 @@ func (app *App) Run() {
 	http.HandleFunc("/edit-project", app.requireAuth(app.handleProjectEdit))
 	http.HandleFunc("/delete-project", app.requireAuth(app.handleDeleteProject))
 	http.HandleFunc("/crawl", app.requireAuth(app.handleCrawl))
+	http.HandleFunc("/crawl-stop", app.requireAuth(app.handleStopCrawl))
 	http.HandleFunc("/crawl-live", app.requireAuth(app.handleCrawlLive))
 	http.HandleFunc("/crawl-auth", app.requireAuth(app.handleCrawlAuth))
 	http.HandleFunc("/crawl-ws", app.requireAuth(app.handleCrawlWs))

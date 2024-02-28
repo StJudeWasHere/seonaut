@@ -1,9 +1,11 @@
 package crawler
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/cache_manager"
@@ -40,6 +42,8 @@ type Service struct {
 	config        *Config
 	cacheManager  *cache_manager.CacheManager
 	reportManager *report_manager.ReportManager
+	crawlers      map[int64]*Crawler
+	lock          *sync.RWMutex
 }
 
 func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.CacheManager, rm *report_manager.ReportManager) *Service {
@@ -49,6 +53,8 @@ func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.C
 		config:        c,
 		cacheManager:  cm,
 		reportManager: rm,
+		crawlers:      make(map[int64]*Crawler),
+		lock:          &sync.RWMutex{},
 	}
 }
 
@@ -81,7 +87,21 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 		return nil, err
 	}
 
+	if _, ok := s.crawlers[p.Id]; ok {
+		return nil, errors.New("project is already being crawled")
+	}
+
 	c := NewCrawler(u, options)
+
+	s.lock.Lock()
+	s.crawlers[p.Id] = c
+	s.lock.Unlock()
+
+	defer func(id int64) {
+		s.lock.Lock()
+		delete(s.crawlers, id)
+		s.lock.Unlock()
+	}(p.Id)
 
 	for r := range c.Stream() {
 		// URLs are added to the TotalURLs count if they are not blocked
@@ -164,4 +184,15 @@ func (s *Service) GetLastCrawls(p models.Project) []models.Crawl {
 	}
 
 	return crawls
+}
+
+// Get the crawler from the crawlers map and stop it.
+// In case the crawler is not running it just returns.
+func (s *Service) StopCrawler(p models.Project) {
+	crawler, ok := s.crawlers[p.Id]
+	if !ok {
+		return
+	}
+
+	crawler.Stop()
 }

@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -54,6 +55,45 @@ func (app *App) handleCrawl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	go app.startCrawler(p)
+
+	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+}
+
+// handleStopCrawl handles the crawler stopping.
+// It expects a query paramater "pid" containinng the project ID that is being crawled.
+// Aftar making sure the user owns the project it is stopped.
+func (app *App) handleStopCrawl(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	user, ok := app.userService.GetUserFromContext(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+
+		return
+	}
+
+	p, err := app.projectService.FindProject(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+		return
+	}
+
+	go app.crawlerService.StopCrawler(p)
+
+	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
+		data := struct{ Crawling bool }{Crawling: false}
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusCreated)
+		json.NewEncoder(w).Encode(data)
+
+		return
+	}
 
 	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 }
@@ -230,11 +270,13 @@ func (app *App) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 				URL        string
 				Crawled    int
 				Discovered int
+				Crawling   bool
 			}{
 				StatusCode: msg.PageReport.StatusCode,
 				URL:        msg.PageReport.URL,
 				Crawled:    msg.Crawled,
 				Discovered: msg.Discovered,
+				Crawling:   msg.Crawling,
 			}
 		}
 

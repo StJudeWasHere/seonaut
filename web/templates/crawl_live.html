@@ -30,6 +30,15 @@
 				<div class="progress" id="progress"></div>
 			</div>
 		</div>
+
+		<div class="col col-actions borderless highlight">
+				<a class="progress-stop" id="progress-stop" href="/crawl-stop?pid={{ .Data.Project.Id }}">
+					Stop Crawler
+				</a>
+				<div class="progress-stopping" id="progress-stopping">
+					<span>Stopping Crawler...</span>
+				</div>
+		</div>
 	</div>
 
 	<noscript>
@@ -77,8 +86,56 @@
 		const progress = document.getElementById("progress")
 		const counter = document.getElementById("counter")
 		const progressBox = document.getElementById("progress-box")
+		const progressStop = document.getElementById("progress-stop")
+		const progressStopping = document.getElementById("progress-stopping")
 
+		progressStopping.style.display = "none";
 		let started = false;
+		let crawling = true;
+
+		progressStop.addEventListener("click", function(event) {
+			event.preventDefault();
+
+			progressStop.style.display = "none";
+			progressStopping.style.display = "flex";
+			crawling = false;
+
+			let xhr = new XMLHttpRequest();
+			let url = event.target.href;
+
+			xhr.open('GET', url, true);
+			xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+			xhr.onload = function () {
+				let error = false;
+				let status = xhr.status;
+				if (status >= 200 && status < 300) {
+					try {
+						var response = JSON.parse(xhr.responseText);
+						if (response.Crawling !== false) {
+							error = true;
+						}
+					} catch (e) {
+						error = true;
+					}
+				} else {
+					error = true;
+				}
+
+				if (error) {
+					progressStop.style.display = "flex";
+					progressStopping.style.display = "none";
+					crawling = true;
+				}
+			};
+
+			xhr.onerror = function () {
+				progressStop.style.display = "flex";
+				progressStopping.style.display = "none";
+				crawling = true;
+			};
+
+			xhr.send();
+		});
 
 		addMsg = msg => {
 			t = msgTmpl.content.cloneNode(true)
@@ -130,6 +187,13 @@
 
 				t.querySelector(".url").textContent = data.URL
 				container.prepend(t)
+
+				if (crawling && !data.Crawling) {
+					progressStop.style.display = "none";
+					progressStopping.style.display = "flex";
+					crawling = false;
+				}
+
 				break
 			case 'IssuesInit':
 				addMsg("Crawl completed. Creating the report, please wait...")
@@ -137,7 +201,6 @@
 			case 'CrawlEnd':
 				conn.close()
 				let totalURLs = msg.Data
-				console.log(msg)
 				if (totalURLs > 0) {
 					window.location = "/dashboard?pid={{ .Data.Project.Id }}"
 				} else {

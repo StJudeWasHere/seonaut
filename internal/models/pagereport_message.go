@@ -12,4 +12,5 @@ type PageReportMessage struct {
 	Header     *http.Header
 	Crawled    int
 	Discovered int
+	Crawling   bool
 }

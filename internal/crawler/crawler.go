@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/url"
 	"strings"
+	"sync"
 
 	"github.com/stjudewashere/seonaut/internal/html_parser"
 	"github.com/stjudewashere/seonaut/internal/httpcrawler"
@@ -44,6 +45,9 @@ type Crawler struct {
 	mainDomain       string
 	httpCrawler      *httpcrawler.HttpCrawler
 	qStream          chan *httpcrawler.RequestMessage
+	cancel           context.CancelFunc
+	crawling         bool
+	crawlLock        sync.RWMutex
 }
 
 func NewCrawler(url *url.URL, options *Options) *Crawler {
@@ -64,8 +68,8 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		AuthPass:         options.AuthPass,
 	})
 
-	ctx, cancel := context.WithCancel(context.Background())
-	q := queue.New(ctx)
+	qctx, cancelQueue := context.WithCancel(context.Background())
+	q := queue.New(qctx)
 
 	robotsChecker := httpcrawler.NewRobotsChecker(httpClient, options.UserAgent)
 	if !robotsChecker.IsBlocked(url) || options.IgnoreRobotsTxt {
@@ -99,6 +103,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 
 	sitemapChecker := httpcrawler.NewSitemapChecker(httpClient, options.MaxPageReports)
 	qStream := make(chan *httpcrawler.RequestMessage)
+	ctx, cancel := context.WithCancel(context.Background())
 
 	c := &Crawler{
 		url:              url,
@@ -117,17 +122,18 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		prStream:         make(chan *models.PageReportMessage),
 		qStream:          qStream,
 		httpCrawler:      httpcrawler.New(httpClient, qStream),
+		cancel:           cancel,
+		crawling:         true,
 	}
 
+	go c.queueStreamer(qctx)
 	go func() {
-		defer close(c.qStream)
-		c.queueStreamer(ctx)
-	}()
+		defer func() {
+			cancelQueue()
+			cancel()
+		}()
 
-	go func() {
-		defer close(c.prStream)
 		c.crawl(ctx)
-		cancel()
 	}()
 
 	return c
@@ -142,6 +148,7 @@ func (c *Crawler) Stream() <-chan *models.PageReportMessage {
 // Polls URLs from the queue and sends them into the qStream channel.
 // queueStreamer shuts down when the ctx context is done.
 func (c *Crawler) queueStreamer(ctx context.Context) {
+	defer close(c.qStream)
 	for {
 		select {
 		case <-ctx.Done():
@@ -155,6 +162,8 @@ func (c *Crawler) queueStreamer(ctx context.Context) {
 // through the pr channel. It will end when there are no more URLs to crawl
 // or the MaxPageReports limit is hit.
 func (c *Crawler) crawl(ctx context.Context) {
+	defer close(c.prStream)
+
 	if c.sitemapExists && c.options.CrawlSitemap {
 		c.sitemapChecker.ParseSitemaps(c.sitemaps, c.loadSitemapURLs)
 	}
@@ -226,6 +235,10 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 		}
 	}
 
+	c.crawlLock.RLock()
+	crawling := c.crawling
+	c.crawlLock.RUnlock()
+
 	for _, t := range urls {
 		if c.storage.Seen(t.String()) {
 			continue
@@ -236,6 +249,7 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 		if !c.options.IgnoreRobotsTxt && c.robotsChecker.IsBlocked(t) {
 			c.prStream <- &models.PageReportMessage{
 				Crawled:    c.responseCounter,
+				Crawling:   crawling,
 				Discovered: c.queue.Count(),
 				HtmlNode:   htmlNode,
 				Header:     &r.Response.Header,
@@ -259,6 +273,7 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 			HtmlNode:   htmlNode,
 			Header:     &r.Response.Header,
 			Crawled:    c.responseCounter,
+			Crawling:   crawling,
 			Discovered: c.queue.Count(),
 		}
 	}
@@ -397,4 +412,12 @@ func (c *Crawler) getCrawlableURLs(p *models.PageReport) []*url.URL {
 	}
 
 	return urls
+}
+
+// Stops the cralwer by canceling the cralwer context.
+func (c *Crawler) Stop() {
+	c.cancel()
+	c.crawlLock.Lock()
+	c.crawling = false
+	c.crawlLock.Unlock()
 }

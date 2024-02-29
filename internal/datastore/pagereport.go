@@ -112,11 +112,11 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 	}
 
 	if len(r.ExternalLinks) > 0 {
-		sqlString := "INSERT INTO external_links (pagereport_id, crawl_id, url, rel, nofollow, text, sponsored, ugc) values "
+		sqlString := "INSERT INTO external_links (pagereport_id, crawl_id, url, rel, nofollow, text, sponsored, ugc, status_code) values "
 		v := []interface{}{}
 		for _, l := range r.ExternalLinks {
-			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.Rel, l.NoFollow, Truncate(l.Text, 1024), l.Sponsored, l.UGC)
+			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?, ?),"
+			v = append(v, lid, cid, l.URL, l.Rel, l.NoFollow, Truncate(l.Text, 1024), l.Sponsored, l.UGC, l.StatusCode)
 		}
 		sqlString = sqlString[0 : len(sqlString)-1]
 		stmt, err := ds.db.Prepare(sqlString)
@@ -656,8 +656,9 @@ func (ds *Datastore) FindExternalLinks(pageReport *models.PageReport, cid int64,
 			rel,
 			nofollow,
 			text,
-			Sponsored,
-			UGC
+			sponsored,
+			ugc,
+			status_code
 		FROM external_links
 		WHERE pagereport_id = ?
 		LIMIT ?,?
@@ -670,7 +671,7 @@ func (ds *Datastore) FindExternalLinks(pageReport *models.PageReport, cid int64,
 
 	for lrows.Next() {
 		l := models.Link{}
-		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.Sponsored, &l.UGC)
+		err = lrows.Scan(&l.URL, &l.Rel, &l.NoFollow, &l.Text, &l.Sponsored, &l.UGC, &l.StatusCode)
 		if err != nil {
 			log.Println(err)
 			continue

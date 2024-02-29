@@ -3,6 +3,7 @@ package crawler
 import (
 	"context"
 	"log"
+	"net/http"
 	"net/url"
 	"strings"
 	"sync"
@@ -15,39 +16,47 @@ import (
 )
 
 type Options struct {
-	MaxPageReports  int
-	IgnoreRobotsTxt bool
-	FollowNofollow  bool
-	IncludeNoindex  bool
-	UserAgent       string
-	CrawlSitemap    bool
-	AllowSubdomains bool
-	BasicAuth       bool
-	AuthUser        string
-	AuthPass        string
+	MaxPageReports     int
+	IgnoreRobotsTxt    bool
+	FollowNofollow     bool
+	IncludeNoindex     bool
+	UserAgent          string
+	CrawlSitemap       bool
+	AllowSubdomains    bool
+	BasicAuth          bool
+	AuthUser           string
+	AuthPass           string
+	CheckExternalLinks bool
 }
 
+type Client interface {
+	Get(u string) (*http.Response, error)
+	Head(u string) (*http.Response, error)
+	Do(req *http.Request) (*http.Response, error)
+}
 type Crawler struct {
-	url              *url.URL
-	options          *Options
-	queue            *queue.Queue
-	storage          *urlstorage.URLStorage
-	sitemapStorage   *urlstorage.URLStorage
-	sitemapChecker   *httpcrawler.SitemapChecker
-	sitemapExists    bool
-	sitemapIsBlocked bool
-	sitemaps         []string
-	robotstxtExists  bool
-	responseCounter  int
-	robotsChecker    *httpcrawler.RobotsChecker
-	prStream         chan *models.PageReportMessage
-	allowedDomains   map[string]bool
-	mainDomain       string
-	httpCrawler      *httpcrawler.HttpCrawler
-	qStream          chan *httpcrawler.RequestMessage
-	cancel           context.CancelFunc
-	crawling         bool
-	crawlLock        sync.RWMutex
+	url                 *url.URL
+	options             *Options
+	queue               *queue.Queue
+	storage             *urlstorage.URLStorage
+	sitemapStorage      *urlstorage.URLStorage
+	sitemapChecker      *httpcrawler.SitemapChecker
+	sitemapExists       bool
+	sitemapIsBlocked    bool
+	sitemaps            []string
+	robotstxtExists     bool
+	responseCounter     int
+	robotsChecker       *httpcrawler.RobotsChecker
+	prStream            chan *models.PageReportMessage
+	allowedDomains      map[string]bool
+	mainDomain          string
+	httpCrawler         *httpcrawler.HttpCrawler
+	qStream             chan *httpcrawler.RequestMessage
+	cancel              context.CancelFunc
+	crawling            bool
+	crawlLock           sync.RWMutex
+	client              Client
+	externalLinksStatus map[string]int
 }
 
 func NewCrawler(url *url.URL, options *Options) *Crawler {
@@ -106,24 +115,26 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	c := &Crawler{
-		url:              url,
-		options:          options,
-		queue:            q,
-		storage:          storage,
-		sitemapStorage:   urlstorage.New(),
-		sitemapChecker:   sitemapChecker,
-		sitemapExists:    sitemapChecker.SitemapExists(sitemaps),
-		sitemapIsBlocked: sitemapIsBlocked,
-		sitemaps:         sitemaps,
-		robotsChecker:    robotsChecker,
-		robotstxtExists:  robotsChecker.Exists(url),
-		allowedDomains:   map[string]bool{mainDomain: true, "www." + mainDomain: true},
-		mainDomain:       mainDomain,
-		prStream:         make(chan *models.PageReportMessage),
-		qStream:          qStream,
-		httpCrawler:      httpcrawler.New(httpClient, qStream),
-		cancel:           cancel,
-		crawling:         true,
+		url:                 url,
+		options:             options,
+		queue:               q,
+		storage:             storage,
+		sitemapStorage:      urlstorage.New(),
+		sitemapChecker:      sitemapChecker,
+		sitemapExists:       sitemapChecker.SitemapExists(sitemaps),
+		sitemapIsBlocked:    sitemapIsBlocked,
+		sitemaps:            sitemaps,
+		robotsChecker:       robotsChecker,
+		robotstxtExists:     robotsChecker.Exists(url),
+		allowedDomains:      map[string]bool{mainDomain: true, "www." + mainDomain: true},
+		mainDomain:          mainDomain,
+		prStream:            make(chan *models.PageReportMessage),
+		qStream:             qStream,
+		httpCrawler:         httpcrawler.New(httpClient, qStream),
+		cancel:              cancel,
+		crawling:            true,
+		client:              httpClient,
+		externalLinksStatus: make(map[string]int),
 	}
 
 	go c.queueStreamer(qctx)
@@ -265,6 +276,24 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 		}
 
 		c.queue.Push(&httpcrawler.RequestMessage{URL: t.String(), Depth: pageReport.Depth + 1})
+	}
+
+	if c.options.CheckExternalLinks {
+		// Check external links status code
+		for i, e := range pageReport.ExternalLinks {
+			status, ok := c.externalLinksStatus[e.URL]
+			if ok {
+				pageReport.ExternalLinks[i].StatusCode = status
+				continue
+			}
+
+			resp, err := c.client.Head(e.URL)
+			if err != nil {
+				continue
+			}
+			c.externalLinksStatus[e.URL] = resp.StatusCode
+			pageReport.ExternalLinks[i].StatusCode = resp.StatusCode
+		}
 	}
 
 	if !pageReport.Noindex || c.options.IncludeNoindex {

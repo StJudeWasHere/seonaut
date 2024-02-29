@@ -41,6 +41,8 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 		NewExternalLinkWitoutNoFollowReporter(),
 		NewHTTPLinksReporter(),
 		NewDeadendReporter(),
+		NewExternalLinkRedirect(),
+		NewExternalLinkBroken(),
 
 		// Add image issue reporters
 		NewAltTextReporter(),

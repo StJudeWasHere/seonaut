@@ -578,6 +578,7 @@
 								{{ if not .NoFollow }}<br><span class="alert">follow</span>{{ end }}
 								{{ if .Sponsored }}<span class="alert"><small>sponsored</small></span>{{ end }}
 								{{ if .UGC }}<span class="alert"><small>ugc</small></span>{{ end }}
+								{{ if gt .StatusCode 299 }}<span class="alert"><small>Status Code {{ .StatusCode }}</small></span>{{ end }}
 							</div>
 						</div>
 					</div>

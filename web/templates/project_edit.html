@@ -131,6 +131,25 @@
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
+
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="check_external_links"{{ if .Project.CheckExternalLinks }} checked{{ end }}>
+							<span class="slider"></span>
+						</label>
+						<span class="label">Check External Links</span>
+					</div>
+					<span class="toggle-help">
+						If checked the crawler will look for broken external links.
+					</span>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
 					<div class="toggle-container">
 						<label class="toggle" >
 							<input type="checkbox" value="1" name="basic_auth"{{ if .Project.BasicAuth }} checked{{ end }}>

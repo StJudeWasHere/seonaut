@@ -93,6 +93,11 @@ func (app *App) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
 			allowSubdomains = false
 		}
 
+		checkExternalLinks, err := strconv.ParseBool(r.FormValue("check_external_links"))
+		if err != nil {
+			checkExternalLinks = false
+		}
+
 		basicAuth, err := strconv.ParseBool(r.FormValue("basic_auth"))
 		if err != nil {
 			basicAuth = false
@@ -107,13 +112,14 @@ func (app *App) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
 		}
 
 		project := &models.Project{
-			URL:             parsedURL.String(),
-			IgnoreRobotsTxt: ignoreRobotsTxt,
-			FollowNofollow:  followNofollow,
-			IncludeNoindex:  includeNoindex,
-			CrawlSitemap:    crawlSitemap,
-			AllowSubdomains: allowSubdomains,
-			BasicAuth:       basicAuth,
+			URL:                parsedURL.String(),
+			IgnoreRobotsTxt:    ignoreRobotsTxt,
+			FollowNofollow:     followNofollow,
+			IncludeNoindex:     includeNoindex,
+			CrawlSitemap:       crawlSitemap,
+			AllowSubdomains:    allowSubdomains,
+			BasicAuth:          basicAuth,
+			CheckExternalLinks: checkExternalLinks,
 		}
 
 		err = app.projectService.SaveProject(project, user.Id)
@@ -228,6 +234,11 @@ func (app *App) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 		p.AllowSubdomains, err = strconv.ParseBool(r.FormValue("allow_subdomains"))
 		if err != nil {
 			p.AllowSubdomains = false
+		}
+
+		p.CheckExternalLinks, err = strconv.ParseBool(r.FormValue("check_external_links"))
+		if err != nil {
+			p.CheckExternalLinks = false
 		}
 
 		p.BasicAuth, err = strconv.ParseBool(r.FormValue("basic_auth"))

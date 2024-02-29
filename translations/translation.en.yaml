@@ -200,3 +200,9 @@ ERROR_MULTIPLE_LANG_REFERENCE_DESC: Pages with multiple languages referenced in 
 
 ERROR_DUPLICATED_CONTENT: Duplicated content
 ERROR_DUPLICATED_CONTENT_DESC: Pages with the exact same content may confuse search engines and make them struggle to determine the most relevant page, leading to indexing issues, diluted ranking, and a waste of crawl budget.
+
+ERROR_EXTERNAL_LINK_REDIRECT: Pages with external links to redirect URLs
+ERROR_EXTERNAL_LINK_REDIRECT_DESC: External links to redirected pages won't affect your site's search engine rankings, but it can affect user experience. To fix it, replace the links with their final destinations.
+
+ERROR_EXTERNAL_LINK_BROKEN: Pages with broken external links
+ERROR_EXTERNAL_LINK_BROKEN_DESC: Broken external links don't impact your site's search engine rankings, but they can frustrate users by leading them to non-existent pages. Fix this by removing or updating the link with the correct URL.

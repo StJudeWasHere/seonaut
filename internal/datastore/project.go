@@ -20,9 +20,10 @@ func (ds *Datastore) SaveProject(project *models.Project, uid int) {
 			crawl_sitemap,
 			allow_subdomains,
 			basic_auth,
-			user_id
+			user_id,
+			check_external_links
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	stmt, _ := ds.db.Prepare(query)
@@ -36,6 +37,7 @@ func (ds *Datastore) SaveProject(project *models.Project, uid int) {
 		project.AllowSubdomains,
 		project.BasicAuth,
 		uid,
+		project.CheckExternalLinks,
 	)
 	if err != nil {
 		log.Printf("saveProject: %v\n", err)
@@ -55,7 +57,8 @@ func (ds *Datastore) FindProjectsByUser(uid int) []models.Project {
 			allow_subdomains,
 			basic_auth,
 			deleting,
-			created
+			created,
+			check_external_links
 		FROM projects
 		WHERE user_id = ?
 		ORDER BY url ASC`
@@ -79,6 +82,7 @@ func (ds *Datastore) FindProjectsByUser(uid int) []models.Project {
 			&p.BasicAuth,
 			&p.Deleting,
 			&p.Created,
+			&p.CheckExternalLinks,
 		)
 		if err != nil {
 			log.Println(err)
@@ -103,7 +107,8 @@ func (ds *Datastore) FindProjectById(id int, uid int) (models.Project, error) {
 			allow_subdomains,
 			basic_auth,
 			deleting,
-			created
+			created,
+			check_external_links
 		FROM projects
 		WHERE id = ? AND user_id = ?`
 
@@ -121,6 +126,7 @@ func (ds *Datastore) FindProjectById(id int, uid int) (models.Project, error) {
 		&p.BasicAuth,
 		&p.Deleting,
 		&p.Created,
+		&p.CheckExternalLinks,
 	)
 	if err != nil {
 		log.Println(err)
@@ -355,7 +361,8 @@ func (ds *Datastore) UpdateProject(p *models.Project) error {
 			include_noindex = ?,
 			crawl_sitemap = ?,
 			allow_subdomains = ?,
-			basic_auth = ?
+			basic_auth = ?,
+			check_external_links = ?
 		WHERE id = ?
 	`
 	_, err := ds.db.Exec(
@@ -366,6 +373,7 @@ func (ds *Datastore) UpdateProject(p *models.Project) error {
 		p.CrawlSitemap,
 		p.AllowSubdomains,
 		p.BasicAuth,
+		p.CheckExternalLinks,
 		p.Id,
 	)
 	if err != nil {

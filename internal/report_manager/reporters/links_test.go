@@ -279,3 +279,107 @@ func TestDeadendIssues(t *testing.T) {
 		t.Errorf("TestHTTPLinksIssues: reportsIssue should be true")
 	}
 }
+
+// Test the NewExternalLinkRedirect reporter with a pageReport that has external
+// links without redirect issues. The reporter should not report the issue.
+func TestExternalLinkRedirectNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{})
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{
+		StatusCode: 200,
+	})
+
+	reporter := reporters.NewExternalLinkRedirect()
+	if reporter.ErrorType != reporter_errors.ErrorExternalLinkRedirect {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("TestExternalLinkRedirectNoIssues: reportsIssue should be false")
+	}
+}
+
+// Test the NewExternalLinkRedirect reporter with a pageReport that has external
+// links with redirect issues. The reporter should report the issue.
+func TestExternalLinkRedirectIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{})
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{
+		StatusCode: 301,
+	})
+
+	reporter := reporters.NewExternalLinkRedirect()
+	if reporter.ErrorType != reporter_errors.ErrorExternalLinkRedirect {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("TestExternalLinkRedirectIssues: reportsIssue should be true")
+	}
+}
+
+// Test the NewExternalLinkBroken reporter with a pageReport that has valid
+// external links. The reporter should not report the issue.
+func TestExternalLinkBrokenNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{})
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{
+		StatusCode: 200,
+	})
+
+	reporter := reporters.NewExternalLinkBroken()
+	if reporter.ErrorType != reporter_errors.ErrorExternalLinkBroken {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("TestExternalLinkBrokenNoIssues: reportsIssue should be false")
+	}
+}
+
+// Test the NewExternalLinkBroken reporter with a pageReport that has broken
+// external links. The reporter should report the issue.
+func TestExternalLinkBrokenIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{})
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{
+		StatusCode: 400,
+	})
+
+	reporter := reporters.NewExternalLinkBroken()
+	if reporter.ErrorType != reporter_errors.ErrorExternalLinkBroken {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("TestExternalLinkBrokenIssues: reportsIssue should be true")
+	}
+}

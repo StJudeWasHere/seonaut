@@ -68,4 +68,6 @@ const (
 	ErrorDepth                                   // Pages with high depth
 	ErrorMultipleLangReference                   // Pages referenced with multiple languages in hreflangs
 	ErrorDuplicatedContent                       // Pages with the same exact content
+	ErrorExternalLinkRedirect                    // Pages with external links to redirect URLs
+	ErrorExternalLinkBroken                      // Pages with brooken external links
 )

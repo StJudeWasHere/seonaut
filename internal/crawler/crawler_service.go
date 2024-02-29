@@ -70,16 +70,17 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 	}
 
 	options := &Options{
-		MaxPageReports:  MaxPageReports,
-		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
-		FollowNofollow:  p.FollowNofollow,
-		IncludeNoindex:  p.IncludeNoindex,
-		UserAgent:       s.config.Agent,
-		CrawlSitemap:    p.CrawlSitemap,
-		AllowSubdomains: p.AllowSubdomains,
-		BasicAuth:       p.BasicAuth,
-		AuthUser:        p.AuthUser,
-		AuthPass:        p.AuthPass,
+		MaxPageReports:     MaxPageReports,
+		IgnoreRobotsTxt:    p.IgnoreRobotsTxt,
+		FollowNofollow:     p.FollowNofollow,
+		IncludeNoindex:     p.IncludeNoindex,
+		UserAgent:          s.config.Agent,
+		CrawlSitemap:       p.CrawlSitemap,
+		AllowSubdomains:    p.AllowSubdomains,
+		BasicAuth:          p.BasicAuth,
+		AuthUser:           p.AuthUser,
+		AuthPass:           p.AuthPass,
+		CheckExternalLinks: p.CheckExternalLinks,
 	}
 
 	crawl, err := s.store.SaveCrawl(p)

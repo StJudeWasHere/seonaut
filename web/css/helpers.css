@@ -32,7 +32,7 @@
 }
 
 .panel {
-	min-height: 48.75rem;
+	min-height: calc(var(--line-height) * 35);
 	overflow: hidden;
 }
 

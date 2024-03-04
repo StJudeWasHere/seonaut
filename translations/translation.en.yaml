@@ -206,3 +206,6 @@ ERROR_EXTERNAL_LINK_REDIRECT_DESC: External links to redirected pages won't affe
 
 ERROR_EXTERNAL_LINK_BROKEN: Pages with broken external links
 ERROR_EXTERNAL_LINK_BROKEN_DESC: Broken external links don't impact your site's search engine rankings, but they can frustrate users by leading them to non-existent pages. Fix this by removing or updating the link with the correct URL.
+
+ERROR_TIMEOUT: Timeout
+ERROR_TIMEOUT_DESC: Pages that timed out when our crawler attempted to access them. When this happens, search engine crawlers may fail to access and index the content, suggesting potential server issues or temporary problems hindering visibility in search results.

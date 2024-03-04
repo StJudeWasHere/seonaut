@@ -39,4 +39,5 @@ type PageReport struct {
 	InternalLinks      []InternalLink
 	Depth              int
 	BodyHash           string
+	Timeout            bool
 }

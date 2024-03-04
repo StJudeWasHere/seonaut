@@ -13,6 +13,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/queue"
 	"github.com/stjudewashere/seonaut/internal/urlstorage"
+	"golang.org/x/net/html"
 )
 
 type Options struct {
@@ -209,19 +210,37 @@ func (c *Crawler) crawl(ctx context.Context) {
 // handleResponse handles the crawler response messages.
 // It creates a new PageReport and adds the new URLs to the crawler queue.
 func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
+	c.crawlLock.RLock()
+	defer c.crawlLock.RUnlock()
+
 	c.queue.Ack(r.URL)
+
+	parsedURL, err := url.Parse(r.URL)
+	if err != nil {
+		return err
+	}
+
 	if r.Error != nil {
+		c.prStream <- &models.PageReportMessage{
+			Crawled:    c.responseCounter,
+			Crawling:   c.crawling,
+			Discovered: c.queue.Count(),
+			HtmlNode:   &html.Node{},
+			Header:     &http.Header{},
+			PageReport: &models.PageReport{
+				URL:       r.URL,
+				ParsedURL: parsedURL,
+				Crawled:   false,
+				Timeout:   true,
+			},
+		}
+
 		return r.Error
 	}
 
 	defer r.Response.Body.Close()
 
 	pageReport, htmlNode, err := html_parser.NewFromHTTPResponse(r.Response)
-	if err != nil {
-		return err
-	}
-
-	parsedURL, err := url.Parse(r.URL)
 	if err != nil {
 		return err
 	}
@@ -246,10 +265,6 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 		}
 	}
 
-	c.crawlLock.RLock()
-	crawling := c.crawling
-	c.crawlLock.RUnlock()
-
 	for _, t := range urls {
 		if c.storage.Seen(t.String()) {
 			continue
@@ -260,7 +275,7 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 		if !c.options.IgnoreRobotsTxt && c.robotsChecker.IsBlocked(t) {
 			c.prStream <- &models.PageReportMessage{
 				Crawled:    c.responseCounter,
-				Crawling:   crawling,
+				Crawling:   c.crawling,
 				Discovered: c.queue.Count(),
 				HtmlNode:   htmlNode,
 				Header:     &r.Response.Header,
@@ -302,7 +317,7 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 			HtmlNode:   htmlNode,
 			Header:     &r.Response.Header,
 			Crawled:    c.responseCounter,
-			Crawling:   crawling,
+			Crawling:   c.crawling,
 			Discovered: c.queue.Count(),
 		}
 	}

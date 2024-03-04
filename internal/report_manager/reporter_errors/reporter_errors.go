@@ -70,4 +70,5 @@ const (
 	ErrorDuplicatedContent                       // Pages with the same exact content
 	ErrorExternalLinkRedirect                    // Pages with external links to redirect URLs
 	ErrorExternalLinkBroken                      // Pages with brooken external links
+	ErrorTimeout                                 // Pages that timed out
 )

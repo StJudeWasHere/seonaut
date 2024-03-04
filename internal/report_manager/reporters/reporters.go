@@ -71,5 +71,8 @@ func GetAllReporters() []*report_manager.PageIssueReporter {
 		NewMissingHSTSHeaderReporter(),
 		NewMissingCSPReporter(),
 		NewMissingContentTypeOptionsReporter(),
+
+		// Add timeout issue reporter
+		NewTimeoutReporter(),
 	}
 }

@@ -33,7 +33,6 @@ type PageReport struct {
 	Iframes            []string
 	Audios             []string
 	Videos             []string
-	ValidHeadings      bool
 	BlockedByRobotstxt bool
 	Crawled            bool
 	InSitemap          bool

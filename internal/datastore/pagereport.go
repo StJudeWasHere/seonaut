@@ -38,14 +38,13 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 			h2,
 			words,
 			size,
-			valid_headings,
 			robotstxt_blocked,
 			crawled,
 			in_sitemap,
 			depth,
 			body_hash
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.db.Prepare(query)
 	if err != nil {
@@ -74,7 +73,6 @@ func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.Pa
 		Truncate(r.H2, 1024),
 		r.Words,
 		r.Size,
-		r.ValidHeadings,
 		r.BlockedByRobotstxt,
 		r.Crawled,
 		r.InSitemap,
@@ -285,7 +283,6 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageR
 				h2,
 				words,
 				size,
-				valid_headings,
 				robotstxt_blocked,
 				crawled,
 				in_sitemap,
@@ -318,7 +315,6 @@ func (ds *Datastore) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageR
 				&p.H2,
 				&p.Words,
 				&p.Size,
-				&p.ValidHeadings,
 				&p.BlockedByRobotstxt,
 				&p.Crawled,
 				&p.InSitemap,
@@ -362,7 +358,6 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				h2,
 				words,
 				size,
-				valid_headings,
 				robotstxt_blocked,
 				crawled,
 				in_sitemap,
@@ -402,7 +397,6 @@ func (ds *Datastore) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et strin
 				&p.H2,
 				&p.Words,
 				&p.Size,
-				&p.ValidHeadings,
 				&p.BlockedByRobotstxt,
 				&p.Crawled,
 				&p.InSitemap,
@@ -441,7 +435,6 @@ func (ds *Datastore) FindPageReportById(rid int) models.PageReport {
 			h2,
 			words,
 			size,
-			valid_headings,
 			robotstxt_blocked,
 			crawled,
 			in_sitemap,
@@ -470,7 +463,6 @@ func (ds *Datastore) FindPageReportById(rid int) models.PageReport {
 		&p.H2,
 		&p.Words,
 		&p.Size,
-		&p.ValidHeadings,
 		&p.BlockedByRobotstxt,
 		&p.Crawled,
 		&p.InSitemap,

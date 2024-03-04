@@ -2,9 +2,11 @@ package reporters
 
 import (
 	"net/http"
+	"strings"
 
 	"golang.org/x/net/html"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
@@ -53,11 +55,51 @@ func NewValidHeadingsOrderReporter() *report_manager.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.ValidHeadings {
+		body, err := htmlquery.Query(htmlNode, "//body")
+		if err != nil || body == nil {
 			return false
 		}
 
-		return true
+		headings := [6]string{"h1", "h2", "h3", "h4", "h5", "h6"}
+		current := 0
+
+		isValidHeading := func(el string) (int, bool) {
+			el = strings.ToLower(el)
+			for i, v := range headings {
+				if v == el {
+					return i, true
+				}
+			}
+
+			return 0, false
+		}
+
+		var output func(n *html.Node) bool
+		output = func(n *html.Node) bool {
+			if n.Type == html.ElementNode {
+				p, ok := isValidHeading(n.Data)
+				if ok {
+					if p > current+1 {
+						return false
+					}
+					current = p
+				}
+			}
+
+			for child := n.FirstChild; child != nil; child = child.NextSibling {
+				if child.Type == html.ElementNode {
+					if !output(child) {
+						return false
+					}
+				}
+			}
+
+			return true
+		}
+
+		correct := output(body)
+
+		return !correct
 	}
 
 	return &report_manager.PageIssueReporter{

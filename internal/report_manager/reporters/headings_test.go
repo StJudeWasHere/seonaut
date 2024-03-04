@@ -2,8 +2,10 @@ package reporters_test
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporter_errors"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
@@ -58,10 +60,9 @@ func TestNoH1Issues(t *testing.T) {
 // The reporter should not report the issue.
 func TestValidHeadingsOrderNoIssues(t *testing.T) {
 	pageReport := &models.PageReport{
-		Crawled:       true,
-		MediaType:     "text/html",
-		StatusCode:    200,
-		ValidHeadings: true,
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
 	}
 
 	reporter := reporters.NewValidHeadingsOrderReporter()
@@ -69,7 +70,21 @@ func TestValidHeadingsOrderNoIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+	html := strings.NewReader(`
+		<html>
+			<body>
+				<h1>Heder 1</h1>
+				<h2>Header 2</h2>
+				<h3>Header 3</h3>
+			</body>
+		</html>`)
+
+	doc, err := htmlquery.Parse(html)
+	if err != nil {
+		t.Errorf("TestValidHeadingsOrderNoIssues: error parsing html")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == true {
 		t.Errorf("TestValidHeadingsOrderNoIssues: reportsIssue should be false")
@@ -90,7 +105,22 @@ func TestValidHeadingsOrderIssues(t *testing.T) {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
 
-	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+	html := strings.NewReader(`
+		<html>
+			<body>
+				<h1>Header 1</h1>
+				<h3>Header 3</h3>
+				<h2>Header 2</h2>
+				<h4>Header 4</h4>
+			</body>
+		</html>`)
+
+	doc, err := htmlquery.Parse(html)
+	if err != nil {
+		t.Errorf("TestValidHeadingsOrderIssues: error parsing html")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("TestValidHeadingsOrderIssues: reportsIssue should be true")

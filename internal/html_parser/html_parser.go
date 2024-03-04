@@ -47,12 +47,11 @@ func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.Pag
 	}
 
 	pageReport := models.PageReport{
-		URL:           u.String(),
-		ParsedURL:     u,
-		StatusCode:    status,
-		ContentType:   headers.Get("Content-Type"),
-		Size:          len(body),
-		ValidHeadings: true,
+		URL:         u.String(),
+		ParsedURL:   u,
+		StatusCode:  status,
+		ContentType: headers.Get("Content-Type"),
+		Size:        len(body),
 	}
 
 	pageReport.MediaType, _, err = mime.ParseMediaType(pageReport.ContentType)
@@ -101,7 +100,6 @@ func New(u *url.URL, status int, headers *http.Header, body []byte) (*models.Pag
 		bnode := parser.htmlBodyNode()
 		if bnode != nil {
 			pageReport.Words = countWords(bnode)
-			pageReport.ValidHeadings = headingOrderIsValid(bnode)
 		}
 
 		pageReport.BodyHash, err = hashString(body)
@@ -155,50 +153,6 @@ func countWords(n *html.Node) int {
 	t := re.ReplaceAllString(buf.String(), " ")
 
 	return len(strings.Fields(t))
-}
-
-// Check if the H headings order is valid.
-func headingOrderIsValid(n *html.Node) bool {
-	headings := [6]string{"h1", "h2", "h3", "h4", "h5", "h6"}
-	current := 0
-
-	isValidHeading := func(el string) (int, bool) {
-		el = strings.ToLower(el)
-		for i, v := range headings {
-			if v == el {
-				return i, true
-			}
-		}
-
-		return 0, false
-	}
-
-	var output func(n *html.Node) bool
-	output = func(n *html.Node) bool {
-		if n.Type == html.ElementNode {
-			p, ok := isValidHeading(n.Data)
-			if ok {
-				if p > current+1 {
-					return false
-				}
-				current = p
-			}
-		}
-
-		for child := n.FirstChild; child != nil; child = child.NextSibling {
-			if child.Type == html.ElementNode {
-				if !output(child) {
-					return false
-				}
-			}
-		}
-
-		return true
-	}
-
-	correct := output(n)
-
-	return correct
 }
 
 // Hash a string using sha256 and returns is hex representation as a string.

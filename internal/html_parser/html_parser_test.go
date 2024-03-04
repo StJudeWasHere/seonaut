@@ -155,7 +155,6 @@ func TestPageReportHTML(t *testing.T) {
 		got  bool
 	}{
 		{want: false, got: pageReport.Links[0].External},
-		{want: false, got: pageReport.ValidHeadings},
 		{want: true, got: pageReport.Noindex},
 		{want: true, got: pageReport.ExternalLinks[0].Sponsored},
 		{want: true, got: pageReport.ExternalLinks[0].UGC},

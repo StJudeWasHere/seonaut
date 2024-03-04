@@ -374,9 +374,19 @@ func (c *Crawler) getCrawlableLinks(p *models.PageReport) []*url.URL {
 
 	links := append(p.Links, p.ExternalLinks...)
 	for _, l := range links {
-		if (!l.NoFollow || c.options.FollowNofollow) && c.domainIsAllowed(l.ParsedURL.Host) {
-			urls = append(urls, l.ParsedURL)
+		if l.ParsedURL.Host == c.url.Host && !strings.HasPrefix(l.ParsedURL.Path, c.url.Path) {
+			continue
 		}
+
+		if !c.domainIsAllowed(l.ParsedURL.Host) {
+			continue
+		}
+
+		if l.NoFollow && !c.options.FollowNofollow {
+			continue
+		}
+
+		urls = append(urls, l.ParsedURL)
 	}
 
 	return urls

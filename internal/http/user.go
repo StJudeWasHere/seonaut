@@ -228,27 +228,36 @@ func (app *App) handleSignout(w http.ResponseWriter, r *http.Request) {
 }
 
 // requireAuth is a middleware function that wraps the provided handler function and enforces authentication.
-// It checks if the user is authenticated based on the session data.
+// It checks if the user is authenticated based on the session data and adds the user to the request's context.
 func (app *App) requireAuth(f func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, _ := app.cookie.Get(r, "SESSION_ID")
-		var authenticated interface{} = session.Values["authenticated"]
-		if authenticated != nil {
-			isAuthenticated := session.Values["authenticated"].(bool)
-			if isAuthenticated {
-				session, _ := app.cookie.Get(r, "SESSION_ID")
-				session.Options.MaxAge = 60 * 60 * 48
-				session.Save(r, w)
-				uid := session.Values["uid"].(int)
-				user := app.userService.FindById(uid)
-				ctx := app.userService.SetUserToContext(user, r.Context())
-				req := r.WithContext(ctx)
-				f(w, req)
-
-				return
-			}
+		session, err := app.cookie.Get(r, "SESSION_ID")
+		if err != nil {
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
 		}
 
-		http.Redirect(w, r, "/signin", http.StatusSeeOther)
+		authenticated, ok := session.Values["authenticated"].(bool)
+		if !ok || !authenticated {
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
+		}
+
+		uid, ok := session.Values["uid"].(int)
+		if !ok {
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
+		}
+
+		session.Options.MaxAge = 60 * 60 * 48
+		if err = session.Save(r, w); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		user := app.userService.FindById(uid)
+		ctx := app.userService.SetUserToContext(user, r.Context())
+		req := r.WithContext(ctx)
+		f(w, req)
 	}
 }

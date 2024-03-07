@@ -12,7 +12,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
-	"github.com/stjudewashere/seonaut/internal/renderer"
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/user"
@@ -43,7 +42,7 @@ type Services struct {
 type App struct {
 	config             *HTTPServerConfig
 	cookieSession      *CookieSession
-	renderer           *renderer.Renderer
+	renderer           *Renderer
 	userService        *user.Service
 	projectService     *project.Service
 	crawlerService     *crawler.Service
@@ -66,7 +65,7 @@ type PageView struct {
 // NewApp initializes the template renderer and the session cookie.
 // Returns a new HTTP application server.
 func NewApp(c *HTTPServerConfig, s *Services) *App {
-	renderer, err := renderer.NewRenderer(&renderer.RendererConfig{
+	renderer, err := NewRenderer(&RendererConfig{
 		TemplatesFolder:  "web/templates",
 		TranslationsFile: "translations/translation.en.yaml",
 	})

@@ -13,7 +13,7 @@ import (
 
 // Handles the user homepage request and lists all the user's projects.
 func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -42,7 +42,7 @@ func (app *App) handleHome(w http.ResponseWriter, r *http.Request) {
 
 // handleProjectAdd handles the form for adding a new project.
 func (app *App) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -147,7 +147,7 @@ func (app *App) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -176,7 +176,7 @@ func (app *App) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 

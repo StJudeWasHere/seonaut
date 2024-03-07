@@ -15,9 +15,6 @@ import (
 	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/user"
-
-	"github.com/gorilla/securecookie"
-	"github.com/gorilla/sessions"
 )
 
 // HTTPServerConfig stores the configuration for the HTTP server.
@@ -44,7 +41,7 @@ type Services struct {
 // App is the server application, and it contains all the needed services to handle requests.
 type App struct {
 	config             *HTTPServerConfig
-	cookie             *sessions.CookieStore
+	cookieSession      *CookieSession
 	renderer           *renderer.Renderer
 	userService        *user.Service
 	projectService     *project.Service
@@ -76,23 +73,11 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 		log.Fatal(err)
 	}
 
-	authKeyOne := securecookie.GenerateRandomKey(64)
-	encryptionKeyOne := securecookie.GenerateRandomKey(32)
-
-	cookie := sessions.NewCookieStore(
-		authKeyOne,
-		encryptionKeyOne,
-	)
-
-	cookie.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   60 * 15,
-		HttpOnly: true,
-	}
+	cookieSession := NewCookieSession(s.UserService)
 
 	return &App{
 		config:             c,
-		cookie:             cookie,
+		cookieSession:      cookieSession,
 		renderer:           renderer,
 		userService:        s.UserService,
 		projectService:     s.ProjectService,
@@ -115,27 +100,27 @@ func (app *App) Run() {
 	http.Handle("/favicon.ico", fileServer)
 
 	// App
-	http.HandleFunc("/", app.requireAuth(app.handleHome))
-	http.HandleFunc("/new-project", app.requireAuth(app.handleProjectAdd))
-	http.HandleFunc("/edit-project", app.requireAuth(app.handleProjectEdit))
-	http.HandleFunc("/delete-project", app.requireAuth(app.handleDeleteProject))
-	http.HandleFunc("/crawl", app.requireAuth(app.handleCrawl))
-	http.HandleFunc("/crawl-stop", app.requireAuth(app.handleStopCrawl))
-	http.HandleFunc("/crawl-live", app.requireAuth(app.handleCrawlLive))
-	http.HandleFunc("/crawl-auth", app.requireAuth(app.handleCrawlAuth))
-	http.HandleFunc("/crawl-ws", app.requireAuth(app.handleCrawlWs))
-	http.HandleFunc("/issues", app.requireAuth(app.handleIssues))
-	http.HandleFunc("/issues/view", app.requireAuth(app.handleIssuesView))
-	http.HandleFunc("/dashboard", app.requireAuth(app.handleDashboard))
-	http.HandleFunc("/download", app.requireAuth(app.handleDownloadCSV))
-	http.HandleFunc("/sitemap", app.requireAuth(app.handleSitemap))
-	http.HandleFunc("/export", app.requireAuth(app.handleExport))
-	http.HandleFunc("/export/download", app.requireAuth(app.handleExportResources))
-	http.HandleFunc("/resources", app.requireAuth(app.handleResourcesView))
-	http.HandleFunc("/signout", app.requireAuth(app.handleSignout))
-	http.HandleFunc("/account", app.requireAuth(app.handleAccount))
-	http.HandleFunc("/delete-account", app.requireAuth((app.handleDeleteUser)))
-	http.HandleFunc("/explorer", app.requireAuth(app.handleExplorer))
+	http.HandleFunc("/", app.cookieSession.Auth(app.handleHome))
+	http.HandleFunc("/new-project", app.cookieSession.Auth(app.handleProjectAdd))
+	http.HandleFunc("/edit-project", app.cookieSession.Auth(app.handleProjectEdit))
+	http.HandleFunc("/delete-project", app.cookieSession.Auth(app.handleDeleteProject))
+	http.HandleFunc("/crawl", app.cookieSession.Auth(app.handleCrawl))
+	http.HandleFunc("/crawl-stop", app.cookieSession.Auth(app.handleStopCrawl))
+	http.HandleFunc("/crawl-live", app.cookieSession.Auth(app.handleCrawlLive))
+	http.HandleFunc("/crawl-auth", app.cookieSession.Auth(app.handleCrawlAuth))
+	http.HandleFunc("/crawl-ws", app.cookieSession.Auth(app.handleCrawlWs))
+	http.HandleFunc("/issues", app.cookieSession.Auth(app.handleIssues))
+	http.HandleFunc("/issues/view", app.cookieSession.Auth(app.handleIssuesView))
+	http.HandleFunc("/dashboard", app.cookieSession.Auth(app.handleDashboard))
+	http.HandleFunc("/download", app.cookieSession.Auth(app.handleDownloadCSV))
+	http.HandleFunc("/sitemap", app.cookieSession.Auth(app.handleSitemap))
+	http.HandleFunc("/export", app.cookieSession.Auth(app.handleExport))
+	http.HandleFunc("/export/download", app.cookieSession.Auth(app.handleExportResources))
+	http.HandleFunc("/resources", app.cookieSession.Auth(app.handleResourcesView))
+	http.HandleFunc("/signout", app.cookieSession.Auth(app.handleSignout))
+	http.HandleFunc("/account", app.cookieSession.Auth(app.handleAccount))
+	http.HandleFunc("/delete-account", app.cookieSession.Auth((app.handleDeleteUser)))
+	http.HandleFunc("/explorer", app.cookieSession.Auth(app.handleExplorer))
 	http.HandleFunc("/signup", app.handleSignup)
 	http.HandleFunc("/signin", app.handleSignin)
 

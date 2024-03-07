@@ -21,7 +21,7 @@ type ExplorerView struct {
 // page in the paginator, and the "term" parameter used to perform the pagereport search.
 func (app *App) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	// Get user from the request's context
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return

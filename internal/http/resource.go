@@ -20,7 +20,7 @@ import (
 // - "t" the tab to be loaded, which defaults to the details tab.
 // - "p" the number of page to be loaded, in case the resource page has pagination.
 func (app *App) handleResourcesView(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 

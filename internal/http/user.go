@@ -44,13 +44,8 @@ func (app *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		session, _ := app.cookie.Get(r, "SESSION_ID")
-		session.Values["authenticated"] = true
-		session.Values["uid"] = u.Id
-		session.Save(r, w)
-
+		app.cookieSession.SetSession(u.Id, w, r)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -63,7 +58,7 @@ func (app *App) handleSignup(w http.ResponseWriter, r *http.Request) {
 // GET: it renders the delete page with the appropriate data.
 // POST: it sign's out the user and deletes the account including all its associated data.
 func (app *App) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -90,10 +85,7 @@ func (app *App) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.Method == http.MethodPost {
-		session, _ := app.cookie.Get(r, "SESSION_ID")
-		session.Values["authenticated"] = false
-		session.Values["uid"] = nil
-		session.Save(r, w)
+		app.cookieSession.DestroySession(w, r)
 
 		app.userService.DeleteUser(user)
 
@@ -135,10 +127,7 @@ func (app *App) handleSignin(w http.ResponseWriter, r *http.Request) {
 
 		u, err := app.userService.SignIn(data.Email, password)
 		if err == nil {
-			session, _ := app.cookie.Get(r, "SESSION_ID")
-			session.Values["authenticated"] = true
-			session.Values["uid"] = u.Id
-			session.Save(r, w)
+			app.cookieSession.SetSession(u.Id, w, r)
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -159,7 +148,7 @@ func (app *App) handleSignin(w http.ResponseWriter, r *http.Request) {
 // updating the password with a new one.
 // GET: it renders the account management form with the appropriate data.
 func (app *App) handleAccount(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -219,45 +208,7 @@ func (app *App) handleAccount(w http.ResponseWriter, r *http.Request) {
 // handleSignout is a handler function that handles the user's signout request.
 // It clears the session data related to authenticated user.
 func (app *App) handleSignout(w http.ResponseWriter, r *http.Request) {
-	session, _ := app.cookie.Get(r, "SESSION_ID")
-	session.Values["authenticated"] = false
-	session.Values["uid"] = nil
-	session.Save(r, w)
+	app.cookieSession.DestroySession(w, r)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
-}
-
-// requireAuth is a middleware function that wraps the provided handler function and enforces authentication.
-// It checks if the user is authenticated based on the session data and adds the user to the request's context.
-func (app *App) requireAuth(f func(w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		session, err := app.cookie.Get(r, "SESSION_ID")
-		if err != nil {
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-			return
-		}
-
-		authenticated, ok := session.Values["authenticated"].(bool)
-		if !ok || !authenticated {
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-			return
-		}
-
-		uid, ok := session.Values["uid"].(int)
-		if !ok {
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-			return
-		}
-
-		session.Options.MaxAge = 60 * 60 * 48
-		if err = session.Save(r, w); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		user := app.userService.FindById(uid)
-		ctx := app.userService.SetUserToContext(user, r.Context())
-		req := r.WithContext(ctx)
-		f(w, req)
-	}
 }

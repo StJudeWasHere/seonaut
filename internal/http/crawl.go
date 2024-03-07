@@ -34,7 +34,7 @@ func (app *App) handleCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -70,7 +70,7 @@ func (app *App) handleStopCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -114,7 +114,7 @@ func (app *App) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -163,7 +163,7 @@ func (app *App) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -216,7 +216,7 @@ func (app *App) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 

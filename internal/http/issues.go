@@ -23,7 +23,7 @@ type IssuesView struct {
 // handleIssues handles the issues view of a project.
 // It expects a query parameter "pid" containing the project ID.
 func (app *App) handleIssues(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -68,7 +68,7 @@ func (app *App) handleIssues(w http.ResponseWriter, r *http.Request) {
 // It expects a query parameter "pid" containing the project ID and an "eid" parameter
 // containing the issue type.
 func (app *App) handleIssuesView(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.userService.GetUserFromContext(r.Context())
+	user, ok := app.cookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 

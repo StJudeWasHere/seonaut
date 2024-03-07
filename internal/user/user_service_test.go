@@ -1,7 +1,6 @@
 package user_test
 
 import (
-	"context"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/user"
@@ -114,41 +113,5 @@ func TestFindById(t *testing.T) {
 	u = service.FindById(unexistingUserId) // Should not return the testUSer
 	if u == testUser {
 		t.Error("User found")
-	}
-}
-
-// TestSetUserToContext verifies the behavior of the SetUserToContext function in the user service.
-// It tests whether the function correctly sets the user value in the context.
-func TestSetUserToContext(t *testing.T) {
-	ctx := context.Background()
-	newCtx := service.SetUserToContext(testUser, ctx)
-
-	resultUser, ok := newCtx.Value(user.UserKey).(*user.User)
-
-	if !ok || resultUser != testUser {
-		t.Errorf("SetUserToContext did not set the user correctly, got %v, expected %v", resultUser, testUser)
-	}
-}
-
-// TestGetUserFromContext_UserExists verifies the behavior of the GetUserFromContext function
-// in the user service when a user exists in the context.
-func TestGetUserFromContext_UserExists(t *testing.T) {
-	ctx := context.WithValue(context.Background(), user.UserKey, testUser)
-
-	resultUser, ok := service.GetUserFromContext(ctx)
-
-	if !ok || resultUser != testUser {
-		t.Errorf("GetUserFromContext returned user %v, expected user %v", resultUser, testUser)
-	}
-}
-
-// TestGetUserFromContext_UserExists verifies the behavior of the GetUserFromContext function
-// in the user service when a user does not exists in the context.
-func TestGetUserFromContext_UserDoesNotExist(t *testing.T) {
-	ctx := context.Background()
-	resultUser, ok := service.GetUserFromContext(ctx)
-
-	if ok || resultUser != nil {
-		t.Error("GetUserFromContext returned a user when it shouldn't have")
 	}
 }

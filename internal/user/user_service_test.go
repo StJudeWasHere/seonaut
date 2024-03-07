@@ -3,6 +3,7 @@ package user_test
 import (
 	"testing"
 
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/user"
 )
 
@@ -13,7 +14,7 @@ const (
 )
 
 // Fake user for testing purposes.
-var testUser = &user.User{
+var testUser = &models.User{
 	Id:       id,
 	Email:    email,
 	Password: "$2a$10$REKj9zUr.reKqlKETKpq3OGGBhzyhQ2TQ3wOVnToroO.Qh3nuWziK",
@@ -23,28 +24,28 @@ var testUser = &user.User{
 // The storage only contains the testUSer.
 type storage struct{}
 
-func (s *storage) FindUserById(i int) *user.User {
+func (s *storage) FindUserById(i int) *models.User {
 	if i == testUser.Id {
 		return testUser
 	}
 
-	return &user.User{}
+	return &models.User{}
 }
 
 func (s *storage) UserUpdatePassword(email, hashedPassword string) error {
 	return nil
 }
 
-func (s *storage) UserSignup(e, p string) (*user.User, error) {
-	return &user.User{}, nil
+func (s *storage) UserSignup(e, p string) (*models.User, error) {
+	return &models.User{}, nil
 }
 
-func (s *storage) FindUserByEmail(e string) *user.User {
+func (s *storage) FindUserByEmail(e string) *models.User {
 	if e == testUser.Email {
 		return testUser
 	}
 
-	return &user.User{}
+	return &models.User{}
 }
 func (s *storage) DeleteUser(uid int) {}
 

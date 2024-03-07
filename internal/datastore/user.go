@@ -3,12 +3,12 @@ package datastore
 import (
 	"log"
 
-	"github.com/stjudewashere/seonaut/internal/user"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 // UserSignup inserts a new user with the provided email and password into the database.
 // It returns the inserted user and an error if the user could not be inserted.
-func (ds *Datastore) UserSignup(user, password string) (*user.User, error) {
+func (ds *Datastore) UserSignup(user, password string) (*models.User, error) {
 	query := `INSERT INTO users (email, password, created) VALUES (?, ?, NOW())`
 	stmt, _ := ds.db.Prepare(query)
 	defer stmt.Close()
@@ -24,8 +24,8 @@ func (ds *Datastore) UserSignup(user, password string) (*user.User, error) {
 	return u, nil
 }
 
-func (ds *Datastore) FindUserByEmail(email string) *user.User {
-	u := user.User{}
+func (ds *Datastore) FindUserByEmail(email string) *models.User {
+	u := models.User{}
 	query := `
 		SELECT
 			id,
@@ -44,8 +44,8 @@ func (ds *Datastore) FindUserByEmail(email string) *user.User {
 	return &u
 }
 
-func (ds *Datastore) FindUserById(id int) *user.User {
-	u := user.User{}
+func (ds *Datastore) FindUserById(id int) *models.User {
+	u := models.User{}
 	query := `
 		SELECT
 			id,

@@ -8,6 +8,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/export"
 	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/project"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
@@ -57,7 +58,7 @@ type App struct {
 // PageView is the data structure used to render the html templates.
 type PageView struct {
 	PageTitle string
-	User      user.User
+	User      models.User
 	Data      interface{}
 	Refresh   bool
 }

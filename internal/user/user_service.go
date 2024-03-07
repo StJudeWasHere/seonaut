@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/mail"
 
+	"github.com/stjudewashere/seonaut/internal/models"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -12,21 +14,15 @@ type contextKey string
 const UserKey contextKey = "user"
 
 type UserStore interface {
-	FindUserById(int) *User
-	UserSignup(string, string) (*User, error)
-	FindUserByEmail(string) *User
+	FindUserById(int) *models.User
+	UserSignup(string, string) (*models.User, error)
+	FindUserByEmail(string) *models.User
 	UserUpdatePassword(email, hashedPassword string) error
 	DeleteUser(int)
 }
 
 type Service struct {
 	store UserStore
-}
-
-type User struct {
-	Id       int
-	Email    string
-	Password string
 }
 
 func NewService(s UserStore) *Service {
@@ -36,13 +32,13 @@ func NewService(s UserStore) *Service {
 }
 
 // FindById returns a by its Id.
-func (s *Service) FindById(id int) *User {
+func (s *Service) FindById(id int) *models.User {
 	return s.store.FindUserById(id)
 }
 
 // SignUp validates the user email and password, if they are both valid creates a password hash
 // before storing it. If the storage is succesful it returns the new user.
-func (s *Service) SignUp(email, password string) (*User, error) {
+func (s *Service) SignUp(email, password string) (*models.User, error) {
 	u := s.store.FindUserByEmail(email)
 	if u.Id != 0 {
 		return nil, errors.New("user already exists")
@@ -68,7 +64,7 @@ func (s *Service) SignUp(email, password string) (*User, error) {
 // SignIn validates the provided email and password combination for user authentication.
 // It compares the provided password with the user's hashed password.
 // If the passwords do not match, it returns an error.
-func (s *Service) SignIn(email, password string) (*User, error) {
+func (s *Service) SignIn(email, password string) (*models.User, error) {
 	u := s.store.FindUserByEmail(email)
 	if u.Id == 0 {
 		return nil, errors.New("user does not exist")
@@ -102,6 +98,6 @@ func (s *Service) UpdatePassword(email, password string) error {
 }
 
 // Delete a User and all its associated projects and crawl data.
-func (s *Service) DeleteUser(user *User) {
+func (s *Service) DeleteUser(user *models.User) {
 	s.store.DeleteUser(user.Id)
 }

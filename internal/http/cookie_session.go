@@ -5,9 +5,10 @@ import (
 	"encoding/gob"
 	"net/http"
 
+	"github.com/stjudewashere/seonaut/internal/models"
+
 	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 type contextKey string
@@ -18,7 +19,7 @@ const (
 )
 
 type sessionUserService interface {
-	FindById(uid int) *user.User
+	FindById(uid int) *models.User
 }
 
 type CookieSession struct {
@@ -41,7 +42,7 @@ func NewCookieSession(s sessionUserService) *CookieSession {
 		HttpOnly: true,
 	}
 
-	gob.Register(user.User{})
+	gob.Register(models.User{})
 
 	return &CookieSession{
 		userService: s,
@@ -87,14 +88,14 @@ func (s *CookieSession) Auth(f func(w http.ResponseWriter, r *http.Request)) htt
 
 // SetUserToContext takes a User and a context as input and returns a new context with the given
 // user value set.
-func (s *CookieSession) setUser(user *user.User, c context.Context) context.Context {
+func (s *CookieSession) setUser(user *models.User, c context.Context) context.Context {
 	return context.WithValue(c, UserKey, user)
 }
 
 // GetUserFromContext takes a context as input and retrieves the associated User value from it, if present.
-func (s *CookieSession) GetUser(c context.Context) (*user.User, bool) {
+func (s *CookieSession) GetUser(c context.Context) (*models.User, bool) {
 	v := c.Value(UserKey)
-	user, ok := v.(*user.User)
+	user, ok := v.(*models.User)
 	return user, ok
 }
 

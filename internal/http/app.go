@@ -48,7 +48,6 @@ type App struct {
 	crawlerService     *crawler.Service
 	issueService       *issue.Service
 	reportService      *report.Service
-	reportManager      *report_manager.ReportManager
 	projectViewService *projectview.Service
 	pubsubBroker       *pubsub.Broker
 	exportService      *export.Exporter
@@ -84,7 +83,6 @@ func NewApp(c *HTTPServerConfig, s *Services) *App {
 		crawlerService:     s.CrawlerService,
 		issueService:       s.IssueService,
 		reportService:      s.ReportService,
-		reportManager:      s.ReportManager,
 		projectViewService: s.ProjectViewService,
 		pubsubBroker:       s.PubSubBroker,
 		exportService:      s.ExportService,

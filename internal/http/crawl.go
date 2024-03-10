@@ -323,14 +323,7 @@ func (app *App) startCrawler(p models.Project) {
 	crawl, err := app.crawlerService.StartCrawler(p)
 	if err != nil {
 		log.Printf("StartCrawler: %s %v\n", p.URL, err)
-
 		return
 	}
-
 	log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
-
-	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
-	app.reportManager.CreateMultipageIssues(crawl)
-	app.issueService.SaveCrawlIssuesCount(crawl)
-	app.pubsubBroker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 }

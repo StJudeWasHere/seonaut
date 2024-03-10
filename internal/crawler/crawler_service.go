@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/cache_manager"
+	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
@@ -42,17 +43,19 @@ type Service struct {
 	config        *Config
 	cacheManager  *cache_manager.CacheManager
 	reportManager *report_manager.ReportManager
+	issueService  *issue.Service
 	crawlers      map[int64]*Crawler
 	lock          *sync.RWMutex
 }
 
-func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.CacheManager, rm *report_manager.ReportManager) *Service {
+func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.CacheManager, rm *report_manager.ReportManager, is *issue.Service) *Service {
 	return &Service{
 		store:         s,
 		broker:        broker,
 		config:        c,
 		cacheManager:  cm,
 		reportManager: rm,
+		issueService:  is,
 		crawlers:      make(map[int64]*Crawler),
 		lock:          &sync.RWMutex{},
 	}
@@ -161,6 +164,12 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "IssuesInit"})
+	s.reportManager.CreateMultipageIssues(crawl)
+
+	s.issueService.SaveCrawlIssuesCount(crawl)
+	s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &pubsub.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 
 	go func() {
 		previous, err := s.store.GetPreviousCrawl(&p)

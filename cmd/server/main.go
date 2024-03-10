@@ -81,10 +81,9 @@ func main() {
 	services := &http.Services{
 		UserService:        user.NewService(ds),
 		ProjectService:     project.NewService(ds, cacheManager),
-		CrawlerService:     crawler.NewService(ds, broker, config.Crawler, cacheManager, reportManager),
+		CrawlerService:     crawler.NewService(ds, broker, config.Crawler, cacheManager, reportManager, issueService),
 		IssueService:       issueService,
 		ReportService:      reportService,
-		ReportManager:      reportManager,
 		ProjectViewService: projectview.NewService(ds),
 		PubSubBroker:       broker,
 		ExportService:      export.NewExporter(ds),

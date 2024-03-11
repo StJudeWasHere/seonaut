@@ -1,7 +1,7 @@
 package config
 
 import (
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/crawler_service"
 	"github.com/stjudewashere/seonaut/internal/datastore"
 	"github.com/stjudewashere/seonaut/internal/http"
 
@@ -10,9 +10,9 @@ import (
 
 // Config stores the configuration for the application.
 type Config struct {
-	Crawler    *crawler.Config        `mapstructure:"crawler"`
-	HTTPServer *http.HTTPServerConfig `mapstructure:"server"`
-	DB         *datastore.DBConfig    `mapstructure:"database"`
+	Crawler    *crawler_service.Config `mapstructure:"crawler"`
+	HTTPServer *http.HTTPServerConfig  `mapstructure:"server"`
+	DB         *datastore.DBConfig     `mapstructure:"database"`
 }
 
 // NewConfig loads the configuration from the specified file and path.

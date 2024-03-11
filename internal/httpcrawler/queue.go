@@ -1,23 +1,21 @@
-package queue
+package httpcrawler
 
 import (
 	"context"
-
-	"github.com/stjudewashere/seonaut/internal/httpcrawler"
 )
 
 type Queue struct {
-	in     chan *httpcrawler.RequestMessage
-	out    chan *httpcrawler.RequestMessage
+	in     chan *RequestMessage
+	out    chan *RequestMessage
 	ack    chan string
 	count  chan int
 	active chan bool
 }
 
-func New(ctx context.Context) *Queue {
+func NewQueue(ctx context.Context) *Queue {
 	q := Queue{
-		in:     make(chan *httpcrawler.RequestMessage),
-		out:    make(chan *httpcrawler.RequestMessage),
+		in:     make(chan *RequestMessage),
+		out:    make(chan *RequestMessage),
 		ack:    make(chan string),
 		count:  make(chan int),
 		active: make(chan bool),
@@ -38,11 +36,11 @@ func (q *Queue) manage(ctx context.Context) {
 		close(q.active)
 	}()
 
-	queue := []*httpcrawler.RequestMessage{}
+	queue := []*RequestMessage{}
 	active := make(map[string]bool)
 
-	var first *httpcrawler.RequestMessage
-	var out chan *httpcrawler.RequestMessage
+	var first *RequestMessage
+	var out chan *RequestMessage
 
 	for {
 		if first == nil && len(queue) > 0 {
@@ -73,12 +71,12 @@ func (q *Queue) manage(ctx context.Context) {
 }
 
 // Adds a new value to the queue's end.
-func (q *Queue) Push(value *httpcrawler.RequestMessage) {
+func (q *Queue) Push(value *RequestMessage) {
 	q.in <- value
 }
 
 // Returns the first element in the queue.
-func (q *Queue) Poll() *httpcrawler.RequestMessage {
+func (q *Queue) Poll() *RequestMessage {
 	return <-q.out
 }
 

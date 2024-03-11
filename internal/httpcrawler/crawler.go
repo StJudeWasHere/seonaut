@@ -1,4 +1,4 @@
-package crawler
+package httpcrawler
 
 import (
 	"context"
@@ -9,9 +9,7 @@ import (
 	"sync"
 
 	"github.com/stjudewashere/seonaut/internal/html_parser"
-	"github.com/stjudewashere/seonaut/internal/httpcrawler"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/queue"
 	"github.com/stjudewashere/seonaut/internal/urlstorage"
 	"golang.org/x/net/html"
 )
@@ -30,33 +28,34 @@ type Options struct {
 	CheckExternalLinks bool
 }
 
-type Client interface {
+type CrawlerClient interface {
 	Get(u string) (*http.Response, error)
 	Head(u string) (*http.Response, error)
 	Do(req *http.Request) (*http.Response, error)
 }
+
 type Crawler struct {
 	url                 *url.URL
 	options             *Options
-	queue               *queue.Queue
+	queue               *Queue
 	storage             *urlstorage.URLStorage
 	sitemapStorage      *urlstorage.URLStorage
-	sitemapChecker      *httpcrawler.SitemapChecker
+	sitemapChecker      *SitemapChecker
 	sitemapExists       bool
 	sitemapIsBlocked    bool
 	sitemaps            []string
 	robotstxtExists     bool
 	responseCounter     int
-	robotsChecker       *httpcrawler.RobotsChecker
+	robotsChecker       *RobotsChecker
 	prStream            chan *models.PageReportMessage
 	allowedDomains      map[string]bool
 	mainDomain          string
-	httpCrawler         *httpcrawler.HttpCrawler
-	qStream             chan *httpcrawler.RequestMessage
+	httpCrawler         *HttpCrawler
+	qStream             chan *RequestMessage
 	cancel              context.CancelFunc
 	crawling            bool
 	crawlLock           sync.RWMutex
-	client              Client
+	client              CrawlerClient
 	externalLinksStatus map[string]int
 }
 
@@ -70,7 +69,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	storage := urlstorage.New()
 	storage.Add(url.String())
 
-	httpClient := httpcrawler.NewClient(&httpcrawler.ClientOptions{
+	httpClient := NewClient(&ClientOptions{
 		UserAgent:        options.UserAgent,
 		BasicAuth:        options.BasicAuth,
 		BasicAuthDomains: []string{mainDomain, "www." + mainDomain},
@@ -79,11 +78,11 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	})
 
 	qctx, cancelQueue := context.WithCancel(context.Background())
-	q := queue.New(qctx)
+	q := NewQueue(qctx)
 
-	robotsChecker := httpcrawler.NewRobotsChecker(httpClient, options.UserAgent)
+	robotsChecker := NewRobotsChecker(httpClient, options.UserAgent)
 	if !robotsChecker.IsBlocked(url) || options.IgnoreRobotsTxt {
-		q.Push(&httpcrawler.RequestMessage{URL: url.String()})
+		q.Push(&RequestMessage{URL: url.String()})
 	}
 
 	sitemaps := robotsChecker.GetSitemaps(url)
@@ -111,8 +110,8 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 
 	sitemaps = nonBlockedSitemaps
 
-	sitemapChecker := httpcrawler.NewSitemapChecker(httpClient, options.MaxPageReports)
-	qStream := make(chan *httpcrawler.RequestMessage)
+	sitemapChecker := NewSitemapChecker(httpClient, options.MaxPageReports)
+	qStream := make(chan *RequestMessage)
 	ctx, cancel := context.WithCancel(context.Background())
 
 	c := &Crawler{
@@ -131,7 +130,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		mainDomain:          mainDomain,
 		prStream:            make(chan *models.PageReportMessage),
 		qStream:             qStream,
-		httpCrawler:         httpcrawler.New(httpClient, qStream),
+		httpCrawler:         New(httpClient, qStream),
 		cancel:              cancel,
 		crawling:            true,
 		client:              httpClient,
@@ -209,7 +208,7 @@ func (c *Crawler) crawl(ctx context.Context) {
 
 // handleResponse handles the crawler response messages.
 // It creates a new PageReport and adds the new URLs to the crawler queue.
-func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
+func (c *Crawler) handleResponse(r *ResponseMessage) error {
 	c.crawlLock.RLock()
 	defer c.crawlLock.RUnlock()
 
@@ -290,7 +289,7 @@ func (c *Crawler) handleResponse(r *httpcrawler.ResponseMessage) error {
 			continue
 		}
 
-		c.queue.Push(&httpcrawler.RequestMessage{URL: t.String(), Depth: pageReport.Depth + 1})
+		c.queue.Push(&RequestMessage{URL: t.String(), Depth: pageReport.Depth + 1})
 	}
 
 	if c.options.CheckExternalLinks {
@@ -360,7 +359,7 @@ func (c *Crawler) queueSitemapURLs() {
 	c.sitemapStorage.Iterate(func(v string) {
 		if !c.storage.Seen(v) {
 			c.storage.Add(v)
-			c.queue.Push(&httpcrawler.RequestMessage{URL: v})
+			c.queue.Push(&RequestMessage{URL: v})
 		}
 	})
 }

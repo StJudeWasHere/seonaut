@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/crawler_service"
 	"github.com/stjudewashere/seonaut/internal/export"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -30,7 +30,7 @@ type Services struct {
 	UserService        *user.Service
 	ProjectService     *project.Service
 	ProjectViewService *projectview.Service
-	CrawlerService     *crawler.Service
+	CrawlerService     *crawler_service.Service
 	IssueService       *issue.Service
 	ReportService      *report.Service
 	ReportManager      *report_manager.ReportManager
@@ -45,7 +45,7 @@ type App struct {
 	renderer           *Renderer
 	userService        *user.Service
 	projectService     *project.Service
-	crawlerService     *crawler.Service
+	crawlerService     *crawler_service.Service
 	issueService       *issue.Service
 	reportService      *report.Service
 	projectViewService *projectview.Service

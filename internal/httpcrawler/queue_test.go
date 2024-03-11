@@ -1,18 +1,17 @@
-package queue_test
+package httpcrawler_test
 
 import (
 	"context"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/httpcrawler"
-	"github.com/stjudewashere/seonaut/internal/queue"
 )
 
 func TestFIFO(t *testing.T) {
 	el1 := &httpcrawler.RequestMessage{URL: "element 1"}
 	el2 := &httpcrawler.RequestMessage{URL: "element 2"}
 
-	queue := queue.New(context.Background())
+	queue := httpcrawler.NewQueue(context.Background())
 	queue.Push(el1)
 	queue.Push(el2)
 
@@ -28,7 +27,7 @@ func TestFIFO(t *testing.T) {
 }
 
 func TestActiveNotActive(t *testing.T) {
-	queue := queue.New(context.Background())
+	queue := httpcrawler.NewQueue(context.Background())
 	el1 := &httpcrawler.RequestMessage{URL: "element 1"}
 
 	queue.Push(el1)

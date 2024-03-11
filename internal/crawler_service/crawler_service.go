@@ -1,4 +1,4 @@
-package crawler
+package crawler_service
 
 import (
 	"errors"
@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/cache_manager"
+	"github.com/stjudewashere/seonaut/internal/httpcrawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/pubsub"
@@ -37,6 +38,14 @@ type Storage interface {
 	GetPreviousCrawl(*models.Project) (*models.Crawl, error)
 	DeleteCrawlData(c *models.Crawl)
 }
+
+type Services struct {
+	Broker        *pubsub.Broker
+	CacheManager  *cache_manager.CacheManager
+	ReportManager *report_manager.ReportManager
+	IssueService  *issue.Service
+}
+
 type Service struct {
 	store         Storage
 	broker        *pubsub.Broker
@@ -44,19 +53,19 @@ type Service struct {
 	cacheManager  *cache_manager.CacheManager
 	reportManager *report_manager.ReportManager
 	issueService  *issue.Service
-	crawlers      map[int64]*Crawler
+	crawlers      map[int64]*httpcrawler.Crawler
 	lock          *sync.RWMutex
 }
 
-func NewService(s Storage, broker *pubsub.Broker, c *Config, cm *cache_manager.CacheManager, rm *report_manager.ReportManager, is *issue.Service) *Service {
+func NewService(s Storage, c *Config, services Services) *Service {
 	return &Service{
 		store:         s,
-		broker:        broker,
+		broker:        services.Broker,
 		config:        c,
-		cacheManager:  cm,
-		reportManager: rm,
-		issueService:  is,
-		crawlers:      make(map[int64]*Crawler),
+		cacheManager:  services.CacheManager,
+		reportManager: services.ReportManager,
+		issueService:  services.IssueService,
+		crawlers:      make(map[int64]*httpcrawler.Crawler),
 		lock:          &sync.RWMutex{},
 	}
 }
@@ -72,7 +81,7 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 		u.Path = "/"
 	}
 
-	options := &Options{
+	options := &httpcrawler.Options{
 		MaxPageReports:     MaxPageReports,
 		IgnoreRobotsTxt:    p.IgnoreRobotsTxt,
 		FollowNofollow:     p.FollowNofollow,
@@ -95,7 +104,7 @@ func (s *Service) StartCrawler(p models.Project) (*models.Crawl, error) {
 		return nil, errors.New("project is already being crawled")
 	}
 
-	c := NewCrawler(u, options)
+	c := httpcrawler.NewCrawler(u, options)
 
 	s.lock.Lock()
 	s.crawlers[p.Id] = c

@@ -7,7 +7,7 @@ import (
 	"github.com/stjudewashere/seonaut/internal/cache"
 	"github.com/stjudewashere/seonaut/internal/cache_manager"
 	"github.com/stjudewashere/seonaut/internal/config"
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/crawler_service"
 	"github.com/stjudewashere/seonaut/internal/datastore"
 	"github.com/stjudewashere/seonaut/internal/export"
 	"github.com/stjudewashere/seonaut/internal/http"
@@ -77,11 +77,18 @@ func main() {
 		reportManager.AddMultipageReporter(r)
 	}
 
+	crawlerServices := crawler_service.Services{
+		Broker:        broker,
+		CacheManager:  cacheManager,
+		ReportManager: reportManager,
+		IssueService:  issueService,
+	}
+
 	// Start HTTP server.
 	services := &http.Services{
 		UserService:        user.NewService(ds),
 		ProjectService:     project.NewService(ds, cacheManager),
-		CrawlerService:     crawler.NewService(ds, broker, config.Crawler, cacheManager, reportManager, issueService),
+		CrawlerService:     crawler_service.NewService(ds, config.Crawler, crawlerServices),
 		IssueService:       issueService,
 		ReportService:      reportService,
 		ProjectViewService: projectview.NewService(ds),

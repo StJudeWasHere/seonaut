@@ -54,7 +54,15 @@ func (app *App) handleCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go app.startCrawler(p)
+	go func() {
+		log.Printf("Crawling %s\n", p.URL)
+		crawl, err := app.crawlerService.StartCrawler(p)
+		if err != nil {
+			log.Printf("StartCrawler: %s %v\n", p.URL, err)
+			return
+		}
+		log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
+	}()
 
 	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 }
@@ -140,7 +148,16 @@ func (app *App) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 		p.AuthUser = r.FormValue("username")
 		p.AuthPass = r.FormValue("password")
 
-		go app.startCrawler(p)
+		go func() {
+			log.Printf("Crawling %s using BasicAuth\n", p.URL)
+			crawl, err := app.crawlerService.StartCrawler(p)
+			if err != nil {
+				log.Printf("StartCrawler: %s %v\n", p.URL, err)
+				return
+			}
+			log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
+
+		}()
 
 		http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 	}
@@ -315,15 +332,4 @@ func (app *App) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 	}
-}
-
-// Helper function to start crawling a project.
-func (app *App) startCrawler(p models.Project) {
-	log.Printf("Crawling %s\n", p.URL)
-	crawl, err := app.crawlerService.StartCrawler(p)
-	if err != nil {
-		log.Printf("StartCrawler: %s %v\n", p.URL, err)
-		return
-	}
-	log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
 }

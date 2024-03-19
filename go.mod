@@ -6,7 +6,7 @@ toolchain go1.21.2
 
 require (
 	github.com/antchfx/htmlquery v1.3.0
-	github.com/go-sql-driver/mysql v1.7.1
+	github.com/go-sql-driver/mysql v1.8.0
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/securecookie v1.1.2
@@ -17,13 +17,14 @@ require (
 	github.com/spf13/viper v1.18.2
 	github.com/temoto/robotstxt v1.1.2
 	github.com/turk/go-sitemap v0.0.0-20210912154218-82ad01095e30
-	golang.org/x/crypto v0.20.0
-	golang.org/x/net v0.21.0
+	golang.org/x/crypto v0.21.0
+	golang.org/x/net v0.22.0
 	golang.org/x/text v0.14.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/antchfx/xpath v1.2.5 // indirect
 	github.com/aymerick/douceur v0.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
@@ -45,7 +46,7 @@ require (
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
-	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
-	golang.org/x/sys v0.17.0 // indirect
+	golang.org/x/exp v0.0.0-20240318143956-a85f2c67cd81 // indirect
+	golang.org/x/sys v0.18.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 )

@@ -1,4 +1,4 @@
-package http
+package renderer
 
 import (
 	"fmt"

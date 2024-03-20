@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/report"
@@ -12,6 +13,10 @@ import (
 const (
 	chartLimit = 4
 )
+
+type dashboardHandler struct {
+	*container.Container
+}
 
 type ChartItem struct {
 	Key   string
@@ -33,8 +38,8 @@ type DashboardView struct {
 
 // handleDashboard handles the dashboard of a project.
 // It expects a query parameter "pid" containing the project ID.
-func (app *App) handleDashboard(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.cookieSession.GetUser(r.Context())
+func (app *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Request) {
+	user, ok := app.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -48,7 +53,7 @@ func (app *App) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
+	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -63,13 +68,13 @@ func (app *App) handleDashboard(w http.ResponseWriter, r *http.Request) {
 
 	data := DashboardView{
 		ProjectView:       pv,
-		MediaChart:        newChart(app.reportService.GetMediaCount(pv.Crawl.Id)),
-		StatusChart:       newChart(app.reportService.GetStatusCount(pv.Crawl.Id)),
-		Crawls:            app.crawlerService.GetLastCrawls(pv.Project),
-		CanonicalCount:    app.reportService.GetCanonicalCount(pv.Crawl.Id),
-		AltCount:          app.reportService.GetImageAltCount(pv.Crawl.Id),
-		SchemeCount:       app.reportService.GetSchemeCount(pv.Crawl.Id),
-		StatusCodeByDepth: app.reportService.GetStatusCodeByDepth(pv.Crawl.Id),
+		MediaChart:        newChart(app.ReportService.GetMediaCount(pv.Crawl.Id)),
+		StatusChart:       newChart(app.ReportService.GetStatusCount(pv.Crawl.Id)),
+		Crawls:            app.CrawlerService.GetLastCrawls(pv.Project),
+		CanonicalCount:    app.ReportService.GetCanonicalCount(pv.Crawl.Id),
+		AltCount:          app.ReportService.GetImageAltCount(pv.Crawl.Id),
+		SchemeCount:       app.ReportService.GetSchemeCount(pv.Crawl.Id),
+		StatusCodeByDepth: app.ReportService.GetStatusCodeByDepth(pv.Crawl.Id),
 	}
 
 	pageView := &PageView{
@@ -78,7 +83,7 @@ func (app *App) handleDashboard(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "PROJECT_DASHBOARD",
 	}
 
-	app.renderer.RenderTemplate(w, "dashboard", pageView)
+	app.Renderer.RenderTemplate(w, "dashboard", pageView)
 }
 
 // Returns a Chart containing the keys and values from the CountList.

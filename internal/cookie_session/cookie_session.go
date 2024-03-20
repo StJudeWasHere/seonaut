@@ -1,4 +1,4 @@
-package http
+package cookie_session
 
 import (
 	"context"

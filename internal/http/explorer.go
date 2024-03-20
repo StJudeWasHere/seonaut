@@ -4,9 +4,14 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
+
+type explorerHandler struct {
+	*container.Container
+}
 
 type ExplorerView struct {
 	ProjectView   *projectview.ProjectView
@@ -19,9 +24,9 @@ type ExplorerView struct {
 // is empty, it loads all the pagereports.
 // It expects a query parameter "pid" containing the project ID, the "p" parameter containing the current
 // page in the paginator, and the "term" parameter used to perform the pagereport search.
-func (app *App) handleExplorer(w http.ResponseWriter, r *http.Request) {
+func (app *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	// Get user from the request's context
-	user, ok := app.cookieSession.GetUser(r.Context())
+	user, ok := app.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -41,7 +46,7 @@ func (app *App) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Get the project view
-	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
+	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -50,7 +55,7 @@ func (app *App) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	term := r.URL.Query().Get("term")
 
 	// Get the paginated reports
-	paginatorView, err := app.reportService.GetPaginatedReports(pv.Crawl.Id, page, term)
+	paginatorView, err := app.ReportService.GetPaginatedReports(pv.Crawl.Id, page, term)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -68,5 +73,5 @@ func (app *App) handleExplorer(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "EXPLORER",
 	}
 
-	app.renderer.RenderTemplate(w, "explorer", v)
+	app.Renderer.RenderTemplate(w, "explorer", v)
 }

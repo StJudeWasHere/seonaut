@@ -2,24 +2,9 @@ package main
 
 import (
 	"flag"
-	"log"
 
-	"github.com/stjudewashere/seonaut/internal/cache"
-	"github.com/stjudewashere/seonaut/internal/cache_manager"
-	"github.com/stjudewashere/seonaut/internal/config"
-	"github.com/stjudewashere/seonaut/internal/crawler_service"
-	"github.com/stjudewashere/seonaut/internal/datastore"
-	"github.com/stjudewashere/seonaut/internal/export"
+	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/http"
-	"github.com/stjudewashere/seonaut/internal/issue"
-	"github.com/stjudewashere/seonaut/internal/project"
-	"github.com/stjudewashere/seonaut/internal/projectview"
-	"github.com/stjudewashere/seonaut/internal/pubsub"
-	"github.com/stjudewashere/seonaut/internal/report"
-	"github.com/stjudewashere/seonaut/internal/report_manager"
-	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
-	"github.com/stjudewashere/seonaut/internal/report_manager/sql_reporters"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 func main() {
@@ -28,69 +13,6 @@ func main() {
 	flag.StringVar(&configFile, "c", "config", "Specify configuration file. Default is config.")
 	flag.Parse()
 
-	// Load config file.
-	config, err := config.NewConfig(configFile)
-	if err != nil {
-		log.Fatalf("Error loading config: %v\n", err)
-	}
-
-	// Create the sql database connection.
-	db, err := datastore.SqlConnect(config.DB)
-	if err != nil {
-		log.Fatalf("Error creating new database connection: %v\n", err)
-	}
-
-	// Create database data store.
-	ds, err := datastore.NewDataStore(db)
-	if err != nil {
-		log.Fatalf("Error creating new datastore: %v\n", err)
-	}
-
-	// Build services.
-	broker := pubsub.New()
-	cache := cache.NewMemCache()
-
-	issueService := issue.NewService(ds, cache)
-	reportService := report.NewService(ds, cache)
-
-	cacheManager := cache_manager.New()
-	cacheManager.AddCrawlCacheHandler(issueService)
-	cacheManager.AddCrawlCacheHandler(reportService)
-
-	reportManager := report_manager.NewReportManager(ds)
-	for _, r := range reporters.GetAllReporters() {
-		reportManager.AddPageReporter(r)
-	}
-
-	// Create the sql multipage reporters and add them all to the reporterManager.
-	sqlReporters := sql_reporters.NewSqlReporter(db)
-	for _, r := range sqlReporters.GetAllReporters() {
-		reportManager.AddMultipageReporter(r)
-	}
-
-	crawlerServices := crawler_service.Services{
-		Broker:        broker,
-		CacheManager:  cacheManager,
-		ReportManager: reportManager,
-		IssueService:  issueService,
-	}
-
-	// Start HTTP server.
-	services := &http.Services{
-		UserService:        user.NewService(ds),
-		ProjectService:     project.NewService(ds, cacheManager),
-		CrawlerService:     crawler_service.NewService(ds, config.Crawler, crawlerServices),
-		IssueService:       issueService,
-		ReportService:      reportService,
-		ProjectViewService: projectview.NewService(ds),
-		PubSubBroker:       broker,
-		ExportService:      export.NewExporter(ds),
-	}
-
-	server := http.NewApp(
-		config.HTTPServer,
-		services,
-	)
-
-	server.Run()
+	container := container.NewContainer(configFile)
+	http.NewServer(container)
 }

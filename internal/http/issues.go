@@ -4,10 +4,15 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 )
+
+type issueHandler struct {
+	*container.Container
+}
 
 type IssuesGroupView struct {
 	ProjectView *projectview.ProjectView
@@ -22,8 +27,8 @@ type IssuesView struct {
 
 // handleIssues handles the issues view of a project.
 // It expects a query parameter "pid" containing the project ID.
-func (app *App) handleIssues(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.cookieSession.GetUser(r.Context())
+func (app *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
+	user, ok := app.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -37,7 +42,7 @@ func (app *App) handleIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
+	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -52,7 +57,7 @@ func (app *App) handleIssues(w http.ResponseWriter, r *http.Request) {
 
 	ig := IssuesGroupView{
 		ProjectView: pv,
-		IssueCount:  app.issueService.GetIssuesCount(pv.Crawl.Id),
+		IssueCount:  app.IssueService.GetIssuesCount(pv.Crawl.Id),
 	}
 
 	v := &PageView{
@@ -61,14 +66,14 @@ func (app *App) handleIssues(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "ISSUES_VIEW",
 	}
 
-	app.renderer.RenderTemplate(w, "issues", v)
+	app.Renderer.RenderTemplate(w, "issues", v)
 }
 
 // handleIssuesView handles the view of project's specific issue type.
 // It expects a query parameter "pid" containing the project ID and an "eid" parameter
 // containing the issue type.
-func (app *App) handleIssuesView(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.cookieSession.GetUser(r.Context())
+func (app *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request) {
+	user, ok := app.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -94,14 +99,14 @@ func (app *App) handleIssuesView(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
+	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
 
-	paginatorView, err := app.issueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
+	paginatorView, err := app.IssueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -120,5 +125,5 @@ func (app *App) handleIssuesView(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "ISSUES_DETAIL",
 	}
 
-	app.renderer.RenderTemplate(w, "issues_view", v)
+	app.Renderer.RenderTemplate(w, "issues_view", v)
 }

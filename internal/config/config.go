@@ -5,15 +5,22 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/crawler_service"
 	"github.com/stjudewashere/seonaut/internal/datastore"
-	"github.com/stjudewashere/seonaut/internal/http"
 
 	"github.com/spf13/viper"
 )
 
+// HTTPServerConfig stores the configuration for the HTTP server.
+// It is loaded from the config package.
+type HTTPServerConfig struct {
+	Server string `mapstructure:"host"`
+	Port   int    `mapstructure:"port"`
+	URL    string `mapstructure:"url"`
+}
+
 // Config stores the configuration for the application.
 type Config struct {
 	Crawler    *crawler_service.Config `mapstructure:"crawler"`
-	HTTPServer *http.HTTPServerConfig  `mapstructure:"server"`
+	HTTPServer *HTTPServerConfig       `mapstructure:"server"`
 	DB         *datastore.DBConfig     `mapstructure:"database"`
 }
 

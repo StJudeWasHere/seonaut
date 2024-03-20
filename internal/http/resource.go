@@ -6,9 +6,14 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/projectview"
 	"github.com/stjudewashere/seonaut/internal/report"
 )
+
+type resourceHandler struct {
+	*container.Container
+}
 
 // handleResourcesView handles the HTTP request for the resources view page.
 //
@@ -19,8 +24,8 @@ import (
 // - "ep" the explorer page number from which the user loaded this resource.
 // - "t" the tab to be loaded, which defaults to the details tab.
 // - "p" the number of page to be loaded, in case the resource page has pagination.
-func (app *App) handleResourcesView(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.cookieSession.GetUser(r.Context())
+func (app *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.Request) {
+	user, ok := app.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -62,7 +67,7 @@ func (app *App) handleResourcesView(w http.ResponseWriter, r *http.Request) {
 		page = 1
 	}
 
-	pv, err := app.projectViewService.GetProjectView(pid, user.Id)
+	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Printf("serveResourcesView GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -81,7 +86,7 @@ func (app *App) handleResourcesView(w http.ResponseWriter, r *http.Request) {
 		Eid:            eid,
 		Ep:             ep,
 		Tab:            tab,
-		PageReportView: app.reportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
+		PageReportView: app.ReportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
 	}
 
 	pageView := &PageView{
@@ -90,5 +95,5 @@ func (app *App) handleResourcesView(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab),
 	}
 
-	app.renderer.RenderTemplate(w, "resources", pageView)
+	app.Renderer.RenderTemplate(w, "resources", pageView)
 }

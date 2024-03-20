@@ -5,53 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/stjudewashere/seonaut/internal/crawler_service"
-	"github.com/stjudewashere/seonaut/internal/export"
-	"github.com/stjudewashere/seonaut/internal/issue"
+	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/project"
-	"github.com/stjudewashere/seonaut/internal/projectview"
-	"github.com/stjudewashere/seonaut/internal/pubsub"
-	"github.com/stjudewashere/seonaut/internal/report"
-	"github.com/stjudewashere/seonaut/internal/report_manager"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
-
-// HTTPServerConfig stores the configuration for the HTTP server.
-// It is loaded from the config package.
-type HTTPServerConfig struct {
-	Server string `mapstructure:"host"`
-	Port   int    `mapstructure:"port"`
-	URL    string `mapstructure:"url"`
-}
-
-// Services stores all the services needed by the HTTP server.
-type Services struct {
-	UserService        *user.Service
-	ProjectService     *project.Service
-	ProjectViewService *projectview.Service
-	CrawlerService     *crawler_service.Service
-	IssueService       *issue.Service
-	ReportService      *report.Service
-	ReportManager      *report_manager.ReportManager
-	PubSubBroker       *pubsub.Broker
-	ExportService      *export.Exporter
-}
-
-// App is the server application, and it contains all the needed services to handle requests.
-type App struct {
-	config             *HTTPServerConfig
-	cookieSession      *CookieSession
-	renderer           *Renderer
-	userService        *user.Service
-	projectService     *project.Service
-	crawlerService     *crawler_service.Service
-	issueService       *issue.Service
-	reportService      *report.Service
-	projectViewService *projectview.Service
-	pubsubBroker       *pubsub.Broker
-	exportService      *export.Exporter
-}
 
 // PageView is the data structure used to render the html templates.
 type PageView struct {
@@ -63,34 +19,7 @@ type PageView struct {
 
 // NewApp initializes the template renderer and the session cookie.
 // Returns a new HTTP application server.
-func NewApp(c *HTTPServerConfig, s *Services) *App {
-	renderer, err := NewRenderer(&RendererConfig{
-		TemplatesFolder:  "web/templates",
-		TranslationsFile: "translations/translation.en.yaml",
-	})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	cookieSession := NewCookieSession(s.UserService)
-
-	return &App{
-		config:             c,
-		cookieSession:      cookieSession,
-		renderer:           renderer,
-		userService:        s.UserService,
-		projectService:     s.ProjectService,
-		crawlerService:     s.CrawlerService,
-		issueService:       s.IssueService,
-		reportService:      s.ReportService,
-		projectViewService: s.ProjectViewService,
-		pubsubBroker:       s.PubSubBroker,
-		exportService:      s.ExportService,
-	}
-}
-
-// Start HTTP server at the server and port specified in the config.
-func (app *App) Run() {
+func NewServer(container *container.Container) {
 	// Static
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
@@ -98,32 +27,47 @@ func (app *App) Run() {
 	http.Handle("/favicon.ico", fileServer)
 
 	// App
-	http.HandleFunc("/", app.cookieSession.Auth(app.handleHome))
-	http.HandleFunc("/new-project", app.cookieSession.Auth(app.handleProjectAdd))
-	http.HandleFunc("/edit-project", app.cookieSession.Auth(app.handleProjectEdit))
-	http.HandleFunc("/delete-project", app.cookieSession.Auth(app.handleDeleteProject))
-	http.HandleFunc("/crawl", app.cookieSession.Auth(app.handleCrawl))
-	http.HandleFunc("/crawl-stop", app.cookieSession.Auth(app.handleStopCrawl))
-	http.HandleFunc("/crawl-live", app.cookieSession.Auth(app.handleCrawlLive))
-	http.HandleFunc("/crawl-auth", app.cookieSession.Auth(app.handleCrawlAuth))
-	http.HandleFunc("/crawl-ws", app.cookieSession.Auth(app.handleCrawlWs))
-	http.HandleFunc("/issues", app.cookieSession.Auth(app.handleIssues))
-	http.HandleFunc("/issues/view", app.cookieSession.Auth(app.handleIssuesView))
-	http.HandleFunc("/dashboard", app.cookieSession.Auth(app.handleDashboard))
-	http.HandleFunc("/download", app.cookieSession.Auth(app.handleDownloadCSV))
-	http.HandleFunc("/sitemap", app.cookieSession.Auth(app.handleSitemap))
-	http.HandleFunc("/export", app.cookieSession.Auth(app.handleExport))
-	http.HandleFunc("/export/download", app.cookieSession.Auth(app.handleExportResources))
-	http.HandleFunc("/resources", app.cookieSession.Auth(app.handleResourcesView))
-	http.HandleFunc("/signout", app.cookieSession.Auth(app.handleSignout))
-	http.HandleFunc("/account", app.cookieSession.Auth(app.handleAccount))
-	http.HandleFunc("/delete-account", app.cookieSession.Auth((app.handleDeleteUser)))
-	http.HandleFunc("/explorer", app.cookieSession.Auth(app.handleExplorer))
-	http.HandleFunc("/signup", app.handleSignup)
-	http.HandleFunc("/signin", app.handleSignin)
+	crawlHandler := crawlHandler{container}
+	http.HandleFunc("/crawl", container.CookieSession.Auth(crawlHandler.handleCrawl))
+	http.HandleFunc("/crawl-stop", container.CookieSession.Auth(crawlHandler.handleStopCrawl))
+	http.HandleFunc("/crawl-live", container.CookieSession.Auth(crawlHandler.handleCrawlLive))
+	http.HandleFunc("/crawl-auth", container.CookieSession.Auth(crawlHandler.handleCrawlAuth))
+	http.HandleFunc("/crawl-ws", container.CookieSession.Auth(crawlHandler.handleCrawlWs))
 
-	fmt.Printf("Starting server at %s on port %d...\n", app.config.Server, app.config.Port)
-	err := http.ListenAndServe(fmt.Sprintf("%s:%d", app.config.Server, app.config.Port), nil)
+	dashboardHandler := dashboardHandler{container}
+	http.HandleFunc("/dashboard", container.CookieSession.Auth(dashboardHandler.handleDashboard))
+
+	explorerHandler := explorerHandler{container}
+	http.HandleFunc("/explorer", container.CookieSession.Auth(explorerHandler.handleExplorer))
+
+	exportHandler := exportHandler{container}
+	http.HandleFunc("/download", container.CookieSession.Auth(exportHandler.handleDownloadCSV))
+	http.HandleFunc("/sitemap", container.CookieSession.Auth(exportHandler.handleSitemap))
+	http.HandleFunc("/export", container.CookieSession.Auth(exportHandler.handleExport))
+	http.HandleFunc("/export/download", container.CookieSession.Auth(exportHandler.handleExportResources))
+
+	issueHandler := issueHandler{container}
+	http.HandleFunc("/issues", container.CookieSession.Auth(issueHandler.handleIssues))
+	http.HandleFunc("/issues/view", container.CookieSession.Auth(issueHandler.handleIssuesView))
+
+	projectHandler := projectHandler{container}
+	http.HandleFunc("/", container.CookieSession.Auth(projectHandler.handleHome))
+	http.HandleFunc("/new-project", container.CookieSession.Auth(projectHandler.handleProjectAdd))
+	http.HandleFunc("/edit-project", container.CookieSession.Auth(projectHandler.handleProjectEdit))
+	http.HandleFunc("/delete-project", container.CookieSession.Auth(projectHandler.handleDeleteProject))
+
+	resourceHandler := resourceHandler{container}
+	http.HandleFunc("/resources", container.CookieSession.Auth(resourceHandler.handleResourcesView))
+
+	userHandle := userHandler{container}
+	http.HandleFunc("/signout", container.CookieSession.Auth(userHandle.handleSignout))
+	http.HandleFunc("/account", container.CookieSession.Auth(userHandle.handleAccount))
+	http.HandleFunc("/delete-account", container.CookieSession.Auth((userHandle.handleDeleteUser)))
+	http.HandleFunc("/signup", userHandle.handleSignup)
+	http.HandleFunc("/signin", userHandle.handleSignin)
+
+	fmt.Printf("Starting server at %s on port %d...\n", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port)
+	err := http.ListenAndServe(fmt.Sprintf("%s:%d", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port), nil)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -1,14 +1,14 @@
-package http_test
+package renderer_test
 
 import (
 	"bytes"
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/http"
+	"github.com/stjudewashere/seonaut/internal/renderer"
 )
 
 func TestRenderer(t *testing.T) {
-	r, err := http.NewRenderer(&http.RendererConfig{
+	r, err := renderer.NewRenderer(&renderer.RendererConfig{
 		TemplatesFolder:  "./testdata",
 		TranslationsFile: "./testdata/translations.test.yaml",
 	})

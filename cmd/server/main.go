@@ -23,15 +23,13 @@ import (
 )
 
 func main() {
-	var fname string
-	var path string
+	var configFile string
 
-	flag.StringVar(&fname, "c", "config", "Specify config filename. Default is config")
-	flag.StringVar(&path, "p", ".", "Specify config path. Default is current directory")
+	flag.StringVar(&configFile, "c", "config", "Specify configuration file. Default is config.")
 	flag.Parse()
 
 	// Load config file.
-	config, err := config.NewConfig(path, fname)
+	config, err := config.NewConfig(configFile)
 	if err != nil {
 		log.Fatalf("Error loading config: %v\n", err)
 	}

@@ -1,6 +1,8 @@
 package config
 
 import (
+	"path/filepath"
+
 	"github.com/stjudewashere/seonaut/internal/crawler_service"
 	"github.com/stjudewashere/seonaut/internal/datastore"
 	"github.com/stjudewashere/seonaut/internal/http"
@@ -16,9 +18,9 @@ type Config struct {
 }
 
 // NewConfig loads the configuration from the specified file and path.
-func NewConfig(path, filename string) (*Config, error) {
-	viper.AddConfigPath(path)
-	viper.SetConfigName(filename)
+func NewConfig(configFile string) (*Config, error) {
+	viper.AddConfigPath(filepath.Dir(configFile))
+	viper.SetConfigName(filepath.Base(configFile))
 	viper.SetConfigType("toml")
 
 	if err := viper.ReadInConfig(); err != nil {

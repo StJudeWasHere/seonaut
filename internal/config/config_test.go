@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadConfig(t *testing.T) {
-	config, err := config.NewConfig("./testdata", "config")
+	config, err := config.NewConfig("./testdata/config")
 	if err != nil {
 		t.Fatalf("Error loading config file: %v", err)
 	}

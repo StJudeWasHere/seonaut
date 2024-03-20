@@ -491,7 +491,7 @@ func (ds *Datastore) DeleteProjectCrawls(p *models.Project) {
 
 // Deletes all crawls that are unfinished and have the issues_end field set to null.
 // It cleans up the crawl data for each unfinished crawl before deleting it.
-func (ds *Datastore) DeleteUnfinishedCrawls() int {
+func (ds *Datastore) DeleteUnfinishedCrawls() {
 	query := `
 		SELECT
 			crawls.id
@@ -503,7 +503,7 @@ func (ds *Datastore) DeleteUnfinishedCrawls() int {
 	rows, err := ds.db.Query(query)
 	if err != nil {
 		log.Println(err)
-		return count
+		return
 	}
 
 	ids := []any{}
@@ -523,7 +523,7 @@ func (ds *Datastore) DeleteUnfinishedCrawls() int {
 	}
 
 	if len(ids) == 0 {
-		return count
+		return
 	}
 
 	placeholdersStr := strings.Join(placeholders, ",")
@@ -533,5 +533,5 @@ func (ds *Datastore) DeleteUnfinishedCrawls() int {
 		log.Printf("DeleteUnfinishedCrawls: %v", err)
 	}
 
-	return count
+	log.Printf("Deleted %d unfinished crawls.", count)
 }

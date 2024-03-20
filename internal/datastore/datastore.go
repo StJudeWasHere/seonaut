@@ -17,12 +17,20 @@ type Datastore struct {
 }
 
 // NewDatastore is called when a new application instance is created.
-func NewDataStore(db *sql.DB) *Datastore {
-	return &Datastore{db: db}
+func NewDataStore(db *sql.DB) (*Datastore, error) {
+	datastore := &Datastore{db: db}
+	if err := datastore.migrate(); err != nil {
+		return datastore, err
+	}
+
+	// Delete any unfinished crawls.
+	datastore.DeleteUnfinishedCrawls()
+
+	return datastore, nil
 }
 
 // Migrate is called when the app is launched to apply the database migrations.
-func (ds *Datastore) Migrate() error {
+func (ds *Datastore) migrate() error {
 	driver, err := mysql.WithInstance(ds.db, &mysql.Config{})
 	if err != nil {
 		return err

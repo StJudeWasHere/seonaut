@@ -37,21 +37,14 @@ func main() {
 	// Create the sql database connection.
 	db, err := datastore.SqlConnect(config.DB)
 	if err != nil {
-		log.Fatalf("Error creating new datastore: %v\n", err)
+		log.Fatalf("Error creating new database connection: %v\n", err)
 	}
 
 	// Create database data store.
-	ds := datastore.NewDataStore(db)
-
-	// Run database migrations.
-	err = ds.Migrate()
+	ds, err := datastore.NewDataStore(db)
 	if err != nil {
-		log.Fatalf("Error running migrations: %v\n", err)
+		log.Fatalf("Error creating new datastore: %v\n", err)
 	}
-
-	// Delete any unfinished crawls.
-	unfinishedCrawls := ds.DeleteUnfinishedCrawls()
-	log.Printf("Deleted %d unfinished crawls.", unfinishedCrawls)
 
 	// Build services.
 	broker := pubsub.New()

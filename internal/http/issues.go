@@ -27,8 +27,8 @@ type IssuesView struct {
 
 // handleIssues handles the issues view of a project.
 // It expects a query parameter "pid" containing the project ID.
-func (app *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.CookieSession.GetUser(r.Context())
+func (h *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -42,7 +42,7 @@ func (app *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
+	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -57,7 +57,7 @@ func (app *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
 
 	ig := IssuesGroupView{
 		ProjectView: pv,
-		IssueCount:  app.IssueService.GetIssuesCount(pv.Crawl.Id),
+		IssueCount:  h.IssueService.GetIssuesCount(pv.Crawl.Id),
 	}
 
 	v := &PageView{
@@ -66,14 +66,14 @@ func (app *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
 		PageTitle: "ISSUES_VIEW",
 	}
 
-	app.Renderer.RenderTemplate(w, "issues", v)
+	h.Renderer.RenderTemplate(w, "issues", v)
 }
 
 // handleIssuesView handles the view of project's specific issue type.
 // It expects a query parameter "pid" containing the project ID and an "eid" parameter
 // containing the issue type.
-func (app *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.CookieSession.GetUser(r.Context())
+func (h *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -99,14 +99,14 @@ func (app *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request
 		page = 1
 	}
 
-	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
+	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
 
-	paginatorView, err := app.IssueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
+	paginatorView, err := h.IssueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -125,5 +125,5 @@ func (app *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request
 		PageTitle: "ISSUES_DETAIL",
 	}
 
-	app.Renderer.RenderTemplate(w, "issues_view", v)
+	h.Renderer.RenderTemplate(w, "issues_view", v)
 }

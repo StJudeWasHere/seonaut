@@ -18,7 +18,7 @@ type userHandler struct {
 // The function handles both GET and POST HTTP methods.
 // GET: Renders the signup form.
 // POST: Processes the signup form data, performs signup, signs the user in, and redirects to the home page.
-func (app *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
+func (h *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 	data := &struct {
 		Email string
 		Error bool
@@ -41,21 +41,21 @@ func (app *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 		data.Email = r.FormValue("email")
 		password := r.FormValue("password")
 
-		u, err := app.UserService.SignUp(data.Email, password)
+		u, err := h.UserService.SignUp(data.Email, password)
 		if err != nil {
 			log.Printf("serveSignup SignUp: %v", err)
 			data.Error = true
-			app.Renderer.RenderTemplate(w, "signup", pageView)
+			h.Renderer.RenderTemplate(w, "signup", pageView)
 
 			return
 		}
 
-		app.CookieSession.SetSession(u.Id, w, r)
+		h.CookieSession.SetSession(u.Id, w, r)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	app.Renderer.RenderTemplate(w, "signup", pageView)
+	h.Renderer.RenderTemplate(w, "signup", pageView)
 }
 
 // handleDeleteUser handles the HTTP GET and POST requests for the delete user account functionality.
@@ -63,8 +63,8 @@ func (app *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 // The function handles both GET and POST HTTP methods.
 // GET: it renders the delete page with the appropriate data.
 // POST: it sign's out the user and deletes the account including all its associated data.
-func (app *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.CookieSession.GetUser(r.Context())
+func (h *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -81,26 +81,26 @@ func (app *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request)
 		Data:      data,
 	}
 
-	pv := app.ProjectViewService.GetProjectViews((user.Id))
+	pv := h.ProjectViewService.GetProjectViews((user.Id))
 	for _, v := range pv {
 		if !v.Crawl.IssuesEnd.Valid || v.Project.Deleting {
 			data.Crawling = true
-			app.Renderer.RenderTemplate(w, "delete_account", pageView)
+			h.Renderer.RenderTemplate(w, "delete_account", pageView)
 			return
 		}
 	}
 
 	if r.Method == http.MethodPost {
-		app.CookieSession.DestroySession(w, r)
+		h.CookieSession.DestroySession(w, r)
 
-		app.UserService.DeleteUser(user)
+		h.UserService.DeleteUser(user)
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
 
-	app.Renderer.RenderTemplate(w, "delete_account", pageView)
+	h.Renderer.RenderTemplate(w, "delete_account", pageView)
 }
 
 // handleSignin handles the HTTP GET and POST requests for the sign-in functionality.
@@ -108,7 +108,7 @@ func (app *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request)
 // The function handles both GET and POST HTTP methods.
 // GET: it renders the sign-in page with the appropriate data.
 // POST: it validates the user's credentials and creates a session if the sign-in is successful.
-func (app *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
+func (h *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 	data := &struct {
 		Email string
 		Error bool
@@ -131,9 +131,9 @@ func (app *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 		data.Email = r.FormValue("email")
 		password := r.FormValue("password")
 
-		u, err := app.UserService.SignIn(data.Email, password)
+		u, err := h.UserService.SignIn(data.Email, password)
 		if err == nil {
-			app.CookieSession.SetSession(u.Id, w, r)
+			h.CookieSession.SetSession(u.Id, w, r)
 
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -144,7 +144,7 @@ func (app *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 		data.Error = true
 	}
 
-	app.Renderer.RenderTemplate(w, "signin", pageView)
+	h.Renderer.RenderTemplate(w, "signin", pageView)
 }
 
 // handleAccount handles the HTTP POST and GET requests for the account management functionality.
@@ -153,8 +153,8 @@ func (app *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 // POST: it allows users to change their credentials by verifying the current password and
 // updating the password with a new one.
 // GET: it renders the account management form with the appropriate data.
-func (app *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.CookieSession.GetUser(r.Context())
+func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -183,22 +183,22 @@ func (app *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 		password := r.FormValue("password")
 		newPassword := r.FormValue("new_password")
 
-		_, err = app.UserService.SignIn(user.Email, password)
+		_, err = h.UserService.SignIn(user.Email, password)
 		if err != nil {
 			data.Error = true
 			data.ErrorMessage = "Current password is not correct."
 
-			app.Renderer.RenderTemplate(w, "account", pageView)
+			h.Renderer.RenderTemplate(w, "account", pageView)
 
 			return
 		}
 
-		err = app.UserService.UpdatePassword(user.Email, newPassword)
+		err = h.UserService.UpdatePassword(user.Email, newPassword)
 		if err != nil {
 			data.Error = true
 			data.ErrorMessage = "New password is not valid."
 
-			app.Renderer.RenderTemplate(w, "account", pageView)
+			h.Renderer.RenderTemplate(w, "account", pageView)
 
 			return
 		}
@@ -208,13 +208,13 @@ func (app *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	app.Renderer.RenderTemplate(w, "account", pageView)
+	h.Renderer.RenderTemplate(w, "account", pageView)
 }
 
 // handleSignout is a handler function that handles the user's signout request.
 // It clears the session data related to authenticated user.
-func (app *userHandler) handleSignout(w http.ResponseWriter, r *http.Request) {
-	app.CookieSession.DestroySession(w, r)
+func (h *userHandler) handleSignout(w http.ResponseWriter, r *http.Request) {
+	h.CookieSession.DestroySession(w, r)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

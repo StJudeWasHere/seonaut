@@ -17,14 +17,14 @@ type projectHandler struct {
 }
 
 // Handles the user homepage request and lists all the user's projects.
-func (app *projectHandler) handleHome(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.CookieSession.GetUser(r.Context())
+func (h *projectHandler) handleHome(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}
 
-	views := app.ProjectViewService.GetProjectViews(user.Id)
+	views := h.ProjectViewService.GetProjectViews(user.Id)
 
 	var refresh bool
 	for _, v := range views {
@@ -42,12 +42,12 @@ func (app *projectHandler) handleHome(w http.ResponseWriter, r *http.Request) {
 		Refresh:   refresh,
 	}
 
-	app.Renderer.RenderTemplate(w, "home", v)
+	h.Renderer.RenderTemplate(w, "home", v)
 }
 
 // handleProjectAdd handles the form for adding a new project.
-func (app *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.CookieSession.GetUser(r.Context())
+func (h *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -111,7 +111,7 @@ func (app *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Reque
 		parsedURL, err := url.ParseRequestURI(strings.TrimSpace(u))
 		if err != nil {
 			data.Error = true
-			app.Renderer.RenderTemplate(w, "project_add", pageView)
+			h.Renderer.RenderTemplate(w, "project_add", pageView)
 
 			return
 		}
@@ -127,10 +127,10 @@ func (app *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Reque
 			CheckExternalLinks: checkExternalLinks,
 		}
 
-		err = app.ProjectService.SaveProject(project, user.Id)
+		err = h.ProjectService.SaveProject(project, user.Id)
 		if err != nil {
 			data.Error = true
-			app.Renderer.RenderTemplate(w, "project_add", pageView)
+			h.Renderer.RenderTemplate(w, "project_add", pageView)
 
 			return
 		}
@@ -139,12 +139,12 @@ func (app *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	app.Renderer.RenderTemplate(w, "project_add", pageView)
+	h.Renderer.RenderTemplate(w, "project_add", pageView)
 }
 
 // handleDeleteProject handles the deletion of a project.
 // It expects a query parameter "pid" containing the project ID to be deleted.
-func (app *projectHandler) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
+func (h *projectHandler) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -152,28 +152,28 @@ func (app *projectHandler) handleDeleteProject(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
 	}
 
-	p, err := app.ProjectService.FindProject(pid, user.Id)
+	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
 
-	app.ProjectService.DeleteProject(&p)
+	h.ProjectService.DeleteProject(&p)
 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // handleProjectEdit handles the edition of a project.
 // It expects a query parameter "pid" containing the project ID to be edited.
-func (app *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
+func (h *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -181,14 +181,14 @@ func (app *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
 	}
 
-	p, err := app.ProjectService.FindProject(pid, user.Id)
+	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -251,10 +251,10 @@ func (app *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Requ
 			p.BasicAuth = false
 		}
 
-		err = app.ProjectService.UpdateProject(&p)
+		err = h.ProjectService.UpdateProject(&p)
 		if err != nil {
 			data.Error = true
-			app.Renderer.RenderTemplate(w, "project_edit", pageView)
+			h.Renderer.RenderTemplate(w, "project_edit", pageView)
 
 			return
 		}
@@ -264,5 +264,5 @@ func (app *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	app.Renderer.RenderTemplate(w, "project_edit", pageView)
+	h.Renderer.RenderTemplate(w, "project_edit", pageView)
 }

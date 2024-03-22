@@ -24,9 +24,9 @@ type ExplorerView struct {
 // is empty, it loads all the pagereports.
 // It expects a query parameter "pid" containing the project ID, the "p" parameter containing the current
 // page in the paginator, and the "term" parameter used to perform the pagereport search.
-func (app *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Request) {
+func (h *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	// Get user from the request's context
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
@@ -46,7 +46,7 @@ func (app *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Reques
 	}
 
 	// Get the project view
-	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
+	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -55,7 +55,7 @@ func (app *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Reques
 	term := r.URL.Query().Get("term")
 
 	// Get the paginated reports
-	paginatorView, err := app.ReportService.GetPaginatedReports(pv.Crawl.Id, page, term)
+	paginatorView, err := h.ReportService.GetPaginatedReports(pv.Crawl.Id, page, term)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -73,5 +73,5 @@ func (app *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Reques
 		PageTitle: "EXPLORER",
 	}
 
-	app.Renderer.RenderTemplate(w, "explorer", v)
+	h.Renderer.RenderTemplate(w, "explorer", v)
 }

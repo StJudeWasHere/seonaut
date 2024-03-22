@@ -24,8 +24,8 @@ type resourceHandler struct {
 // - "ep" the explorer page number from which the user loaded this resource.
 // - "t" the tab to be loaded, which defaults to the details tab.
 // - "p" the number of page to be loaded, in case the resource page has pagination.
-func (app *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.Request) {
-	user, ok := app.CookieSession.GetUser(r.Context())
+func (h *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
@@ -67,7 +67,7 @@ func (app *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.R
 		page = 1
 	}
 
-	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
+	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		log.Printf("serveResourcesView GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -86,7 +86,7 @@ func (app *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.R
 		Eid:            eid,
 		Ep:             ep,
 		Tab:            tab,
-		PageReportView: app.ReportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
+		PageReportView: h.ReportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
 	}
 
 	pageView := &PageView{
@@ -95,5 +95,5 @@ func (app *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.R
 		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab),
 	}
 
-	app.Renderer.RenderTemplate(w, "resources", pageView)
+	h.Renderer.RenderTemplate(w, "resources", pageView)
 }

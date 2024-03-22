@@ -31,7 +31,7 @@ type crawlHandler struct {
 // It expects a query parameter "pid" containing the project ID to be crawled.
 // In case the project requieres BasicAuth it will redirect the user to the BasicAuth
 // credentials URL. Otherwise, it starts a new crawler.
-func (app *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -39,14 +39,14 @@ func (app *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
 	}
 
-	p, err := app.ProjectService.FindProject(pid, user.Id)
+	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -61,7 +61,7 @@ func (app *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		log.Printf("Crawling %s\n", p.URL)
-		crawl, err := app.CrawlerService.StartCrawler(p)
+		crawl, err := h.CrawlerService.StartCrawler(p)
 		if err != nil {
 			log.Printf("StartCrawler: %s %v\n", p.URL, err)
 			return
@@ -75,7 +75,7 @@ func (app *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 // handleStopCrawl handles the crawler stopping.
 // It expects a query paramater "pid" containinng the project ID that is being crawled.
 // Aftar making sure the user owns the project it is stopped.
-func (app *crawlHandler) handleStopCrawl(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) handleStopCrawl(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -83,25 +83,25 @@ func (app *crawlHandler) handleStopCrawl(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
 	}
 
-	p, err := app.ProjectService.FindProject(pid, user.Id)
+	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 		return
 	}
 
-	go app.CrawlerService.StopCrawler(p)
+	go h.CrawlerService.StopCrawler(p)
 
 	if r.Header.Get("X-Requested-With") == "XMLHttpRequest" {
 		data := struct{ Crawling bool }{Crawling: false}
-		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Content-Type", "hlication/json")
 		w.WriteHeader(http.StatusCreated)
 		json.NewEncoder(w).Encode(data)
 
@@ -119,7 +119,7 @@ func (app *crawlHandler) handleStopCrawl(w http.ResponseWriter, r *http.Request)
 // The function handles both GET and POST HTTP methods.
 // GET: Renders the auth form.
 // POST: Processes the auth form data and starts the crawler.
-func (app *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -127,14 +127,14 @@ func (app *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
 	}
 
-	p, err := app.ProjectService.FindProject(pid, user.Id)
+	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -155,7 +155,7 @@ func (app *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request)
 
 		go func() {
 			log.Printf("Crawling %s using BasicAuth\n", p.URL)
-			crawl, err := app.CrawlerService.StartCrawler(p)
+			crawl, err := h.CrawlerService.StartCrawler(p)
 			if err != nil {
 				log.Printf("StartCrawler: %s %v\n", p.URL, err)
 				return
@@ -172,12 +172,12 @@ func (app *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request)
 		Data:      struct{ Project models.Project }{Project: p},
 	}
 
-	app.Renderer.RenderTemplate(w, "crawl_auth", pageView)
+	h.Renderer.RenderTemplate(w, "crawl_auth", pageView)
 }
 
 // handleCrawlLive handles the request for the live crawling of a project.
 // It expects a query parameter "pid" containing the project ID to be crawled.
-func (app *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -185,14 +185,14 @@ func (app *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 
 		return
 	}
 
-	pv, err := app.ProjectViewService.GetProjectView(pid, user.Id)
+	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -205,7 +205,7 @@ func (app *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	configURL, err := url.Parse(app.Config.HTTPServer.URL)
+	configURL, err := url.Parse(h.Config.HTTPServer.URL)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
@@ -224,13 +224,13 @@ func (app *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request)
 		PageTitle: "CRAWL_LIVE",
 	}
 
-	app.Renderer.RenderTemplate(w, "crawl_live", v)
+	h.Renderer.RenderTemplate(w, "crawl_live", v)
 }
 
 // handleCrawlWs handles the live crawling of a project using websockets.
 // It expects a query parameter "pid" containing the project ID.
 // It upgrades the connection to websockets and sends the crawler messages through it.
-func (app *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -238,14 +238,14 @@ func (app *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := app.CookieSession.GetUser(r.Context())
+	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 
 		return
 	}
 
-	p, err := app.ProjectService.FindProject(pid, user.Id)
+	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 
@@ -259,7 +259,7 @@ func (app *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 		CheckOrigin: func(r *http.Request) bool {
 			origin := r.Header.Get("Origin")
 
-			return origin == app.Config.HTTPServer.URL
+			return origin == h.Config.HTTPServer.URL
 		},
 	}
 
@@ -276,7 +276,7 @@ func (app *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 
 	connLock := &sync.RWMutex{}
 
-	subscriber := app.PubSubBroker.NewSubscriber(fmt.Sprintf("crawl-%d", p.Id), func(i *pubsub.Message) error {
+	subscriber := h.PubSubBroker.NewSubscriber(fmt.Sprintf("crawl-%d", p.Id), func(i *pubsub.Message) error {
 		pubsubMessage := i
 		wsMessage := struct {
 			Name string
@@ -314,7 +314,7 @@ func (app *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 
 		return err
 	})
-	defer app.PubSubBroker.Unsubscribe(subscriber)
+	defer h.PubSubBroker.Unsubscribe(subscriber)
 
 	go func() {
 		ticker := time.NewTicker(pingPeriod)

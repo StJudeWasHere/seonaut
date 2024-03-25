@@ -54,7 +54,7 @@ func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if p.BasicAuth {
-		http.Redirect(w, r, "/crawl-auth?id="+strconv.Itoa(pid), http.StatusSeeOther)
+		http.Redirect(w, r, "/crawl/auth?id="+strconv.Itoa(pid), http.StatusSeeOther)
 
 		return
 	}
@@ -69,7 +69,7 @@ func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
 	}()
 
-	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+	http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 }
 
 // handleStopCrawl handles the crawler stopping.
@@ -108,7 +108,7 @@ func (h *crawlHandler) handleStopCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+	http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 }
 
 // handleCrawlAuth handles the crawling of a project with BasicAuth.
@@ -144,7 +144,7 @@ func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
 		err := r.ParseForm()
 		if err != nil {
-			http.Redirect(w, r, "/crawl-auth", http.StatusSeeOther)
+			http.Redirect(w, r, "/crawl/auth", http.StatusSeeOther)
 
 			return
 		}
@@ -164,7 +164,7 @@ func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 
 		}()
 
-		http.Redirect(w, r, "/crawl-live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+		http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 	}
 
 	pageView := &PageView{

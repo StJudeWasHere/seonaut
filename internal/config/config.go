@@ -3,25 +3,35 @@ package config
 import (
 	"path/filepath"
 
-	"github.com/stjudewashere/seonaut/internal/crawler_service"
-	"github.com/stjudewashere/seonaut/internal/datastore"
-
 	"github.com/spf13/viper"
 )
 
+// CrawlerConfig stores the configuration for the crawler.
+type CrawlerConfig struct {
+	Agent string `mapstructure:"agent"`
+}
+
 // HTTPServerConfig stores the configuration for the HTTP server.
-// It is loaded from the config package.
 type HTTPServerConfig struct {
 	Server string `mapstructure:"host"`
 	Port   int    `mapstructure:"port"`
 	URL    string `mapstructure:"url"`
 }
 
+// DBConfig stores the configuration for the database store.
+type DBConfig struct {
+	Server string `mapstructure:"server"`
+	Port   int    `mapstructure:"port"`
+	User   string `mapstructure:"user"`
+	Pass   string `mapstructure:"password"`
+	Name   string `mapstructure:"database"`
+}
+
 // Config stores the configuration for the application.
 type Config struct {
-	Crawler    *crawler_service.Config `mapstructure:"crawler"`
-	HTTPServer *HTTPServerConfig       `mapstructure:"server"`
-	DB         *datastore.DBConfig     `mapstructure:"database"`
+	Crawler    *CrawlerConfig    `mapstructure:"crawler"`
+	HTTPServer *HTTPServerConfig `mapstructure:"server"`
+	DB         *DBConfig         `mapstructure:"database"`
 }
 
 // NewConfig loads the configuration from the specified file and path.

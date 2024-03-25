@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/cache_manager"
+	"github.com/stjudewashere/seonaut/internal/config"
 	"github.com/stjudewashere/seonaut/internal/httpcrawler"
 	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -23,12 +24,6 @@ const (
 	// Max number returned by GetLastCrawls
 	LastCrawlsLimit = 5
 )
-
-// CrawlerConfig stores the configuration for the crawler.
-// It is loaded from the config package.
-type Config struct {
-	Agent string `mapstructure:"agent"`
-}
 
 type Storage interface {
 	SaveCrawl(models.Project) (*models.Crawl, error)
@@ -49,7 +44,7 @@ type Services struct {
 type Service struct {
 	store         Storage
 	broker        *pubsub.Broker
-	config        *Config
+	config        *config.CrawlerConfig
 	cacheManager  *cache_manager.CacheManager
 	reportManager *report_manager.ReportManager
 	issueService  *issue.Service
@@ -57,7 +52,7 @@ type Service struct {
 	lock          *sync.RWMutex
 }
 
-func NewService(s Storage, c *Config, services Services) *Service {
+func NewService(s Storage, c *config.CrawlerConfig, services Services) *Service {
 	return &Service{
 		store:         s,
 		broker:        services.Broker,

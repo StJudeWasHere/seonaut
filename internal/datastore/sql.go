@@ -7,6 +7,7 @@ import (
 	"database/sql"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/stjudewashere/seonaut/internal/config"
 )
 
 const (
@@ -26,18 +27,8 @@ const (
 	connMaxLifeInMinutes = 5
 )
 
-// DBConfig stores the configuration for the database store.
-// It is loaded from the config package.
-type DBConfig struct {
-	Server string `mapstructure:"server"`
-	Port   int    `mapstructure:"port"`
-	User   string `mapstructure:"user"`
-	Pass   string `mapstructure:"password"`
-	Name   string `mapstructure:"database"`
-}
-
 // SqlConnect creates a new SQL connection with the provided configuration.
-func SqlConnect(config *DBConfig) (*sql.DB, error) {
+func SqlConnect(config *config.DBConfig) (*sql.DB, error) {
 	db, err := sql.Open("mysql", fmt.Sprintf(
 		"%s:%s@tcp(%s:%d)/%s?parseTime=true&multiStatements=true",
 		config.User,

@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 
-	"github.com/stjudewashere/seonaut/internal/http"
+	"github.com/stjudewashere/seonaut/internal/routes"
 	"github.com/stjudewashere/seonaut/internal/services"
 )
 
@@ -14,5 +14,5 @@ func main() {
 	flag.Parse()
 
 	container := services.NewContainer(configFile)
-	http.NewServer(container)
+	routes.NewServer(container)
 }

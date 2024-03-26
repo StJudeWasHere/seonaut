@@ -8,18 +8,14 @@ import (
 	"github.com/stjudewashere/seonaut/internal/services"
 )
 
-const (
-	chartLimit = 4
-)
-
 type dashboardHandler struct {
 	*services.Container
 }
 
 type DashboardView struct {
 	ProjectView       *models.ProjectView
-	MediaChart        models.Chart
-	StatusChart       models.Chart
+	MediaChart        *models.Chart
+	StatusChart       *models.Chart
 	Crawls            []models.Crawl
 	CanonicalCount    *models.CanonicalCount
 	AltCount          *models.AltCount
@@ -59,8 +55,8 @@ func (h *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Reques
 
 	data := DashboardView{
 		ProjectView:       pv,
-		MediaChart:        newChart(h.ReportService.GetMediaCount(pv.Crawl.Id)),
-		StatusChart:       newChart(h.ReportService.GetStatusCount(pv.Crawl.Id)),
+		MediaChart:        h.ReportService.GetMediaCount(pv.Crawl.Id),
+		StatusChart:       h.ReportService.GetStatusCount(pv.Crawl.Id),
 		Crawls:            h.CrawlerService.GetLastCrawls(pv.Project),
 		CanonicalCount:    h.ReportService.GetCanonicalCount(pv.Crawl.Id),
 		AltCount:          h.ReportService.GetImageAltCount(pv.Crawl.Id),
@@ -75,35 +71,4 @@ func (h *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Reques
 	}
 
 	h.Renderer.RenderTemplate(w, "dashboard", pageView)
-}
-
-// Returns a Chart containing the keys and values from the CountList.
-// It limits the slice to the chartLimit value.
-func newChart(c *models.CountList) models.Chart {
-	chart := models.Chart{}
-	total := 0
-
-	for _, i := range *c {
-		total = total + i.Value
-	}
-
-	for _, i := range *c {
-		ci := models.ChartItem{
-			Key:   i.Key,
-			Value: i.Value,
-		}
-
-		chart = append(chart, ci)
-	}
-
-	if len(chart) > chartLimit {
-		chart[chartLimit-1].Key = "Other"
-		for _, v := range chart[chartLimit:] {
-			chart[chartLimit-1].Value += v.Value
-		}
-
-		chart = chart[:chartLimit]
-	}
-
-	return chart
 }

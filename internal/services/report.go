@@ -8,6 +8,10 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
+const (
+	chartLimit = 4
+)
+
 type (
 	ReportServiceCache interface {
 		Set(key string, v interface{}) error
@@ -141,8 +145,8 @@ func (s *ReportService) GetSitemapPageReports(crawlId int64) <-chan *models.Page
 	return s.store.FindSitemapPageReports(crawlId)
 }
 
-// Returns a CountList with the PageReport's media type count.
-func (s *ReportService) GetMediaCount(crawlId int64) *models.CountList {
+// Returns a Chart with the PageReport's media type chart data.
+func (s *ReportService) GetMediaCount(crawlId int64) *models.Chart {
 	key := fmt.Sprintf("media-%d", crawlId)
 	v := &models.CountList{}
 	if err := s.cache.Get(key, v); err != nil {
@@ -152,11 +156,11 @@ func (s *ReportService) GetMediaCount(crawlId int64) *models.CountList {
 		}
 	}
 
-	return v
+	return newChart(v)
 }
 
-// Returns a CountList with the PageReport's status code count.
-func (s *ReportService) GetStatusCount(crawlId int64) *models.CountList {
+// Returns a Chart with the PageReport's status code chart data.
+func (s *ReportService) GetStatusCount(crawlId int64) *models.Chart {
 	key := fmt.Sprintf("status-%d", crawlId)
 	v := &models.CountList{}
 	if err := s.cache.Get(key, v); err != nil {
@@ -166,7 +170,7 @@ func (s *ReportService) GetStatusCount(crawlId int64) *models.CountList {
 		}
 	}
 
-	return v
+	return newChart(v)
 }
 
 // Returns the count Images with and without the alt attribute.
@@ -209,6 +213,37 @@ func (s *ReportService) GetCanonicalCount(crawlId int64) *models.CanonicalCount 
 	}
 
 	return c
+}
+
+// Returns a Chart containing the keys and values from the CountList.
+// It limits the slice to the chartLimit value.
+func newChart(c *models.CountList) *models.Chart {
+	chart := models.Chart{}
+	total := 0
+
+	for _, i := range *c {
+		total = total + i.Value
+	}
+
+	for _, i := range *c {
+		ci := models.ChartItem{
+			Key:   i.Key,
+			Value: i.Value,
+		}
+
+		chart = append(chart, ci)
+	}
+
+	if len(chart) > chartLimit {
+		chart[chartLimit-1].Key = "Other"
+		for _, v := range chart[chartLimit:] {
+			chart[chartLimit-1].Value += v.Value
+		}
+
+		chart = chart[:chartLimit]
+	}
+
+	return &chart
 }
 
 func (s *ReportService) BuildCrawlCache(crawl *models.Crawl) {

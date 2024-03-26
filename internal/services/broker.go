@@ -8,30 +8,34 @@ import (
 	"github.com/google/uuid"
 )
 
-type Subscriber struct {
-	Id       uuid.UUID
-	Topic    string
-	Callback func(*models.Message) error
-}
+type (
+	// PubSub subscriber struct.
+	subscriber struct {
+		Id       uuid.UUID
+		Topic    string
+		Callback func(*models.Message) error
+	}
 
-type Broker struct {
-	subscribers map[string][]*Subscriber
-	lock        *sync.RWMutex
-}
+	// PubSub broker service struct keeps a map of subscribers.
+	Broker struct {
+		subscribers map[string][]*subscriber
+		lock        *sync.RWMutex
+	}
+)
 
 func NewPubSubBroker() *Broker {
 	return &Broker{
-		subscribers: make(map[string][]*Subscriber, 0),
+		subscribers: make(map[string][]*subscriber, 0),
 		lock:        &sync.RWMutex{},
 	}
 }
 
 // Returns a new subsciber to the topic.
-func (b *Broker) NewSubscriber(topic string, c func(*models.Message) error) *Subscriber {
+func (b *Broker) NewSubscriber(topic string, c func(*models.Message) error) *subscriber {
 	b.lock.Lock()
 	defer b.lock.Unlock()
 
-	s := &Subscriber{
+	s := &subscriber{
 		Id:       uuid.New(),
 		Topic:    topic,
 		Callback: c,
@@ -43,7 +47,7 @@ func (b *Broker) NewSubscriber(topic string, c func(*models.Message) error) *Sub
 }
 
 // Unsubscribes a subscriber.
-func (b *Broker) Unsubscribe(s *Subscriber) {
+func (b *Broker) Unsubscribe(s *subscriber) {
 	b.lock.Lock()
 	defer b.lock.Unlock()
 

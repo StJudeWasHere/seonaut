@@ -15,15 +15,17 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-type ReportManagerStore interface {
-	SaveIssues(<-chan *models.Issue)
-}
+type (
+	ReportManagerStore interface {
+		SaveIssues(<-chan *models.Issue)
+	}
 
-type ReportManager struct {
-	store              ReportManagerStore
-	pageCallbacks      []*models.PageIssueReporter
-	multipageCallbacks []models.MultipageCallback
-}
+	ReportManager struct {
+		store              ReportManagerStore
+		pageCallbacks      []*models.PageIssueReporter
+		multipageCallbacks []models.MultipageCallback
+	}
+)
 
 // Create a new ReportManager with no issue reporters.
 func NewReportManager(s ReportManagerStore) *ReportManager {

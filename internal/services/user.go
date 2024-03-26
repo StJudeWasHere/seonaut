@@ -9,17 +9,21 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserStore interface {
-	FindUserById(int) *models.User
-	UserSignup(string, string) (*models.User, error)
-	FindUserByEmail(string) *models.User
-	UserUpdatePassword(email, hashedPassword string) error
-	DeleteUser(int)
-}
+type (
+	// UserService storage interface.
+	UserStore interface {
+		FindUserById(int) *models.User
+		UserSignup(string, string) (*models.User, error)
+		FindUserByEmail(string) *models.User
+		UserUpdatePassword(email, hashedPassword string) error
+		DeleteUser(int)
+	}
 
-type UserService struct {
-	store UserStore
-}
+	// User service struct.
+	UserService struct {
+		store UserStore
+	}
+)
 
 func NewUserService(s UserStore) *UserService {
 	return &UserService{

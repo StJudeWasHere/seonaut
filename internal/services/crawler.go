@@ -14,39 +14,38 @@ import (
 )
 
 const (
-	// Max number of page reports that will be created
-	MaxPageReports = 20000
-
-	// Max number returned by GetLastCrawls
-	LastCrawlsLimit = 5
+	MaxPageReports  = 20000 // Max number of page reports that will be created
+	LastCrawlsLimit = 5     // Max number returned by GetLastCrawls
 )
 
-type CrawlerServiceStorage interface {
-	SaveCrawl(models.Project) (*models.Crawl, error)
-	SavePageReport(*models.PageReport, int64) (*models.PageReport, error)
-	SaveEndCrawl(*models.Crawl) (*models.Crawl, error)
-	GetLastCrawls(models.Project, int) []models.Crawl
-	GetPreviousCrawl(*models.Project) (*models.Crawl, error)
-	DeleteCrawlData(c *models.Crawl)
-}
+type (
+	CrawlerServiceStorage interface {
+		SaveCrawl(models.Project) (*models.Crawl, error)
+		SavePageReport(*models.PageReport, int64) (*models.PageReport, error)
+		SaveEndCrawl(*models.Crawl) (*models.Crawl, error)
+		GetLastCrawls(models.Project, int) []models.Crawl
+		GetPreviousCrawl(*models.Project) (*models.Crawl, error)
+		DeleteCrawlData(c *models.Crawl)
+	}
 
-type Services struct {
-	Broker        *Broker
-	CacheManager  *CacheManager
-	ReportManager *ReportManager
-	IssueService  *IssueService
-}
+	Services struct {
+		Broker        *Broker
+		CacheManager  *CacheManager
+		ReportManager *ReportManager
+		IssueService  *IssueService
+	}
 
-type CrawlerService struct {
-	store         CrawlerServiceStorage
-	broker        *Broker
-	config        *config.CrawlerConfig
-	cacheManager  *CacheManager
-	reportManager *ReportManager
-	issueService  *IssueService
-	crawlers      map[int64]*crawler.Crawler
-	lock          *sync.RWMutex
-}
+	CrawlerService struct {
+		store         CrawlerServiceStorage
+		broker        *Broker
+		config        *config.CrawlerConfig
+		cacheManager  *CacheManager
+		reportManager *ReportManager
+		issueService  *IssueService
+		crawlers      map[int64]*crawler.Crawler
+		lock          *sync.RWMutex
+	}
+)
 
 func NewCrawlerService(s CrawlerServiceStorage, c *config.CrawlerConfig, services Services) *CrawlerService {
 	return &CrawlerService{

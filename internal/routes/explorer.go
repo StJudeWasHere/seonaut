@@ -12,12 +12,6 @@ type explorerHandler struct {
 	*services.Container
 }
 
-type ExplorerView struct {
-	ProjectView   *models.ProjectView
-	Term          string
-	PaginatorView models.PaginatorView
-}
-
 // handleExplorer handles the URL explorer request.
 // It performas a search of pagereports based on the "term" parameter. In case the "term" parameter
 // is empty, it loads all the pagereports.
@@ -60,7 +54,7 @@ func (h *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	view := ExplorerView{
+	view := models.ExplorerView{
 		ProjectView:   pv,
 		Term:          term,
 		PaginatorView: paginatorView,

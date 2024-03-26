@@ -4,14 +4,16 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-type CrawlCacheHandler interface {
-	BuildCrawlCache(crawl *models.Crawl)
-	RemoveCrawlCache(crawl *models.Crawl)
-}
+type (
+	CrawlCacheHandler interface {
+		BuildCrawlCache(crawl *models.Crawl)
+		RemoveCrawlCache(crawl *models.Crawl)
+	}
 
-type CacheManager struct {
-	handlers []CrawlCacheHandler
-}
+	CacheManager struct {
+		handlers []CrawlCacheHandler
+	}
+)
 
 func NewCacheManager() *CacheManager {
 	return &CacheManager{}

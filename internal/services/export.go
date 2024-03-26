@@ -7,23 +7,25 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-type Store interface {
-	ExportLinks(*models.Crawl) <-chan *models.ExportLink
-	ExportExternalLinks(*models.Crawl) <-chan *models.ExportLink
-	ExportImages(crawl *models.Crawl) <-chan *models.ExportImage
-	ExportScripts(crawl *models.Crawl) <-chan *models.Script
-	ExportStyles(crawl *models.Crawl) <-chan *models.Style
-	ExportIframes(crawl *models.Crawl) <-chan *models.Iframe
-	ExportAudios(crawl *models.Crawl) <-chan *models.Audio
-	ExportVideos(crawl *models.Crawl) <-chan *models.Video
-	ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportHreflang
-}
+type (
+	ExportStore interface {
+		ExportLinks(*models.Crawl) <-chan *models.ExportLink
+		ExportExternalLinks(*models.Crawl) <-chan *models.ExportLink
+		ExportImages(crawl *models.Crawl) <-chan *models.ExportImage
+		ExportScripts(crawl *models.Crawl) <-chan *models.Script
+		ExportStyles(crawl *models.Crawl) <-chan *models.Style
+		ExportIframes(crawl *models.Crawl) <-chan *models.Iframe
+		ExportAudios(crawl *models.Crawl) <-chan *models.Audio
+		ExportVideos(crawl *models.Crawl) <-chan *models.Video
+		ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportHreflang
+	}
 
-type Exporter struct {
-	store Store
-}
+	Exporter struct {
+		store ExportStore
+	}
+)
 
-func NewExporter(s Store) *Exporter {
+func NewExporter(s ExportStore) *Exporter {
 	return &Exporter{
 		store: s,
 	}

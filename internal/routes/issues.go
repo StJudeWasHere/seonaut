@@ -12,17 +12,6 @@ type issueHandler struct {
 	*services.Container
 }
 
-type IssuesGroupView struct {
-	ProjectView *models.ProjectView
-	IssueCount  *models.IssueCount
-}
-
-type IssuesView struct {
-	ProjectView   *models.ProjectView
-	Eid           string
-	PaginatorView models.PaginatorView
-}
-
 // handleIssues handles the issues view of a project.
 // It expects a query parameter "pid" containing the project ID.
 func (h *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
@@ -53,7 +42,7 @@ func (h *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ig := IssuesGroupView{
+	ig := models.IssuesGroupView{
 		ProjectView: pv,
 		IssueCount:  h.IssueService.GetIssuesCount(pv.Crawl.Id),
 	}
@@ -111,7 +100,7 @@ func (h *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	data := IssuesView{
+	data := models.IssuesView{
 		ProjectView:   pv,
 		Eid:           eid,
 		PaginatorView: paginatorView,

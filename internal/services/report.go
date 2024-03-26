@@ -8,44 +8,46 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-type ReportServiceCache interface {
-	Set(key string, v interface{}) error
-	Get(key string, v interface{}) error
-	Delete(key string) error
-}
+type (
+	ReportServiceCache interface {
+		Set(key string, v interface{}) error
+		Get(key string, v interface{}) error
+		Delete(key string) error
+	}
 
-type ReportStore interface {
-	FindPageReportById(int) models.PageReport
-	FindErrorTypesByPage(int, int64) []string
-	FindInLinks(string, int64, int) []models.InternalLink
-	FindPageReportsRedirectingToURL(string, int64, int) []models.PageReport
-	FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *models.PageReport
-	FindAllPageReportsByCrawlId(int64) <-chan *models.PageReport
-	FindSitemapPageReports(int64) <-chan *models.PageReport
-	FindLinks(pageReport *models.PageReport, cid int64, page int) []models.InternalLink
-	FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link
-	FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport
+	ReportStore interface {
+		FindPageReportById(int) models.PageReport
+		FindErrorTypesByPage(int, int64) []string
+		FindInLinks(string, int64, int) []models.InternalLink
+		FindPageReportsRedirectingToURL(string, int64, int) []models.PageReport
+		FindAllPageReportsByCrawlIdAndErrorType(int64, string) <-chan *models.PageReport
+		FindAllPageReportsByCrawlId(int64) <-chan *models.PageReport
+		FindSitemapPageReports(int64) <-chan *models.PageReport
+		FindLinks(pageReport *models.PageReport, cid int64, page int) []models.InternalLink
+		FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link
+		FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport
 
-	GetNumberOfPagesForPageReport(cid int64, term string) int
-	GetNumberOfPagesForInlinks(*models.PageReport, int64) int
-	GetNumberOfPagesForRedirecting(*models.PageReport, int64) int
-	GetNumberOfPagesForLinks(*models.PageReport, int64) int
-	GetNumberOfPagesForExternalLinks(pageReport *models.PageReport, cid int64) int
+		GetNumberOfPagesForPageReport(cid int64, term string) int
+		GetNumberOfPagesForInlinks(*models.PageReport, int64) int
+		GetNumberOfPagesForRedirecting(*models.PageReport, int64) int
+		GetNumberOfPagesForLinks(*models.PageReport, int64) int
+		GetNumberOfPagesForExternalLinks(pageReport *models.PageReport, cid int64) int
 
-	CountByMediaType(int64) *models.CountList
-	CountByStatusCode(int64) *models.CountList
+		CountByMediaType(int64) *models.CountList
+		CountByStatusCode(int64) *models.CountList
 
-	CountByCanonical(int64) int
-	CountImagesAlt(int64) *models.AltCount
-	CountScheme(int64) *models.SchemeCount
-	CountByNonCanonical(int64) int
-	GetStatusCodeByDepth(crawlId int64) []models.StatusCodeByDepth
-}
+		CountByCanonical(int64) int
+		CountImagesAlt(int64) *models.AltCount
+		CountScheme(int64) *models.SchemeCount
+		CountByNonCanonical(int64) int
+		GetStatusCodeByDepth(crawlId int64) []models.StatusCodeByDepth
+	}
 
-type ReportService struct {
-	store ReportStore
-	cache ReportServiceCache
-}
+	ReportService struct {
+		store ReportStore
+		cache ReportServiceCache
+	}
+)
 
 func NewReportService(store ReportStore, cache ReportServiceCache) *ReportService {
 	return &ReportService{

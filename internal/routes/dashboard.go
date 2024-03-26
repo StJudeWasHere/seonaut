@@ -16,17 +16,10 @@ type dashboardHandler struct {
 	*services.Container
 }
 
-type ChartItem struct {
-	Key   string
-	Value int
-}
-
-type Chart []ChartItem
-
 type DashboardView struct {
 	ProjectView       *models.ProjectView
-	MediaChart        Chart
-	StatusChart       Chart
+	MediaChart        models.Chart
+	StatusChart       models.Chart
 	Crawls            []models.Crawl
 	CanonicalCount    *models.CanonicalCount
 	AltCount          *models.AltCount
@@ -86,8 +79,8 @@ func (h *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Reques
 
 // Returns a Chart containing the keys and values from the CountList.
 // It limits the slice to the chartLimit value.
-func newChart(c *models.CountList) Chart {
-	chart := Chart{}
+func newChart(c *models.CountList) models.Chart {
+	chart := models.Chart{}
 	total := 0
 
 	for _, i := range *c {
@@ -95,7 +88,7 @@ func newChart(c *models.CountList) Chart {
 	}
 
 	for _, i := range *c {
-		ci := ChartItem{
+		ci := models.ChartItem{
 			Key:   i.Key,
 			Value: i.Value,
 		}

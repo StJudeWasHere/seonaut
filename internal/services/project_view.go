@@ -6,15 +6,17 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-type ProjectViewStorage interface {
-	FindProjectsByUser(int) []models.Project
-	FindProjectById(id int, uid int) (models.Project, error)
-	GetLastCrawl(*models.Project) models.Crawl
-}
+type (
+	ProjectViewStorage interface {
+		FindProjectsByUser(int) []models.Project
+		FindProjectById(id int, uid int) (models.Project, error)
+		GetLastCrawl(*models.Project) models.Crawl
+	}
 
-type ProjectViewService struct {
-	storage ProjectViewStorage
-}
+	ProjectViewService struct {
+		storage ProjectViewStorage
+	}
+)
 
 func NewProjectViewService(s ProjectViewStorage) *ProjectViewService {
 	return &ProjectViewService{

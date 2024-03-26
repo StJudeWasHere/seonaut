@@ -15,24 +15,26 @@ const (
 	Warning
 )
 
-type IssueCache interface {
-	Set(key string, v interface{}) error
-	Get(key string, v interface{}) error
-	Delete(key string) error
-}
+type (
+	IssueCache interface {
+		Set(key string, v interface{}) error
+		Get(key string, v interface{}) error
+		Delete(key string) error
+	}
 
-type IssueStore interface {
-	GetNumberOfPagesForIssues(int64, string) int
-	FindPageReportIssues(int64, int, string) []models.PageReport
-	FindIssuesByPriority(int64, int) []models.IssueGroup
-	SaveIssuesCount(int64, int, int, int)
-	SaveEndIssues(int64, time.Time)
-}
+	IssueStore interface {
+		GetNumberOfPagesForIssues(int64, string) int
+		FindPageReportIssues(int64, int, string) []models.PageReport
+		FindIssuesByPriority(int64, int) []models.IssueGroup
+		SaveIssuesCount(int64, int, int, int)
+		SaveEndIssues(int64, time.Time)
+	}
 
-type IssueService struct {
-	store IssueStore
-	cache IssueCache
-}
+	IssueService struct {
+		store IssueStore
+		cache IssueCache
+	}
+)
 
 func NewIssueService(s IssueStore, c IssueCache) *IssueService {
 	return &IssueService{

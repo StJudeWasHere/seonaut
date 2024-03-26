@@ -11,21 +11,23 @@ import (
 	"github.com/gorilla/sessions"
 )
 
-type contextKey string
-
 const (
 	UserKey     contextKey = "user"
 	SessionName string     = "SESSION_ID"
 )
 
-type sessionUserService interface {
-	FindById(uid int) *models.User
-}
+type (
+	contextKey string
 
-type CookieSession struct {
-	userService sessionUserService
-	cookie      *sessions.CookieStore
-}
+	sessionUserService interface {
+		FindById(uid int) *models.User
+	}
+
+	CookieSession struct {
+		userService sessionUserService
+		cookie      *sessions.CookieStore
+	}
+)
 
 func NewCookieSession(s sessionUserService) *CookieSession {
 	authKeyOne := securecookie.GenerateRandomKey(64)

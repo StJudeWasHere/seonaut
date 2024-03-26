@@ -11,15 +11,17 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type RendererConfig struct {
-	TemplatesFolder  string
-	TranslationsFile string
-}
+type (
+	RendererConfig struct {
+		TemplatesFolder  string
+		TranslationsFile string
+	}
 
-type Renderer struct {
-	translationMap map[string]interface{}
-	config         *RendererConfig
-}
+	Renderer struct {
+		translationMap map[string]interface{}
+		config         *RendererConfig
+	}
+)
 
 // NewRenderer will load a translation file and return a new template renderer.
 func NewRenderer(config *RendererConfig) (*Renderer, error) {

@@ -7,18 +7,20 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-type ProjectServiceStorage interface {
-	SaveProject(*models.Project, int)
-	DeleteProject(*models.Project)
-	GetLastCrawl(*models.Project) models.Crawl
-	UpdateProject(p *models.Project) error
-	FindProjectById(id int, uid int) (models.Project, error)
-}
+type (
+	ProjectServiceStorage interface {
+		SaveProject(*models.Project, int)
+		DeleteProject(*models.Project)
+		GetLastCrawl(*models.Project) models.Crawl
+		UpdateProject(p *models.Project) error
+		FindProjectById(id int, uid int) (models.Project, error)
+	}
 
-type ProjectService struct {
-	storage      ProjectServiceStorage
-	cacheManager *CacheManager
-}
+	ProjectService struct {
+		storage      ProjectServiceStorage
+		cacheManager *CacheManager
+	}
+)
 
 func NewProjectService(s ProjectServiceStorage, cm *CacheManager) *ProjectService {
 	return &ProjectService{

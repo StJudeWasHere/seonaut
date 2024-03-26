@@ -8,9 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/stjudewashere/seonaut/internal/html_parser"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/urlstorage"
 	"golang.org/x/net/html"
 )
 
@@ -38,8 +36,8 @@ type Crawler struct {
 	url                 *url.URL
 	options             *Options
 	queue               *Queue
-	storage             *urlstorage.URLStorage
-	sitemapStorage      *urlstorage.URLStorage
+	storage             *URLStorage
+	sitemapStorage      *URLStorage
 	sitemapChecker      *SitemapChecker
 	sitemapExists       bool
 	sitemapIsBlocked    bool
@@ -66,7 +64,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		url.Path = "/"
 	}
 
-	storage := urlstorage.New()
+	storage := NewURLStorage()
 	storage.Add(url.String())
 
 	httpClient := NewClient(&ClientOptions{
@@ -119,7 +117,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		options:             options,
 		queue:               q,
 		storage:             storage,
-		sitemapStorage:      urlstorage.New(),
+		sitemapStorage:      NewURLStorage(),
 		sitemapChecker:      sitemapChecker,
 		sitemapExists:       sitemapChecker.SitemapExists(sitemaps),
 		sitemapIsBlocked:    sitemapIsBlocked,
@@ -239,7 +237,7 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 
 	defer r.Response.Body.Close()
 
-	pageReport, htmlNode, err := html_parser.NewFromHTTPResponse(r.Response)
+	pageReport, htmlNode, err := NewFromHTTPResponse(r.Response)
 	if err != nil {
 		return err
 	}

@@ -12,7 +12,6 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/pubsub"
 
 	"github.com/gorilla/websocket"
 )
@@ -276,7 +275,7 @@ func (h *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 
 	connLock := &sync.RWMutex{}
 
-	subscriber := h.PubSubBroker.NewSubscriber(fmt.Sprintf("crawl-%d", p.Id), func(i *pubsub.Message) error {
+	subscriber := h.PubSubBroker.NewSubscriber(fmt.Sprintf("crawl-%d", p.Id), func(i *container.Message) error {
 		pubsubMessage := i
 		wsMessage := struct {
 			Name string

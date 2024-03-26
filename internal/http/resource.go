@@ -7,8 +7,7 @@ import (
 	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/container"
-	"github.com/stjudewashere/seonaut/internal/projectview"
-	"github.com/stjudewashere/seonaut/internal/report"
+	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 type resourceHandler struct {
@@ -76,8 +75,8 @@ func (h *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.Req
 	}
 
 	data := &struct {
-		PageReportView *report.PageReportView
-		ProjectView    *projectview.ProjectView
+		PageReportView *models.PageReportView
+		ProjectView    *container.ProjectView
 		Eid            string
 		Ep             string
 		Tab            string

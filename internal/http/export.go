@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/container"
-	"github.com/stjudewashere/seonaut/internal/encoding"
 	"github.com/stjudewashere/seonaut/internal/models"
 
 	"github.com/turk/go-sitemap"
@@ -81,7 +80,7 @@ func (h *exportHandler) handleDownloadCSV(w http.ResponseWriter, r *http.Request
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
-	cw := encoding.NewCSVWriter(w)
+	cw := container.NewCSVWriter(w)
 	prStream := h.ReportService.GetPageReporsByIssueType(pv.Crawl.Id, eid)
 
 	for p := range prStream {

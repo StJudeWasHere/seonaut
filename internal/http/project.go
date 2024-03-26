@@ -9,7 +9,6 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
 type projectHandler struct {
@@ -35,7 +34,7 @@ func (h *projectHandler) handleHome(w http.ResponseWriter, r *http.Request) {
 
 	v := &PageView{
 		Data: struct {
-			Projects []projectview.ProjectView
+			Projects []container.ProjectView
 		}{Projects: views},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",

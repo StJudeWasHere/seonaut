@@ -5,7 +5,6 @@ import (
 	"math"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
@@ -51,8 +50,8 @@ func (ds *Datastore) SaveIssues(iStream <-chan *models.Issue) {
 	}
 }
 
-func (ds *Datastore) FindIssuesByPriority(cid int64, p int) []issue.IssueGroup {
-	issues := []issue.IssueGroup{}
+func (ds *Datastore) FindIssuesByPriority(cid int64, p int) []models.IssueGroup {
+	issues := []models.IssueGroup{}
 	query := `
 		SELECT
 			issue_types.type,
@@ -70,7 +69,7 @@ func (ds *Datastore) FindIssuesByPriority(cid int64, p int) []issue.IssueGroup {
 	}
 
 	for rows.Next() {
-		ig := issue.IssueGroup{}
+		ig := models.IssueGroup{}
 		err := rows.Scan(&ig.ErrorType, &ig.Priority, &ig.Count)
 		if err != nil {
 			log.Println(err)

@@ -5,3 +5,15 @@ type Issue struct {
 	CrawlId      int64
 	ErrorType    int
 }
+
+type IssueGroup struct {
+	ErrorType string
+	Priority  int
+	Count     int
+}
+
+type IssueCount struct {
+	CriticalIssues []IssueGroup
+	AlertIssues    []IssueGroup
+	WarningIssues  []IssueGroup
+}

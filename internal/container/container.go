@@ -4,43 +4,31 @@ import (
 	"database/sql"
 	"log"
 
-	"github.com/stjudewashere/seonaut/internal/cache"
-	"github.com/stjudewashere/seonaut/internal/cache_manager"
 	"github.com/stjudewashere/seonaut/internal/config"
-	"github.com/stjudewashere/seonaut/internal/cookie_session"
-	"github.com/stjudewashere/seonaut/internal/crawler_service"
 	"github.com/stjudewashere/seonaut/internal/datastore"
-	"github.com/stjudewashere/seonaut/internal/export"
-	"github.com/stjudewashere/seonaut/internal/issue"
-	"github.com/stjudewashere/seonaut/internal/project"
-	"github.com/stjudewashere/seonaut/internal/projectview"
-	"github.com/stjudewashere/seonaut/internal/pubsub"
-	"github.com/stjudewashere/seonaut/internal/renderer"
-	"github.com/stjudewashere/seonaut/internal/report"
 	"github.com/stjudewashere/seonaut/internal/report_manager"
 	"github.com/stjudewashere/seonaut/internal/report_manager/reporters"
 	"github.com/stjudewashere/seonaut/internal/report_manager/sql_reporters"
-	"github.com/stjudewashere/seonaut/internal/user"
 )
 
 type Container struct {
 	Config             *config.Config
 	Datastore          *datastore.Datastore
-	PubSubBroker       *pubsub.Broker
-	CacheManager       *cache_manager.CacheManager
-	IssueService       *issue.Service
-	ReportService      *report.Service
+	PubSubBroker       *Broker
+	CacheManager       *CacheManager
+	IssueService       *IssueService
+	ReportService      *ReportService
 	ReportManager      *report_manager.ReportManager
-	UserService        *user.Service
-	ProjectService     *project.Service
-	ProjectViewService *projectview.Service
-	ExportService      *export.Exporter
-	CrawlerService     *crawler_service.Service
-	Renderer           *renderer.Renderer
-	CookieSession      *cookie_session.CookieSession
+	UserService        *UserService
+	ProjectService     *ProjectService
+	ProjectViewService *ProjectViewService
+	ExportService      *Exporter
+	CrawlerService     *CrawlerService
+	Renderer           *Renderer
+	CookieSession      *CookieSession
 
 	db    *sql.DB
-	cache *cache.MemCache
+	cache *MemCache
 }
 
 func NewContainer(configFile string) *Container {
@@ -97,28 +85,28 @@ func (c *Container) InitDatastore() {
 
 // Create the PubSub broker.
 func (c *Container) InitPubSubBroker() {
-	c.PubSubBroker = pubsub.New()
+	c.PubSubBroker = NewPubSubBroker()
 }
 
 // Create the cache system.
 func (c *Container) InitCache() {
-	c.cache = cache.NewMemCache()
+	c.cache = NewMemCache()
 }
 
 // Create the cache manager.
 func (c *Container) InitCacheManager() {
-	c.CacheManager = cache_manager.New()
+	c.CacheManager = NewCacheManager()
 }
 
 // Create the issue service and add it to the cache manager.
 func (c *Container) InitIssueService() {
-	c.IssueService = issue.NewService(c.Datastore, c.cache)
+	c.IssueService = NewIssueService(c.Datastore, c.cache)
 	c.CacheManager.AddCrawlCacheHandler(c.IssueService)
 }
 
 // Create the report service and add it to the cache manager.
 func (c *Container) InitReportService() {
-	c.ReportService = report.NewService(c.Datastore, c.cache)
+	c.ReportService = NewReportService(c.Datastore, c.cache)
 	c.CacheManager.AddCrawlCacheHandler(c.ReportService)
 }
 
@@ -138,39 +126,39 @@ func (c *Container) InitReportManager() {
 
 // Create the user service.
 func (c *Container) InitUserService() {
-	c.UserService = user.NewService(c.Datastore)
+	c.UserService = NewUserService(c.Datastore)
 }
 
 // Create the Project service.
 func (c *Container) InitProjectService() {
-	c.ProjectService = project.NewService(c.Datastore, c.CacheManager)
+	c.ProjectService = NewProjectService(c.Datastore, c.CacheManager)
 }
 
 // Create the ProjectView service.
 func (c *Container) InitProjectViewService() {
-	c.ProjectViewService = projectview.NewService(c.Datastore)
+	c.ProjectViewService = NewProjectViewService(c.Datastore)
 }
 
 // Create the Export service.
 func (c *Container) InitExportService() {
-	c.ExportService = export.NewExporter(c.Datastore)
+	c.ExportService = NewExporter(c.Datastore)
 }
 
 // Create Crawler service.
 func (c *Container) InitCrawlerService() {
-	crawlerServices := crawler_service.Services{
+	crawlerServices := Services{
 		Broker:        c.PubSubBroker,
 		CacheManager:  c.CacheManager,
 		ReportManager: c.ReportManager,
 		IssueService:  c.IssueService,
 	}
 
-	c.CrawlerService = crawler_service.NewService(c.Datastore, c.Config.Crawler, crawlerServices)
+	c.CrawlerService = NewCrawlerService(c.Datastore, c.Config.Crawler, crawlerServices)
 }
 
 // Create html renderer.
 func (c *Container) InitRenderer() {
-	renderer, err := renderer.NewRenderer(&renderer.RendererConfig{
+	renderer, err := NewRenderer(&RendererConfig{
 		TemplatesFolder:  "web/templates",
 		TranslationsFile: "translations/translation.en.yaml",
 	})
@@ -183,5 +171,5 @@ func (c *Container) InitRenderer() {
 
 // Create cookie session handler
 func (c *Container) InitCookieSession() {
-	c.CookieSession = cookie_session.NewCookieSession(c.UserService)
+	c.CookieSession = NewCookieSession(c.UserService)
 }

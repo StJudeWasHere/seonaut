@@ -4,12 +4,11 @@ import (
 	"log"
 
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/export"
 )
 
 // Send all internal links through a read-only channel
-func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *export.Link {
-	lStream := make(chan *export.Link)
+func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *models.ExportLink {
+	lStream := make(chan *models.ExportLink)
 
 	go func() {
 		defer close(lStream)
@@ -29,7 +28,7 @@ func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *export.Link {
 		}
 
 		for rows.Next() {
-			v := &export.Link{}
+			v := &models.ExportLink{}
 			err := rows.Scan(&v.Origin, &v.Destination, &v.Text)
 			if err != nil {
 				log.Println(err)
@@ -44,8 +43,8 @@ func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *export.Link {
 }
 
 // Send all external links through a read-only channel
-func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *export.Link {
-	lStream := make(chan *export.Link)
+func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *models.ExportLink {
+	lStream := make(chan *models.ExportLink)
 
 	go func() {
 		defer close(lStream)
@@ -65,7 +64,7 @@ func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *export.Lin
 		}
 
 		for rows.Next() {
-			v := &export.Link{}
+			v := &models.ExportLink{}
 			err := rows.Scan(&v.Origin, &v.Destination, &v.Text)
 			if err != nil {
 				log.Println(err)
@@ -80,8 +79,8 @@ func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *export.Lin
 }
 
 // Send all image URLs through a read-only channel
-func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *export.Image {
-	iStream := make(chan *export.Image)
+func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *models.ExportImage {
+	iStream := make(chan *models.ExportImage)
 
 	go func() {
 		defer close(iStream)
@@ -101,7 +100,7 @@ func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *export.Image {
 		}
 
 		for rows.Next() {
-			v := &export.Image{}
+			v := &models.ExportImage{}
 			err := rows.Scan(&v.Origin, &v.Image, &v.Alt)
 			if err != nil {
 				log.Println(err)
@@ -116,8 +115,8 @@ func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *export.Image {
 }
 
 // Send all scripts URLs through a read-only channel
-func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *export.Script {
-	sStream := make(chan *export.Script)
+func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *models.Script {
+	sStream := make(chan *models.Script)
 
 	go func() {
 		defer close(sStream)
@@ -136,7 +135,7 @@ func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *export.Script {
 		}
 
 		for rows.Next() {
-			v := &export.Script{}
+			v := &models.Script{}
 			err := rows.Scan(&v.Origin, &v.Script)
 			if err != nil {
 				log.Println(err)
@@ -151,8 +150,8 @@ func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *export.Script {
 }
 
 // Send all css style URLs through a read-only channel
-func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *export.Style {
-	sStream := make(chan *export.Style)
+func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *models.Style {
+	sStream := make(chan *models.Style)
 
 	go func() {
 		defer close(sStream)
@@ -171,7 +170,7 @@ func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *export.Style {
 		}
 
 		for rows.Next() {
-			v := &export.Style{}
+			v := &models.Style{}
 			err := rows.Scan(&v.Origin, &v.Style)
 			if err != nil {
 				log.Println(err)
@@ -186,8 +185,8 @@ func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *export.Style {
 }
 
 // Send all iframe URLs through a read-only channel
-func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *export.Iframe {
-	vStream := make(chan *export.Iframe)
+func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *models.Iframe {
+	vStream := make(chan *models.Iframe)
 
 	go func() {
 		defer close(vStream)
@@ -206,7 +205,7 @@ func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *export.Iframe {
 		}
 
 		for rows.Next() {
-			v := &export.Iframe{}
+			v := &models.Iframe{}
 			err := rows.Scan(&v.Origin, &v.Iframe)
 			if err != nil {
 				log.Println(err)
@@ -221,8 +220,8 @@ func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *export.Iframe {
 }
 
 // Send all audio URLs through a read-only channel
-func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *export.Audio {
-	vStream := make(chan *export.Audio)
+func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *models.Audio {
+	vStream := make(chan *models.Audio)
 
 	go func() {
 		defer close(vStream)
@@ -241,7 +240,7 @@ func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *export.Audio {
 		}
 
 		for rows.Next() {
-			v := &export.Audio{}
+			v := &models.Audio{}
 			err := rows.Scan(&v.Origin, &v.Audio)
 			if err != nil {
 				log.Println(err)
@@ -256,8 +255,8 @@ func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *export.Audio {
 }
 
 // Send all video URLs through a read-only channel
-func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *export.Video {
-	vStream := make(chan *export.Video)
+func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *models.Video {
+	vStream := make(chan *models.Video)
 
 	go func() {
 		defer close(vStream)
@@ -276,7 +275,7 @@ func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *export.Video {
 		}
 
 		for rows.Next() {
-			v := &export.Video{}
+			v := &models.Video{}
 			err := rows.Scan(&v.Origin, &v.Video)
 			if err != nil {
 				log.Println(err)
@@ -291,8 +290,8 @@ func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *export.Video {
 }
 
 // Send all hreflang URLs and language through a read-only channel
-func (ds *Datastore) ExportHreflangs(crawl *models.Crawl) <-chan *export.Hreflang {
-	vStream := make(chan *export.Hreflang)
+func (ds *Datastore) ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportHreflang {
+	vStream := make(chan *models.ExportHreflang)
 
 	go func() {
 		defer close(vStream)
@@ -313,7 +312,7 @@ func (ds *Datastore) ExportHreflangs(crawl *models.Crawl) <-chan *export.Hreflan
 		}
 
 		for rows.Next() {
-			v := &export.Hreflang{}
+			v := &models.ExportHreflang{}
 			err := rows.Scan(&v.Origin, &v.OriginLang, &v.Hreflang, &v.HreflangLang)
 			if err != nil {
 				log.Println(err)

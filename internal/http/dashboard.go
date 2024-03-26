@@ -6,8 +6,6 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/projectview"
-	"github.com/stjudewashere/seonaut/internal/report"
 )
 
 const (
@@ -26,14 +24,14 @@ type ChartItem struct {
 type Chart []ChartItem
 
 type DashboardView struct {
-	ProjectView       *projectview.ProjectView
+	ProjectView       *container.ProjectView
 	MediaChart        Chart
 	StatusChart       Chart
 	Crawls            []models.Crawl
-	CanonicalCount    *report.CanonicalCount
-	AltCount          *report.AltCount
-	SchemeCount       *report.SchemeCount
-	StatusCodeByDepth []report.StatusCodeByDepth
+	CanonicalCount    *models.CanonicalCount
+	AltCount          *models.AltCount
+	SchemeCount       *models.SchemeCount
+	StatusCodeByDepth []models.StatusCodeByDepth
 }
 
 // handleDashboard handles the dashboard of a project.
@@ -88,7 +86,7 @@ func (h *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Reques
 
 // Returns a Chart containing the keys and values from the CountList.
 // It limits the slice to the chartLimit value.
-func newChart(c *report.CountList) Chart {
+func newChart(c *models.CountList) Chart {
 	chart := Chart{}
 	total := 0
 

@@ -6,7 +6,6 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
 type explorerHandler struct {
@@ -14,7 +13,7 @@ type explorerHandler struct {
 }
 
 type ExplorerView struct {
-	ProjectView   *projectview.ProjectView
+	ProjectView   *container.ProjectView
 	Term          string
 	PaginatorView models.PaginatorView
 }

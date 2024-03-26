@@ -5,9 +5,7 @@ import (
 	"strconv"
 
 	"github.com/stjudewashere/seonaut/internal/container"
-	"github.com/stjudewashere/seonaut/internal/issue"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/projectview"
 )
 
 type issueHandler struct {
@@ -15,12 +13,12 @@ type issueHandler struct {
 }
 
 type IssuesGroupView struct {
-	ProjectView *projectview.ProjectView
-	IssueCount  *issue.IssueCount
+	ProjectView *container.ProjectView
+	IssueCount  *models.IssueCount
 }
 
 type IssuesView struct {
-	ProjectView   *projectview.ProjectView
+	ProjectView   *container.ProjectView
 	Eid           string
 	PaginatorView models.PaginatorView
 }

@@ -6,7 +6,6 @@ import (
 	"sort"
 
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/stjudewashere/seonaut/internal/report"
 )
 
 func (ds *Datastore) SavePageReport(r *models.PageReport, cid int64) (*models.PageReport, error) {
@@ -993,7 +992,7 @@ func (ds *Datastore) CountByNonCanonical(cid int64) int {
 	return c
 }
 
-func (ds *Datastore) CountImagesAlt(cid int64) *report.AltCount {
+func (ds *Datastore) CountImagesAlt(cid int64) *models.AltCount {
 	query := `
 		SELECT 
 			if(alt = "", "no alt", "alt") as a,
@@ -1003,7 +1002,7 @@ func (ds *Datastore) CountImagesAlt(cid int64) *report.AltCount {
 		GROUP BY a
 	`
 
-	c := &report.AltCount{}
+	c := &models.AltCount{}
 
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -1030,7 +1029,7 @@ func (ds *Datastore) CountImagesAlt(cid int64) *report.AltCount {
 	return c
 }
 
-func (ds *Datastore) CountScheme(cid int64) *report.SchemeCount {
+func (ds *Datastore) CountScheme(cid int64) *models.SchemeCount {
 	query := `
 		SELECT
 			scheme,
@@ -1040,7 +1039,7 @@ func (ds *Datastore) CountScheme(cid int64) *report.SchemeCount {
 		GROUP BY scheme
 	`
 
-	c := &report.SchemeCount{}
+	c := &models.SchemeCount{}
 
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -1067,7 +1066,7 @@ func (ds *Datastore) CountScheme(cid int64) *report.SchemeCount {
 	return c
 }
 
-func (ds *Datastore) CountByMediaType(cid int64) *report.CountList {
+func (ds *Datastore) CountByMediaType(cid int64) *models.CountList {
 	query := `
 		SELECT media_type, count(*)
 		FROM pagereports
@@ -1077,7 +1076,7 @@ func (ds *Datastore) CountByMediaType(cid int64) *report.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *Datastore) CountByStatusCode(cid int64) *report.CountList {
+func (ds *Datastore) CountByStatusCode(cid int64) *models.CountList {
 	query := `
 		SELECT
 			status_code,
@@ -1089,8 +1088,8 @@ func (ds *Datastore) CountByStatusCode(cid int64) *report.CountList {
 	return ds.countListQuery(query, cid)
 }
 
-func (ds *Datastore) countListQuery(query string, cid int64) *report.CountList {
-	m := report.CountList{}
+func (ds *Datastore) countListQuery(query string, cid int64) *models.CountList {
+	m := models.CountList{}
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
 		log.Println(err)
@@ -1098,7 +1097,7 @@ func (ds *Datastore) countListQuery(query string, cid int64) *report.CountList {
 	}
 
 	for rows.Next() {
-		c := report.CountItem{}
+		c := models.CountItem{}
 		err := rows.Scan(&c.Key, &c.Value)
 		if err != nil {
 			log.Println(err)
@@ -1112,7 +1111,7 @@ func (ds *Datastore) countListQuery(query string, cid int64) *report.CountList {
 	return &m
 }
 
-func (ds *Datastore) GetStatusCodeByDepth(cid int64) []report.StatusCodeByDepth {
+func (ds *Datastore) GetStatusCodeByDepth(cid int64) []models.StatusCodeByDepth {
 	query := `
 	SELECT
 		d.depth,
@@ -1135,7 +1134,7 @@ func (ds *Datastore) GetStatusCodeByDepth(cid int64) []report.StatusCodeByDepth 
 	ORDER BY d.depth;
 	`
 
-	s := []report.StatusCodeByDepth{}
+	s := []models.StatusCodeByDepth{}
 
 	rows, err := ds.db.Query(query, cid)
 	if err != nil {
@@ -1144,7 +1143,7 @@ func (ds *Datastore) GetStatusCodeByDepth(cid int64) []report.StatusCodeByDepth 
 	}
 
 	for rows.Next() {
-		c := report.StatusCodeByDepth{}
+		c := models.StatusCodeByDepth{}
 		err := rows.Scan(&c.Depth, &c.StatusCode100, &c.StatusCode200, &c.StatusCode300, &c.StatusCode400, &c.StatusCode500)
 		if err != nil {
 			log.Println(err)

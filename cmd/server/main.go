@@ -3,8 +3,8 @@ package main
 import (
 	"flag"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/http"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 func main() {
@@ -13,6 +13,6 @@ func main() {
 	flag.StringVar(&configFile, "c", "config", "Specify configuration file. Default is config.")
 	flag.Parse()
 
-	container := container.NewContainer(configFile)
+	container := services.NewContainer(configFile)
 	http.NewServer(container)
 }

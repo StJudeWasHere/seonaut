@@ -5,8 +5,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 // PageView is the data structure used to render the html templates.
@@ -19,7 +19,7 @@ type PageView struct {
 
 // NewApp initializes the template renderer and the session cookie.
 // Returns a new HTTP application server.
-func NewServer(container *container.Container) {
+func NewServer(container *services.Container) {
 	// Static
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))

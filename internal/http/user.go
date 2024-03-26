@@ -4,11 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/stjudewashere/seonaut/internal/container"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 type userHandler struct {
-	*container.Container
+	*services.Container
 }
 
 // handleSignup handles the signup functionality for the application.

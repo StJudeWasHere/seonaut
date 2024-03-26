@@ -4,16 +4,16 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 type explorerHandler struct {
-	*container.Container
+	*services.Container
 }
 
 type ExplorerView struct {
-	ProjectView   *container.ProjectView
+	ProjectView   *models.ProjectView
 	Term          string
 	PaginatorView models.PaginatorView
 }

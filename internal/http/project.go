@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 type projectHandler struct {
-	*container.Container
+	*services.Container
 }
 
 // Handles the user homepage request and lists all the user's projects.
@@ -34,7 +34,7 @@ func (h *projectHandler) handleHome(w http.ResponseWriter, r *http.Request) {
 
 	v := &PageView{
 		Data: struct {
-			Projects []container.ProjectView
+			Projects []models.ProjectView
 		}{Projects: views},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",

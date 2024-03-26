@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 const (
@@ -13,7 +13,7 @@ const (
 )
 
 type dashboardHandler struct {
-	*container.Container
+	*services.Container
 }
 
 type ChartItem struct {
@@ -24,7 +24,7 @@ type ChartItem struct {
 type Chart []ChartItem
 
 type DashboardView struct {
-	ProjectView       *container.ProjectView
+	ProjectView       *models.ProjectView
 	MediaChart        Chart
 	StatusChart       Chart
 	Crawls            []models.Crawl

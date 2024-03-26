@@ -4,21 +4,21 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 type issueHandler struct {
-	*container.Container
+	*services.Container
 }
 
 type IssuesGroupView struct {
-	ProjectView *container.ProjectView
+	ProjectView *models.ProjectView
 	IssueCount  *models.IssueCount
 }
 
 type IssuesView struct {
-	ProjectView   *container.ProjectView
+	ProjectView   *models.ProjectView
 	Eid           string
 	PaginatorView models.PaginatorView
 }

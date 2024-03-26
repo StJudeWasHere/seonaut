@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 
 	"github.com/gorilla/websocket"
 )
@@ -23,7 +23,7 @@ const (
 )
 
 type crawlHandler struct {
-	*container.Container
+	*services.Container
 }
 
 // handleCrawl handles the crawling of a project.
@@ -275,7 +275,7 @@ func (h *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 
 	connLock := &sync.RWMutex{}
 
-	subscriber := h.PubSubBroker.NewSubscriber(fmt.Sprintf("crawl-%d", p.Id), func(i *container.Message) error {
+	subscriber := h.PubSubBroker.NewSubscriber(fmt.Sprintf("crawl-%d", p.Id), func(i *models.Message) error {
 		pubsubMessage := i
 		wsMessage := struct {
 			Name string

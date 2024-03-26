@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 
 	"github.com/turk/go-sitemap"
 )
 
 type exportHandler struct {
-	*container.Container
+	*services.Container
 }
 
 // handleExport handles the export request and renders the the export template.
@@ -80,7 +80,7 @@ func (h *exportHandler) handleDownloadCSV(w http.ResponseWriter, r *http.Request
 
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
 
-	cw := container.NewCSVWriter(w)
+	cw := services.NewCSVWriter(w)
 	prStream := h.ReportService.GetPageReporsByIssueType(pv.Crawl.Id, eid)
 
 	for p := range prStream {

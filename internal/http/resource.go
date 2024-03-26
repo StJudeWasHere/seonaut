@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/stjudewashere/seonaut/internal/container"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 type resourceHandler struct {
-	*container.Container
+	*services.Container
 }
 
 // handleResourcesView handles the HTTP request for the resources view page.
@@ -76,7 +76,7 @@ func (h *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.Req
 
 	data := &struct {
 		PageReportView *models.PageReportView
-		ProjectView    *container.ProjectView
+		ProjectView    *models.ProjectView
 		Eid            string
 		Ep             string
 		Tab            string

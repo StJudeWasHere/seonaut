@@ -17,10 +17,9 @@ type PageView struct {
 	Refresh   bool
 }
 
-// NewApp initializes the template renderer and the session cookie.
-// Returns a new HTTP application server.
+// NewServer sets up the HTTP server routes and starts the HTTP server.
 func NewServer(container *services.Container) {
-	// Static
+	// Handle static files
 	fileServer := http.FileServer(http.Dir("./web/static"))
 	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
 	http.Handle("/robots.txt", fileServer)

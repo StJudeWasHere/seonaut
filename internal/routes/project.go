@@ -45,11 +45,11 @@ func (h *projectHandler) handleHome(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleProjectAdd handles the form for adding a new project.
+// This handler handles both, the GET and POST requests.
 func (h *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
@@ -66,7 +66,6 @@ func (h *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Request
 		if err != nil {
 			log.Printf("serveProjectAdd ParseForm: %v\n", err)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
-
 			return
 		}
 
@@ -111,7 +110,6 @@ func (h *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Request
 		if err != nil {
 			data.Error = true
 			h.Renderer.RenderTemplate(w, "project_add", pageView)
-
 			return
 		}
 
@@ -130,7 +128,6 @@ func (h *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Request
 		if err != nil {
 			data.Error = true
 			h.Renderer.RenderTemplate(w, "project_add", pageView)
-
 			return
 		}
 
@@ -142,26 +139,23 @@ func (h *projectHandler) handleProjectAdd(w http.ResponseWriter, r *http.Request
 }
 
 // handleDeleteProject handles the deletion of a project.
-// It expects a query parameter "pid" containing the project ID to be deleted.
+// It expects a query parameter "pid" containing the project id to be deleted.
 func (h *projectHandler) handleDeleteProject(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -171,26 +165,24 @@ func (h *projectHandler) handleDeleteProject(w http.ResponseWriter, r *http.Requ
 }
 
 // handleProjectEdit handles the edition of a project.
-// It expects a query parameter "pid" containing the project ID to be edited.
+// It expects a query parameter "pid" containing the project id to be edited.
+// Thes handler handles both, the GET and POST requests.
 func (h *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	p, err := h.ProjectService.FindProject(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -254,12 +246,10 @@ func (h *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Reques
 		if err != nil {
 			data.Error = true
 			h.Renderer.RenderTemplate(w, "project_edit", pageView)
-
 			return
 		}
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 

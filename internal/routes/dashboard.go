@@ -12,48 +12,42 @@ type dashboardHandler struct {
 	*services.Container
 }
 
-type DashboardView struct {
-	ProjectView       *models.ProjectView
-	MediaChart        *models.Chart
-	StatusChart       *models.Chart
-	Crawls            []models.Crawl
-	CanonicalCount    *models.CanonicalCount
-	AltCount          *models.AltCount
-	SchemeCount       *models.SchemeCount
-	StatusCodeByDepth []models.StatusCodeByDepth
-}
-
-// handleDashboard handles the dashboard of a project.
-// It expects a query parameter "pid" containing the project ID.
+// handleDashboard handles the dashboard of a project with all the needed data to render
+// the charts. It expects a query parameter "pid" containing the project id.
 func (h *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	if pv.Crawl.TotalURLs == 0 {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
-	data := DashboardView{
+	data := struct {
+		ProjectView       *models.ProjectView
+		MediaChart        *models.Chart
+		StatusChart       *models.Chart
+		Crawls            []models.Crawl
+		CanonicalCount    *models.CanonicalCount
+		AltCount          *models.AltCount
+		SchemeCount       *models.SchemeCount
+		StatusCodeByDepth []models.StatusCodeByDepth
+	}{
 		ProjectView:       pv,
 		MediaChart:        h.ReportService.GetMediaCount(pv.Crawl.Id),
 		StatusChart:       h.ReportService.GetStatusCount(pv.Crawl.Id),

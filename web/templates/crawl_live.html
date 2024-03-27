@@ -140,7 +140,7 @@
 		addMsg = msg => {
 			t = msgTmpl.content.cloneNode(true)
 			t.querySelector(".content").innerHTML = msg;
-			services.prepend(t)
+			container.prepend(t)
 		}
 
 		if (!window["WebSocket"]) {
@@ -186,7 +186,7 @@
 				counter.textContent = data.Crawled + " " + p + " crawled"
 
 				t.querySelector(".url").textContent = data.URL
-				services.prepend(t)
+				container.prepend(t)
 
 				if (crawling && !data.Crawling) {
 					progressStop.style.display = "none";
@@ -214,8 +214,8 @@
 				progressBox.style.display = "flex"
 			}
 
-			if (services.childElementCount > 15) {
-				services.removeChild(services.lastElementChild)
+			if (container.childElementCount > 15) {
+				container.removeChild(container.lastElementChild)
 			}
 		}
 	});

@@ -15,7 +15,7 @@ type explorerHandler struct {
 // handleExplorer handles the URL explorer request.
 // It performas a search of pagereports based on the "term" parameter. In case the "term" parameter
 // is empty, it loads all the pagereports.
-// It expects a query parameter "pid" containing the project ID, the "p" parameter containing the current
+// It expects a query parameter "pid" containing the project id, the "p" parameter containing the current
 // page in the paginator, and the "term" parameter used to perform the pagereport search.
 func (h *explorerHandler) handleExplorer(w http.ResponseWriter, r *http.Request) {
 	// Get user from the request's context

@@ -18,6 +18,7 @@ type exportHandler struct {
 }
 
 // handleExport handles the export request and renders the the export template.
+// It expects a "pid" query parameter with the project's id.
 func (h *exportHandler) handleExport(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
@@ -50,25 +51,23 @@ func (h *exportHandler) handleExport(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleDownloadCSV exports the pagereports of a specific project as a CSV file by issue type.
+// It expects a "pid" query parameter with the project's id.
 func (h *exportHandler) handleDownloadCSV(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -89,25 +88,23 @@ func (h *exportHandler) handleDownloadCSV(w http.ResponseWriter, r *http.Request
 }
 
 // handleSitemap exports the crawled urls of a specific project as a sitemap.xml file.
+// It expects a "pid" query parameter with the project's id.
 func (h *exportHandler) handleSitemap(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -126,26 +123,24 @@ func (h *exportHandler) handleSitemap(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleExportResources exports the resources of a specific project.
-// The URL query parameter t specifys the type of resources to be exported.
+// It expects a "pid" query parameter with the project's id as well as a query
+// parameter "t" specifys the type of resources to be exported.
 func (h *exportHandler) handleExportResources(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -166,13 +161,10 @@ func (h *exportHandler) handleExportResources(w http.ResponseWriter, r *http.Req
 	e, ok := m[t]
 	if !ok {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	fileName := pv.Project.Host + " " + t + " " + time.Now().Format("2006-01-02")
-
 	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
-
 	e(w, &pv.Crawl)
 }

@@ -13,32 +13,28 @@ type issueHandler struct {
 }
 
 // handleIssues handles the issues view of a project.
-// It expects a query parameter "pid" containing the project ID.
+// It expects a query parameter "pid" containing the project id.
 func (h *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	if pv.Crawl.TotalURLs == 0 {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -57,27 +53,24 @@ func (h *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleIssuesView handles the view of project's specific issue type.
-// It expects a query parameter "pid" containing the project ID and an "eid" parameter
+// It expects a query parameter "pid" containing the project id and an "eid" parameter
 // containing the issue type.
 func (h *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
 	eid := r.URL.Query().Get("eid")
 	if eid == "" {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -89,14 +82,12 @@ func (h *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request) 
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
 	paginatorView, err := h.IssueService.GetPaginatedReportsByIssue(pv.Crawl.Id, page, eid)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 

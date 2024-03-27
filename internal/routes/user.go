@@ -14,7 +14,6 @@ type userHandler struct {
 // handleSignup handles the signup functionality for the application.
 // It allows users to sign up by providing their email and password.
 // Upon successful signup, the user is automatically signed in and redirected to the home page.
-//
 // The function handles both GET and POST HTTP methods.
 // GET: Renders the signup form.
 // POST: Processes the signup form data, performs signup, signs the user in, and redirects to the home page.
@@ -34,7 +33,6 @@ func (h *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("serveSignup ParseForm: %v", err)
 			http.Redirect(w, r, "/signup", http.StatusSeeOther)
-
 			return
 		}
 
@@ -46,7 +44,6 @@ func (h *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 			log.Printf("serveSignup SignUp: %v", err)
 			data.Error = true
 			h.Renderer.RenderTemplate(w, "signup", pageView)
-
 			return
 		}
 
@@ -59,7 +56,6 @@ func (h *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleDeleteUser handles the HTTP GET and POST requests for the delete user account functionality.
-//
 // The function handles both GET and POST HTTP methods.
 // GET: it renders the delete page with the appropriate data.
 // POST: it sign's out the user and deletes the account including all its associated data.
@@ -67,7 +63,6 @@ func (h *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
@@ -92,11 +87,8 @@ func (h *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		h.CookieSession.DestroySession(w, r)
-
 		h.UserService.DeleteUser(user)
-
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -104,7 +96,6 @@ func (h *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleSignin handles the HTTP GET and POST requests for the sign-in functionality.
-//
 // The function handles both GET and POST HTTP methods.
 // GET: it renders the sign-in page with the appropriate data.
 // POST: it validates the user's credentials and creates a session if the sign-in is successful.
@@ -124,7 +115,6 @@ func (h *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("serveSignin ParseForm: %v\n", err)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-
 			return
 		}
 
@@ -134,9 +124,7 @@ func (h *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 		u, err := h.UserService.SignIn(data.Email, password)
 		if err == nil {
 			h.CookieSession.SetSession(u.Id, w, r)
-
 			http.Redirect(w, r, "/", http.StatusSeeOther)
-
 			return
 		}
 
@@ -148,7 +136,6 @@ func (h *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleAccount handles the HTTP POST and GET requests for the account management functionality.
-//
 // The function handles both GET and POST HTTP methods.
 // POST: it allows users to change their credentials by verifying the current password and
 // updating the password with a new one.
@@ -157,7 +144,6 @@ func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
-
 		return
 	}
 
@@ -176,7 +162,6 @@ func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 		err := r.ParseForm()
 		if err != nil {
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-
 			return
 		}
 
@@ -187,9 +172,7 @@ func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			data.Error = true
 			data.ErrorMessage = "Current password is not correct."
-
 			h.Renderer.RenderTemplate(w, "account", pageView)
-
 			return
 		}
 
@@ -197,14 +180,11 @@ func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			data.Error = true
 			data.ErrorMessage = "New password is not valid."
-
 			h.Renderer.RenderTemplate(w, "account", pageView)
-
 			return
 		}
 
 		http.Redirect(w, r, "/", http.StatusSeeOther)
-
 		return
 	}
 
@@ -215,6 +195,5 @@ func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 // It clears the session data related to authenticated user.
 func (h *userHandler) handleSignout(w http.ResponseWriter, r *http.Request) {
 	h.CookieSession.DestroySession(w, r)
-
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

@@ -47,7 +47,13 @@ func (s *userstorage) FindUserByEmail(e string) *models.User {
 
 	return &models.User{}
 }
-func (s *userstorage) DeleteUser(uid int) {}
+func (s *userstorage) DeleteUser(uid int)            {}
+func (s *userstorage) DisableUser(uid int)           {}
+func (p *userstorage) DeleteProject(*models.Project) {}
+func (p *userstorage) FindProjectsByUser(uid int) []models.Project {
+	return []models.Project{}
+}
+func (p *userstorage) DeleteProjectCrawls(*models.Project) {}
 
 var userService = services.NewUserService(&userstorage{})
 

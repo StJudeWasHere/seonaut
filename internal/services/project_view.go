@@ -7,21 +7,20 @@ import (
 )
 
 type (
-	ProjectViewStorage interface {
+	ProjectViewServiceStorage interface {
 		FindProjectsByUser(int) []models.Project
 		FindProjectById(id int, uid int) (models.Project, error)
+
 		GetLastCrawl(*models.Project) models.Crawl
 	}
 
 	ProjectViewService struct {
-		storage ProjectViewStorage
+		storage ProjectViewServiceStorage
 	}
 )
 
-func NewProjectViewService(s ProjectViewStorage) *ProjectViewService {
-	return &ProjectViewService{
-		storage: s,
-	}
+func NewProjectViewService(s ProjectViewServiceStorage) *ProjectViewService {
+	return &ProjectViewService{storage: s}
 }
 
 // GetProjectView returns a new ProjectView with the specified project

@@ -2,8 +2,6 @@ package services
 
 import (
 	"errors"
-	"fmt"
-	"log"
 	"time"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -16,13 +14,7 @@ const (
 )
 
 type (
-	IssueCache interface {
-		Set(key string, v interface{}) error
-		Get(key string, v interface{}) error
-		Delete(key string) error
-	}
-
-	IssueStore interface {
+	IssueServiceStorage interface {
 		GetNumberOfPagesForIssues(int64, string) int
 		FindPageReportIssues(int64, int, string) []models.PageReport
 		FindIssuesByPriority(int64, int) []models.IssueGroup
@@ -31,53 +23,30 @@ type (
 	}
 
 	IssueService struct {
-		store IssueStore
-		cache IssueCache
+		store IssueServiceStorage
 	}
 )
 
-func NewIssueService(s IssueStore, c IssueCache) *IssueService {
-	return &IssueService{
-		store: s,
-		cache: c,
-	}
+func NewIssueService(s IssueServiceStorage) *IssueService {
+	return &IssueService{store: s}
 }
 
 // GetIssuesCount returns an IssueCount with the number of issues by type.
-// It checks if the data has been cached, otherwise, it creates the IssueCount and adds it to the cache.
 func (s *IssueService) GetIssuesCount(crawlID int64) *models.IssueCount {
-	key := fmt.Sprintf("crawl-%d", crawlID)
-	v := &models.IssueCount{}
-	err := s.cache.Get(key, v)
-	if err != nil {
-		v = &models.IssueCount{
-			CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
-			AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
-			WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
-		}
-
-		if err := s.cache.Set(key, v); err != nil {
-			log.Printf("GetIssuesCount: cacheSet: %v\n", err)
-		}
+	return &models.IssueCount{
+		CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
+		AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
+		WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
 	}
-
-	return v
 }
 
-// SaveCrawlIssuesCount stores the issue count in the storage and adds the IssueCount to the cache.
+// SaveCrawlIssuesCount stores the issue count in the storage.
 func (s *IssueService) SaveCrawlIssuesCount(crawl *models.Crawl) {
-
 	s.store.SaveEndIssues(crawl.Id, time.Now())
-
-	key := fmt.Sprintf("crawl-%d", crawl.Id)
 	ic := &models.IssueCount{
 		CriticalIssues: s.store.FindIssuesByPriority(crawl.Id, Critical),
 		AlertIssues:    s.store.FindIssuesByPriority(crawl.Id, Alert),
 		WarningIssues:  s.store.FindIssuesByPriority(crawl.Id, Warning),
-	}
-
-	if err := s.cache.Set(key, ic); err != nil {
-		log.Printf("GetIssuesCount: cacheSet: %v\n", err)
 	}
 
 	var critical, alert, warning int
@@ -95,7 +64,6 @@ func (s *IssueService) SaveCrawlIssuesCount(crawl *models.Crawl) {
 	}
 
 	s.store.SaveIssuesCount(crawl.Id, critical, alert, warning)
-	s.BuildCrawlCache(crawl)
 }
 
 // Returns a PaginatorView with the corresponding page reports.
@@ -123,23 +91,4 @@ func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int
 	}
 
 	return paginatorView, nil
-}
-
-func (s *IssueService) BuildCrawlCache(crawl *models.Crawl) {
-	key := fmt.Sprintf("crawl-%d", crawl.Id)
-	ic := &models.IssueCount{
-		CriticalIssues: s.store.FindIssuesByPriority(crawl.Id, Critical),
-		AlertIssues:    s.store.FindIssuesByPriority(crawl.Id, Alert),
-		WarningIssues:  s.store.FindIssuesByPriority(crawl.Id, Warning),
-	}
-	if err := s.cache.Set(key, ic); err != nil {
-		log.Printf("GetIssuesCount: cacheSet: %v\n", err)
-	}
-}
-
-func (s *IssueService) RemoveCrawlCache(crawl *models.Crawl) {
-	key := fmt.Sprintf("crawl-%d", crawl.Id)
-	if err := s.cache.Delete(key); err != nil {
-		log.Printf("DeleteIssuesCache: %v\n", err)
-	}
 }

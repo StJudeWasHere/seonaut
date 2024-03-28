@@ -1,9 +1,9 @@
-package datastore_test
+package repository_test
 
 import (
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/datastore"
+	"github.com/stjudewashere/seonaut/internal/repository"
 )
 
 const (
@@ -14,13 +14,21 @@ const (
 )
 
 func TestHash(t *testing.T) {
-	h := datastore.Hash(url1)
+	h := repository.Hash(url1)
 	if h != hash1 {
 		t.Error("Error hashing url1")
 	}
 
-	h = datastore.Hash(url2)
+	h = repository.Hash(url2)
 	if h != hash2 {
 		t.Error("Error hashing url2")
+	}
+}
+
+func TestTruncate(t *testing.T) {
+	s := "abcdefghi"
+	truncated := repository.Truncate(s, 6)
+	if truncated != "abc..." {
+		t.Error("Error truncating string")
 	}
 }

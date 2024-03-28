@@ -11,21 +11,27 @@ import (
 
 type (
 	// UserService storage interface.
-	UserStore interface {
+	UserServiceStorage interface {
 		FindUserById(int) *models.User
 		UserSignup(string, string) (*models.User, error)
 		FindUserByEmail(string) *models.User
 		UserUpdatePassword(email, hashedPassword string) error
 		DeleteUser(int)
+		DisableUser(int)
+
+		DeleteProjectCrawls(*models.Project)
+
+		DeleteProject(*models.Project)
+		FindProjectsByUser(uid int) []models.Project
 	}
 
 	// User service struct.
 	UserService struct {
-		store UserStore
+		store UserServiceStorage
 	}
 )
 
-func NewUserService(s UserStore) *UserService {
+func NewUserService(s UserServiceStorage) *UserService {
 	return &UserService{
 		store: s,
 	}
@@ -99,5 +105,14 @@ func (s *UserService) UpdatePassword(email, password string) error {
 
 // Delete a User and all its associated projects and crawl data.
 func (s *UserService) DeleteUser(user *models.User) {
-	s.store.DeleteUser(user.Id)
+	s.store.DisableUser(user.Id)
+	go func() {
+		projects := s.store.FindProjectsByUser(user.Id)
+		for _, p := range projects {
+			s.store.DeleteProjectCrawls(&p)
+			s.store.DeleteProject(&p)
+		}
+
+		s.store.DeleteUser(user.Id)
+	}()
 }

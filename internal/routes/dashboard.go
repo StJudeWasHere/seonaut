@@ -49,13 +49,13 @@ func (h *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Reques
 		StatusCodeByDepth []models.StatusCodeByDepth
 	}{
 		ProjectView:       pv,
-		MediaChart:        h.ReportService.GetMediaCount(pv.Crawl.Id),
-		StatusChart:       h.ReportService.GetStatusCount(pv.Crawl.Id),
+		MediaChart:        h.DashboardService.GetMediaCount(pv.Crawl.Id),
+		StatusChart:       h.DashboardService.GetStatusCount(pv.Crawl.Id),
 		Crawls:            h.CrawlerService.GetLastCrawls(pv.Project),
-		CanonicalCount:    h.ReportService.GetCanonicalCount(pv.Crawl.Id),
-		AltCount:          h.ReportService.GetImageAltCount(pv.Crawl.Id),
-		SchemeCount:       h.ReportService.GetSchemeCount(pv.Crawl.Id),
-		StatusCodeByDepth: h.ReportService.GetStatusCodeByDepth(pv.Crawl.Id),
+		CanonicalCount:    h.DashboardService.GetCanonicalCount(pv.Crawl.Id),
+		AltCount:          h.DashboardService.GetImageAltCount(pv.Crawl.Id),
+		SchemeCount:       h.DashboardService.GetSchemeCount(pv.Crawl.Id),
+		StatusCodeByDepth: h.DashboardService.GetStatusCodeByDepth(pv.Crawl.Id),
 	}
 
 	pageView := &PageView{

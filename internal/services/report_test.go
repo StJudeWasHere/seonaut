@@ -129,21 +129,7 @@ func (s *reportstorage) GetStatusCodeByDepth(crawlId int64) []models.StatusCodeB
 	return []models.StatusCodeByDepth{}
 }
 
-type cache struct{}
-
-func (c *cache) Set(key string, v interface{}) error {
-	return nil
-}
-
-func (c *cache) Get(key string, v interface{}) error {
-	return nil
-}
-
-func (c *cache) Delete(key string) error {
-	return nil
-}
-
-var reportservice = services.NewReportService(&reportstorage{}, &cache{})
+var reportservice = services.NewReportService(&reportstorage{})
 
 func TestGetSitemapPageReports(t *testing.T) {
 	prStream := reportservice.GetSitemapPageReports(crawlId)

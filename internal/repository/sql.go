@@ -1,12 +1,12 @@
-package datastore
+package repository
 
 import (
+	"crypto/sha256"
+	"database/sql"
+	"encoding/hex"
 	"fmt"
 	"time"
 
-	"database/sql"
-
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/stjudewashere/seonaut/internal/config"
 )
 
@@ -57,4 +57,21 @@ func SqlConnect(config *config.DBConfig) (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+// Hash returns a hashed string.
+func Hash(s string) string {
+	hash := sha256.Sum256([]byte(s))
+
+	return hex.EncodeToString(hash[:])
+}
+
+// Truncate a string to the requiered length.
+func Truncate(s string, length int) string {
+	text := []rune(s)
+	if len(text) > length {
+		s = string(text[:length-3]) + "..."
+	}
+
+	return s
 }

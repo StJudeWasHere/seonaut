@@ -41,8 +41,12 @@ func (s *testStorage) FindProjectById(id int, uid int) (models.Project, error) {
 	return models.Project{}, errors.New("Test error")
 }
 
-func (s *testStorage) GetLastCrawl(*models.Project) models.Crawl {
-	return models.Crawl{Id: test_cid}
+func (s *testStorage) GetLastCrawl(p *models.Project) models.Crawl {
+	if p.Id == test_pid {
+		return models.Crawl{Id: test_cid}
+	}
+
+	return models.Crawl{}
 }
 
 var projectviewService = services.NewProjectViewService(&testStorage{})

@@ -1,16 +1,21 @@
-package datastore
+package repository
 
 import (
+	"database/sql"
 	"log"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
+type UserRepository struct {
+	DB *sql.DB
+}
+
 // UserSignup inserts a new user with the provided email and password into the database.
 // It returns the inserted user and an error if the user could not be inserted.
-func (ds *Datastore) UserSignup(user, password string) (*models.User, error) {
+func (ds *UserRepository) UserSignup(user, password string) (*models.User, error) {
 	query := `INSERT INTO users (email, password, created) VALUES (?, ?, NOW())`
-	stmt, _ := ds.db.Prepare(query)
+	stmt, _ := ds.DB.Prepare(query)
 	defer stmt.Close()
 
 	_, err := stmt.Exec(user, password)
@@ -24,7 +29,7 @@ func (ds *Datastore) UserSignup(user, password string) (*models.User, error) {
 	return u, nil
 }
 
-func (ds *Datastore) FindUserByEmail(email string) *models.User {
+func (ds *UserRepository) FindUserByEmail(email string) *models.User {
 	u := models.User{}
 	query := `
 		SELECT
@@ -34,7 +39,7 @@ func (ds *Datastore) FindUserByEmail(email string) *models.User {
 		FROM users
 		WHERE email = ? AND deleting = 0`
 
-	row := ds.db.QueryRow(query, email)
+	row := ds.DB.QueryRow(query, email)
 	err := row.Scan(&u.Id, &u.Email, &u.Password)
 	if err != nil {
 		log.Println(err)
@@ -44,7 +49,7 @@ func (ds *Datastore) FindUserByEmail(email string) *models.User {
 	return &u
 }
 
-func (ds *Datastore) FindUserById(id int) *models.User {
+func (ds *UserRepository) FindUserById(id int) *models.User {
 	u := models.User{}
 	query := `
 		SELECT
@@ -54,7 +59,7 @@ func (ds *Datastore) FindUserById(id int) *models.User {
 		FROM users
 		WHERE id = ? AND deleting = 0`
 
-	row := ds.db.QueryRow(query, id)
+	row := ds.DB.QueryRow(query, id)
 	err := row.Scan(&u.Id, &u.Email, &u.Password)
 	if err != nil {
 		log.Println(err)
@@ -64,36 +69,29 @@ func (ds *Datastore) FindUserById(id int) *models.User {
 	return &u
 }
 
-func (ds *Datastore) UserUpdatePassword(email, hashedPassword string) error {
+func (ds *UserRepository) UserUpdatePassword(email, hashedPassword string) error {
 	query := `
 		UPDATE users
 		SET password = ?
 		WHERE email = ?
 	`
 
-	_, err := ds.db.Exec(query, hashedPassword, email)
+	_, err := ds.DB.Exec(query, hashedPassword, email)
 
 	return err
 }
 
-// DeleteUser deletes an existing user and all its associated projects and crawl data.
-// It first updates the user to set the deleting field to 1. Once all the user data has
-// been removed it proceeds to actually delete the user.
-func (ds *Datastore) DeleteUser(uid int) {
+func (ds *UserRepository) DisableUser(uid int) {
 	query := `UPDATE users SET deleting=1 WHERE id = ?`
-	_, err := ds.db.Exec(query, uid)
+	_, err := ds.DB.Exec(query, uid)
 	if err != nil {
 		log.Printf("DeleteUser: update: pid %d %v\n", uid, err)
-		return
 	}
+}
 
-	projects := ds.FindProjectsByUser(uid)
-	for _, p := range projects {
-		ds.DeleteProject(&p)
-	}
-
-	deleteQuery := "DELETE FROM users WHERE id = ?"
-	_, err = ds.db.Exec(deleteQuery, uid)
+func (ds *UserRepository) DeleteUser(uid int) {
+	query := "DELETE FROM users WHERE id = ?"
+	_, err := ds.DB.Exec(query, uid)
 	if err != nil {
 		log.Printf("DeleteUser: %v", err)
 	}

@@ -1,4 +1,4 @@
-package datastore
+package repository
 
 import (
 	"database/sql"
@@ -10,134 +10,12 @@ import (
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
-func (ds *Datastore) SaveProject(project *models.Project, uid int) {
-	query := `
-		INSERT INTO projects (
-			url,
-			ignore_robotstxt,
-			follow_nofollow,
-			include_noindex,
-			crawl_sitemap,
-			allow_subdomains,
-			basic_auth,
-			user_id,
-			check_external_links
-		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-	`
-
-	stmt, _ := ds.db.Prepare(query)
-	defer stmt.Close()
-	_, err := stmt.Exec(
-		project.URL,
-		project.IgnoreRobotsTxt,
-		project.FollowNofollow,
-		project.IncludeNoindex,
-		project.CrawlSitemap,
-		project.AllowSubdomains,
-		project.BasicAuth,
-		uid,
-		project.CheckExternalLinks,
-	)
-	if err != nil {
-		log.Printf("saveProject: %v\n", err)
-	}
+type CrawlRepository struct {
+	DB *sql.DB
 }
 
-func (ds *Datastore) FindProjectsByUser(uid int) []models.Project {
-	var projects []models.Project
-	query := `
-		SELECT
-			id,
-			url,
-			ignore_robotstxt,
-			follow_nofollow,
-			include_noindex,
-			crawl_sitemap,
-			allow_subdomains,
-			basic_auth,
-			deleting,
-			created,
-			check_external_links
-		FROM projects
-		WHERE user_id = ?
-		ORDER BY url ASC`
-
-	rows, err := ds.db.Query(query, uid)
-	if err != nil {
-		log.Println(err)
-		return projects
-	}
-
-	for rows.Next() {
-		p := models.Project{}
-		err := rows.Scan(
-			&p.Id,
-			&p.URL,
-			&p.IgnoreRobotsTxt,
-			&p.FollowNofollow,
-			&p.IncludeNoindex,
-			&p.CrawlSitemap,
-			&p.AllowSubdomains,
-			&p.BasicAuth,
-			&p.Deleting,
-			&p.Created,
-			&p.CheckExternalLinks,
-		)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-
-		projects = append(projects, p)
-	}
-
-	return projects
-}
-
-func (ds *Datastore) FindProjectById(id int, uid int) (models.Project, error) {
-	query := `
-		SELECT
-			id,
-			url,
-			ignore_robotstxt,
-			follow_nofollow,
-			include_noindex,
-			crawl_sitemap,
-			allow_subdomains,
-			basic_auth,
-			deleting,
-			created,
-			check_external_links
-		FROM projects
-		WHERE id = ? AND user_id = ?`
-
-	row := ds.db.QueryRow(query, id, uid)
-
-	p := models.Project{}
-	err := row.Scan(
-		&p.Id,
-		&p.URL,
-		&p.IgnoreRobotsTxt,
-		&p.FollowNofollow,
-		&p.IncludeNoindex,
-		&p.CrawlSitemap,
-		&p.AllowSubdomains,
-		&p.BasicAuth,
-		&p.Deleting,
-		&p.Created,
-		&p.CheckExternalLinks,
-	)
-	if err != nil {
-		log.Println(err)
-		return p, err
-	}
-
-	return p, nil
-}
-
-func (ds *Datastore) SaveCrawl(p models.Project) (*models.Crawl, error) {
-	stmt, _ := ds.db.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
+func (ds *CrawlRepository) SaveCrawl(p models.Project) (*models.Crawl, error) {
+	stmt, _ := ds.DB.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
 	defer stmt.Close()
 	res, err := stmt.Exec(p.Id)
 
@@ -158,7 +36,7 @@ func (ds *Datastore) SaveCrawl(p models.Project) (*models.Crawl, error) {
 	}, nil
 }
 
-func (ds *Datastore) SaveEndCrawl(c *models.Crawl) (*models.Crawl, error) {
+func (ds *CrawlRepository) SaveEndCrawl(c *models.Crawl) (*models.Crawl, error) {
 	query := `
 		UPDATE
 			crawls
@@ -178,7 +56,7 @@ func (ds *Datastore) SaveEndCrawl(c *models.Crawl) (*models.Crawl, error) {
 			links_ugc = ?
 		WHERE id = ?
 	`
-	stmt, _ := ds.db.Prepare(query)
+	stmt, _ := ds.DB.Prepare(query)
 	defer stmt.Close()
 
 	c.End = sql.NullTime{
@@ -210,7 +88,7 @@ func (ds *Datastore) SaveEndCrawl(c *models.Crawl) (*models.Crawl, error) {
 	return c, nil
 }
 
-func (ds *Datastore) GetLastCrawl(p *models.Project) models.Crawl {
+func (ds *CrawlRepository) GetLastCrawl(p *models.Project) models.Crawl {
 	query := `
 		SELECT
 			id,
@@ -235,7 +113,7 @@ func (ds *Datastore) GetLastCrawl(p *models.Project) models.Crawl {
 		WHERE project_id = ?
 		ORDER BY start DESC LIMIT 1`
 
-	row := ds.db.QueryRow(query, p.Id)
+	row := ds.DB.QueryRow(query, p.Id)
 
 	crawl := models.Crawl{}
 	err := row.Scan(
@@ -265,7 +143,7 @@ func (ds *Datastore) GetLastCrawl(p *models.Project) models.Crawl {
 	return crawl
 }
 
-func (ds *Datastore) GetLastCrawls(p models.Project, limit int) []models.Crawl {
+func (ds *CrawlRepository) GetLastCrawls(p models.Project, limit int) []models.Crawl {
 	query := `
 		SELECT
 			id,
@@ -284,7 +162,7 @@ func (ds *Datastore) GetLastCrawls(p models.Project, limit int) []models.Crawl {
 		ORDER BY start DESC LIMIT ?`
 
 	crawls := []models.Crawl{}
-	rows, err := ds.db.Query(query, p.Id, limit)
+	rows, err := ds.DB.Query(query, p.Id, limit)
 	if err != nil {
 		log.Println(err)
 	}
@@ -313,77 +191,7 @@ func (ds *Datastore) GetLastCrawls(p models.Project, limit int) []models.Crawl {
 	return crawls
 }
 
-func (ds *Datastore) SaveIssuesCount(crawlId int64, critical, alert, warning int) {
-	query := `UPDATE
-		crawls
-		SET 
-			critical_issues = ?,
-			alert_issues = ?,
-			warning_issues = ?,
-			total_issues = ?
-		WHERE id = ?`
-
-	stmt, _ := ds.db.Prepare(query)
-	defer stmt.Close()
-
-	total := critical + alert + warning
-	_, err := stmt.Exec(critical, alert, warning, total, crawlId)
-	if err != nil {
-		log.Printf("SaveIssuesCount: %v\n", err)
-	}
-}
-
-func (ds *Datastore) DeleteProject(p *models.Project) {
-	query := `UPDATE projects SET deleting=1 WHERE id = ?`
-	_, err := ds.db.Exec(query, p.Id)
-	if err != nil {
-		log.Printf("DeleteProject: update: pid %d %v\n", p.Id, err)
-		return
-	}
-
-	go func(p models.Project) {
-		ds.DeleteProjectCrawls(&p)
-
-		query := `DELETE FROM projects WHERE id = ?`
-		_, err := ds.db.Exec(query, p.Id)
-		if err != nil {
-			log.Printf("DeleteProject: pid %d %v\n", p.Id, err)
-			return
-		}
-	}(*p)
-}
-
-func (ds *Datastore) UpdateProject(p *models.Project) error {
-	query := `
-		UPDATE projects SET
-			ignore_robotstxt = ?,
-			follow_nofollow = ?,
-			include_noindex = ?,
-			crawl_sitemap = ?,
-			allow_subdomains = ?,
-			basic_auth = ?,
-			check_external_links = ?
-		WHERE id = ?
-	`
-	_, err := ds.db.Exec(
-		query,
-		p.IgnoreRobotsTxt,
-		p.FollowNofollow,
-		p.IncludeNoindex,
-		p.CrawlSitemap,
-		p.AllowSubdomains,
-		p.BasicAuth,
-		p.CheckExternalLinks,
-		p.Id,
-	)
-	if err != nil {
-		log.Printf("UpdateProject: pid %d %v\n", p.Id, err)
-	}
-
-	return err
-}
-
-func (ds *Datastore) GetPreviousCrawl(p *models.Project) (*models.Crawl, error) {
+func (ds *CrawlRepository) GetPreviousCrawl(p *models.Project) (*models.Crawl, error) {
 	query := `
 		SELECT
 			id,
@@ -402,7 +210,7 @@ func (ds *Datastore) GetPreviousCrawl(p *models.Project) (*models.Crawl, error) 
 		ORDER BY end DESC
 		LIMIT 1, 1`
 
-	row := ds.db.QueryRow(query, p.Id)
+	row := ds.DB.QueryRow(query, p.Id)
 
 	crawl := &models.Crawl{}
 	err := row.Scan(
@@ -422,18 +230,18 @@ func (ds *Datastore) GetPreviousCrawl(p *models.Project) (*models.Crawl, error) 
 	return crawl, err
 }
 
-func (ds *Datastore) DeleteCrawlData(crawl *models.Crawl) {
+func (ds *CrawlRepository) DeleteCrawlData(crawl *models.Crawl) {
 	var deleteFunc func(cid int64, table string)
 	deleteFunc = func(cid int64, table string) {
 		query := fmt.Sprintf("DELETE FROM %s WHERE crawl_id = ? ORDER BY id DESC LIMIT 1000", table)
-		_, err := ds.db.Exec(query, cid)
+		_, err := ds.DB.Exec(query, cid)
 		if err != nil {
 			log.Printf("DeleteCrawlData: cid %d table %s %v\n", cid, table, err)
 			return
 		}
 
 		query = fmt.Sprintf("SELECT count(*) FROM %s WHERE crawl_id = ?", table)
-		row := ds.db.QueryRow(query, cid)
+		row := ds.DB.QueryRow(query, cid)
 		var c int
 		if err := row.Scan(&c); err != nil {
 			log.Printf("DeleteCrawlData count: pid %d table %s %v\n", cid, table, err)
@@ -459,7 +267,7 @@ func (ds *Datastore) DeleteCrawlData(crawl *models.Crawl) {
 }
 
 // DeleteProjectCrawls deletes the project's crawl data
-func (ds *Datastore) DeleteProjectCrawls(p *models.Project) {
+func (ds *CrawlRepository) DeleteProjectCrawls(p *models.Project) {
 	query := `
 		SELECT
 			id
@@ -467,7 +275,7 @@ func (ds *Datastore) DeleteProjectCrawls(p *models.Project) {
 		WHERE project_id = ?
 	`
 
-	rows, err := ds.db.Query(query, p.Id)
+	rows, err := ds.DB.Query(query, p.Id)
 	if err != nil {
 		log.Printf("DeleteProjectCrawls Query: %v\n", err)
 	}
@@ -482,7 +290,7 @@ func (ds *Datastore) DeleteProjectCrawls(p *models.Project) {
 	}
 
 	query = `DELETE FROM crawls WHERE project_id = ?`
-	_, err = ds.db.Exec(query, p.Id)
+	_, err = ds.DB.Exec(query, p.Id)
 	if err != nil {
 		log.Printf("deleting crawls for project %d: %v", p.Id, err)
 		return
@@ -491,7 +299,7 @@ func (ds *Datastore) DeleteProjectCrawls(p *models.Project) {
 
 // Deletes all crawls that are unfinished and have the issues_end field set to null.
 // It cleans up the crawl data for each unfinished crawl before deleting it.
-func (ds *Datastore) DeleteUnfinishedCrawls() {
+func (ds *CrawlRepository) DeleteUnfinishedCrawls() {
 	query := `
 		SELECT
 			crawls.id
@@ -500,7 +308,7 @@ func (ds *Datastore) DeleteUnfinishedCrawls() {
 	`
 	count := 0
 
-	rows, err := ds.db.Query(query)
+	rows, err := ds.DB.Query(query)
 	if err != nil {
 		log.Println(err)
 		return
@@ -528,7 +336,7 @@ func (ds *Datastore) DeleteUnfinishedCrawls() {
 
 	placeholdersStr := strings.Join(placeholders, ",")
 	deleteQuery := fmt.Sprintf("DELETE FROM crawls WHERE id IN (%s)", placeholdersStr)
-	_, err = ds.db.Exec(deleteQuery, ids...)
+	_, err = ds.DB.Exec(deleteQuery, ids...)
 	if err != nil {
 		log.Printf("DeleteUnfinishedCrawls: %v", err)
 	}

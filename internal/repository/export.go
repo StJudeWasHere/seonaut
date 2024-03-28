@@ -1,13 +1,18 @@
-package datastore
+package repository
 
 import (
+	"database/sql"
 	"log"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
+type ExportRepository struct {
+	DB *sql.DB
+}
+
 // Send all internal links through a read-only channel
-func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *models.ExportLink {
+func (ds *ExportRepository) ExportLinks(crawl *models.Crawl) <-chan *models.ExportLink {
 	lStream := make(chan *models.ExportLink)
 
 	go func() {
@@ -22,7 +27,7 @@ func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *models.ExportLink 
 				LEFT JOIN pagereports ON pagereports.id  = links.pagereport_id
 				WHERE links.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -43,7 +48,7 @@ func (ds *Datastore) ExportLinks(crawl *models.Crawl) <-chan *models.ExportLink 
 }
 
 // Send all external links through a read-only channel
-func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *models.ExportLink {
+func (ds *ExportRepository) ExportExternalLinks(crawl *models.Crawl) <-chan *models.ExportLink {
 	lStream := make(chan *models.ExportLink)
 
 	go func() {
@@ -58,7 +63,7 @@ func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *models.Exp
 				LEFT JOIN pagereports ON pagereports.id  = external_links.pagereport_id
 				WHERE external_links.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -79,7 +84,7 @@ func (ds *Datastore) ExportExternalLinks(crawl *models.Crawl) <-chan *models.Exp
 }
 
 // Send all image URLs through a read-only channel
-func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *models.ExportImage {
+func (ds *ExportRepository) ExportImages(crawl *models.Crawl) <-chan *models.ExportImage {
 	iStream := make(chan *models.ExportImage)
 
 	go func() {
@@ -94,7 +99,7 @@ func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *models.ExportImag
 			LEFT JOIN pagereports ON pagereports.id  = images.pagereport_id
 			WHERE images.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -115,7 +120,7 @@ func (ds *Datastore) ExportImages(crawl *models.Crawl) <-chan *models.ExportImag
 }
 
 // Send all scripts URLs through a read-only channel
-func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *models.Script {
+func (ds *ExportRepository) ExportScripts(crawl *models.Crawl) <-chan *models.Script {
 	sStream := make(chan *models.Script)
 
 	go func() {
@@ -129,7 +134,7 @@ func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *models.Script {
 			LEFT JOIN pagereports ON pagereports.id  = scripts.pagereport_id
 			WHERE scripts.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -150,7 +155,7 @@ func (ds *Datastore) ExportScripts(crawl *models.Crawl) <-chan *models.Script {
 }
 
 // Send all css style URLs through a read-only channel
-func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *models.Style {
+func (ds *ExportRepository) ExportStyles(crawl *models.Crawl) <-chan *models.Style {
 	sStream := make(chan *models.Style)
 
 	go func() {
@@ -164,7 +169,7 @@ func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *models.Style {
 			LEFT JOIN pagereports ON pagereports.id  = styles.pagereport_id
 			WHERE styles.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -185,7 +190,7 @@ func (ds *Datastore) ExportStyles(crawl *models.Crawl) <-chan *models.Style {
 }
 
 // Send all iframe URLs through a read-only channel
-func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *models.Iframe {
+func (ds *ExportRepository) ExportIframes(crawl *models.Crawl) <-chan *models.Iframe {
 	vStream := make(chan *models.Iframe)
 
 	go func() {
@@ -199,7 +204,7 @@ func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *models.Iframe {
 			LEFT JOIN pagereports ON pagereports.id  = iframes.pagereport_id
 			WHERE iframes.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -220,7 +225,7 @@ func (ds *Datastore) ExportIframes(crawl *models.Crawl) <-chan *models.Iframe {
 }
 
 // Send all audio URLs through a read-only channel
-func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *models.Audio {
+func (ds *ExportRepository) ExportAudios(crawl *models.Crawl) <-chan *models.Audio {
 	vStream := make(chan *models.Audio)
 
 	go func() {
@@ -234,7 +239,7 @@ func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *models.Audio {
 			LEFT JOIN pagereports ON pagereports.id  = audios.pagereport_id
 			WHERE audios.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -255,7 +260,7 @@ func (ds *Datastore) ExportAudios(crawl *models.Crawl) <-chan *models.Audio {
 }
 
 // Send all video URLs through a read-only channel
-func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *models.Video {
+func (ds *ExportRepository) ExportVideos(crawl *models.Crawl) <-chan *models.Video {
 	vStream := make(chan *models.Video)
 
 	go func() {
@@ -269,7 +274,7 @@ func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *models.Video {
 			LEFT JOIN pagereports ON pagereports.id  = videos.pagereport_id
 			WHERE videos.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}
@@ -290,7 +295,7 @@ func (ds *Datastore) ExportVideos(crawl *models.Crawl) <-chan *models.Video {
 }
 
 // Send all hreflang URLs and language through a read-only channel
-func (ds *Datastore) ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportHreflang {
+func (ds *ExportRepository) ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportHreflang {
 	vStream := make(chan *models.ExportHreflang)
 
 	go func() {
@@ -306,7 +311,7 @@ func (ds *Datastore) ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportH
 			LEFT JOIN pagereports ON pagereports.id  = hreflangs.pagereport_id
 			WHERE hreflangs.crawl_id = ?`
 
-		rows, err := ds.db.Query(query, crawl.Id)
+		rows, err := ds.DB.Query(query, crawl.Id)
 		if err != nil {
 			log.Println(err)
 		}

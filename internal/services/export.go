@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	ExportStore interface {
+	ExportStorage interface {
 		ExportLinks(*models.Crawl) <-chan *models.ExportLink
 		ExportExternalLinks(*models.Crawl) <-chan *models.ExportLink
 		ExportImages(crawl *models.Crawl) <-chan *models.ExportImage
@@ -21,11 +21,11 @@ type (
 	}
 
 	Exporter struct {
-		store ExportStore
+		store ExportStorage
 	}
 )
 
-func NewExporter(s ExportStore) *Exporter {
+func NewExporter(s ExportStorage) *Exporter {
 	return &Exporter{
 		store: s,
 	}

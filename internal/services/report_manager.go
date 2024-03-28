@@ -16,19 +16,19 @@ import (
 )
 
 type (
-	ReportManagerStore interface {
+	ReportManagerStorage interface {
 		SaveIssues(<-chan *models.Issue)
 	}
 
 	ReportManager struct {
-		store              ReportManagerStore
+		store              ReportManagerStorage
 		pageCallbacks      []*models.PageIssueReporter
 		multipageCallbacks []models.MultipageCallback
 	}
 )
 
 // Create a new ReportManager with no issue reporters.
-func NewReportManager(s ReportManagerStore) *ReportManager {
+func NewReportManager(s ReportManagerStorage) *ReportManager {
 	return &ReportManager{
 		store: s,
 	}

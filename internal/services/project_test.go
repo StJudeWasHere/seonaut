@@ -20,11 +20,9 @@ type storage struct{}
 
 func (s *storage) SaveProject(project *models.Project, userId int) {}
 func (s *storage) DeleteProject(project *models.Project)           {}
+func (s *storage) DisableProject(project *models.Project)          {}
 func (s *storage) UpdateProject(p *models.Project) error {
 	return nil
-}
-func (s *storage) GetLastCrawl(p *models.Project) models.Crawl {
-	return models.Crawl{}
 }
 func (s *storage) FindProjectById(id, uid int) (models.Project, error) {
 	p := models.Project{}
@@ -37,8 +35,9 @@ func (s *storage) FindProjectById(id, uid int) (models.Project, error) {
 
 	return p, nil
 }
+func (s *storage) DeleteProjectCrawls(*models.Project) {}
 
-var service = services.NewProjectService(&storage{}, services.NewCacheManager())
+var service = services.NewProjectService(&storage{})
 
 func TestFindProjectById(t *testing.T) {
 	p, err := service.FindProject(gid, guid)

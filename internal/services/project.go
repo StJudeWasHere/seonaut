@@ -11,22 +11,20 @@ type (
 	ProjectServiceStorage interface {
 		SaveProject(*models.Project, int)
 		DeleteProject(*models.Project)
-		GetLastCrawl(*models.Project) models.Crawl
+		DisableProject(*models.Project)
 		UpdateProject(p *models.Project) error
 		FindProjectById(id int, uid int) (models.Project, error)
+
+		DeleteProjectCrawls(*models.Project)
 	}
 
 	ProjectService struct {
-		storage      ProjectServiceStorage
-		cacheManager *CacheManager
+		storage ProjectServiceStorage
 	}
 )
 
-func NewProjectService(s ProjectServiceStorage, cm *CacheManager) *ProjectService {
-	return &ProjectService{
-		storage:      s,
-		cacheManager: cm,
-	}
+func NewProjectService(s ProjectServiceStorage) *ProjectService {
+	return &ProjectService{storage: s}
 }
 
 // SaveProject stores a new project.
@@ -63,11 +61,13 @@ func (s *ProjectService) FindProject(id, uid int) (models.Project, error) {
 	return project, nil
 }
 
-// Delete a project and remove any related data that has been cached.
+// Delete a project and its related data.
 func (s *ProjectService) DeleteProject(p *models.Project) {
-	last := s.storage.GetLastCrawl(p)
-	s.cacheManager.RemoveCrawlCache(&last)
-	s.storage.DeleteProject(p)
+	s.storage.DisableProject(p)
+	go func() {
+		s.storage.DeleteProjectCrawls(p)
+		s.storage.DeleteProject(p)
+	}()
 }
 
 // Update project details.

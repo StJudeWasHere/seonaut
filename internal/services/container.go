@@ -181,12 +181,21 @@ func (c *Container) InitExportService() {
 
 // Create Crawler service.
 func (c *Container) InitCrawlerService() {
-	crawlerServices := Services{
+	crawlerServices := CrawlerServicesContainer{
 		Broker:        c.PubSubBroker,
 		ReportManager: c.ReportManager,
 		IssueService:  c.IssueService,
+		Config:        c.Config.Crawler,
 	}
-	c.CrawlerService = NewCrawlerService(c.crawlRepository, c.pageReportRepository, c.Config.Crawler, crawlerServices)
+	storage := &struct {
+		*repository.CrawlRepository
+		*repository.PageReportRepository
+	}{
+		c.crawlRepository,
+		c.pageReportRepository,
+	}
+
+	c.CrawlerService = NewCrawlerService(storage, crawlerServices)
 }
 
 // Create the dashboard service.

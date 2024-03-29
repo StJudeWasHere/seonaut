@@ -19,29 +19,27 @@ const (
 )
 
 type (
-	CrawlerPageReportStorage interface {
-		SavePageReport(*models.PageReport, int64) (*models.PageReport, error)
-	}
-
 	CrawlerServiceStorage interface {
 		SaveCrawl(models.Project) (*models.Crawl, error)
 		SaveEndCrawl(*models.Crawl) (*models.Crawl, error)
 		GetLastCrawls(models.Project, int) []models.Crawl
 		GetPreviousCrawl(*models.Project) (*models.Crawl, error)
 		DeleteCrawlData(c *models.Crawl)
+
+		SavePageReport(*models.PageReport, int64) (*models.PageReport, error)
 	}
 
-	Services struct {
+	CrawlerServicesContainer struct {
 		Broker        *Broker
 		ReportManager *ReportManager
 		IssueService  *IssueService
+		Config        *config.CrawlerConfig
 	}
 
 	CrawlerService struct {
 		store         CrawlerServiceStorage
-		pstore        CrawlerPageReportStorage
-		broker        *Broker
 		config        *config.CrawlerConfig
+		broker        *Broker
 		reportManager *ReportManager
 		issueService  *IssueService
 		crawlers      map[int64]*crawler.Crawler
@@ -49,12 +47,11 @@ type (
 	}
 )
 
-func NewCrawlerService(s CrawlerServiceStorage, ps CrawlerPageReportStorage, c *config.CrawlerConfig, services Services) *CrawlerService {
+func NewCrawlerService(s CrawlerServiceStorage, services CrawlerServicesContainer) *CrawlerService {
 	return &CrawlerService{
 		store:         s,
-		pstore:        ps,
 		broker:        services.Broker,
-		config:        c,
+		config:        services.Config,
 		reportManager: services.ReportManager,
 		issueService:  services.IssueService,
 		crawlers:      make(map[int64]*crawler.Crawler),
@@ -146,7 +143,7 @@ func (s *CrawlerService) StartCrawler(p models.Project) (*models.Crawl, error) {
 			}
 		}
 
-		r.PageReport, err = s.pstore.SavePageReport(r.PageReport, crawl.Id)
+		r.PageReport, err = s.store.SavePageReport(r.PageReport, crawl.Id)
 		if err != nil {
 			log.Printf("SavePageReport: %v\n", err)
 			continue

@@ -1,19 +1,20 @@
 package models
 
 import (
-	"database/sql"
 	"time"
 )
 
 type Crawl struct {
-	Id                    int64
-	ProjectId             int64
+	Id        int64
+	ProjectId int64
+	Crawling  bool
+
 	URL                   string
 	Start                 time.Time
-	End                   sql.NullTime
+	End                   time.Time
 	TotalIssues           int
 	TotalURLs             int
-	IssuesEnd             sql.NullTime
+	IssuesEnd             time.Time
 	CriticalIssues        int
 	AlertIssues           int
 	WarningIssues         int

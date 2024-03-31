@@ -11,6 +11,7 @@ type ProjectRepository struct {
 	DB *sql.DB
 }
 
+// SaveProject inserts a new project into the database.
 func (ds *ProjectRepository) SaveProject(project *models.Project, uid int) {
 	query := `
 		INSERT INTO projects (
@@ -45,6 +46,7 @@ func (ds *ProjectRepository) SaveProject(project *models.Project, uid int) {
 	}
 }
 
+// FindProjectsByUser returns a slice with all the projects of the specified user.
 func (ds *ProjectRepository) FindProjectsByUser(uid int) []models.Project {
 	var projects []models.Project
 	query := `
@@ -96,6 +98,7 @@ func (ds *ProjectRepository) FindProjectsByUser(uid int) []models.Project {
 	return projects
 }
 
+// Returns a Project model with the speciefied id and user id.
 func (ds *ProjectRepository) FindProjectById(id int, uid int) (models.Project, error) {
 	query := `
 		SELECT
@@ -137,6 +140,7 @@ func (ds *ProjectRepository) FindProjectById(id int, uid int) (models.Project, e
 	return p, nil
 }
 
+// DisableProject disables a project marking it as "deleting".
 func (ds *ProjectRepository) DisableProject(p *models.Project) {
 	query := `UPDATE projects SET deleting=1 WHERE id = ?`
 	_, err := ds.DB.Exec(query, p.Id)
@@ -145,6 +149,7 @@ func (ds *ProjectRepository) DisableProject(p *models.Project) {
 	}
 }
 
+// DeleteProject deletes the project.
 func (ds *ProjectRepository) DeleteProject(p *models.Project) {
 	query := `DELETE FROM projects WHERE id = ?`
 	_, err := ds.DB.Exec(query, p.Id)
@@ -154,6 +159,7 @@ func (ds *ProjectRepository) DeleteProject(p *models.Project) {
 	}
 }
 
+// UpdateProject updates a project with the data specified in the Project model.
 func (ds *ProjectRepository) UpdateProject(p *models.Project) error {
 	query := `
 		UPDATE projects SET

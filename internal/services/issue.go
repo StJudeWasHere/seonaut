@@ -2,7 +2,6 @@ package services
 
 import (
 	"errors"
-	"time"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -17,9 +16,7 @@ type (
 	IssueServiceStorage interface {
 		GetNumberOfPagesForIssues(int64, string) int
 		FindPageReportIssues(int64, int, string) []models.PageReport
-		FindIssuesByPriority(int64, int) []models.IssueGroup
-		SaveIssuesCount(int64, int, int, int)
-		SaveEndIssues(int64, time.Time)
+		FindIssuesByTypeAndPriority(int64, int) []models.IssueGroup
 	}
 
 	IssueService struct {
@@ -34,36 +31,10 @@ func NewIssueService(s IssueServiceStorage) *IssueService {
 // GetIssuesCount returns an IssueCount with the number of issues by type.
 func (s *IssueService) GetIssuesCount(crawlID int64) *models.IssueCount {
 	return &models.IssueCount{
-		CriticalIssues: s.store.FindIssuesByPriority(crawlID, Critical),
-		AlertIssues:    s.store.FindIssuesByPriority(crawlID, Alert),
-		WarningIssues:  s.store.FindIssuesByPriority(crawlID, Warning),
+		CriticalIssues: s.store.FindIssuesByTypeAndPriority(crawlID, Critical),
+		AlertIssues:    s.store.FindIssuesByTypeAndPriority(crawlID, Alert),
+		WarningIssues:  s.store.FindIssuesByTypeAndPriority(crawlID, Warning),
 	}
-}
-
-// SaveCrawlIssuesCount stores the issue count in the storage.
-func (s *IssueService) SaveCrawlIssuesCount(crawl *models.Crawl) {
-	s.store.SaveEndIssues(crawl.Id, time.Now())
-	ic := &models.IssueCount{
-		CriticalIssues: s.store.FindIssuesByPriority(crawl.Id, Critical),
-		AlertIssues:    s.store.FindIssuesByPriority(crawl.Id, Alert),
-		WarningIssues:  s.store.FindIssuesByPriority(crawl.Id, Warning),
-	}
-
-	var critical, alert, warning int
-
-	for _, v := range ic.CriticalIssues {
-		critical += v.Count
-	}
-
-	for _, v := range ic.AlertIssues {
-		alert += v.Count
-	}
-
-	for _, v := range ic.WarningIssues {
-		warning += v.Count
-	}
-
-	s.store.SaveIssuesCount(crawl.Id, critical, alert, warning)
 }
 
 // Returns a PaginatorView with the corresponding page reports.

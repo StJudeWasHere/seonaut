@@ -27,7 +27,7 @@ func (h *projectHandler) handleHome(w http.ResponseWriter, r *http.Request) {
 
 	var refresh bool
 	for _, v := range views {
-		if v.Crawl.Id > 0 && (!v.Crawl.IssuesEnd.Valid || v.Project.Deleting) {
+		if v.Crawl.Id > 0 && (v.Crawl.Crawling || v.Project.Deleting) {
 			refresh = true
 		}
 	}

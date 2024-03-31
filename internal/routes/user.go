@@ -47,7 +47,7 @@ func (h *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		h.CookieSession.SetSession(u.Id, w, r)
+		h.CookieSession.SetSession(u, w, r)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -78,7 +78,7 @@ func (h *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	pv := h.ProjectViewService.GetProjectViews((user.Id))
 	for _, v := range pv {
-		if !v.Crawl.IssuesEnd.Valid || v.Project.Deleting {
+		if v.Crawl.Crawling || v.Project.Deleting {
 			data.Crawling = true
 			h.Renderer.RenderTemplate(w, "delete_account", pageView)
 			return
@@ -123,7 +123,7 @@ func (h *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
 
 		u, err := h.UserService.SignIn(data.Email, password)
 		if err == nil {
-			h.CookieSession.SetSession(u.Id, w, r)
+			h.CookieSession.SetSession(u, w, r)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 			return
 		}

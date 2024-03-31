@@ -102,6 +102,9 @@ func (c *Container) InitRepositories() {
 	c.exportRepository = &repository.ExportRepository{DB: c.db}
 	c.crawlRepository = &repository.CrawlRepository{DB: c.db}
 	c.dashboardRepository = &repository.DashboardRepository{DB: c.db}
+
+	// Clean up unfinished crawls.
+	c.crawlRepository.DeleteUnfinishedCrawls()
 }
 
 // Create the PubSub broker.
@@ -116,7 +119,15 @@ func (c *Container) InitIssueService() {
 
 // Create the report service.
 func (c *Container) InitReportService() {
-	c.ReportService = NewReportService(c.pageReportRepository)
+	storage := &struct {
+		*repository.PageReportRepository
+		*repository.IssueRepository
+	}{
+		c.pageReportRepository,
+		c.issueRepository,
+	}
+
+	c.ReportService = NewReportService(storage)
 }
 
 // Create the report manager and add all the available reporters.
@@ -184,15 +195,16 @@ func (c *Container) InitCrawlerService() {
 	crawlerServices := CrawlerServicesContainer{
 		Broker:        c.PubSubBroker,
 		ReportManager: c.ReportManager,
-		IssueService:  c.IssueService,
 		Config:        c.Config.Crawler,
 	}
 	storage := &struct {
 		*repository.CrawlRepository
 		*repository.PageReportRepository
+		*repository.IssueRepository
 	}{
 		c.crawlRepository,
 		c.pageReportRepository,
+		c.issueRepository,
 	}
 
 	c.CrawlerService = NewCrawlerService(storage, crawlerServices)
@@ -218,5 +230,5 @@ func (c *Container) InitRenderer() {
 
 // Create cookie session handler
 func (c *Container) InitCookieSession() {
-	c.CookieSession = NewCookieSession(c.UserService)
+	c.CookieSession = NewCookieSession(c.userRepository)
 }

@@ -19,17 +19,17 @@ const (
 type (
 	contextKey string
 
-	sessionUserService interface {
-		FindById(uid int) *models.User
+	CookieSessionStorage interface {
+		FindUserByEmail(email string) (*models.User, error)
 	}
 
 	CookieSession struct {
-		userService sessionUserService
-		cookie      *sessions.CookieStore
+		storage CookieSessionStorage
+		cookie  *sessions.CookieStore
 	}
 )
 
-func NewCookieSession(s sessionUserService) *CookieSession {
+func NewCookieSession(s CookieSessionStorage) *CookieSession {
 	authKeyOne := securecookie.GenerateRandomKey(64)
 	encryptionKeyOne := securecookie.GenerateRandomKey(32)
 
@@ -47,8 +47,8 @@ func NewCookieSession(s sessionUserService) *CookieSession {
 	gob.Register(models.User{})
 
 	return &CookieSession{
-		userService: s,
-		cookie:      cookie,
+		storage: s,
+		cookie:  cookie,
 	}
 }
 
@@ -68,7 +68,7 @@ func (s *CookieSession) Auth(f func(w http.ResponseWriter, r *http.Request)) htt
 			return
 		}
 
-		uid, ok := session.Values["uid"].(int)
+		email, ok := session.Values["email"].(string)
 		if !ok {
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
@@ -80,7 +80,11 @@ func (s *CookieSession) Auth(f func(w http.ResponseWriter, r *http.Request)) htt
 			return
 		}
 
-		user := s.userService.FindById(uid)
+		user, err := s.storage.FindUserByEmail(email)
+		if err != nil {
+			http.Redirect(w, r, "/signin", http.StatusSeeOther)
+			return
+		}
 
 		ctx := s.setUser(user, r.Context())
 		req := r.WithContext(ctx)
@@ -102,14 +106,14 @@ func (s *CookieSession) GetUser(c context.Context) (*models.User, bool) {
 }
 
 // Sets a user authentication session with the user Id.
-func (s *CookieSession) SetSession(uid int, w http.ResponseWriter, r *http.Request) error {
+func (s *CookieSession) SetSession(user *models.User, w http.ResponseWriter, r *http.Request) error {
 	session, err := s.cookie.Get(r, SessionName)
 	if err != nil {
 		return err
 	}
 
 	session.Values["authenticated"] = true
-	session.Values["uid"] = uid
+	session.Values["email"] = user.Email
 	return session.Save(r, w)
 }
 
@@ -121,7 +125,7 @@ func (s *CookieSession) DestroySession(w http.ResponseWriter, r *http.Request) e
 	}
 
 	session.Values["authenticated"] = false
-	session.Values["uid"] = nil
+	session.Values["email"] = nil
 	session.Options.MaxAge = -1
 	return session.Save(r, w)
 }

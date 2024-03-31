@@ -10,14 +10,12 @@ import (
 )
 
 type (
-	// UserService storage interface.
 	UserServiceStorage interface {
-		FindUserById(int) *models.User
 		UserSignup(string, string) (*models.User, error)
-		FindUserByEmail(string) *models.User
+		FindUserByEmail(string) (*models.User, error)
 		UserUpdatePassword(email, hashedPassword string) error
-		DeleteUser(int)
-		DisableUser(int)
+		DeleteUser(*models.User) error
+		DisableUser(*models.User) error
 
 		DeleteProjectCrawls(*models.Project)
 
@@ -25,7 +23,6 @@ type (
 		FindProjectsByUser(uid int) []models.Project
 	}
 
-	// User service struct.
 	UserService struct {
 		store UserServiceStorage
 	}
@@ -37,16 +34,11 @@ func NewUserService(s UserServiceStorage) *UserService {
 	}
 }
 
-// FindById returns a by its Id.
-func (s *UserService) FindById(id int) *models.User {
-	return s.store.FindUserById(id)
-}
-
 // SignUp validates the user email and password, if they are both valid creates a password hash
 // before storing it. If the storage is succesful it returns the new user.
 func (s *UserService) SignUp(email, password string) (*models.User, error) {
-	u := s.store.FindUserByEmail(email)
-	if u.Id != 0 {
+	_, err := s.store.FindUserByEmail(email)
+	if err == nil {
 		return nil, errors.New("user already exists")
 	}
 
@@ -54,7 +46,7 @@ func (s *UserService) SignUp(email, password string) (*models.User, error) {
 		return nil, errors.New("invalid password")
 	}
 
-	_, err := mail.ParseAddress(email)
+	_, err = mail.ParseAddress(email)
 	if err != nil {
 		return nil, errors.New("invalid email")
 	}
@@ -71,8 +63,8 @@ func (s *UserService) SignUp(email, password string) (*models.User, error) {
 // It compares the provided password with the user's hashed password.
 // If the passwords do not match, it returns an error.
 func (s *UserService) SignIn(email, password string) (*models.User, error) {
-	u := s.store.FindUserByEmail(email)
-	if u.Id == 0 {
+	u, err := s.store.FindUserByEmail(email)
+	if err != nil {
 		return nil, errors.New("user does not exist")
 	}
 
@@ -105,7 +97,7 @@ func (s *UserService) UpdatePassword(email, password string) error {
 
 // Delete a User and all its associated projects and crawl data.
 func (s *UserService) DeleteUser(user *models.User) {
-	s.store.DisableUser(user.Id)
+	s.store.DisableUser(user)
 	go func() {
 		projects := s.store.FindProjectsByUser(user.Id)
 		for _, p := range projects {
@@ -113,6 +105,6 @@ func (s *UserService) DeleteUser(user *models.User) {
 			s.store.DeleteProject(&p)
 		}
 
-		s.store.DeleteUser(user.Id)
+		s.store.DeleteUser(user)
 	}()
 }

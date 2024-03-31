@@ -59,6 +59,8 @@ func (s *DashboardService) GetCanonicalCount(crawlId int64) *models.CanonicalCou
 	}
 }
 
+// GetStatusCodeByDepth returns a slice of StatusCodeByDepth models with the total number of
+// pagereports by depth and status code.
 func (s *DashboardService) GetStatusCodeByDepth(crawlId int64) []models.StatusCodeByDepth {
 	return s.store.GetStatusCodeByDepth(crawlId)
 }
@@ -74,11 +76,7 @@ func newChart(c *models.CountList) *models.Chart {
 	}
 
 	for _, i := range *c {
-		ci := models.ChartItem{
-			Key:   i.Key,
-			Value: i.Value,
-		}
-
+		ci := models.ChartItem(i)
 		chart = append(chart, ci)
 	}
 

@@ -19,6 +19,14 @@ type (
 		FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link
 		FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport
 
+		FindPageReportStyles(pageReport *models.PageReport, cid int64) []string
+		FindPageReportScripts(pageReport *models.PageReport, cid int64) []string
+		FindPageReportVideos(pageReport *models.PageReport, cid int64) []string
+		FindPageReportAudios(pageReport *models.PageReport, cid int64) []string
+		FindPageReportIframes(pageReport *models.PageReport, cid int64) []string
+		FindPageReportImages(pageReport *models.PageReport, cid int64) []models.Image
+		FindPageReportHreflangs(pageReport *models.PageReport, cid int64) []models.Hreflang
+
 		GetNumberOfPagesForPageReport(cid int64, term string) int
 		GetNumberOfPagesForInlinks(*models.PageReport, int64) int
 		GetNumberOfPagesForRedirecting(*models.PageReport, int64) int
@@ -38,31 +46,57 @@ func NewReportService(store ReportServiceStorage) *ReportService {
 // Returns a PageReportView by PageReport Id and Crawl Id.
 // It also loads the data specified in the tab paramater.
 func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string, page int) *models.PageReportView {
-	paginator := models.Paginator{
-		CurrentPage: page,
-	}
-
 	v := &models.PageReportView{
 		PageReport: s.store.FindPageReportById(rid),
 		ErrorTypes: s.store.FindErrorTypesByPage(rid, crawlId),
 	}
 
+	v.PageReport.Hreflangs = s.store.FindPageReportHreflangs(&v.PageReport, crawlId)
+
 	switch tab {
 	case "internal":
-		paginator.TotalPages = s.store.GetNumberOfPagesForLinks(&v.PageReport, crawlId)
 		v.PageReport.InternalLinks = s.store.FindLinks(&v.PageReport, crawlId, page)
 	case "external":
-		paginator.TotalPages = s.store.GetNumberOfPagesForExternalLinks(&v.PageReport, crawlId)
 		v.PageReport.ExternalLinks = s.store.FindExternalLinks(&v.PageReport, crawlId, page)
 	case "inlinks":
-		paginator.TotalPages = s.store.GetNumberOfPagesForInlinks(&v.PageReport, crawlId)
 		v.InLinks = s.store.FindInLinks(v.PageReport.URL, crawlId, page)
 	case "redirections":
-		paginator.TotalPages = s.store.GetNumberOfPagesForRedirecting(&v.PageReport, crawlId)
 		v.Redirects = s.store.FindPageReportsRedirectingToURL(v.PageReport.URL, crawlId, page)
+	case "styles":
+		v.PageReport.Styles = s.store.FindPageReportStyles(&v.PageReport, crawlId)
+	case "scripts":
+		v.PageReport.Scripts = s.store.FindPageReportScripts(&v.PageReport, crawlId)
+	case "videos":
+		v.PageReport.Videos = s.store.FindPageReportVideos(&v.PageReport, crawlId)
+	case "audios":
+		v.PageReport.Audios = s.store.FindPageReportAudios(&v.PageReport, crawlId)
+	case "iframes":
+		v.PageReport.Iframes = s.store.FindPageReportIframes(&v.PageReport, crawlId)
+	case "images":
+		v.PageReport.Images = s.store.FindPageReportImages(&v.PageReport, crawlId)
 	}
 
-	if paginator.TotalPages == 0 {
+	v.Paginator = s.getPaginator(&v.PageReport, crawlId, tab, page)
+
+	return v
+}
+
+// Returns the paginator for the specific "tab".
+func (s *ReportService) getPaginator(pageReport *models.PageReport, crawlId int64, tab string, page int) models.Paginator {
+	paginator := models.Paginator{
+		CurrentPage: page,
+	}
+
+	switch tab {
+	case "internal":
+		paginator.TotalPages = s.store.GetNumberOfPagesForLinks(pageReport, crawlId)
+	case "external":
+		paginator.TotalPages = s.store.GetNumberOfPagesForExternalLinks(pageReport, crawlId)
+	case "inlinks":
+		paginator.TotalPages = s.store.GetNumberOfPagesForInlinks(pageReport, crawlId)
+	case "redirections":
+		paginator.TotalPages = s.store.GetNumberOfPagesForRedirecting(pageReport, crawlId)
+	default:
 		paginator.TotalPages = 1
 	}
 
@@ -74,9 +108,7 @@ func (s *ReportService) GetPageReport(rid int, crawlId int64, tab string, page i
 		paginator.PreviousPage = paginator.CurrentPage - 1
 	}
 
-	v.Paginator = paginator
-
-	return v
+	return paginator
 }
 
 // Return channel of PageReports by error type.

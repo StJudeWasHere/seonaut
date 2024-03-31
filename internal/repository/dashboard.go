@@ -12,6 +12,8 @@ type DashboardRepository struct {
 	DB *sql.DB
 }
 
+// CountByCanonical returns the number of pagereports in a crawl that are of type "text/html"
+// and have an empty canonical or a canonical pointing to its own url.
 func (ds *DashboardRepository) CountByCanonical(cid int64) int {
 	query := `
 		SELECT
@@ -30,6 +32,8 @@ func (ds *DashboardRepository) CountByCanonical(cid int64) int {
 	return c
 }
 
+// CountByNonCanonical returns the number of pagereports in a crawl that are of type "text/html"
+// and have a non empty canonical or a canonical pointing to a different url.
 func (ds *DashboardRepository) CountByNonCanonical(cid int64) int {
 	query := `
 		SELECT
@@ -48,6 +52,8 @@ func (ds *DashboardRepository) CountByNonCanonical(cid int64) int {
 	return c
 }
 
+// CountImagesAlt returns an AltCount model with the total number of images that have an alt attribute
+// and the total number of images that don't.
 func (ds *DashboardRepository) CountImagesAlt(cid int64) *models.AltCount {
 	query := `
 		SELECT 
@@ -85,6 +91,8 @@ func (ds *DashboardRepository) CountImagesAlt(cid int64) *models.AltCount {
 	return c
 }
 
+// CountScheme returns an SchemeCount model with the total number of pagereports that use the
+// http and the total number of pagereports that use https.
 func (ds *DashboardRepository) CountScheme(cid int64) *models.SchemeCount {
 	query := `
 		SELECT
@@ -122,6 +130,7 @@ func (ds *DashboardRepository) CountScheme(cid int64) *models.SchemeCount {
 	return c
 }
 
+// CountByMediaType returns a CountList model with the total number of pagereports by media type.
 func (ds *DashboardRepository) CountByMediaType(cid int64) *models.CountList {
 	query := `
 		SELECT media_type, count(*)
@@ -132,6 +141,7 @@ func (ds *DashboardRepository) CountByMediaType(cid int64) *models.CountList {
 	return ds.countListQuery(query, cid)
 }
 
+// CountByStatusCode returns a CountList model with the total number of pagereports by status code.
 func (ds *DashboardRepository) CountByStatusCode(cid int64) *models.CountList {
 	query := `
 		SELECT
@@ -144,6 +154,7 @@ func (ds *DashboardRepository) CountByStatusCode(cid int64) *models.CountList {
 	return ds.countListQuery(query, cid)
 }
 
+// countListQuery is a helper function used to build the CountList model.
 func (ds *DashboardRepository) countListQuery(query string, cid int64) *models.CountList {
 	m := models.CountList{}
 	rows, err := ds.DB.Query(query, cid)
@@ -167,6 +178,8 @@ func (ds *DashboardRepository) countListQuery(query string, cid int64) *models.C
 	return &m
 }
 
+// GetStatusCodeByDepth returns a slice of StatusCodeByDepth models with the total number of
+// pagereports by depth and status code.
 func (ds *DashboardRepository) GetStatusCodeByDepth(cid int64) []models.StatusCodeByDepth {
 	query := `
 	SELECT

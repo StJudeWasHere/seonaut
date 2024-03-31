@@ -60,7 +60,7 @@
 					<div class="content">
 						{{ if .Project.Deleting }}
 							<p>Deleting project.<br> This can take a few minutes, please wait...</p>
-						{{ else if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
+						{{ else if (and .Crawl.Id (not .Crawl.Crawling)) }}
 							{{ if eq .Crawl.TotalURLs 0 }}
 								<p class="error">The SEOnaut bot was unable to access your website. Check that the URL is correct and not blocked by the Robots settings or Basic HTTP Authentication.</p>
 							{{ end }}
@@ -71,7 +71,7 @@
 
 				<div class="col col-right">
 					<div class="content">
-					{{ if (and (not .Project.Deleting) (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid))) }}
+					{{ if (and (not .Project.Deleting) (or (not .Crawl.Id) (and .Crawl.Id (not .Crawl.Crawling)))) }}
 						<a href="/project/edit?pid={{ .Project.Id }}" class="icon-link">
 							<p><svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M8.071 21.586l-7.071 1.414 1.414-7.071 14.929-14.929 5.657 5.657-14.929 14.929zm-.493-.921l-4.243-4.243-1.06 5.303 5.303-1.06zm9.765-18.251l-13.3 13.301 4.242 4.242 13.301-13.3-4.243-4.243z"/></svg></p>
 						</a>
@@ -85,7 +85,7 @@
 
 		<div class="col col-actions">
 			{{ if gt .Crawl.TotalURLs 0 }}
-				{{ if (and .Crawl.Id .Crawl.IssuesEnd.Valid) }}
+				{{ if (and .Crawl.Id (not .Crawl.Crawling)) }}
 					<a href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
 					<a href="/issues?pid={{ .Project.Id }}">Site Issues</a>
 					<a href="/explorer?pid={{ .Project.Id }}">Page Details</a>
@@ -93,12 +93,12 @@
 				{{ end }}
 			{{ end }}
 
-			{{ if (or (not .Crawl.Id) (and .Crawl.Id .Crawl.IssuesEnd.Valid)) }}
+			{{ if (or (not .Crawl.Id) (and .Crawl.Id (not .Crawl.Crawling))) }}
 				<a class="icon-text project-crawl " href="{{ if .Project.BasicAuth }}/crawl/auth?pid={{ .Project.Id }}{{ else }}/crawl?pid={{ .Project.Id }}{{ end }}">
 					<p class="icon"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg></p>
 					<p>Crawl Now</p>
 				</a>
-			{{ else if (and .Crawl.Id (not .Crawl.IssuesEnd.Valid) )}}
+			{{ else if (and .Crawl.Id .Crawl.Crawling) }}
 				<a href="/crawl/live?pid={{ .Project.Id }}">Crawling...</a>
 			{{ end }}
 

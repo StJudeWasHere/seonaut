@@ -129,6 +129,28 @@ func (s *reportstorage) GetStatusCodeByDepth(crawlId int64) []models.StatusCodeB
 	return []models.StatusCodeByDepth{}
 }
 
+func (s *reportstorage) FindPageReportStyles(pageReport *models.PageReport, cid int64) []string {
+	return []string{}
+}
+func (s *reportstorage) FindPageReportScripts(pageReport *models.PageReport, cid int64) []string {
+	return []string{}
+}
+func (s *reportstorage) FindPageReportVideos(pageReport *models.PageReport, cid int64) []string {
+	return []string{}
+}
+func (s *reportstorage) FindPageReportAudios(pageReport *models.PageReport, cid int64) []string {
+	return []string{}
+}
+func (s *reportstorage) FindPageReportIframes(pageReport *models.PageReport, cid int64) []string {
+	return []string{}
+}
+func (s *reportstorage) FindPageReportImages(pageReport *models.PageReport, cid int64) []models.Image {
+	return []models.Image{}
+}
+func (s *reportstorage) FindPageReportHreflangs(pageReport *models.PageReport, cid int64) []models.Hreflang {
+	return []models.Hreflang{}
+}
+
 var reportservice = services.NewReportService(&reportstorage{})
 
 func TestGetSitemapPageReports(t *testing.T) {

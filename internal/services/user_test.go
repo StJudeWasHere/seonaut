@@ -1,6 +1,7 @@
 package services_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -24,31 +25,29 @@ var testUser = &models.User{
 // The storage only contains the testUSer.
 type userstorage struct{}
 
-func (s *userstorage) FindUserById(i int) *models.User {
-	if i == testUser.Id {
-		return testUser
+func (s *userstorage) UserUpdatePassword(email, hashedPassword string) error {
+	if email != testUser.Email {
+		return errors.New("user does not exist")
 	}
 
-	return &models.User{}
-}
-
-func (s *userstorage) UserUpdatePassword(email, hashedPassword string) error {
 	return nil
 }
-
 func (s *userstorage) UserSignup(e, p string) (*models.User, error) {
 	return &models.User{}, nil
 }
-
-func (s *userstorage) FindUserByEmail(e string) *models.User {
+func (s *userstorage) FindUserByEmail(e string) (*models.User, error) {
 	if e == testUser.Email {
-		return testUser
+		return testUser, nil
 	}
 
-	return &models.User{}
+	return &models.User{}, errors.New("user does not exist")
 }
-func (s *userstorage) DeleteUser(uid int)            {}
-func (s *userstorage) DisableUser(uid int)           {}
+func (s *userstorage) DeleteUser(*models.User) error {
+	return nil
+}
+func (s *userstorage) DisableUser(*models.User) error {
+	return nil
+}
 func (p *userstorage) DeleteProject(*models.Project) {}
 func (p *userstorage) FindProjectsByUser(uid int) []models.Project {
 	return []models.Project{}
@@ -108,17 +107,26 @@ func TestSigin(t *testing.T) {
 	}
 }
 
-// TestFindById tests the FindById method of the user service.
-// It verifies the behavior of the FindById function for different user ID scenarios.
-func TestFindById(t *testing.T) {
-	u := userService.FindById(id) // Should return the testUSer
-	if u != testUser {
-		t.Error("User not found")
+// TestUpdatePassword tests the UpdatePassword method of the user service.
+// It verifies the behavior of the UpdatePassword function for different input scenarios.
+// For each test case, it calls the UpdatePassword function with the provided email and password,
+// and checks if the returned error matches the expected error value.
+// If the expected error and the actual error do not match, it reports a test failure.
+func TestUpdatePassword(t *testing.T) {
+	m := []struct {
+		email    string
+		password string
+		err      bool
+	}{
+		{testUser.Email, "valid_password", false},        // Valid email and password. Expects no error.
+		{testUser.Email, "", true},                       // Empty password. Expects an error.
+		{"not_user@example.com", "valid_password", true}, // User does not exist. Expects an error.
 	}
 
-	unexistingUserId := 1009
-	u = userService.FindById(unexistingUserId) // Should not return the testUSer
-	if u == testUser {
-		t.Error("User found")
+	for _, v := range m {
+		err := userService.UpdatePassword(v.email, v.password)
+		if (v.err == true && err == nil) || (v.err == false && err != nil) {
+			t.Errorf("Signup '%s' password '%s' should error %v", v.email, v.password, v.err)
+		}
 	}
 }

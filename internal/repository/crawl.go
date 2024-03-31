@@ -14,6 +14,8 @@ type CrawlRepository struct {
 	DB *sql.DB
 }
 
+// SaveCrawl inserts a new crawl into the database and returns a new Crawl model with
+// the data provided by the project.
 func (ds *CrawlRepository) SaveCrawl(p models.Project) (*models.Crawl, error) {
 	stmt, _ := ds.DB.Prepare("INSERT INTO crawls (project_id) VALUES (?)")
 	defer stmt.Close()
@@ -36,58 +38,7 @@ func (ds *CrawlRepository) SaveCrawl(p models.Project) (*models.Crawl, error) {
 	}, nil
 }
 
-func (ds *CrawlRepository) SaveEndCrawl(c *models.Crawl) (*models.Crawl, error) {
-	query := `
-		UPDATE
-			crawls
-		SET
-			end = ?,
-			total_urls = ?,
-			blocked_by_robotstxt = ?,
-			noindex = ?,
-			robotstxt_exists = ?,
-			sitemap_exists = ?,
-			sitemap_blocked = ?,
-			links_internal_follow = ?,
-			links_internal_nofollow = ?,
-			links_external_follow = ?,
-			links_external_nofollow = ?,
-			links_sponsored = ?,
-			links_ugc = ?
-		WHERE id = ?
-	`
-	stmt, _ := ds.DB.Prepare(query)
-	defer stmt.Close()
-
-	c.End = sql.NullTime{
-		Time:  time.Now(),
-		Valid: true,
-	}
-
-	_, err := stmt.Exec(
-		c.End,
-		c.TotalURLs,
-		c.BlockedByRobotstxt,
-		c.Noindex,
-		c.RobotstxtExists,
-		c.SitemapExists,
-		c.SitemapIsBlocked,
-		c.InternalFollowLinks,
-		c.InternalNoFollowLinks,
-		c.ExternalFollowLinks,
-		c.ExternalNoFollowLinks,
-		c.SponsoredLinks,
-		c.UGCLinks,
-		c.Id,
-	)
-	if err != nil {
-		log.Printf("saveEndCrawl: %v\n", err)
-		return c, err
-	}
-
-	return c, nil
-}
-
+// GetLastCrawl returns a Crawl model with the last crawl stored for an specific project.
 func (ds *CrawlRepository) GetLastCrawl(p *models.Project) models.Crawl {
 	query := `
 		SELECT
@@ -115,17 +66,18 @@ func (ds *CrawlRepository) GetLastCrawl(p *models.Project) models.Crawl {
 
 	row := ds.DB.QueryRow(query, p.Id)
 
-	crawl := models.Crawl{}
+	var endTime, issuesEndTime sql.NullTime
+	crawl := models.Crawl{Crawling: true}
 	err := row.Scan(
 		&crawl.Id,
 		&crawl.Start,
-		&crawl.End,
+		&endTime, // &crawl.End,
 		&crawl.TotalURLs,
 		&crawl.TotalIssues,
 		&crawl.CriticalIssues,
 		&crawl.AlertIssues,
 		&crawl.WarningIssues,
-		&crawl.IssuesEnd,
+		&issuesEndTime, // &crawl.IssuesEnd,
 		&crawl.RobotstxtExists,
 		&crawl.SitemapExists,
 		&crawl.SitemapIsBlocked,
@@ -140,9 +92,17 @@ func (ds *CrawlRepository) GetLastCrawl(p *models.Project) models.Crawl {
 		log.Printf("GetLastCrawl project id %d: %v\n", p.Id, err)
 	}
 
+	if endTime.Valid && issuesEndTime.Valid {
+		crawl.End = endTime.Time
+		crawl.IssuesEnd = issuesEndTime.Time
+		crawl.Crawling = false
+	}
+
 	return crawl
 }
 
+// GetLastCrawls returns a slice with a number of crawls for the specific project. The number of crawls
+// to be returned is specified with the limit parameter.
 func (ds *CrawlRepository) GetLastCrawls(p models.Project, limit int) []models.Crawl {
 	query := `
 		SELECT
@@ -168,14 +128,16 @@ func (ds *CrawlRepository) GetLastCrawls(p models.Project, limit int) []models.C
 	}
 
 	for rows.Next() {
-		crawl := models.Crawl{}
+		endTime := sql.NullTime{}
+		issuesEndTime := sql.NullTime{}
+		crawl := models.Crawl{Crawling: true}
 		err := rows.Scan(
 			&crawl.Id,
 			&crawl.Start,
-			&crawl.End,
+			&endTime, // &crawl.End,
 			&crawl.TotalURLs,
 			&crawl.TotalIssues,
-			&crawl.IssuesEnd,
+			&issuesEndTime, // &crawl.IssuesEnd,
 			&crawl.CriticalIssues,
 			&crawl.AlertIssues,
 			&crawl.WarningIssues,
@@ -185,51 +147,19 @@ func (ds *CrawlRepository) GetLastCrawls(p models.Project, limit int) []models.C
 		if err != nil {
 			log.Printf("GetLastCrawl: %v\n", err)
 		}
+		if endTime.Valid && issuesEndTime.Valid {
+			crawl.End = endTime.Time
+			crawl.IssuesEnd = issuesEndTime.Time
+			crawl.Crawling = false
+		}
 		crawls = append([]models.Crawl{crawl}, crawls...)
 	}
 
 	return crawls
 }
 
-func (ds *CrawlRepository) GetPreviousCrawl(p *models.Project) (*models.Crawl, error) {
-	query := `
-		SELECT
-			id,
-			start,
-			end,
-			total_urls,
-			total_issues,
-			issues_end,
-			critical_issues,
-			alert_issues,
-			warning_issues,
-			blocked_by_robotstxt,
-			noindex
-		FROM crawls
-		WHERE project_id = ?
-		ORDER BY end DESC
-		LIMIT 1, 1`
-
-	row := ds.DB.QueryRow(query, p.Id)
-
-	crawl := &models.Crawl{}
-	err := row.Scan(
-		&crawl.Id,
-		&crawl.Start,
-		&crawl.End,
-		&crawl.TotalURLs,
-		&crawl.TotalIssues,
-		&crawl.IssuesEnd,
-		&crawl.CriticalIssues,
-		&crawl.AlertIssues,
-		&crawl.WarningIssues,
-		&crawl.BlockedByRobotstxt,
-		&crawl.Noindex,
-	)
-
-	return crawl, err
-}
-
+// DeleteCrawlData deletes all the crawl's data in a batch process. It removes the crawl's associated
+// links, external_links, hreflangs, issues, images and any other data associated to it.
 func (ds *CrawlRepository) DeleteCrawlData(crawl *models.Crawl) {
 	var deleteFunc func(cid int64, table string)
 	deleteFunc = func(cid int64, table string) {
@@ -266,7 +196,7 @@ func (ds *CrawlRepository) DeleteCrawlData(crawl *models.Crawl) {
 	deleteFunc(crawl.Id, "pagereports")
 }
 
-// DeleteProjectCrawls deletes the project's crawl data
+// DeleteProjectCrawls deletes all of the project's crawls and associated data.
 func (ds *CrawlRepository) DeleteProjectCrawls(p *models.Project) {
 	query := `
 		SELECT
@@ -342,4 +272,57 @@ func (ds *CrawlRepository) DeleteUnfinishedCrawls() {
 	}
 
 	log.Printf("Deleted %d unfinished crawls.", count)
+}
+
+// SaveIssuesCount stores the total number of issues as well as the total issues by priority for
+// the crawl specified in the "crawlId" parameter.
+func (ds *CrawlRepository) UpdateCrawl(crawl *models.Crawl) {
+	query := `UPDATE
+		crawls
+		SET 
+			end = ?,
+			total_urls = ?,
+			blocked_by_robotstxt = ?,
+			noindex = ?,
+			robotstxt_exists = ?,
+			sitemap_exists = ?,
+			sitemap_blocked = ?,
+			links_internal_follow = ?,
+			links_internal_nofollow = ?,
+			links_external_follow = ?,
+			links_external_nofollow = ?,
+			links_sponsored = ?,
+			links_ugc = ?,
+			issues_end = ?,
+			critical_issues = ?,
+			alert_issues = ?,
+			warning_issues = ?,
+			total_issues = ?
+		WHERE id = ?`
+
+	_, err := ds.DB.Exec(
+		query,
+		crawl.End,
+		crawl.TotalURLs,
+		crawl.BlockedByRobotstxt,
+		crawl.Noindex,
+		crawl.RobotstxtExists,
+		crawl.SitemapExists,
+		crawl.SitemapIsBlocked,
+		crawl.InternalFollowLinks,
+		crawl.InternalNoFollowLinks,
+		crawl.ExternalFollowLinks,
+		crawl.ExternalNoFollowLinks,
+		crawl.SponsoredLinks,
+		crawl.UGCLinks,
+		crawl.IssuesEnd,
+		crawl.CriticalIssues,
+		crawl.AlertIssues,
+		crawl.WarningIssues,
+		crawl.TotalIssues,
+		crawl.Id,
+	)
+	if err != nil {
+		log.Printf("SaveIssuesCount: %v\n", err)
+	}
 }

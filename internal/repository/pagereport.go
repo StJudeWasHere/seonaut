@@ -12,6 +12,8 @@ type PageReportRepository struct {
 	DB *sql.DB
 }
 
+// Save a pagereport and all its related data to the database. Once the pagereport is saved it uses its id to
+// save the associated links, external_links, images, scripts and so on.
 func (ds *PageReportRepository) SavePageReport(r *models.PageReport, cid int64) (*models.PageReport, error) {
 	urlHash := Hash(r.URL)
 	var redirectHash string
@@ -86,181 +88,226 @@ func (ds *PageReportRepository) SavePageReport(r *models.PageReport, cid int64) 
 		return r, err
 	}
 
-	lid, err := res.LastInsertId()
+	r.Id, err = res.LastInsertId()
 	if err != nil {
 		return r, err
 	}
 
-	if len(r.Links) > 0 {
-		sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, url_hash) values "
-		v := []interface{}{}
-		for _, l := range r.Links {
-			hash := Hash(l.URL)
-			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.ParsedURL.Scheme, l.Rel, l.NoFollow, Truncate(l.Text, 1024), hash)
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, err := ds.DB.Prepare(sqlString)
-		if err != nil {
-			return r, err
-		}
-		defer stmt.Close()
-
-		_, err = stmt.Exec(v...)
-		if err != nil {
-			log.Printf("Error in SavePageReport\nCID: %v\n Links: %+v\nError: %+v\n", cid, v, err)
-		}
+	f := []func(*models.PageReport, int64) error{
+		ds.SavePageReportLinks,
+		ds.SavePageReportExternalLinks,
+		ds.SavePageReportHreflangs,
+		ds.SavePageReportImages,
+		ds.SavePageReportIframes,
+		ds.SavePageReportAudios,
+		ds.SavePageReportVideos,
+		ds.SavePageReportScripts,
+		ds.SavePageReportStyles,
 	}
 
-	if len(r.ExternalLinks) > 0 {
-		sqlString := "INSERT INTO external_links (pagereport_id, crawl_id, url, rel, nofollow, text, sponsored, ugc, status_code) values "
-		v := []interface{}{}
-		for _, l := range r.ExternalLinks {
-			sqlString += "(?, ?, ?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, l.URL, l.Rel, l.NoFollow, Truncate(l.Text, 1024), l.Sponsored, l.UGC, l.StatusCode)
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, err := ds.DB.Prepare(sqlString)
+	for _, sf := range f {
+		err = sf(r, cid)
 		if err != nil {
-			return r, err
-		}
-		defer stmt.Close()
-
-		_, err = stmt.Exec(v...)
-		if err != nil {
-			log.Printf("Error in SavePageReport\nCID: %v\n Links: %+v\nError: %+v\n", cid, v, err)
+			log.Println(err)
 		}
 	}
-
-	if len(r.Hreflangs) > 0 {
-		sqlString := "INSERT INTO hreflangs (pagereport_id, crawl_id, from_lang, to_url, to_lang, from_hash, to_hash) values "
-		v := []interface{}{}
-		for _, h := range r.Hreflangs {
-			sqlString += "(?, ?, ?, ?, ?, ?, ?),"
-			v = append(v, lid, cid, r.Lang, h.URL, h.Lang, Hash(r.URL), Hash(h.URL))
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ := ds.DB.Prepare(sqlString)
-		defer stmt.Close()
-
-		_, err := stmt.Exec(v...)
-		if err != nil {
-			log.Printf("savePageReport\nCID: %v\n Hreflangs: %+v\nError: %+v\n", cid, v, err)
-		}
-	}
-
-	if len(r.Images) > 0 {
-		sqlString := "INSERT INTO images (pagereport_id, url, alt, crawl_id) values "
-		v := []interface{}{}
-		for _, i := range r.Images {
-			sqlString += "(?, ?, ?, ?),"
-			v = append(v, lid, i.URL, Truncate(i.Alt, 1024), cid)
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = ds.DB.Prepare(sqlString)
-		defer stmt.Close()
-
-		_, err := stmt.Exec(v...)
-		if err != nil {
-			log.Printf("savePageReport\nCID: %v\n Images: %+v\nError: %+v\n", cid, v, err)
-		}
-	}
-
-	if len(r.Iframes) > 0 {
-		sqlString := "INSERT INTO iframes (pagereport_id, url, crawl_id) values "
-
-		v := []interface{}{}
-		for _, i := range r.Iframes {
-			sqlString += "(?, ?, ?),"
-			v = append(v, lid, i, cid)
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = ds.DB.Prepare(sqlString)
-		defer stmt.Close()
-
-		_, err := stmt.Exec(v...)
-		if err != nil {
-			log.Printf("savePageReport\nCID: %v\n Iframes: %+v\nError: %+v\n", cid, v, err)
-		}
-	}
-
-	if len(r.Audios) > 0 {
-		sqlString := "INSERT INTO audios (pagereport_id, url, crawl_id) values "
-
-		v := []interface{}{}
-		for _, i := range r.Audios {
-			sqlString += "(?, ?, ?),"
-			v = append(v, lid, i, cid)
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = ds.DB.Prepare(sqlString)
-		defer stmt.Close()
-
-		_, err := stmt.Exec(v...)
-		if err != nil {
-			log.Printf("savePageReport\nCID: %v\n Audios: %+v\nError: %+v\n", cid, v, err)
-		}
-	}
-
-	if len(r.Videos) > 0 {
-		sqlString := "INSERT INTO videos (pagereport_id, url, crawl_id) values "
-
-		v := []interface{}{}
-		for _, i := range r.Videos {
-			sqlString += "(?, ?, ?),"
-			v = append(v, lid, i, cid)
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ = ds.DB.Prepare(sqlString)
-		defer stmt.Close()
-
-		_, err := stmt.Exec(v...)
-		if err != nil {
-			log.Printf("savePageReport\nCID: %v\n Videos: %+v\nError: %+v\n", cid, v, err)
-		}
-	}
-
-	if len(r.Scripts) > 0 {
-		sqlString := "INSERT INTO scripts (pagereport_id, url, crawl_id) values "
-		v := []interface{}{}
-		for _, s := range r.Scripts {
-			sqlString += "(?, ?, ?),"
-			v = append(v, lid, s, cid)
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ := ds.DB.Prepare(sqlString)
-		defer stmt.Close()
-
-		_, err := stmt.Exec(v...)
-		if err != nil {
-			log.Printf("savePageReport\nCID: %v\n Scripts: %+v\nError: %+v\n", cid, v, err)
-		}
-	}
-
-	if len(r.Styles) > 0 {
-		sqlString := "INSERT INTO styles (pagereport_id, url, crawl_id) values "
-		v := []interface{}{}
-
-		for _, s := range r.Styles {
-			sqlString += "(?, ?, ?),"
-			v = append(v, lid, s, cid)
-
-		}
-		sqlString = sqlString[0 : len(sqlString)-1]
-		stmt, _ := ds.DB.Prepare(sqlString)
-		defer stmt.Close()
-
-		_, err := stmt.Exec(v...)
-		if err != nil {
-			log.Printf("savePageReport\nCID: %v\n Styles: %+v\nError: %+v\n", cid, v, err)
-		}
-	}
-
-	r.Id = lid
 
 	return r, nil
 }
 
+// Save pagereport internal links.
+func (ds *PageReportRepository) SavePageReportLinks(r *models.PageReport, cid int64) error {
+	if len(r.Links) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO links (pagereport_id, crawl_id, url, scheme, rel, nofollow, text, url_hash) values "
+	v := []interface{}{}
+	for _, l := range r.Links {
+		hash := Hash(l.URL)
+		sqlString += "(?, ?, ?, ?, ?, ?, ?, ?),"
+		v = append(v, r.Id, cid, l.URL, l.ParsedURL.Scheme, l.Rel, l.NoFollow, Truncate(l.Text, 1024), hash)
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, err := ds.DB.Prepare(sqlString)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport external links.
+func (ds *PageReportRepository) SavePageReportExternalLinks(r *models.PageReport, cid int64) error {
+	if len(r.ExternalLinks) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO external_links (pagereport_id, crawl_id, url, rel, nofollow, text, sponsored, ugc, status_code) values "
+	v := []interface{}{}
+	for _, l := range r.ExternalLinks {
+		sqlString += "(?, ?, ?, ?, ?, ?, ?, ?, ?),"
+		v = append(v, r.Id, cid, l.URL, l.Rel, l.NoFollow, Truncate(l.Text, 1024), l.Sponsored, l.UGC, l.StatusCode)
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, err := ds.DB.Prepare(sqlString)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	_, err = stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport hreflangs.
+func (ds *PageReportRepository) SavePageReportHreflangs(r *models.PageReport, cid int64) error {
+	if len(r.Hreflangs) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO hreflangs (pagereport_id, crawl_id, from_lang, to_url, to_lang, from_hash, to_hash) values "
+	v := []interface{}{}
+	for _, h := range r.Hreflangs {
+		sqlString += "(?, ?, ?, ?, ?, ?, ?),"
+		v = append(v, r.Id, cid, r.Lang, h.URL, h.Lang, Hash(r.URL), Hash(h.URL))
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, _ := ds.DB.Prepare(sqlString)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport images.
+func (ds *PageReportRepository) SavePageReportImages(r *models.PageReport, cid int64) error {
+	if len(r.Images) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO images (pagereport_id, url, alt, crawl_id) values "
+	v := []interface{}{}
+	for _, i := range r.Images {
+		sqlString += "(?, ?, ?, ?),"
+		v = append(v, r.Id, i.URL, Truncate(i.Alt, 1024), cid)
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, _ := ds.DB.Prepare(sqlString)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport iframes.
+func (ds *PageReportRepository) SavePageReportIframes(r *models.PageReport, cid int64) error {
+	if len(r.Iframes) == 0 {
+		return nil
+	}
+	sqlString := "INSERT INTO iframes (pagereport_id, url, crawl_id) values "
+
+	v := []interface{}{}
+	for _, i := range r.Iframes {
+		sqlString += "(?, ?, ?),"
+		v = append(v, r.Id, i, cid)
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, _ := ds.DB.Prepare(sqlString)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport audios.
+func (ds *PageReportRepository) SavePageReportAudios(r *models.PageReport, cid int64) error {
+	if len(r.Audios) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO audios (pagereport_id, url, crawl_id) values "
+
+	v := []interface{}{}
+	for _, i := range r.Audios {
+		sqlString += "(?, ?, ?),"
+		v = append(v, r.Id, i, cid)
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, _ := ds.DB.Prepare(sqlString)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport videos.
+func (ds *PageReportRepository) SavePageReportVideos(r *models.PageReport, cid int64) error {
+	if len(r.Videos) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO videos (pagereport_id, url, crawl_id) values "
+
+	v := []interface{}{}
+	for _, i := range r.Videos {
+		sqlString += "(?, ?, ?),"
+		v = append(v, r.Id, i, cid)
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, _ := ds.DB.Prepare(sqlString)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport scripts.
+func (ds *PageReportRepository) SavePageReportScripts(r *models.PageReport, cid int64) error {
+	if len(r.Scripts) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO scripts (pagereport_id, url, crawl_id) values "
+	v := []interface{}{}
+	for _, s := range r.Scripts {
+		sqlString += "(?, ?, ?),"
+		v = append(v, r.Id, s, cid)
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, _ := ds.DB.Prepare(sqlString)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(v...)
+	return err
+}
+
+// Save pagereport styles.
+func (ds *PageReportRepository) SavePageReportStyles(r *models.PageReport, cid int64) error {
+	if len(r.Styles) == 0 {
+		return nil
+	}
+
+	sqlString := "INSERT INTO styles (pagereport_id, url, crawl_id) values "
+	v := []interface{}{}
+
+	for _, s := range r.Styles {
+		sqlString += "(?, ?, ?),"
+		v = append(v, r.Id, s, cid)
+
+	}
+	sqlString = sqlString[0 : len(sqlString)-1]
+	stmt, _ := ds.DB.Prepare(sqlString)
+	defer stmt.Close()
+
+	_, err := stmt.Exec(v...)
+	return err
+}
+
+// FindAllPageReportsByCrawlId returns a channel where it streams all the crawl's page reports.
+// Once it is done it closes the channel.
 func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *models.PageReport {
 	prStream := make(chan *models.PageReport)
 
@@ -336,6 +383,8 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 	return prStream
 }
 
+// FindAllPageReportsByCrawlIdAndErrorType returns a channel of pagereports where it streams all the reports
+// for the specified crawl and error type. Once it is done it closes the channel.
 func (ds *PageReportRepository) FindAllPageReportsByCrawlIdAndErrorType(cid int64, et string) <-chan *models.PageReport {
 	prStream := make(chan *models.PageReport)
 
@@ -418,6 +467,7 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlIdAndErrorType(cid int6
 	return prStream
 }
 
+// FindPageReportById returns a PageReport Model with all its hreflang tags
 func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 	query := `
 		SELECT
@@ -476,7 +526,14 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 		log.Println(err)
 	}
 
-	hrows, err := ds.DB.Query("SELECT to_url, to_lang FROM hreflangs WHERE pagereport_id = ?", rid)
+	return p
+}
+
+// Find images in an specific pagereport.
+func (ds *PageReportRepository) FindPageReportHreflangs(pageReport *models.PageReport, cid int64) []models.Hreflang {
+	hreflangs := []models.Hreflang{}
+
+	hrows, err := ds.DB.Query("SELECT to_url, to_lang FROM hreflangs WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -489,10 +546,17 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			continue
 		}
 
-		p.Hreflangs = append(p.Hreflangs, h)
+		hreflangs = append(hreflangs, h)
 	}
 
-	irows, err := ds.DB.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", rid)
+	return hreflangs
+}
+
+// Find images in an specific pagereport.
+func (ds *PageReportRepository) FindPageReportImages(pageReport *models.PageReport, cid int64) []models.Image {
+	images := []models.Image{}
+
+	irows, err := ds.DB.Query("SELECT url, alt FROM images WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -505,10 +569,17 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			continue
 		}
 
-		p.Images = append(p.Images, i)
+		images = append(images, i)
 	}
 
-	ifrows, err := ds.DB.Query("SELECT url FROM iframes WHERE pagereport_id = ?", rid)
+	return images
+}
+
+// Find iframes in an specific pagereport.
+func (ds *PageReportRepository) FindPageReportIframes(pageReport *models.PageReport, cid int64) []string {
+	iframes := []string{}
+
+	ifrows, err := ds.DB.Query("SELECT url FROM iframes WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -521,10 +592,17 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			continue
 		}
 
-		p.Iframes = append(p.Iframes, url)
+		iframes = append(iframes, url)
 	}
 
-	arows, err := ds.DB.Query("SELECT url FROM audios WHERE pagereport_id = ?", rid)
+	return iframes
+}
+
+// Find audios in an specific pagereport.
+func (ds *PageReportRepository) FindPageReportAudios(pageReport *models.PageReport, cid int64) []string {
+	audios := []string{}
+
+	arows, err := ds.DB.Query("SELECT url FROM audios WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -537,10 +615,17 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			continue
 		}
 
-		p.Audios = append(p.Audios, url)
+		audios = append(audios, url)
 	}
 
-	vrows, err := ds.DB.Query("SELECT url FROM videos WHERE pagereport_id = ?", rid)
+	return audios
+}
+
+// Find videos in an specific pagereport.
+func (ds *PageReportRepository) FindPageReportVideos(pageReport *models.PageReport, cid int64) []string {
+	videos := []string{}
+
+	vrows, err := ds.DB.Query("SELECT url FROM videos WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -553,10 +638,17 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			continue
 		}
 
-		p.Videos = append(p.Videos, url)
+		videos = append(videos, url)
 	}
 
-	scrows, err := ds.DB.Query("SELECT url FROM scripts WHERE pagereport_id = ?", rid)
+	return videos
+}
+
+// Find the scripts of an specific pagereport.
+func (ds *PageReportRepository) FindPageReportScripts(pageReport *models.PageReport, cid int64) []string {
+	scripts := []string{}
+
+	scrows, err := ds.DB.Query("SELECT url FROM scripts WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -569,10 +661,17 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			continue
 		}
 
-		p.Scripts = append(p.Scripts, url)
+		scripts = append(scripts, url)
 	}
 
-	strows, err := ds.DB.Query("SELECT url FROM styles WHERE pagereport_id = ?", rid)
+	return scripts
+}
+
+// Find the styles of an specific pagereport
+func (ds *PageReportRepository) FindPageReportStyles(pageReport *models.PageReport, cid int64) []string {
+	styles := []string{}
+
+	strows, err := ds.DB.Query("SELECT url FROM styles WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
@@ -585,12 +684,13 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			continue
 		}
 
-		p.Styles = append(p.Styles, url)
+		styles = append(styles, url)
 	}
 
-	return p
+	return styles
 }
 
+// FindLinks returns a slice of paginated InternalLinks. The page is specified in the "p" parameter.
 func (ds *PageReportRepository) FindLinks(pageReport *models.PageReport, cid int64, p int) []models.InternalLink {
 	max := paginationMax
 	offset := max * (p - 1)
@@ -640,6 +740,8 @@ func (ds *PageReportRepository) FindLinks(pageReport *models.PageReport, cid int
 	return links
 }
 
+// FindExternalLinks returns a slice of paginated Link models.
+// The page to retrieve is specified in the "p" paramenter.
 func (ds *PageReportRepository) FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link {
 	max := paginationMax
 	offset := max * (p - 1)
@@ -678,6 +780,8 @@ func (ds *PageReportRepository) FindExternalLinks(pageReport *models.PageReport,
 	return links
 }
 
+// FindSitemapPageReports returns a channel of models.PageReport that is used to stream all
+// the PageReports that are eligible to be added to a sitemap.xml file.
 func (ds *PageReportRepository) FindSitemapPageReports(cid int64) <-chan *models.PageReport {
 	prStream := make(chan *models.PageReport)
 
@@ -711,6 +815,9 @@ func (ds *PageReportRepository) FindSitemapPageReports(cid int64) <-chan *models
 	return prStream
 }
 
+// FindPaginatedPageReports returns a paginated slice of models.PageReport.
+// The page to be retrieved is specidied in the "p" parameter. This method also allows for
+// "term" search in case it is not an empty string "".
 func (ds *PageReportRepository) FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
@@ -759,6 +866,8 @@ func (ds *PageReportRepository) FindPaginatedPageReports(cid int64, p int, term 
 	return pageReports
 }
 
+// GetNumberOfPagesForPageReport returns the total number of pageReport pages.
+// This method can be used to build a paginator.
 func (ds *PageReportRepository) GetNumberOfPagesForPageReport(cid int64, term string) int {
 	query := `
 		SELECT count(id)
@@ -781,6 +890,8 @@ func (ds *PageReportRepository) GetNumberOfPagesForPageReport(cid int64, term st
 	return int(math.Ceil(f))
 }
 
+// FindInLinks Returns a paginated slice of models.InternalLink models.
+// The page number to be retrieved is specified in the "p" parameter.
 func (ds *PageReportRepository) FindInLinks(s string, cid int64, p int) []models.InternalLink {
 	max := paginationMax
 	offset := max * (p - 1)
@@ -818,6 +929,8 @@ func (ds *PageReportRepository) FindInLinks(s string, cid int64, p int) []models
 	return internalLinks
 }
 
+// FindPageReportsRedirectingToURL returns a paginated slice of models.PageReport that are being redirected to
+// a specidied URL. The page number is set in the "p" paramenter.
 func (ds *PageReportRepository) FindPageReportsRedirectingToURL(u string, cid int64, p int) []models.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
@@ -851,6 +964,8 @@ func (ds *PageReportRepository) FindPageReportsRedirectingToURL(u string, cid in
 	return pageReports
 }
 
+// GetNumberOfPagesForLinks returns the total number of pages of Links for an specific PageReport.
+// this method is used to build a paginator of Links.
 func (ds *PageReportRepository) GetNumberOfPagesForLinks(pageReport *models.PageReport, cid int64) int {
 	query := `
 		SELECT
@@ -868,6 +983,8 @@ func (ds *PageReportRepository) GetNumberOfPagesForLinks(pageReport *models.Page
 	return int(math.Ceil(f))
 }
 
+// GetNumberOfPagesForExternalLinks returns the total number of pages of external Links for an specific PageReport.
+// this method is used to build a paginator of external links.
 func (ds *PageReportRepository) GetNumberOfPagesForExternalLinks(pageReport *models.PageReport, cid int64) int {
 	query := `
 		SELECT
@@ -885,6 +1002,8 @@ func (ds *PageReportRepository) GetNumberOfPagesForExternalLinks(pageReport *mod
 	return int(math.Ceil(f))
 }
 
+// GetNumberOfPagesForInlinks returns the total number of pages of in links for an specific PageReport.
+// this method is used to build a paginator of in links.
 func (ds *PageReportRepository) GetNumberOfPagesForInlinks(pageReport *models.PageReport, cid int64) int {
 	h := Hash(pageReport.URL)
 	query := `
@@ -904,6 +1023,8 @@ func (ds *PageReportRepository) GetNumberOfPagesForInlinks(pageReport *models.Pa
 	return int(math.Ceil(f))
 }
 
+// GetNumberOfPagesForRedirecting returns the total number of pages of redirects for an specific PageReport.
+// this method is used to build a paginator of redirects.
 func (ds *PageReportRepository) GetNumberOfPagesForRedirecting(pageReport *models.PageReport, cid int64) int {
 	h := Hash(pageReport.URL)
 	query := `
@@ -921,33 +1042,4 @@ func (ds *PageReportRepository) GetNumberOfPagesForRedirecting(pageReport *model
 	var f float64 = float64(c) / float64(paginationMax)
 	return int(math.Ceil(f))
 
-}
-
-func (ds *PageReportRepository) FindErrorTypesByPage(pid int, cid int64) []string {
-	var et []string
-	query := `
-		SELECT 
-			issue_types.type
-		FROM issues
-		INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
-		WHERE pagereport_id = ? and crawl_id = ?
-		GROUP BY issue_type_id`
-
-	rows, err := ds.DB.Query(query, pid, cid)
-	if err != nil {
-		log.Println(err)
-		return et
-	}
-
-	for rows.Next() {
-		var s string
-		err := rows.Scan(&s)
-		if err != nil {
-			log.Println(err)
-			continue
-		}
-		et = append(et, s)
-	}
-
-	return et
 }

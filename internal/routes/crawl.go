@@ -54,15 +54,11 @@ func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	go func() {
-		log.Printf("Crawling %s\n", p.URL)
-		crawl, err := h.CrawlerService.StartCrawler(p)
-		if err != nil {
-			log.Printf("StartCrawler: %s %v\n", p.URL, err)
-			return
-		}
-		log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
-	}()
+	err = h.CrawlerService.StartCrawler(p)
+	if err != nil {
+		log.Printf("StartCrawler: %s %v\n", p.URL, err)
+		return
+	}
 
 	http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 }
@@ -141,16 +137,11 @@ func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 		p.AuthUser = r.FormValue("username")
 		p.AuthPass = r.FormValue("password")
 
-		go func() {
-			log.Printf("Crawling %s using BasicAuth\n", p.URL)
-			crawl, err := h.CrawlerService.StartCrawler(p)
-			if err != nil {
-				log.Printf("StartCrawler: %s %v\n", p.URL, err)
-				return
-			}
-			log.Printf("Crawled %d pages at %s\n", crawl.TotalURLs, p.URL)
-
-		}()
+		err = h.CrawlerService.StartCrawler(p)
+		if err != nil {
+			log.Printf("StartCrawler: %s %v\n", p.URL, err)
+			return
+		}
 
 		http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 	}
@@ -186,7 +177,7 @@ func (h *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if pv.Crawl.IssuesEnd.Valid {
+	if !pv.Crawl.Crawling {
 		http.Redirect(w, r, "/dashboard?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 		return
 	}

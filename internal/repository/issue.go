@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"math"
-	"time"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -13,15 +12,8 @@ type IssueRepository struct {
 	DB *sql.DB
 }
 
-func (ds *IssueRepository) SaveEndIssues(cid int64, t time.Time) {
-	stmt, _ := ds.DB.Prepare("UPDATE crawls SET issues_end = ? WHERE id = ?")
-	defer stmt.Close()
-	_, err := stmt.Exec(t, cid)
-	if err != nil {
-		log.Printf("saveEndIssues: %v\n", err)
-	}
-}
-
+// SaveIssues inserts the issues it receives in the iStream channel into the database
+// using a batch process.
 func (ds *IssueRepository) SaveIssues(iStream <-chan *models.Issue) {
 	query := "INSERT INTO issues (pagereport_id, crawl_id, issue_type_id) VALUES "
 	sqlString := ""
@@ -55,7 +47,9 @@ func (ds *IssueRepository) SaveIssues(iStream <-chan *models.Issue) {
 	}
 }
 
-func (ds *IssueRepository) FindIssuesByPriority(cid int64, p int) []models.IssueGroup {
+// FindIssuesByTypeAndPriority returns an IssueGroup model with all the issues detected in a crawl
+// with the specified priority and categorized by error type.
+func (ds *IssueRepository) FindIssuesByTypeAndPriority(cid int64, p int) []models.IssueGroup {
 	issues := []models.IssueGroup{}
 	query := `
 		SELECT
@@ -87,6 +81,27 @@ func (ds *IssueRepository) FindIssuesByPriority(cid int64, p int) []models.Issue
 	return issues
 }
 
+// CountIssuesByPriority returns the total number of issues of the specified priority
+// found in a crawl.
+func (ds *IssueRepository) CountIssuesByPriority(cid int64, p int) int {
+	query := `
+		SELECT
+			count(issues.pagereport_id) AS c
+		FROM issues
+		INNER JOIN  issue_types ON issue_types.id = issues.issue_type_id
+		WHERE crawl_id = ? AND issue_types.priority = ? GROUP BY issue_types.priority`
+
+	row := ds.DB.QueryRow(query, cid, p)
+	var c int
+	if err := row.Scan(&c); err != nil {
+		log.Printf("CountIssuesByPriority: %v\n", err)
+	}
+
+	return c
+}
+
+// GetNumberOfPagesForIssues returns the total number of pages for an specific issue "errorType". This can
+// be used in combination with FindPageReportIssues to generate a paginated view of the issues.
 func (ds *IssueRepository) GetNumberOfPagesForIssues(cid int64, errorType string) int {
 	query := `
 		SELECT count(DISTINCT pagereport_id)
@@ -103,6 +118,8 @@ func (ds *IssueRepository) GetNumberOfPagesForIssues(cid int64, errorType string
 	return int(math.Ceil(f))
 }
 
+// FindPageReportIssues returns a slice of PageReports corresponding to the page specified in the "p" parameter
+// and with the errorType specified in "errorType".
 func (ds *IssueRepository) FindPageReportIssues(cid int64, p int, errorType string) []models.PageReport {
 	max := paginationMax
 	offset := max * (p - 1)
@@ -140,22 +157,32 @@ func (ds *IssueRepository) FindPageReportIssues(cid int64, p int, errorType stri
 	return pageReports
 }
 
-func (ds *IssueRepository) SaveIssuesCount(crawlId int64, critical, alert, warning int) {
-	query := `UPDATE
-		crawls
-		SET 
-			critical_issues = ?,
-			alert_issues = ?,
-			warning_issues = ?,
-			total_issues = ?
-		WHERE id = ?`
+// Return the issue types found for an specific page report.
+func (ds *IssueRepository) FindErrorTypesByPage(pid int, cid int64) []string {
+	var et []string
+	query := `
+		SELECT 
+			issue_types.type
+		FROM issues
+		INNER JOIN issue_types ON issue_types.id = issues.issue_type_id
+		WHERE pagereport_id = ? and crawl_id = ?
+		GROUP BY issue_type_id`
 
-	stmt, _ := ds.DB.Prepare(query)
-	defer stmt.Close()
-
-	total := critical + alert + warning
-	_, err := stmt.Exec(critical, alert, warning, total, crawlId)
+	rows, err := ds.DB.Query(query, pid, cid)
 	if err != nil {
-		log.Printf("SaveIssuesCount: %v\n", err)
+		log.Println(err)
+		return et
 	}
+
+	for rows.Next() {
+		var s string
+		err := rows.Scan(&s)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+		et = append(et, s)
+	}
+
+	return et
 }

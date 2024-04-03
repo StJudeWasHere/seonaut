@@ -93,7 +93,7 @@ func (ds *IssueRepository) CountIssuesByPriority(cid int64, p int) int {
 
 	row := ds.DB.QueryRow(query, cid, p)
 	var c int
-	if err := row.Scan(&c); err != nil {
+	if err := row.Scan(&c); err != nil && err != sql.ErrNoRows {
 		log.Printf("CountIssuesByPriority: %v\n", err)
 	}
 

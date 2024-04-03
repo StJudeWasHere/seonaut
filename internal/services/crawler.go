@@ -80,6 +80,7 @@ func (s *CrawlerService) StartCrawler(p models.Project) error {
 	}
 
 	go func() {
+		log.Printf("Crawling %s...", p.URL)
 		for r := range c.Stream() {
 			crawl.TotalURLs++
 
@@ -141,6 +142,7 @@ func (s *CrawlerService) StartCrawler(p models.Project) error {
 
 		s.store.UpdateCrawl(crawl)
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
+		log.Printf("Crawled %d urls in %s", crawl.TotalURLs, p.URL)
 
 		s.crawlerManager.RemoveCrawler(&p)
 		s.store.DeleteCrawlData(&previousCrawl)

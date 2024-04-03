@@ -183,9 +183,6 @@ func (ds *ProjectRepository) UpdateProject(p *models.Project) error {
 		p.CheckExternalLinks,
 		p.Id,
 	)
-	if err != nil {
-		log.Printf("UpdateProject: pid %d %v\n", p.Id, err)
-	}
 
 	return err
 }

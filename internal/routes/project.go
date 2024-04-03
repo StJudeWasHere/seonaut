@@ -244,6 +244,7 @@ func (h *projectHandler) handleProjectEdit(w http.ResponseWriter, r *http.Reques
 
 		err = h.ProjectService.UpdateProject(&p)
 		if err != nil {
+			log.Printf("update project: %v", err)
 			data.Error = true
 			h.Renderer.RenderTemplate(w, "project_edit", pageView)
 			return

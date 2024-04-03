@@ -58,18 +58,24 @@ func (s *CookieSession) Auth(f func(w http.ResponseWriter, r *http.Request)) htt
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := s.cookie.Get(r, SessionName)
 		if err != nil {
+			session.Options.MaxAge = -1
+			session.Save(r, w)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
 		}
 
 		authenticated, ok := session.Values["authenticated"].(bool)
 		if !ok || !authenticated {
+			session.Options.MaxAge = -1
+			session.Save(r, w)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
 		}
 
 		email, ok := session.Values["email"].(string)
 		if !ok {
+			session.Options.MaxAge = -1
+			session.Save(r, w)
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return
 		}

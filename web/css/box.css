@@ -22,6 +22,9 @@
 
 .box .col-main {
 	flex: 1;
+	justify-content: space-between;
+	display:flex;
+	flex-direction: column;
 }
 
 .box .col-actions {

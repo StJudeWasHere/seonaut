@@ -79,6 +79,13 @@
 					</div>
 				</div>
 			</div>
+			{{ if (and (not .Project.Deleting) (and .Crawl.Id (not .Crawl.Crawling))) }}
+				<div class="box borderless">
+					<div class="content-s">
+						<span style="opacity:.5; padding: 5px 10px;border-top-left-radius: 10px;border-top-right-radius: 10px;"><i>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</i></span>
+					</div>
+				</div>
+			{{ end }}
 		</div>
 
 		{{ if (not .Project.Deleting) }}

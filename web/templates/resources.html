@@ -33,7 +33,7 @@
 		</div>
 	</div>
 
-	<div class="box box-highlight">
+	<div class="box box-highlight soft">
 		<div class="col col-main">
 			<div class="content">
 				<div class="url">
@@ -122,11 +122,16 @@
 	{{ $parameters = printf "%s&t=%s" $parameters .Tab }}
 
 	{{ if eq .Tab "details" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					General details about this URL.
+				</div>
+			</div>
+		</div>
 		{{ $errorTypes := .PageReportView.ErrorTypes }}
 		{{ with .PageReportView.PageReport }}
-
 			<div>
-
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
@@ -405,6 +410,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "inlinks" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Inlinks are links to this URL from other pages on this website.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.InLinks }}
 			{{ range .PageReportView.InLinks }}
 				<div class="box">
@@ -460,6 +472,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "redirections" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Redirections are the URLs from this website that are redirected to this URL.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.Redirects }}
 			{{ range .PageReportView.Redirects }}
 				<div class="box">
@@ -507,36 +526,43 @@
 	{{ end }}
 
 	{{ if eq .Tab "internal" }}
-			{{ if .PageReportView.PageReport.InternalLinks }}
-					{{ range .PageReportView.PageReport.InternalLinks }}
-						<div class="box">
-							<div class="col col-main">
-								<div class="content">
-								{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
-								{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
-								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
-									{{ .Link.URL }}
-								</a>
-								{{ if .Link.NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
-								</div>
-							</div>
-
-							{{ if .PageReport.Crawled }}
-							<div class="col col-actions">
-								<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
-									View details
-								</a>
-							</div>
-							{{ end }}
-						</div>
-					{{ end }}
-			{{ else }}
-				<div class="box">
-					<div class="content">
-						There are no internal links in this page.
-					</div>
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Internal links are the links found in this URL's HTML code that point to other pages on this website.
 				</div>
-			{{ end }}
+			</div>
+		</div>
+		{{ if .PageReportView.PageReport.InternalLinks }}
+				{{ range .PageReportView.PageReport.InternalLinks }}
+					<div class="box">
+						<div class="col col-main">
+							<div class="content">
+							{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
+							{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
+							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
+								{{ .Link.URL }}
+							</a>
+							{{ if .Link.NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
+							</div>
+						</div>
+
+						{{ if .PageReport.Crawled }}
+						<div class="col col-actions">
+							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
+								View details
+							</a>
+						</div>
+						{{ end }}
+					</div>
+				{{ end }}
+		{{ else }}
+			<div class="box">
+				<div class="content">
+					There are no internal links in this page.
+				</div>
+			</div>
+		{{ end }}
 		
 		<div class="box pagination">
 			<div class="col prev">
@@ -568,6 +594,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "external" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					External links are the links found in this URL's HTML code pointing to other websites.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.PageReport.ExternalLinks }}
 			{{ range .PageReportView.PageReport.ExternalLinks }}
 					<div class="box">
@@ -613,6 +646,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "images" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Images that are found in this URL's HTML code. Note that images shown using CSS are not included here.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.PageReport.Images }}
 			{{ range .PageReportView.PageReport.Images }}
 				<div class="box">
@@ -631,6 +671,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "iframes" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Iframes that are found in this URL's HTML code.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.PageReport.Iframes }}
 			{{ range .PageReportView.PageReport.Iframes }}
 				<div class="box">
@@ -647,6 +694,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "audios" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Audio files that are found in this URL's HTML code.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.PageReport.Audios }}
 			{{ range .PageReportView.PageReport.Audios }}
 				<div class="box">
@@ -663,6 +717,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "videos" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Video files that are found in this URL's HTML code.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.PageReport.Videos }}
 			{{ range .PageReportView.PageReport.Videos }}
 				<div class="box">
@@ -679,6 +740,13 @@
 	{{ end }}
 
 	{{ if eq .Tab "scripts" }}
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content">
+					Script files that are found in this URL's code.
+				</div>
+			</div>
+		</div>
 		{{ if .PageReportView.PageReport.Scripts }}
 			{{ range .PageReportView.PageReport.Scripts }}
 				<div class="box">
@@ -695,6 +763,13 @@
 	{{ end }}
 	
 	{{ if eq .Tab "styles" }}
+	<div class="box box-highlight">
+		<div class="col col-main">
+			<div class="content">
+				CSS files that are found in this URL's HTML code.
+			</div>
+		</div>
+	</div>
 		{{ if .PageReportView.PageReport.Styles }}
 			{{ range .PageReportView.PageReport.Styles }}
 				<div class="box">

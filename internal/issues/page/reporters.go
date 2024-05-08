@@ -72,5 +72,8 @@ func GetAllReporters() []*models.PageIssueReporter {
 
 		// Add timeout issue reporter
 		NewTimeoutReporter(),
+
+		// Add URL issue reports
+		NewUnderscoreURLReporter(),
 	}
 }

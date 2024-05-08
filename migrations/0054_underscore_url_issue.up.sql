@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(63, "ERROR_UNDERSCORE_URL", 3);

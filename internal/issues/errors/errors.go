@@ -71,4 +71,5 @@ const (
 	ErrorExternalLinkRedirect                    // Pages with external links to redirect URLs
 	ErrorExternalLinkBroken                      // Pages with brooken external links
 	ErrorTimeout                                 // Pages that timed out
+	ErrorUnderscoreURL                           // Pages wich URL has underscore characters
 )

@@ -209,3 +209,6 @@ ERROR_EXTERNAL_LINK_BROKEN_DESC: Broken external links don't impact your site's 
 
 ERROR_TIMEOUT: Timeout
 ERROR_TIMEOUT_DESC: Pages that timed out when our crawler attempted to access them. When this happens, search engine crawlers may fail to access and index the content, suggesting potential server issues or temporary problems hindering visibility in search results.
+
+ERROR_UNDERSCORE_URL: URLs with underscore characters
+ERROR_UNDERSCORE_URL_DESC: It is usually not recommended to use underscore characters in URLs, as some search engines will ignore them and treat that part as a single word. Use a dash instead as a word separator character.

@@ -47,9 +47,10 @@ func (ds *PageReportRepository) SavePageReport(r *models.PageReport, cid int64) 
 			crawled,
 			in_sitemap,
 			depth,
-			body_hash
+			body_hash,
+			ttfb
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	stmt, err := ds.DB.Prepare(query)
 	if err != nil {
@@ -83,6 +84,7 @@ func (ds *PageReportRepository) SavePageReport(r *models.PageReport, cid int64) 
 		r.InSitemap,
 		r.Depth,
 		r.BodyHash,
+		r.TTFB,
 	)
 	if err != nil {
 		return r, err
@@ -337,7 +339,8 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 				crawled,
 				in_sitemap,
 				depth,
-				body_hash
+				body_hash,
+				ttf
 			FROM pagereports
 			WHERE crawl_id = ?`
 
@@ -370,6 +373,7 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 				&p.InSitemap,
 				&p.Depth,
 				&p.BodyHash,
+				&p.TTFB,
 			)
 			if err != nil {
 				log.Println(err)
@@ -414,7 +418,8 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlIdAndErrorType(cid int6
 				crawled,
 				in_sitemap,
 				depth,
-				body_hash
+				body_hash,
+				ttfb
 			FROM pagereports
 			WHERE crawl_id = ?
 			AND id IN (
@@ -454,6 +459,7 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlIdAndErrorType(cid int6
 				&p.InSitemap,
 				&p.Depth,
 				&p.BodyHash,
+				&p.TTFB,
 			)
 			if err != nil {
 				log.Println(err)
@@ -492,7 +498,8 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 			crawled,
 			in_sitemap,
 			depth,
-			body_hash
+			body_hash,
+			ttfb
 		FROM pagereports
 		WHERE id = ?`
 
@@ -521,6 +528,7 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 		&p.InSitemap,
 		&p.Depth,
 		&p.BodyHash,
+		&p.TTFB,
 	)
 	if err != nil {
 		log.Println(err)

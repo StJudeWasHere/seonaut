@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
 )
@@ -20,6 +21,10 @@ func (c *MockClient) Head(u string) (*http.Response, error) {
 
 func (c *MockClient) Do(req *http.Request) (*http.Response, error) {
 	return nil, nil
+}
+
+func (c *MockClient) GetTTFB(req *http.Response) time.Duration {
+	return 0
 }
 
 func TestHttpCrawler_Crawl(t *testing.T) {

@@ -2,7 +2,9 @@ package crawler
 
 import (
 	"net/http"
+	"net/http/httptrace"
 	"net/url"
+	"sync"
 	"time"
 )
 
@@ -14,6 +16,8 @@ const (
 type BasicAuthClient struct {
 	Options *ClientOptions
 	client  *http.Client
+	ttfbMap map[*http.Response]time.Duration
+	mu      sync.Mutex
 }
 
 type ClientOptions struct {
@@ -35,6 +39,7 @@ func NewClient(options *ClientOptions) *BasicAuthClient {
 	return &BasicAuthClient{
 		client:  httpClient,
 		Options: options,
+		ttfbMap: make(map[*http.Response]time.Duration),
 	}
 }
 
@@ -83,10 +88,38 @@ func (c *BasicAuthClient) Head(u string) (*http.Response, error) {
 func (c *BasicAuthClient) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Set("User-Agent", c.Options.UserAgent)
 
+	var start time.Time
+	var ttfb time.Duration
+	trace := &httptrace.ClientTrace{
+		GotFirstResponseByte: func() {
+			ttfb = time.Since(start)
+		},
+	}
+	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
+
+	start = time.Now()
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return resp, err
 	}
 
+	// Store the ttfb value in the map
+	c.mu.Lock()
+	c.ttfbMap[resp] = ttfb
+	c.mu.Unlock()
+
 	return resp, nil
+}
+
+// GetTTFB retrieves the ttfb value for a given response.
+func (c *BasicAuthClient) GetTTFB(resp *http.Response) time.Duration {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	ttfb, ok := c.ttfbMap[resp]
+	if !ok {
+		return 0
+	}
+
+	return ttfb
 }

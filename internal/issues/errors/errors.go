@@ -72,4 +72,5 @@ const (
 	ErrorExternalLinkBroken                      // Pages with brooken external links
 	ErrorTimeout                                 // Pages that timed out
 	ErrorUnderscoreURL                           // Pages wich URL has underscore characters
+	ErrorSlowTTFB                                // Pages with slow time to first byte
 )

@@ -215,6 +215,7 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 		return err
 	}
 
+	pageReport.TTFB = r.TTFB
 	pageReport.Depth = r.Depth
 	pageReport.BlockedByRobotstxt = c.robotsChecker.IsBlocked(parsedURL)
 	pageReport.InSitemap = c.sitemapStorage.Seen(r.URL)

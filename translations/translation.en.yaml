@@ -212,3 +212,6 @@ ERROR_TIMEOUT_DESC: Pages that timed out when our crawler attempted to access th
 
 ERROR_UNDERSCORE_URL: URLs with underscore characters
 ERROR_UNDERSCORE_URL_DESC: It is usually not recommended to use underscore characters in URLs, as some search engines will ignore them and treat that part as a single word. Use a dash instead as a word separator character.
+
+ERROR_SLOW_TTFB: Slow Time to First Byte
+ERROR_SLOW_TTFB_DESC: A slow time to first byte can negatively impact the user experience and hurt SEO by causing longer page load times, as some search engines take page speed into consideration as a ranking factor.

@@ -2,6 +2,7 @@ package models
 
 import (
 	"net/url"
+	"time"
 )
 
 type PageReport struct {
@@ -40,4 +41,5 @@ type PageReport struct {
 	Depth              int
 	BodyHash           string
 	Timeout            bool
+	TTFB               time.Duration
 }

@@ -381,6 +381,20 @@
 						</div>
 					</div>
 
+					<div class="box soft">
+						<div class="col borderless">
+							<div class="content">
+								<b>TTFB</b>
+							</div>
+						</div>
+
+						<div class="col borderless">
+							<div class="content">
+								{{ if (gt .TTFB 0) }}{{ .TTFB }}{{ else }} - {{ end }}
+							</div>
+						</div>
+					</div>
+
 					<div class="box">
 						<div class="col borderless">
 							<div class="content">

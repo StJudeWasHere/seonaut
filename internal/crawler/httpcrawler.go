@@ -21,6 +21,7 @@ type Client interface {
 	Get(u string) (*http.Response, error)
 	Head(u string) (*http.Response, error)
 	Do(req *http.Request) (*http.Response, error)
+	GetTTFB(resp *http.Response) time.Duration
 }
 
 type HttpCrawler struct {
@@ -39,6 +40,7 @@ type ResponseMessage struct {
 	Response *http.Response
 	Error    error
 	Depth    int
+	TTFB     time.Duration
 }
 
 func New(client Client, urlStream <-chan *RequestMessage) *HttpCrawler {
@@ -87,6 +89,7 @@ func (c *HttpCrawler) consumer(ctx context.Context) {
 			}
 
 			rm.Response, rm.Error = c.client.Get(requestMessage.URL)
+			rm.TTFB = c.client.GetTTFB(rm.Response)
 
 			c.rStream <- rm
 		case <-ctx.Done():

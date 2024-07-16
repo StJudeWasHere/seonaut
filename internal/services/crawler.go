@@ -82,39 +82,7 @@ func (s *CrawlerService) StartCrawler(p models.Project) error {
 	go func() {
 		log.Printf("Crawling %s...", p.URL)
 		for r := range c.Stream() {
-			crawl.TotalURLs++
-
-			if r.PageReport.BlockedByRobotstxt {
-				crawl.BlockedByRobotstxt++
-			}
-
-			if r.PageReport.Noindex {
-				crawl.Noindex++
-			}
-
-			for _, l := range r.PageReport.Links {
-				if l.NoFollow {
-					crawl.InternalNoFollowLinks++
-				} else {
-					crawl.InternalFollowLinks++
-				}
-			}
-
-			for _, l := range r.PageReport.ExternalLinks {
-				if l.NoFollow {
-					crawl.ExternalNoFollowLinks++
-				} else {
-					crawl.ExternalFollowLinks++
-				}
-
-				if l.Sponsored {
-					crawl.SponsoredLinks++
-				}
-
-				if l.UGC {
-					crawl.UGCLinks++
-				}
-			}
+			status := c.GetStatus()
 
 			r.PageReport, err = s.store.SavePageReport(r.PageReport, crawl.Id)
 			if err != nil {
@@ -122,9 +90,25 @@ func (s *CrawlerService) StartCrawler(p models.Project) error {
 				continue
 			}
 
+			r.Crawled = status.Crawled
+			r.Crawling = status.Crawling
+			r.Discovered = status.Discovered
+
 			s.reportManager.CreatePageIssues(r.PageReport, r.HtmlNode, r.Header, crawl)
 			s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "PageReport", Data: r})
 		}
+
+		status := c.GetStatus()
+
+		crawl.TotalURLs = status.Crawled
+		crawl.BlockedByRobotstxt = status.Blocked
+		crawl.Noindex = status.NoIndexable
+		crawl.InternalNoFollowLinks = status.NofollowLinks
+		crawl.InternalFollowLinks = status.FollowLinks
+		crawl.ExternalNoFollowLinks = status.NofollowExternal
+		crawl.ExternalFollowLinks = status.FollowExternal
+		crawl.SponsoredLinks = status.SponsoredExternal
+		crawl.UGCLinks = status.UGCExternal
 
 		crawl.RobotstxtExists = c.RobotstxtExists()
 		crawl.SitemapExists = c.SitemapExists()

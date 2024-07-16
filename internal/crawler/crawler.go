@@ -9,7 +9,6 @@ import (
 	"sync"
 
 	"github.com/stjudewashere/seonaut/internal/models"
-	"golang.org/x/net/html"
 )
 
 type Options struct {
@@ -32,7 +31,22 @@ type CrawlerClient interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
+type CrawlerStatus struct {
+	Crawled           int
+	Crawling          bool
+	Discovered        int
+	Blocked           int
+	NoIndexable       int
+	NofollowLinks     int
+	FollowLinks       int
+	NofollowExternal  int
+	FollowExternal    int
+	SponsoredExternal int
+	UGCExternal       int
+}
+
 type Crawler struct {
+	status              CrawlerStatus
 	url                 *url.URL
 	options             *Options
 	queue               *Queue
@@ -42,7 +56,6 @@ type Crawler struct {
 	sitemapExists       bool
 	sitemapIsBlocked    bool
 	sitemaps            []string
-	responseCounter     int
 	robotsChecker       *RobotsChecker
 	prStream            chan *models.PageReportMessage
 	allowedDomains      map[string]bool
@@ -50,8 +63,8 @@ type Crawler struct {
 	httpCrawler         *HttpCrawler
 	qStream             chan *RequestMessage
 	cancel              context.CancelFunc
-	crawling            bool
 	crawlLock           sync.RWMutex
+	statusLock          sync.RWMutex
 	client              CrawlerClient
 	externalLinksStatus map[string]int
 }
@@ -84,6 +97,7 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 	ctx, cancel := context.WithCancel(context.Background())
 
 	c := &Crawler{
+		status:              CrawlerStatus{Crawling: true},
 		url:                 url,
 		options:             options,
 		queue:               q,
@@ -97,7 +111,6 @@ func NewCrawler(url *url.URL, options *Options) *Crawler {
 		qStream:             qStream,
 		httpCrawler:         New(httpClient, qStream),
 		cancel:              cancel,
-		crawling:            true,
 		client:              httpClient,
 		externalLinksStatus: make(map[string]int),
 	}
@@ -171,10 +184,20 @@ func (c *Crawler) crawl(ctx context.Context) {
 			sitemapLoaded = true
 		}
 
-		if !c.queue.Active() || c.responseCounter >= c.options.MaxPageReports {
+		if !c.queue.Active() || c.status.Crawled >= c.options.MaxPageReports {
 			break
 		}
 	}
+}
+
+// GetStatus returns the current cralwer status.
+func (c *Crawler) GetStatus() *CrawlerStatus {
+	c.statusLock.RLock()
+	defer c.statusLock.RUnlock()
+
+	status := c.status
+
+	return &status
 }
 
 // handleResponse handles the crawler response messages.
@@ -192,11 +215,6 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 
 	if r.Error != nil {
 		c.prStream <- &models.PageReportMessage{
-			Crawled:    c.responseCounter,
-			Crawling:   c.crawling,
-			Discovered: c.queue.Count(),
-			HtmlNode:   &html.Node{},
-			Header:     &http.Header{},
 			PageReport: &models.PageReport{
 				URL:       r.URL,
 				ParsedURL: parsedURL,
@@ -221,8 +239,6 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 	pageReport.InSitemap = c.sitemapStorage.Seen(r.URL)
 	pageReport.Crawled = true
 
-	c.responseCounter++
-
 	urls := []*url.URL{}
 	if c.options.FollowNofollow || !pageReport.Nofollow {
 		crawlable := [][]*url.URL{
@@ -231,11 +247,12 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 			c.getCrawlableURLs(pageReport),
 		}
 
-		for _, c := range crawlable {
-			urls = append(urls, c...)
+		for _, u := range crawlable {
+			urls = append(urls, u...)
 		}
 	}
 
+	blocked := 0
 	for _, t := range urls {
 		if c.storage.Seen(t.String()) {
 			continue
@@ -243,13 +260,15 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 
 		c.storage.Add(t.String())
 
-		if !c.options.IgnoreRobotsTxt && c.robotsChecker.IsBlocked(t) {
+		isBlocked := c.robotsChecker.IsBlocked(t)
+		if isBlocked {
+			blocked++
+		}
+
+		if !c.options.IgnoreRobotsTxt && isBlocked {
 			c.prStream <- &models.PageReportMessage{
-				Crawled:    c.responseCounter,
-				Crawling:   c.crawling,
-				Discovered: c.queue.Count(),
-				HtmlNode:   htmlNode,
-				Header:     &r.Response.Header,
+				HtmlNode: htmlNode,
+				Header:   &r.Response.Header,
 				PageReport: &models.PageReport{
 					URL:                t.String(),
 					ParsedURL:          t,
@@ -277,8 +296,10 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 			if err != nil {
 				continue
 			}
-			c.externalLinksStatus[e.URL] = resp.StatusCode
 			pageReport.ExternalLinks[i].StatusCode = resp.StatusCode
+			c.statusLock.Lock()
+			c.externalLinksStatus[e.URL] = resp.StatusCode
+			c.statusLock.Unlock()
 		}
 	}
 
@@ -287,9 +308,41 @@ func (c *Crawler) handleResponse(r *ResponseMessage) error {
 			PageReport: pageReport,
 			HtmlNode:   htmlNode,
 			Header:     &r.Response.Header,
-			Crawled:    c.responseCounter,
-			Crawling:   c.crawling,
-			Discovered: c.queue.Count(),
+		}
+	}
+
+	c.statusLock.Lock()
+	defer c.statusLock.Unlock()
+
+	c.status.Crawled++
+	c.status.Blocked += blocked
+	c.status.Discovered = c.queue.Count()
+
+	if pageReport.Noindex {
+		c.status.NoIndexable++
+	}
+
+	for _, l := range pageReport.Links {
+		if l.NoFollow {
+			c.status.NofollowLinks++
+		} else {
+			c.status.FollowLinks++
+		}
+	}
+
+	for _, l := range pageReport.ExternalLinks {
+		if l.NoFollow {
+			c.status.NofollowExternal++
+		} else {
+			c.status.FollowExternal++
+		}
+
+		if l.Sponsored {
+			c.status.SponsoredExternal++
+		}
+
+		if l.UGC {
+			c.status.UGCExternal++
 		}
 	}
 
@@ -441,10 +494,11 @@ func (c *Crawler) getCrawlableURLs(p *models.PageReport) []*url.URL {
 
 // Stops the cralwer by canceling the cralwer context.
 func (c *Crawler) Stop() {
-	c.cancel()
 	c.crawlLock.Lock()
-	c.crawling = false
-	c.crawlLock.Unlock()
+	defer c.crawlLock.Unlock()
+
+	c.cancel()
+	c.status.Crawling = false
 }
 
 // setupSitemaps checks if any sitemap exists for the crawler's url. It checks the robots file

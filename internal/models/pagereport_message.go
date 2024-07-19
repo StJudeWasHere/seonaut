@@ -1,16 +1,9 @@
 package models
 
-import (
-	"net/http"
-
-	"golang.org/x/net/html"
-)
-
 type PageReportMessage struct {
-	PageReport *PageReport
-	HtmlNode   *html.Node
-	Header     *http.Header
+	StatusCode int
 	Crawled    int
-	Discovered int
+	URL        string
 	Crawling   bool
+	Discovered int
 }

@@ -266,8 +266,8 @@ func (h *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
 				Discovered int
 				Crawling   bool
 			}{
-				StatusCode: msg.PageReport.StatusCode,
-				URL:        msg.PageReport.URL,
+				StatusCode: msg.StatusCode,
+				URL:        msg.URL,
 				Crawled:    msg.Crawled,
 				Discovered: msg.Discovered,
 				Crawling:   msg.Crawling,

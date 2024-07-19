@@ -61,7 +61,7 @@ func (cw *CSVWriter) Write(r *models.PageReport) {
 	cw.writer.Flush()
 }
 
-func byteToKByte(b int) float64 {
+func byteToKByte(b int64) float64 {
 	v := b / (1 << 10)
 	r := b % (1 << 10)
 

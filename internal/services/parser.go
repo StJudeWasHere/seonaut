@@ -1,8 +1,9 @@
-package crawler
+package services
 
 import (
 	"bytes"
 	"errors"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -23,13 +24,23 @@ type Parser struct {
 }
 
 func newParser(url *url.URL, headers *http.Header, body []byte) (*Parser, error) {
+	if len(body) == 0 {
+		return &Parser{
+			ParsedURL: url,
+			Headers:   headers,
+			doc:       &html.Node{},
+		}, nil
+	}
+
 	utf8Body, err := charset.NewReader(bytes.NewReader(body), headers.Get("Content-Type"))
 	if err != nil {
+		log.Println(("utf8 reader error"))
 		return nil, err
 	}
 
 	doc, err := htmlquery.Parse(utf8Body)
 	if err != nil {
+		log.Println(("htmlquery parse error"))
 		return nil, err
 	}
 

@@ -11,11 +11,11 @@ import (
 type RobotsChecker struct {
 	robotsMap map[string]*robotstxt.RobotsData
 	rlock     *sync.RWMutex
-	client    Client
+	client    CrawlerClient
 	userAgent string
 }
 
-func NewRobotsChecker(client Client, ua string) *RobotsChecker {
+func NewRobotsChecker(client CrawlerClient, ua string) *RobotsChecker {
 	return &RobotsChecker{
 		robotsMap: make(map[string]*robotstxt.RobotsData),
 		rlock:     &sync.RWMutex{},

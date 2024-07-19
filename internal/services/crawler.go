@@ -14,101 +14,83 @@ import (
 )
 
 const (
-	MaxPageReports  = 20000 // Max number of page reports that will be created
+	CrawlLimit      = 20000 // Max number of page reports that will be created
 	LastCrawlsLimit = 5     // Max number returned by GetLastCrawls
 )
 
-type (
-	CrawlerServiceStorage interface {
-		SaveCrawl(models.Project) (*models.Crawl, error)
-		GetLastCrawl(p *models.Project) models.Crawl
-		GetLastCrawls(models.Project, int) []models.Crawl
-		DeleteCrawlData(c *models.Crawl)
+type CrawlerServiceStorage interface {
+	SaveCrawl(models.Project) (*models.Crawl, error)
+	GetLastCrawl(p *models.Project) models.Crawl
+	GetLastCrawls(models.Project, int) []models.Crawl
+	DeleteCrawlData(c *models.Crawl)
 
-		CountIssuesByPriority(int64, int) int
-		UpdateCrawl(*models.Crawl)
+	CountIssuesByPriority(int64, int) int
+	UpdateCrawl(*models.Crawl)
+}
 
-		SavePageReport(*models.PageReport, int64) (*models.PageReport, error)
-	}
+type CrawlerServicesContainer struct {
+	Broker         *Broker
+	ReportManager  *ReportManager
+	CrawlerHandler *CrawlerHandler
+	Config         *config.CrawlerConfig
+}
 
-	CrawlerServicesContainer struct {
-		Broker        *Broker
-		ReportManager *ReportManager
-		Config        *config.CrawlerConfig
-	}
-
-	CrawlerService struct {
-		store          CrawlerServiceStorage
-		config         *config.CrawlerConfig
-		broker         *Broker
-		reportManager  *ReportManager
-		crawlerManager *CrawlerManager
-	}
-)
+type CrawlerService struct {
+	store          CrawlerServiceStorage
+	config         *config.CrawlerConfig
+	broker         *Broker
+	reportManager  *ReportManager
+	crawlerHandler *CrawlerHandler
+	crawlers       map[int64]*crawler.Crawler
+	lock           *sync.RWMutex
+}
 
 func NewCrawlerService(s CrawlerServiceStorage, services CrawlerServicesContainer) *CrawlerService {
-	crawlerManager := &CrawlerManager{
-		config:   services.Config,
-		crawlers: make(map[int64]*crawler.Crawler),
-		lock:     &sync.RWMutex{},
-	}
-
 	return &CrawlerService{
 		store:          s,
 		broker:         services.Broker,
 		config:         services.Config,
 		reportManager:  services.ReportManager,
-		crawlerManager: crawlerManager,
+		crawlerHandler: services.CrawlerHandler,
+		crawlers:       make(map[int64]*crawler.Crawler),
+		lock:           &sync.RWMutex{},
 	}
 }
 
 // StartCrawler creates a new crawler and crawls the project's URL.
 // It adds a new crawler for the project, it returns an error if there's one already
 // running or if there's an error creating it.
-// A crawl is created and it is updated with the crawler's data as urls are crawled.
 // Finally the previous crawl's data is removed and the crawl is returned.
 func (s *CrawlerService) StartCrawler(p models.Project) error {
-	c, err := s.crawlerManager.AddCrawler(&p)
-	if err != nil {
-		return err
-	}
-
 	previousCrawl := s.store.GetLastCrawl(&p)
 	crawl, err := s.store.SaveCrawl(p)
 	if err != nil {
 		return err
 	}
 
+	u, err := url.Parse(p.URL)
+	if err != nil {
+		return err
+	}
+
+	if u.Path == "" {
+		u.Path = "/"
+	}
+
+	c, err := s.addCrawler(u, &p, crawl)
+	if err != nil {
+		return err
+	}
+
+	c.OnResponse(s.crawlerHandler.responseCallback(crawl, &p, c))
+
 	go func() {
 		log.Printf("Crawling %s...", p.URL)
-		for r := range c.Stream() {
-			status := c.GetStatus()
+		c.AddRequest(&crawler.RequestMessage{URL: u, Data: crawlerData{}})
 
-			r.PageReport, err = s.store.SavePageReport(r.PageReport, crawl.Id)
-			if err != nil {
-				log.Printf("crawler service: SavePageReport: %v\n", err)
-				continue
-			}
-
-			r.Crawled = status.Crawled
-			r.Crawling = status.Crawling
-			r.Discovered = status.Discovered
-
-			s.reportManager.CreatePageIssues(r.PageReport, r.HtmlNode, r.Header, crawl)
-			s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "PageReport", Data: r})
-		}
-
-		status := c.GetStatus()
-
-		crawl.TotalURLs = status.Crawled
-		crawl.BlockedByRobotstxt = status.Blocked
-		crawl.Noindex = status.NoIndexable
-		crawl.InternalNoFollowLinks = status.NofollowLinks
-		crawl.InternalFollowLinks = status.FollowLinks
-		crawl.ExternalNoFollowLinks = status.NofollowExternal
-		crawl.ExternalFollowLinks = status.FollowExternal
-		crawl.SponsoredLinks = status.SponsoredExternal
-		crawl.UGCLinks = status.UGCExternal
+		// Calling Start() initiates the website crawling process and
+		// blocks execution until the crawling is complete.
+		c.Start()
 
 		crawl.RobotstxtExists = c.RobotstxtExists()
 		crawl.SitemapExists = c.SitemapExists()
@@ -128,7 +110,7 @@ func (s *CrawlerService) StartCrawler(p models.Project) error {
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 		log.Printf("Crawled %d urls in %s", crawl.TotalURLs, p.URL)
 
-		s.crawlerManager.RemoveCrawler(&p)
+		s.removeCrawler(&p)
 		s.store.DeleteCrawlData(&previousCrawl)
 	}()
 
@@ -146,66 +128,8 @@ func (s *CrawlerService) GetLastCrawls(p models.Project) []models.Crawl {
 	return crawls
 }
 
-// Get the crawler from the crawlers map and stop it.
-// In case the crawler is not running it just returns.
-func (s *CrawlerService) StopCrawler(p models.Project) {
-	s.crawlerManager.StopCrawler(&p)
-}
-
-type CrawlerManager struct {
-	config   *config.CrawlerConfig
-	crawlers map[int64]*crawler.Crawler
-	lock     *sync.RWMutex
-}
-
-// AddCrawler creates a new project crawler and adds it to the crawlers map. It returns the crawler
-// on success otherwise it returns an error indicating the crawler already exists or there was an
-// error creating it.
-func (s *CrawlerManager) AddCrawler(p *models.Project) (*crawler.Crawler, error) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-
-	if _, ok := s.crawlers[p.Id]; ok {
-		return nil, errors.New("project is already being crawled")
-	}
-
-	u, err := url.Parse(p.URL)
-	if err != nil {
-		return nil, err
-	}
-
-	if u.Path == "" {
-		u.Path = "/"
-	}
-
-	options := &crawler.Options{
-		MaxPageReports:     MaxPageReports,
-		IgnoreRobotsTxt:    p.IgnoreRobotsTxt,
-		FollowNofollow:     p.FollowNofollow,
-		IncludeNoindex:     p.IncludeNoindex,
-		UserAgent:          s.config.Agent,
-		CrawlSitemap:       p.CrawlSitemap,
-		AllowSubdomains:    p.AllowSubdomains,
-		BasicAuth:          p.BasicAuth,
-		AuthUser:           p.AuthUser,
-		AuthPass:           p.AuthPass,
-		CheckExternalLinks: p.CheckExternalLinks,
-	}
-	s.crawlers[p.Id] = crawler.NewCrawler(u, options)
-
-	return s.crawlers[p.Id], nil
-}
-
-// RemoveCrawler removes a project's crawler from the crawlers map.
-func (s *CrawlerManager) RemoveCrawler(p *models.Project) {
-	s.lock.Lock()
-	defer s.lock.Unlock()
-
-	delete(s.crawlers, p.Id)
-}
-
 // StopCrawler stops a crawler. If the crawler does not exsit it will just return.
-func (s *CrawlerManager) StopCrawler(p *models.Project) {
+func (s *CrawlerService) StopCrawler(p models.Project) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -215,4 +139,41 @@ func (s *CrawlerManager) StopCrawler(p *models.Project) {
 	}
 
 	crawler.Stop()
+}
+
+// AddCrawler creates a new project crawler and adds it to the crawlers map. It returns the crawler
+// on success otherwise it returns an error indicating the crawler already exists or there was an
+// error creating it.
+func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project, c *models.Crawl) (*crawler.Crawler, error) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	if _, ok := s.crawlers[p.Id]; ok {
+		return nil, errors.New("project is already being crawled")
+	}
+
+	options := &crawler.Options{
+		CrawlLimit:      CrawlLimit,
+		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
+		FollowNofollow:  p.FollowNofollow,
+		IncludeNoindex:  p.IncludeNoindex,
+		UserAgent:       s.config.Agent,
+		CrawlSitemap:    p.CrawlSitemap,
+		AllowSubdomains: p.AllowSubdomains,
+		AuthUser:        p.AuthUser,
+		AuthPass:        p.AuthPass,
+	}
+
+	// Creates a new crawler with the crawler's response handler.
+	s.crawlers[p.Id] = crawler.NewCrawler(u, options)
+
+	return s.crawlers[p.Id], nil
+}
+
+// RemoveCrawler removes a project's crawler from the crawlers map.
+func (s *CrawlerService) removeCrawler(p *models.Project) {
+	s.lock.Lock()
+	defer s.lock.Unlock()
+
+	delete(s.crawlers, p.Id)
 }

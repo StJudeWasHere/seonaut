@@ -27,7 +27,7 @@ type PageReport struct {
 	ExternalLinks      []Link
 	Words              int
 	Hreflangs          []Hreflang
-	Size               int
+	Size               int64
 	Images             []Image
 	Scripts            []string
 	Styles             []string

@@ -45,7 +45,7 @@ func (q *Queue) manage(ctx context.Context) {
 	for {
 		if first == nil && len(queue) > 0 {
 			first = queue[0]
-			active[first.URL] = true
+			active[first.URL.String()] = true
 			queue = queue[1:]
 		}
 

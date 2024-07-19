@@ -1,4 +1,4 @@
-package crawler_test
+package services_test
 
 import (
 	"fmt"
@@ -8,7 +8,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stjudewashere/seonaut/internal/crawler"
+	"github.com/stjudewashere/seonaut/internal/services"
 )
 
 const (
@@ -29,7 +29,7 @@ func TestNewPageReport(t *testing.T) {
 		"Content-Type": []string{contentType},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +66,7 @@ func TestNewRedirectPageReport(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -96,7 +96,7 @@ func TestPageReportHTML(t *testing.T) {
 		log.Fatal(err)
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +197,7 @@ func TestMultipleCanonicalTags(t *testing.T) {
 			</head>
 		`)
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -225,7 +225,7 @@ func TestCanonicalTagInBody(t *testing.T) {
 			</body>
 		`)
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -248,7 +248,7 @@ func TestNoindex(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -276,7 +276,7 @@ func TestContentLanguage(t *testing.T) {
 		"Content-Type":     []string{"text/html"},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -305,7 +305,7 @@ func TestHreflangHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -346,7 +346,7 @@ func TestCanonicalHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -375,7 +375,7 @@ func TestRelativeCanonicalHeaders(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -397,7 +397,7 @@ func TestNoBodyTag(t *testing.T) {
 		"Content-Type": []string{"text/html"},
 	}
 
-	pageReport, _, err := crawler.NewHTMLParser(u, statusCode, &headers, body)
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, &headers, body, int64(len(body)))
 	if err != nil {
 		t.Fatal(err)
 	}

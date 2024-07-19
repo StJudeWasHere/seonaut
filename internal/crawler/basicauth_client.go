@@ -22,7 +22,6 @@ type BasicAuthClient struct {
 
 type ClientOptions struct {
 	UserAgent        string
-	BasicAuth        bool
 	BasicAuthDomains []string
 	AuthUser         string
 	AuthPass         string
@@ -55,7 +54,7 @@ func (c *BasicAuthClient) request(method, u string) (*http.Response, error) {
 		return &http.Response{}, err
 	}
 
-	if c.Options.BasicAuth && c.isBasicAuthDomain(domain.Host) {
+	if c.Options.AuthUser != "" && c.isBasicAuthDomain(domain.Host) {
 		req.SetBasicAuth(c.Options.AuthUser, c.Options.AuthPass)
 	}
 

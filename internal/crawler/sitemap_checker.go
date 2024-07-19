@@ -9,10 +9,10 @@ import (
 
 type SitemapChecker struct {
 	limit  int
-	client Client
+	client CrawlerClient
 }
 
-func NewSitemapChecker(client Client, limit int) *SitemapChecker {
+func NewSitemapChecker(client CrawlerClient, limit int) *SitemapChecker {
 	return &SitemapChecker{
 		limit:  limit,
 		client: client,

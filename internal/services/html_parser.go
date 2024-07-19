@@ -1,4 +1,4 @@
-package crawler
+package services
 
 import (
 	"bytes"
@@ -36,14 +36,20 @@ func NewFromHTTPResponse(r *http.Response) (*models.PageReport, *html.Node, erro
 		return &models.PageReport{}, nil, err
 	}
 
-	return NewHTMLParser(r.Request.URL, r.StatusCode, &r.Header, b)
+	return NewHTMLParser(r.Request.URL, r.StatusCode, &r.Header, b, r.ContentLength)
 }
 
 // Return a new PageReport.
-func NewHTMLParser(u *url.URL, status int, headers *http.Header, body []byte) (*models.PageReport, *html.Node, error) {
+func NewHTMLParser(u *url.URL, status int, headers *http.Header, body []byte, contentLength int64) (*models.PageReport, *html.Node, error) {
 	parser, err := newParser(u, headers, body)
 	if err != nil {
+		log.Println("newParser error!")
 		return nil, nil, err
+	}
+
+	size := int64(len(body))
+	if size == 0 && contentLength > size {
+		size = contentLength
 	}
 
 	pageReport := models.PageReport{
@@ -51,7 +57,7 @@ func NewHTMLParser(u *url.URL, status int, headers *http.Header, body []byte) (*
 		ParsedURL:   u,
 		StatusCode:  status,
 		ContentType: headers.Get("Content-Type"),
-		Size:        len(body),
+		Size:        size,
 	}
 
 	pageReport.MediaType, _, err = mime.ParseMediaType(pageReport.ContentType)

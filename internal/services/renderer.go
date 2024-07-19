@@ -88,7 +88,7 @@ func (r *Renderer) add(i ...int) int {
 }
 
 // Returns an int formated as KB.
-func (r *Renderer) ToKByte(b int) string {
+func (r *Renderer) ToKByte(b int64) string {
 	v := b / (1 << 10)
 	i := b % (1 << 10)
 

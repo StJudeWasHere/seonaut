@@ -10,6 +10,7 @@ import (
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"golang.org/x/net/html"
 )
 
 type CrawlerHandlerStorage interface {
@@ -41,29 +42,9 @@ func NewCrawlerHandler(s CrawlerHandlerStorage, b *Broker, r *ReportManager, c *
 func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project, c *crawler.Crawler) crawler.ResponseCallback {
 	return func(r *crawler.ResponseMessage) {
 
-		// Check if the response caused an error and save a pageReport
-		// if it is a Timeout report.
-		if r.Error != nil {
-			if nErr, ok := r.Error.(net.Error); ok && nErr.Timeout() {
-				s.saveTimeoutPageReport(r.URL, crawl)
-			} else {
-				log.Println("request failed:", r.Error)
-			}
-
-			return
-		}
-
-		// Create a new PageReport from the response. If there's a context.DeadlineExceeded
-		// error save a pageReport with a timeout.
-		pageReport, htmlNode, err := NewFromHTTPResponse(r.Response)
+		pageReport, htmlNode, err := s.buildPageReport(r)
 		if err != nil {
-			if errors.Is(err, context.DeadlineExceeded) {
-				s.saveTimeoutPageReport(r.URL, crawl)
-				log.Println("timeout")
-			} else {
-				log.Printf("callback funciton error: %v", err)
-			}
-
+			log.Printf("callback function error: %v", err)
 			return
 		}
 
@@ -81,7 +62,7 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 		pageReport.Depth = d.Depth
 		pageReport.BlockedByRobotstxt = r.Blocked
 		pageReport.InSitemap = r.InSitemap
-		pageReport.Crawled = p.FollowNofollow || !pageReport.Nofollow
+		pageReport.Crawled = !pageReport.Timeout && (p.FollowNofollow || !pageReport.Nofollow)
 
 		// Add link URLs to the crawler considering the nofollow attribute as well as
 		// the projects FollowNoFollow option. In case the URL is blocked by the robots.txt
@@ -149,6 +130,39 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 	}
 }
 
+// buildPageReport builds a PageReport based on the responseMessage checking for Timeout errors.
+func (s *CrawlerHandler) buildPageReport(r *crawler.ResponseMessage) (*models.PageReport, *html.Node, error) {
+	// Check if the response caused an error and save a pageReport
+	// if it is a Timeout report.
+	if r.Error != nil {
+		if nErr, ok := r.Error.(net.Error); ok && nErr.Timeout() {
+			return &models.PageReport{
+				Timeout:   true,
+				URL:       r.Response.Request.URL.String(),
+				ParsedURL: r.Response.Request.URL,
+			}, &html.Node{}, nil
+		} else {
+			return nil, nil, r.Error
+		}
+	}
+
+	// Create a new PageReport from the response. If there's a context.DeadlineExceeded
+	// error save a pageReport with a timeout.
+	pageReport, htmlNode, err := NewFromHTTPResponse(r.Response)
+	if err != nil {
+		var netErr net.Error
+		if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &netErr) && netErr.Timeout()) {
+			pageReport.Timeout = true
+			pageReport.URL = r.Response.Request.URL.String()
+			pageReport.ParsedURL = r.Response.Request.URL
+		} else {
+			return nil, nil, err
+		}
+	}
+
+	return pageReport, htmlNode, err
+}
+
 // saveBlockedPageReport saves a new PageReport with the specified URL and Crawl,
 // setting the blockedByRobotstxt field to true.
 func (s *CrawlerHandler) saveBlockedPageReport(u *url.URL, crawl *models.Crawl) {
@@ -157,22 +171,6 @@ func (s *CrawlerHandler) saveBlockedPageReport(u *url.URL, crawl *models.Crawl) 
 		ParsedURL:          u,
 		BlockedByRobotstxt: true,
 		Crawled:            false,
-	}
-
-	_, err := s.store.SavePageReport(pageReport, crawl.Id)
-	if err != nil {
-		log.Printf("crawler service: SavePageReport: %v\n", err)
-	}
-}
-
-// saveBlockedPageReport saves a new PageReport with the specified URL and Crawl,
-// setting the blockedByRobotstxt field to true.
-func (s *CrawlerHandler) saveTimeoutPageReport(u *url.URL, crawl *models.Crawl) {
-	pageReport := &models.PageReport{
-		URL:       u.String(),
-		ParsedURL: u,
-		Timeout:   true,
-		Crawled:   false,
 	}
 
 	_, err := s.store.SavePageReport(pageReport, crawl.Id)

@@ -76,8 +76,6 @@ type Crawler struct {
 	qStream          chan *RequestMessage
 	cancel           context.CancelFunc
 	context          context.Context
-	crawlLock        sync.RWMutex
-	statusLock       sync.RWMutex
 	client           CrawlerClient
 	callback         ResponseCallback
 	rStream          chan *ResponseMessage
@@ -168,7 +166,6 @@ func (c *Crawler) Start() {
 	defer func() {
 		c.cancelQueue()
 		c.cancel()
-		close(c.rStream)
 	}()
 
 	go c.queueStreamer(c.queueContext)
@@ -198,6 +195,8 @@ func (c *Crawler) Start() {
 		rm.Blocked = c.robotsChecker.IsBlocked(rm.URL)
 		rm.Timeout = rm.Error != nil
 
+		c.status.Crawled++
+
 		if c.callback != nil {
 			c.callback(rm)
 		}
@@ -207,12 +206,9 @@ func (c *Crawler) Start() {
 			sitemapLoaded = true
 		}
 
-		c.statusLock.Lock()
-		c.status.Crawled++
 		if !c.queue.Active() || c.status.Crawled >= c.options.CrawlLimit {
 			break
 		}
-		c.statusLock.Unlock()
 	}
 }
 
@@ -242,36 +238,30 @@ func (c *Crawler) AddRequest(r *RequestMessage) error {
 
 // GetStatus returns the current cralwer status.
 func (c *Crawler) GetStatus() CrawlerStatus {
-	c.statusLock.RLock()
-	defer c.statusLock.RUnlock()
-
 	c.status.Discovered = c.queue.Count()
+	c.status.Crawling = c.context.Err() == nil
 
 	return c.status
 }
 
-// Returns true if the sitemap.xml file exists
+// Returns true if the sitemap.xml file exists.
 func (c *Crawler) SitemapExists() bool {
 	return c.sitemapExists
 }
 
-// Returns true if the robots.txt file exists
+// Returns true if the robots.txt file exists.
 func (c *Crawler) RobotstxtExists() bool {
 	return c.robotsChecker.Exists(c.url)
 }
 
-// Returns true if any of the website's sitemaps is blocked in the robots.txt file
+// Returns true if any of the website's sitemaps is blocked in the robots.txt file.
 func (c *Crawler) SitemapIsBlocked() bool {
 	return c.sitemapIsBlocked
 }
 
 // Stops the cralwer by canceling the cralwer context.
 func (c *Crawler) Stop() {
-	c.crawlLock.Lock()
-	defer c.crawlLock.Unlock()
-
 	c.cancel()
-	c.status.Crawling = false
 }
 
 // setupSitemaps checks if any sitemap exists for the crawler's url. It checks the robots file
@@ -309,6 +299,7 @@ func (c *Crawler) setupSitemaps() {
 // sending requests concurrently.
 func (c *Crawler) crawl() {
 	go func() {
+		defer close(c.rStream)
 		wg := new(sync.WaitGroup)
 		wg.Add(consumerThreads)
 

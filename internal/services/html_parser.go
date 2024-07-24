@@ -33,7 +33,7 @@ func NewFromHTTPResponse(r *http.Response) (*models.PageReport, *html.Node, erro
 
 	b, err := io.ReadAll(bodyReader)
 	if err != nil {
-		return &models.PageReport{}, nil, err
+		return &models.PageReport{}, &html.Node{}, err
 	}
 
 	return NewHTMLParser(r.Request.URL, r.StatusCode, &r.Header, b, r.ContentLength)
@@ -44,7 +44,7 @@ func NewHTMLParser(u *url.URL, status int, headers *http.Header, body []byte, co
 	parser, err := newParser(u, headers, body)
 	if err != nil {
 		log.Println("newParser error!")
-		return nil, nil, err
+		return &models.PageReport{}, &html.Node{}, err
 	}
 
 	size := int64(len(body))

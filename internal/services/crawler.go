@@ -77,7 +77,7 @@ func (s *CrawlerService) StartCrawler(p models.Project) error {
 		u.Path = "/"
 	}
 
-	c, err := s.addCrawler(u, &p, crawl)
+	c, err := s.addCrawler(u, &p)
 	if err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func (s *CrawlerService) StopCrawler(p models.Project) {
 // AddCrawler creates a new project crawler and adds it to the crawlers map. It returns the crawler
 // on success otherwise it returns an error indicating the crawler already exists or there was an
 // error creating it.
-func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project, c *models.Crawl) (*crawler.Crawler, error) {
+func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project) (*crawler.Crawler, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 

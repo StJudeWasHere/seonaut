@@ -91,7 +91,7 @@ func TestPageReportHTML(t *testing.T) {
 	headers := &http.Header{
 		"Content-Type": []string{contentType},
 	}
-	body, err := os.ReadFile("./testdata/test.html")
+	body, err := os.ReadFile("./testdata/parser.html")
 	if err != nil {
 		log.Fatal(err)
 	}

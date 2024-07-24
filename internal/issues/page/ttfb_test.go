@@ -3,7 +3,6 @@ package page_test
 import (
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/stjudewashere/seonaut/internal/issues/errors"
 	"github.com/stjudewashere/seonaut/internal/issues/page"
@@ -17,7 +16,7 @@ import (
 func TestNoSlowTTFB(t *testing.T) {
 	pageReport := &models.PageReport{
 		URL:  "https://example.com/some-url",
-		TTFB: 100 * time.Millisecond,
+		TTFB: 100,
 	}
 
 	reporter := page.NewSlowTTFBReporter()
@@ -37,7 +36,7 @@ func TestNoSlowTTFB(t *testing.T) {
 func TestSlowTTFB(t *testing.T) {
 	pageReport := &models.PageReport{
 		URL:  "https://example.com/some-url",
-		TTFB: 1000 * time.Millisecond,
+		TTFB: 1000,
 	}
 
 	reporter := page.NewSlowTTFBReporter()

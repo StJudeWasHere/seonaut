@@ -46,7 +46,7 @@ type CrawlerClient interface {
 	Get(u string) (*http.Response, error)
 	Head(u string) (*http.Response, error)
 	Do(req *http.Request) (*http.Response, error)
-	GetTTFB(resp *http.Response) time.Duration
+	GetTTFB(resp *http.Response) int
 }
 
 type CrawlerStatus struct {
@@ -94,7 +94,7 @@ type ResponseMessage struct {
 	URL       *url.URL
 	Response  *http.Response
 	Error     error
-	TTFB      time.Duration
+	TTFB      int
 	Blocked   bool
 	InSitemap bool
 	Timeout   bool

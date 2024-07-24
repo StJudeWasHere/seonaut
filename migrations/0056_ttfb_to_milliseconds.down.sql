@@ -1,0 +1,1 @@
+UPDATE `pagereports` SET `ttfb` = `ttfb` * 1000000

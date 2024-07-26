@@ -73,4 +73,6 @@ const (
 	ErrorTimeout                                 // Pages that timed out
 	ErrorUnderscoreURL                           // Pages wich URL has underscore characters
 	ErrorSlowTTFB                                // Pages with slow time to first byte
+	ErrorFormOnHTTP                              // Pages with forms on HTTP URLs
+	ErrorInsecureForm                            // Forms with HTTP action URLs
 )

@@ -78,5 +78,9 @@ func GetAllReporters() []*models.PageIssueReporter {
 
 		// Add Time To Firts Byte reporter
 		NewSlowTTFBReporter(),
+
+		// Add form reporters
+		NewFormOnHTTPReporter(),
+		NewInsecureFormReporter(),
 	}
 }

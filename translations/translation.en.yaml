@@ -215,3 +215,9 @@ ERROR_UNDERSCORE_URL_DESC: It is usually not recommended to use underscore chara
 
 ERROR_SLOW_TTFB: Slow Time to First Byte
 ERROR_SLOW_TTFB_DESC: A slow time to first byte can negatively impact the user experience and hurt SEO by causing longer page load times, as some search engines take page speed into consideration as a ranking factor.
+
+ERROR_HTTP_FORM: Forms on HTTP pages
+ERROR_HTTP_FORM_DESC: HTTP pages with forms. Having a form on an HTTP URL compromises security, reducing user trust and SEO rankings. Make sure your forms are on HTTPS pages.
+
+ERROR_INSECURE_FORM: Insecure forms
+ERROR_INSECURE_FORM_DESC: Pages that have forms with HTTP action URLs. A form with an HTTP action URL exposes data to interception, reduces trust, triggers browser warnings, and negatively impacts SEO rankings.

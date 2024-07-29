@@ -22,3 +22,16 @@ func NewUnderscoreURLReporter() *models.PageIssueReporter {
 		Callback:  c,
 	}
 }
+
+// Returns a report_manager.PageIssueReporter with a callback function that checks
+// if URL has a space characters.
+func NewSpaceURLReporter() *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		return strings.Contains(pageReport.URL, " ")
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorSpaceURL,
+		Callback:  c,
+	}
+}

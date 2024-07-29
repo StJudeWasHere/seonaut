@@ -75,4 +75,5 @@ const (
 	ErrorSlowTTFB                                // Pages with slow time to first byte
 	ErrorFormOnHTTP                              // Pages with forms on HTTP URLs
 	ErrorInsecureForm                            // Forms with HTTP action URLs
+	ErrorSpaceURL                                // URLS containing spaces
 )

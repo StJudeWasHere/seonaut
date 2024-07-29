@@ -221,3 +221,6 @@ ERROR_HTTP_FORM_DESC: HTTP pages with forms. Having a form on an HTTP URL compro
 
 ERROR_INSECURE_FORM: Insecure forms
 ERROR_INSECURE_FORM_DESC: Pages that have forms with HTTP action URLs. A form with an HTTP action URL exposes data to interception, reduces trust, triggers browser warnings, and negatively impacts SEO rankings.
+
+ERROR_SPACE_URL: URLs that contain a space
+ERROR_SPACE_URL_DESC: Having a space character in the URL can cause indexing issues and broken links, negatively affecting SEO and user experience. Hyphens should be used as a word separator instead of spaces.

@@ -224,3 +224,6 @@ ERROR_INSECURE_FORM_DESC: Pages that have forms with HTTP action URLs. A form wi
 
 ERROR_SPACE_URL: URLs that contain a space
 ERROR_SPACE_URL_DESC: Having a space character in the URL can cause indexing issues and broken links, negatively affecting SEO and user experience. Hyphens should be used as a word separator instead of spaces.
+
+ERROR_MULTIPLE_SLASHES: URLS with multiple slashes in the path
+ERROR_MULTIPLE_SLASHES_DESC: URLS with multiple consecutive forward slashes in the path. This can create confusion for search engines and users, potentially leading to indexing issues and a less clean, professional appearance.

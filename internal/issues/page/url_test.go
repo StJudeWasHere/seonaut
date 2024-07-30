@@ -2,6 +2,7 @@ package page_test
 
 import (
 	"net/http"
+	"net/url"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/issues/errors"
@@ -100,5 +101,65 @@ func TestSpaceURL(t *testing.T) {
 
 	if reportsIssue == false {
 		t.Errorf("TestSpaceURL: reportsIssue should be true")
+	}
+}
+
+// Test the MultipleSlashes reporter with an URL that has not multiple slashes.
+// The reporter should not report the issue.
+func TestNoMultipleSlashes(t *testing.T) {
+	u := "https://example.com/someurl"
+	parsedURL, err := url.Parse(u)
+	if err != nil {
+		t.Errorf("TestNoMultipleSlashes: url parse error %v", err)
+	}
+
+	pageReport := &models.PageReport{
+		URL:        u,
+		ParsedURL:  parsedURL,
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+		Title:      "not empty description",
+	}
+
+	reporter := page.NewMultipleSlashesReporter()
+	if reporter.ErrorType != errors.ErrorMultipleSlashes {
+		t.Errorf("TestNoMultipleSlashes: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("TestNoMultipleSlashes: reportsIssue should be false")
+	}
+}
+
+// Test the MultipleSlashes reporter with an URL that has multiple slashes.
+// The reporter should report the issue.
+func TestMultiplSlashes(t *testing.T) {
+	u := "https://example.com/someurl//"
+	parsedURL, err := url.Parse(u)
+	if err != nil {
+		t.Errorf("TestMultipleSlashes: url parse error %v", err)
+	}
+
+	pageReport := &models.PageReport{
+		URL:        u,
+		ParsedURL:  parsedURL,
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+		Title:      "not empty description",
+	}
+
+	reporter := page.NewMultipleSlashesReporter()
+	if reporter.ErrorType != errors.ErrorMultipleSlashes {
+		t.Errorf("TestMultiplSlashes: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("TestMultiplSlashes: reportsIssue should be true")
 	}
 }

@@ -76,6 +76,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		// Add URL issue reports
 		NewUnderscoreURLReporter(),
 		NewSpaceURLReporter(),
+		NewMultipleSlashesReporter(),
 
 		// Add Time To Firts Byte reporter
 		NewSlowTTFBReporter(),

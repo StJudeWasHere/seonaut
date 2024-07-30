@@ -76,4 +76,5 @@ const (
 	ErrorFormOnHTTP                              // Pages with forms on HTTP URLs
 	ErrorInsecureForm                            // Forms with HTTP action URLs
 	ErrorSpaceURL                                // URLS containing spaces
+	ErrorMultipleSlashes                         // URLS containing multiple slashes in their path
 )

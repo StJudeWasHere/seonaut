@@ -406,3 +406,33 @@ func TestNoBodyTag(t *testing.T) {
 		t.Errorf("NoBody: %d != 0", pageReport.Words)
 	}
 }
+
+func TestRobotsNone(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	body := []byte(
+		`<html>
+		<head><meta name="robots" content="none"></head>
+		<body></body>
+	</html>`)
+	statusCode := 200
+	headers := &http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, headers, body, int64(len(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if !pageReport.Noindex {
+		t.Errorf("NewPageReport Noindex should be true")
+	}
+
+	if !pageReport.Nofollow {
+		t.Error("NewPageReport Nofollow should be true")
+	}
+}

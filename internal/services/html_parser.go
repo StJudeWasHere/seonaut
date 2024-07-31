@@ -78,8 +78,8 @@ func NewHTMLParser(u *url.URL, status int, headers *http.Header, body []byte, co
 		pageReport.Refresh = parser.htmlMetaRefresh()
 		pageReport.RedirectURL = parser.htmlMetaRefreshURL()
 		pageReport.Robots = parser.robots()
-		pageReport.Noindex = strings.Contains(pageReport.Robots, "noindex")
-		pageReport.Nofollow = strings.Contains(pageReport.Robots, "nofollow")
+		pageReport.Noindex = containsAny(pageReport.Robots, "noindex", "none")
+		pageReport.Nofollow = containsAny(pageReport.Robots, "nofollow", "none")
 		pageReport.H1 = parser.htmlH1()
 		pageReport.H2 = parser.htmlH2()
 		pageReport.Canonical = parser.canonical()
@@ -173,4 +173,15 @@ func hashString(input []byte) (string, error) {
 	hashString := hex.EncodeToString(hashSum)
 
 	return hashString, nil
+}
+
+// containsAny checks if a string contains any of the substrings.
+func containsAny(s string, substrings ...string) bool {
+	for _, substr := range substrings {
+		if strings.Contains(s, substr) {
+			return true
+		}
+	}
+
+	return false
 }

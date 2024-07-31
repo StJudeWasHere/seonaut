@@ -227,3 +227,6 @@ ERROR_SPACE_URL_DESC: Having a space character in the URL can cause indexing iss
 
 ERROR_MULTIPLE_SLASHES: URLS with multiple slashes in the path
 ERROR_MULTIPLE_SLASHES_DESC: URLS with multiple consecutive forward slashes in the path. This can create confusion for search engines and users, potentially leading to indexing issues and a less clean, professional appearance.
+
+ERROR_NOIMAGEINDEX: Pages with the noimageindex rule
+ERROR_NOIMAGEINDEX_DESC: The noimageindex rule in the robots meta tag prevents images to be indexed by search engines. Reveiew these pages to ensure the images in this pages shouldn't be indexed.

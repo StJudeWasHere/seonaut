@@ -77,4 +77,5 @@ const (
 	ErrorInsecureForm                            // Forms with HTTP action URLs
 	ErrorSpaceURL                                // URLS containing spaces
 	ErrorMultipleSlashes                         // URLS containing multiple slashes in their path
+	ErrorNoImageIndex                            // Pages with the noimageindex rule in the robots meta
 )

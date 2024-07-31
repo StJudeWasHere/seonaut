@@ -150,3 +150,45 @@ func TestLargeImageReporterIssues(t *testing.T) {
 		t.Errorf("reportsIssue should be true")
 	}
 }
+
+// Test the NewNoImageIndex reporter with a pageReport that does not
+// have the noimageindex rule in the robots meta tag.
+// The reporter should not report the issue.
+func TestNoImageIndexReporterNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+	}
+
+	reporter := page.NewNoImageIndexReporter()
+	if reporter.ErrorType != errors.ErrorNoImageIndex {
+		t.Errorf("error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
+	}
+}
+
+// Test the NewNoImageIndex reporter with a pageReport that has the noimageindex rule
+// in the robots meta tag. The reporter should not report the issue.
+func TestImageIndexReporterNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+		Robots:    "noimageindex",
+	}
+
+	reporter := page.NewNoImageIndexReporter()
+	if reporter.ErrorType != errors.ErrorNoImageIndex {
+		t.Errorf("error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+}

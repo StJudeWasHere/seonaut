@@ -54,7 +54,7 @@ func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.CrawlerService.StartCrawler(p)
+	err = h.CrawlerService.StartCrawler(p, models.BasicAuth{})
 	if err != nil {
 		log.Printf("StartCrawler: %s %v\n", p.URL, err)
 		return
@@ -133,11 +133,12 @@ func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		p.BasicAuth = true
-		p.AuthUser = r.FormValue("username")
-		p.AuthPass = r.FormValue("password")
+		basicAuth := models.BasicAuth{
+			AuthUser: r.FormValue("username"),
+			AuthPass: r.FormValue("password"),
+		}
 
-		err = h.CrawlerService.StartCrawler(p)
+		err = h.CrawlerService.StartCrawler(p, basicAuth)
 		if err != nil {
 			log.Printf("StartCrawler: %s %v\n", p.URL, err)
 			return

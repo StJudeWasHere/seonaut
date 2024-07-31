@@ -61,7 +61,7 @@ func NewCrawlerService(s CrawlerServiceStorage, services CrawlerServicesContaine
 // It adds a new crawler for the project, it returns an error if there's one already
 // running or if there's an error creating it.
 // Finally the previous crawl's data is removed and the crawl is returned.
-func (s *CrawlerService) StartCrawler(p models.Project) error {
+func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) error {
 	previousCrawl := s.store.GetLastCrawl(&p)
 	crawl, err := s.store.SaveCrawl(p)
 	if err != nil {
@@ -77,7 +77,7 @@ func (s *CrawlerService) StartCrawler(p models.Project) error {
 		u.Path = "/"
 	}
 
-	c, err := s.addCrawler(u, &p)
+	c, err := s.addCrawler(u, &p, &b)
 	if err != nil {
 		return err
 	}
@@ -144,7 +144,7 @@ func (s *CrawlerService) StopCrawler(p models.Project) {
 // AddCrawler creates a new project crawler and adds it to the crawlers map. It returns the crawler
 // on success otherwise it returns an error indicating the crawler already exists or there was an
 // error creating it.
-func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project) (*crawler.Crawler, error) {
+func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project, b *models.BasicAuth) (*crawler.Crawler, error) {
 	s.lock.Lock()
 	defer s.lock.Unlock()
 
@@ -160,8 +160,8 @@ func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project) (*crawler.Cra
 		UserAgent:       s.config.Agent,
 		CrawlSitemap:    p.CrawlSitemap,
 		AllowSubdomains: p.AllowSubdomains,
-		AuthUser:        p.AuthUser,
-		AuthPass:        p.AuthPass,
+		AuthUser:        b.AuthUser,
+		AuthPass:        b.AuthPass,
 	}
 
 	// Creates a new crawler with the crawler's response handler.

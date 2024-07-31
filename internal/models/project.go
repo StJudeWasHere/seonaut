@@ -16,7 +16,5 @@ type Project struct {
 	AllowSubdomains    bool
 	Deleting           bool
 	BasicAuth          bool
-	AuthUser           string
-	AuthPass           string
 	CheckExternalLinks bool
 }

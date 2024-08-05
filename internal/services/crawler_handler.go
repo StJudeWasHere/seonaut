@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"net/url"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
@@ -111,7 +112,11 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 		if !pageReport.Noindex || p.IncludeNoindex {
 			pageReport, err = s.store.SavePageReport(pageReport, crawl.Id)
 			if err == nil {
-				s.reportManager.CreatePageIssues(pageReport, htmlNode, &r.Response.Header, crawl)
+				headers := make(http.Header)
+				if r.Response != nil {
+					headers = r.Response.Header
+				}
+				s.reportManager.CreatePageIssues(pageReport, htmlNode, &headers, crawl)
 			} else {
 				log.Printf("crawler service: SavePageReport: %v\n", err)
 			}
@@ -132,35 +137,39 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 
 // buildPageReport builds a PageReport based on the responseMessage checking for Timeout errors.
 func (s *CrawlerHandler) buildPageReport(r *crawler.ResponseMessage) (*models.PageReport, *html.Node, error) {
-	// Check if the response caused an error and save a pageReport
-	// if it is a Timeout report.
+	// Check if the response caused an error and save a pageReport.
 	if r.Error != nil {
-		if nErr, ok := r.Error.(net.Error); ok && nErr.Timeout() {
-			return &models.PageReport{
-				Timeout:   true,
-				URL:       r.Response.Request.URL.String(),
-				ParsedURL: r.Response.Request.URL,
-			}, &html.Node{}, nil
-		} else {
-			return nil, nil, r.Error
-		}
+		return &models.PageReport{
+			Timeout:   true,
+			URL:       r.URL.String(),
+			ParsedURL: r.URL,
+		}, &html.Node{}, nil
 	}
 
 	// Create a new PageReport from the response. If there's a context.DeadlineExceeded
 	// error save a pageReport with a timeout.
 	pageReport, htmlNode, err := NewFromHTTPResponse(r.Response)
 	if err != nil {
-		var netErr net.Error
-		if errors.Is(err, context.DeadlineExceeded) || (errors.As(err, &netErr) && netErr.Timeout()) {
+		pageReport.URL = r.URL.String()
+		pageReport.ParsedURL = r.URL
+
+		if _, ok := err.(net.Error); ok {
 			pageReport.Timeout = true
-			pageReport.URL = r.Response.Request.URL.String()
-			pageReport.ParsedURL = r.Response.Request.URL
-		} else {
+		}
+		if _, ok := err.(*url.Error); ok {
+			pageReport.Timeout = true
+		}
+
+		if errors.Is(err, context.DeadlineExceeded) {
+			pageReport.Timeout = true
+		}
+
+		if !pageReport.Timeout {
 			return nil, nil, err
 		}
 	}
 
-	return pageReport, htmlNode, err
+	return pageReport, htmlNode, nil
 }
 
 // saveBlockedPageReport saves a new PageReport with the specified URL and Crawl,

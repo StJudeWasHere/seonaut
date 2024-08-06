@@ -235,14 +235,14 @@ func (s *CrawlerHandler) checkExternalLinks(pageReport *models.PageReport) {
 			continue
 		}
 
+		statusCode := -1
 		res, err := s.client.Head(l.URL)
-		if err != nil {
-			log.Printf("external link (%s) error: %v", l.URL, err)
-			continue
+		if err == nil {
+			statusCode = res.StatusCode
 		}
 
-		s.externalLinksStatus[l.URL] = res.StatusCode
-		pageReport.ExternalLinks[n].StatusCode = res.StatusCode
+		s.externalLinksStatus[l.URL] = statusCode
+		pageReport.ExternalLinks[n].StatusCode = statusCode
 	}
 }
 

@@ -382,4 +382,12 @@ func TestExternalLinkBrokenIssues(t *testing.T) {
 	if reportsIssue == false {
 		t.Errorf("TestExternalLinkBrokenIssues: reportsIssue should be true")
 	}
+
+	pageReport.ExternalLinks = []models.Link{{StatusCode: -1}, {}}
+
+	reportsIssue = reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("TestExternalLinkBrokenIssues: reportsIssue should be true")
+	}
 }

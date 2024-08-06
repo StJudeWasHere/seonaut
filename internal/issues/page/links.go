@@ -197,7 +197,7 @@ func NewExternalLinkBroken() *models.PageIssueReporter {
 		}
 
 		for _, l := range pageReport.ExternalLinks {
-			if l.StatusCode > 399 {
+			if l.StatusCode < 0 || l.StatusCode > 399 {
 				return true
 			}
 		}

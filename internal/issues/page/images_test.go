@@ -2,6 +2,7 @@ package page_test
 
 import (
 	"net/http"
+	"strings"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/issues/errors"
@@ -174,7 +175,7 @@ func TestNoImageIndexReporterNoIssues(t *testing.T) {
 
 // Test the NewNoImageIndex reporter with a pageReport that has the noimageindex rule
 // in the robots meta tag. The reporter should not report the issue.
-func TestImageIndexReporterNoIssues(t *testing.T) {
+func TestImageIndexReporterIssues(t *testing.T) {
 	pageReport := &models.PageReport{
 		Crawled:   true,
 		MediaType: "text/html",
@@ -187,6 +188,77 @@ func TestImageIndexReporterNoIssues(t *testing.T) {
 	}
 
 	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+}
+
+// Test the NewNoImageIndex reporter with a pageReport that has all the img elements in
+// the pictures. The reporter should not report the issue.
+func TestMissingImgTagInPictureReporterNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+	}
+
+	reporter := page.NewMissingImgTagInPictureReporter()
+	if reporter.ErrorType != errors.ErrorMissingImgElement {
+		t.Errorf("error type is not correct")
+	}
+
+	source := `
+	<html>
+		<body>
+			<picture>
+				<source srcset="/media/img-240-200.jpg" media="(orientation: portrait)" />
+				<img src="/media/media/img-298-332.jpg" alt="" />
+			</picture>
+		</body>
+	</html>
+`
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
+	}
+}
+
+// Test the NewNoImageIndex reporter with a pageReport that hasn't the img elements in
+// the pictures. The reporter should report the issue.
+func TestMissingImgTagInPictureReporterIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+	}
+
+	reporter := page.NewMissingImgTagInPictureReporter()
+	if reporter.ErrorType != errors.ErrorMissingImgElement {
+		t.Errorf("error type is not correct")
+	}
+
+	source := `
+	<html>
+		<body>
+			<picture>
+				<source srcset="/media/img-240-200.jpg" media="(orientation: portrait)" />
+			</picture>
+		</body>
+	</html>
+`
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
 
 	if reportsIssue == false {
 		t.Errorf("reportsIssue should be true")

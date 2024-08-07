@@ -78,4 +78,5 @@ const (
 	ErrorSpaceURL                                // URLS containing spaces
 	ErrorMultipleSlashes                         // URLS containing multiple slashes in their path
 	ErrorNoImageIndex                            // Pages with the noimageindex rule in the robots meta
+	ErrorMissingImgElement                       // Pages with Picture missing the img element
 )

@@ -230,3 +230,6 @@ ERROR_MULTIPLE_SLASHES_DESC: URLS with multiple consecutive forward slashes in t
 
 ERROR_NOIMAGEINDEX: Pages with the noimageindex rule
 ERROR_NOIMAGEINDEX_DESC: The noimageindex rule in the robots meta tag prevents images to be indexed by search engines. Reveiew these pages to ensure the images in this pages shouldn't be indexed.
+
+ERROR_PICTURE_MISSONG_IMG: Pages with pictures missing the img element
+ERROR_PICTURE_MISSONG_IMG_DESC: Pages that are using a picture HTML element which is missing the img element. This can cause images to not be properly displayed in the browser and cause search engine image indexation issues.

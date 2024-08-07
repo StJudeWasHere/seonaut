@@ -47,6 +47,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		NewLongAltTextReporter(),
 		NewLargeImageReporter(),
 		NewNoImageIndexReporter(),
+		NewMissingImgTagInPictureReporter(),
 
 		// Add language issue reporters
 		NewInvalidLangReporter(),

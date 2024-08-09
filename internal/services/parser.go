@@ -38,7 +38,7 @@ func newParser(url *url.URL, headers *http.Header, body []byte) (*Parser, error)
 		return nil, err
 	}
 
-	doc, err := htmlquery.Parse(utf8Body)
+	doc, err := html.ParseWithOptions(utf8Body, html.ParseOptionEnableScripting(false))
 	if err != nil {
 		log.Println(("htmlquery parse error"))
 		return nil, err
@@ -119,7 +119,7 @@ func (p *Parser) htmlLang() string {
 // The title element in the head section defines the page title
 // ex. <title>Test Page Title</title>
 func (p *Parser) htmlTitle() string {
-	title, err := htmlquery.Query(p.doc, "//title")
+	title, err := htmlquery.Query(p.doc, "//head/title")
 	if err != nil || title == nil {
 		return ""
 	}
@@ -132,7 +132,7 @@ func (p *Parser) htmlTitle() string {
 // The description meta tag defines the page description
 // ex. <meta name="description" content="Test Page Description" />
 func (p *Parser) htmlMetaDescription() string {
-	description, err := htmlquery.Query(p.doc, "//meta[@name=\"description\"]/@content")
+	description, err := htmlquery.Query(p.doc, "//head/meta[@name=\"description\"]/@content")
 	if err != nil || description == nil {
 		return ""
 	}
@@ -146,7 +146,7 @@ func (p *Parser) htmlMetaDescription() string {
 // The refresh meta tag refreshes current page or redirects to a different one
 // ex. <meta http-equiv="refresh" content="0;URL='https://example.com/'" />
 func (p *Parser) htmlMetaRefresh() string {
-	refresh, err := htmlquery.Query(p.doc, "//meta[@http-equiv=\"refresh\"]/@content")
+	refresh, err := htmlquery.Query(p.doc, "//head//meta[@http-equiv=\"refresh\"]/@content")
 	if err != nil || refresh == nil {
 		return ""
 	}
@@ -175,7 +175,7 @@ func (p *Parser) htmlMetaRefreshURL() string {
 // The robots meta provides information to crawlers
 // ex. <meta name="robots" content="noindex, nofollow" />
 func (p *Parser) htmlMetaRobots() string {
-	robots, err := htmlquery.Query(p.doc, "//meta[@name=\"robots\"]/@content")
+	robots, err := htmlquery.Query(p.doc, "//head/meta[@name=\"robots\"]/@content")
 	if err != nil || robots == nil {
 		return ""
 	}

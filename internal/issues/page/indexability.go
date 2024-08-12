@@ -3,6 +3,7 @@ package page
 import (
 	"net/http"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/issues/errors"
 	"github.com/stjudewashere/seonaut/internal/models"
 
@@ -82,6 +83,32 @@ func NewNonCanonicalInSitemapReporter() *models.PageIssueReporter {
 
 	return &models.PageIssueReporter{
 		ErrorType: errors.ErrorSitemapNonCanonical,
+		Callback:  c,
+	}
+}
+
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
+// the page has meta tags in the document's body.
+func NewMetasInBodyReporter() *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		metas, err := htmlquery.QueryAll(htmlNode, "//body/meta")
+		if err != nil {
+			return false
+		}
+
+		return len(metas) > 0
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorMetasInBody,
 		Callback:  c,
 	}
 }

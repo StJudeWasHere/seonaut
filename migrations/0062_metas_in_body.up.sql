@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(71, "ERROR_METAS_IN_BODY", 2);

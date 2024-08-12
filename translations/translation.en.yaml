@@ -233,3 +233,6 @@ ERROR_NOIMAGEINDEX_DESC: The noimageindex rule in the robots meta tag prevents i
 
 ERROR_PICTURE_MISSONG_IMG: Pages with pictures missing the img element
 ERROR_PICTURE_MISSONG_IMG_DESC: Pages that are using a picture HTML element which is missing the img element. This can cause images to not be properly displayed in the browser and cause search engine image indexation issues.
+
+ERROR_METAS_IN_BODY: Pages with meta tags in the document's body
+ERROR_METAS_IN_BODY_DESC: Pages that have meta tags in the document's body. The meta tags must be placed in the head section of the document, otherwise they may get ignored by browsers as well as search engines, causing indexability issues.

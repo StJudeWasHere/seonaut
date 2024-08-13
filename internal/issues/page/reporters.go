@@ -33,6 +33,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		NewCanonicalMismatch(),
 		NewDepthReporter(),
 		NewNosnippetReporter(),
+		NewMetasInBodyReporter(),
 
 		// Add link issue reporters
 		NewTooManyLinksReporter(),

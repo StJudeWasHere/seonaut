@@ -2,6 +2,7 @@ package page
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/issues/errors"
@@ -109,6 +110,36 @@ func NewMetasInBodyReporter() *models.PageIssueReporter {
 
 	return &models.PageIssueReporter{
 		ErrorType: errors.ErrorMetasInBody,
+		Callback:  c,
+	}
+}
+
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
+// the page has the nosnippet directive in the robots meta tag.
+func NewNosnippetReporter() *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if strings.Contains(pageReport.Robots, "nosnippet") {
+			return true
+		}
+
+		// max-snippet:0 sets snippet size to 0. Equivalent to nosnippet.
+		if strings.Contains(pageReport.Robots, "max-snippet:0") {
+			return true
+		}
+
+		return false
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorNosnippet,
 		Callback:  c,
 	}
 }

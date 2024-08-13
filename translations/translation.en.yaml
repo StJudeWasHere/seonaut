@@ -236,3 +236,6 @@ ERROR_PICTURE_MISSONG_IMG_DESC: Pages that are using a picture HTML element whic
 
 ERROR_METAS_IN_BODY: Pages with meta tags in the document's body
 ERROR_METAS_IN_BODY_DESC: Pages that have meta tags in the document's body. The meta tags must be placed in the head section of the document, otherwise they may get ignored by browsers as well as search engines, causing indexability issues.
+
+ERROR_NOSNIPPET: Pages with the nosnippet directive
+ERROR_NOSNIPPET_DESC: The nosnippet or max-snippet:0 directives tell search engines not to display a text snippet or video preview in the search results. Review these pages to make sure this is the wanted behavior.

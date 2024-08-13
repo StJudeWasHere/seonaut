@@ -80,4 +80,5 @@ const (
 	ErrorNoImageIndex                            // Pages with the noimageindex rule in the robots meta
 	ErrorMissingImgElement                       // Pages with Picture missing the img element
 	ErrorMetasInBody                             // Pages with meta tags in the document's body
+	ErrorNosnippet                               // Pages with the nosnippet directive
 )

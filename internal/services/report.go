@@ -21,7 +21,7 @@ type (
 
 		FindPageReportStyles(pageReport *models.PageReport, cid int64) []string
 		FindPageReportScripts(pageReport *models.PageReport, cid int64) []string
-		FindPageReportVideos(pageReport *models.PageReport, cid int64) []string
+		FindPageReportVideos(pageReport *models.PageReport, cid int64) []models.Video
 		FindPageReportAudios(pageReport *models.PageReport, cid int64) []string
 		FindPageReportIframes(pageReport *models.PageReport, cid int64) []string
 		FindPageReportImages(pageReport *models.PageReport, cid int64) []models.Image

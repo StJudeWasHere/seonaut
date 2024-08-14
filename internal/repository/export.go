@@ -260,8 +260,8 @@ func (ds *ExportRepository) ExportAudios(crawl *models.Crawl) <-chan *models.Aud
 }
 
 // Send all video URLs through a read-only channel
-func (ds *ExportRepository) ExportVideos(crawl *models.Crawl) <-chan *models.Video {
-	vStream := make(chan *models.Video)
+func (ds *ExportRepository) ExportVideos(crawl *models.Crawl) <-chan *models.ExportVideo {
+	vStream := make(chan *models.ExportVideo)
 
 	go func() {
 		defer close(vStream)
@@ -280,7 +280,7 @@ func (ds *ExportRepository) ExportVideos(crawl *models.Crawl) <-chan *models.Vid
 		}
 
 		for rows.Next() {
-			v := &models.Video{}
+			v := &models.ExportVideo{}
 			err := rows.Scan(&v.Origin, &v.Video)
 			if err != nil {
 				log.Println(err)

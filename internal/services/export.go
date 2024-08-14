@@ -16,7 +16,7 @@ type (
 		ExportStyles(crawl *models.Crawl) <-chan *models.Style
 		ExportIframes(crawl *models.Crawl) <-chan *models.Iframe
 		ExportAudios(crawl *models.Crawl) <-chan *models.Audio
-		ExportVideos(crawl *models.Crawl) <-chan *models.Video
+		ExportVideos(crawl *models.Crawl) <-chan *models.ExportVideo
 		ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportHreflang
 	}
 

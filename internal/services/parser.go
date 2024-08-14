@@ -413,16 +413,24 @@ func (p *Parser) htmlAudios() []string {
 // <source src="video_file.webm" type="video/webm">
 // <source src="video_file.mp4" type="video/mp4">
 // </video>
-func (p *Parser) htmlVideos() []string {
-	videos := []string{}
+func (p *Parser) htmlVideos() []models.Video {
+	videos := []models.Video{}
 	v := htmlquery.Find(p.doc, "//video")
 	for _, n := range v {
+		poster := ""
+		posterAttr := htmlquery.SelectAttr(n, "poster")
+		if strings.TrimSpace(posterAttr) != "" {
+			pURL, err := p.absoluteURL(posterAttr)
+			if err == nil {
+				poster = pURL.String()
+			}
+		}
 
 		src := htmlquery.SelectAttr(n, "src")
 		if strings.TrimSpace(src) != "" {
 			url, err := p.absoluteURL(src)
 			if err == nil {
-				videos = append(videos, url.String())
+				videos = append(videos, models.Video{URL: url.String(), Poster: poster})
 			}
 		}
 
@@ -434,7 +442,7 @@ func (p *Parser) htmlVideos() []string {
 				continue
 			}
 
-			videos = append(videos, url.String())
+			videos = append(videos, models.Video{URL: url.String(), Poster: poster})
 		}
 	}
 

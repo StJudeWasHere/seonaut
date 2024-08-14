@@ -286,14 +286,20 @@ func (s *CrawlerHandler) getResourceURLs(p *models.PageReport) []*url.URL {
 	var urls []*url.URL
 	var resources []string
 
+	resources = append(resources, p.Scripts...)
+	resources = append(resources, p.Styles...)
+	resources = append(resources, p.Audios...)
+
 	for _, l := range p.Images {
 		resources = append(resources, l.URL)
 	}
 
-	resources = append(resources, p.Scripts...)
-	resources = append(resources, p.Styles...)
-	resources = append(resources, p.Audios...)
-	resources = append(resources, p.Videos...)
+	for _, l := range p.Videos {
+		resources = append(resources, l.URL)
+		if l.Poster != "" {
+			resources = append(resources, l.Poster)
+		}
+	}
 
 	for _, v := range resources {
 		t, err := url.Parse(v)

@@ -251,12 +251,12 @@ func (ds *PageReportRepository) SavePageReportVideos(r *models.PageReport, cid i
 		return nil
 	}
 
-	sqlString := "INSERT INTO videos (pagereport_id, url, crawl_id) values "
+	sqlString := "INSERT INTO videos (pagereport_id, url, poster, crawl_id) values "
 
 	v := []interface{}{}
 	for _, i := range r.Videos {
-		sqlString += "(?, ?, ?),"
-		v = append(v, r.Id, i, cid)
+		sqlString += "(?, ?, ?, ?),"
+		v = append(v, r.Id, i.URL, i.Poster, cid)
 	}
 	sqlString = sqlString[0 : len(sqlString)-1]
 	stmt, _ := ds.DB.Prepare(sqlString)
@@ -630,23 +630,23 @@ func (ds *PageReportRepository) FindPageReportAudios(pageReport *models.PageRepo
 }
 
 // Find videos in an specific pagereport.
-func (ds *PageReportRepository) FindPageReportVideos(pageReport *models.PageReport, cid int64) []string {
-	videos := []string{}
+func (ds *PageReportRepository) FindPageReportVideos(pageReport *models.PageReport, cid int64) []models.Video {
+	videos := []models.Video{}
 
-	vrows, err := ds.DB.Query("SELECT url FROM videos WHERE pagereport_id = ?", pageReport.Id)
+	vrows, err := ds.DB.Query("SELECT url, poster FROM videos WHERE pagereport_id = ?", pageReport.Id)
 	if err != nil {
 		log.Println(err)
 	}
 
 	for vrows.Next() {
-		var url string
-		err = vrows.Scan(&url)
+		var video models.Video
+		err = vrows.Scan(&video.URL, &video.Poster)
 		if err != nil {
 			log.Println(err)
 			continue
 		}
 
-		videos = append(videos, url)
+		videos = append(videos, video)
 	}
 
 	return videos

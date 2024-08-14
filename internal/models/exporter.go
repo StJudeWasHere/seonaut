@@ -32,7 +32,7 @@ type Audio struct {
 	Audio  string
 }
 
-type Video struct {
+type ExportVideo struct {
 	Origin string
 	Video  string
 }

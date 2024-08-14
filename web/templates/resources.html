@@ -744,7 +744,8 @@
 				<div class="box">
 					<div class="col col-main">
 						<div class="content">
-							<span class="url">{{ . }}</span>
+							<span class="url">{{ .URL }}</span><br>
+							<small>Poster: {{ if (.Poster) }} {{.Poster }} {{ else }} - {{ end }}</small>
 						</div>
 					</div>
 				</div>

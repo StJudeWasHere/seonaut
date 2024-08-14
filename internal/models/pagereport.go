@@ -32,7 +32,7 @@ type PageReport struct {
 	Styles             []string
 	Iframes            []string
 	Audios             []string
-	Videos             []string
+	Videos             []Video
 	BlockedByRobotstxt bool
 	Crawled            bool
 	InSitemap          bool

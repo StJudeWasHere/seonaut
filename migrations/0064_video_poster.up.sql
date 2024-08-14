@@ -1,0 +1,1 @@
+ALTER TABLE `videos` ADD COLUMN `poster` varchar(2048) NOT NULL DEFAULT '';

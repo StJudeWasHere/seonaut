@@ -135,8 +135,8 @@ func (s *reportstorage) FindPageReportStyles(pageReport *models.PageReport, cid 
 func (s *reportstorage) FindPageReportScripts(pageReport *models.PageReport, cid int64) []string {
 	return []string{}
 }
-func (s *reportstorage) FindPageReportVideos(pageReport *models.PageReport, cid int64) []string {
-	return []string{}
+func (s *reportstorage) FindPageReportVideos(pageReport *models.PageReport, cid int64) []models.Video {
+	return []models.Video{}
 }
 func (s *reportstorage) FindPageReportAudios(pageReport *models.PageReport, cid int64) []string {
 	return []string{}

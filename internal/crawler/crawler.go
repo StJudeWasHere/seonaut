@@ -24,46 +24,43 @@ const (
 
 	// Number of threads a queue will use to crawl a project.
 	consumerThreads = 2
+
+	// Crawler timeout in hours.
+	crawlerTimeout = 2
 )
 
 var ErrBlockedByRobotstxt = errors.New("blocked by robots.txt")
 var ErrVisited = errors.New("URL already visited")
 var ErrDomainNotAllowed = errors.New("domain not allowed")
 
+type Client interface {
+	Get(urlStr string) (*ClientResponse, error)
+	Head(urlStr string) (*ClientResponse, error)
+	GetUA() string
+}
+
+type ResponseCallback func(r *ResponseMessage)
+
 type Options struct {
 	CrawlLimit      int
 	IgnoreRobotsTxt bool
 	FollowNofollow  bool
 	IncludeNoindex  bool
-	UserAgent       string
 	CrawlSitemap    bool
 	AllowSubdomains bool
-	AuthUser        string
-	AuthPass        string
 }
 
-type CrawlerClient interface {
-	Get(u string) (*http.Response, error)
-	Head(u string) (*http.Response, error)
-	Do(req *http.Request) (*http.Response, error)
-	GetTTFB(resp *http.Response) int
-}
-
-type CrawlerStatus struct {
+type Status struct {
 	Crawled    int
 	Crawling   bool
 	Discovered int
 }
 
-type ResponseCallback func(r *ResponseMessage)
-
 type Crawler struct {
-	status           CrawlerStatus
+	status           Status
 	url              *url.URL
 	options          *Options
 	queue            *Queue
-	cancelQueue      context.CancelFunc
-	queueContext     context.Context
 	storage          *URLStorage
 	sitemapStorage   *URLStorage
 	sitemapChecker   *SitemapChecker
@@ -73,12 +70,15 @@ type Crawler struct {
 	robotsChecker    *RobotsChecker
 	allowedDomains   map[string]bool
 	mainDomain       string
-	qStream          chan *RequestMessage
 	cancel           context.CancelFunc
 	context          context.Context
-	client           CrawlerClient
+	client           Client
 	callback         ResponseCallback
-	rStream          chan *ResponseMessage
+}
+
+type ClientResponse struct {
+	Response *http.Response
+	TTFB     int
 }
 
 type RequestMessage struct {
@@ -99,58 +99,28 @@ type ResponseMessage struct {
 	Data      interface{}
 }
 
-func NewCrawler(url *url.URL, options *Options) *Crawler {
-	mainDomain := strings.TrimPrefix(url.Host, "www.")
-	httpClient := NewClient(&ClientOptions{
-		UserAgent:        options.UserAgent,
-		BasicAuthDomains: []string{mainDomain, "www." + mainDomain},
-		AuthUser:         options.AuthUser,
-		AuthPass:         options.AuthPass,
-	})
+func NewCrawler(parsedURL *url.URL, options *Options, client Client) *Crawler {
+	mainDomain := strings.TrimPrefix(parsedURL.Host, "www.")
 
-	storage := NewURLStorage()
+	robotsChecker := NewRobotsChecker(client)
+	sitemapChecker := NewSitemapChecker(client, options.CrawlLimit)
 
-	qctx, cancelQueue := context.WithCancel(context.Background())
-	q := NewQueue(qctx)
-
-	robotsChecker := NewRobotsChecker(httpClient, options.UserAgent)
-	sitemapChecker := NewSitemapChecker(httpClient, options.CrawlLimit)
-	qStream := make(chan *RequestMessage)
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithTimeout(context.Background(), crawlerTimeout*time.Hour)
 
 	return &Crawler{
-		status:         CrawlerStatus{Crawling: true},
-		url:            url,
+		status:         Status{Crawling: true},
+		url:            parsedURL,
 		options:        options,
-		queue:          q,
-		cancelQueue:    cancelQueue,
-		queueContext:   qctx,
-		storage:        storage,
+		queue:          NewQueue(),
+		storage:        NewURLStorage(),
 		sitemapStorage: NewURLStorage(),
 		sitemapChecker: sitemapChecker,
 		robotsChecker:  robotsChecker,
 		allowedDomains: map[string]bool{mainDomain: true, "www." + mainDomain: true},
 		mainDomain:     mainDomain,
-		qStream:        qStream,
 		cancel:         cancel,
 		context:        ctx,
-		client:         httpClient,
-		rStream:        make(chan *ResponseMessage),
-	}
-}
-
-// Polls URLs from the queue and sends them into the qStream channel which is used
-// by the httpCrawler to request the URLs.
-// The qStream shuts down when the ctx context is done.
-func (c *Crawler) queueStreamer(ctx context.Context) {
-	defer close(c.qStream)
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case c.qStream <- c.queue.Poll():
-		}
+		client:         client,
 	}
 }
 
@@ -163,12 +133,8 @@ func (c *Crawler) OnResponse(r ResponseCallback) {
 // through the pr channel. It will end when there are no more URLs to crawl
 // or the MaxPageReports limit is hit.
 func (c *Crawler) Start() {
-	defer func() {
-		c.cancelQueue()
-		c.cancel()
-	}()
-
-	go c.queueStreamer(c.queueContext)
+	defer c.queue.Done()
+	defer c.cancel() // cancel the consumers so all channels are closed.
 
 	c.setupSitemaps()
 
@@ -186,9 +152,7 @@ func (c *Crawler) Start() {
 		return
 	}
 
-	c.crawl()
-
-	for rm := range c.rStream {
+	for rm := range c.crawl() {
 		c.queue.Ack(rm.URL.String())
 
 		rm.InSitemap = c.sitemapStorage.Seen(rm.URL.String())
@@ -237,7 +201,7 @@ func (c *Crawler) AddRequest(r *RequestMessage) error {
 }
 
 // GetStatus returns the current cralwer status.
-func (c *Crawler) GetStatus() CrawlerStatus {
+func (c *Crawler) GetStatus() Status {
 	c.status.Discovered = c.queue.Count()
 	c.status.Crawling = c.context.Err() == nil
 
@@ -295,31 +259,48 @@ func (c *Crawler) setupSitemaps() {
 	c.sitemapExists = c.sitemapChecker.SitemapExists(sitemaps)
 }
 
-// crawl starts the request consumers in goroutines so they can start
-// sending requests concurrently.
-func (c *Crawler) crawl() {
+// crawl starts the request consumers in goroutines and polls URLs from the queue so they
+// can be requested concurrently.
+func (c *Crawler) crawl() <-chan *ResponseMessage {
+	reqStream := make(chan *RequestMessage)
+	respStream := make(chan *ResponseMessage)
+
+	wg := new(sync.WaitGroup)
+	wg.Add(consumerThreads)
+
+	// Starts the consumers that will make the client requests
+	for i := 0; i < consumerThreads; i++ {
+		go func() {
+			defer wg.Done()
+			c.consumer(reqStream, respStream)
+		}()
+	}
+
+	// Polls URLs from the queue and send them to the requests stream so they can
+	// be consumed. Waits for all the consumers to finish before closing the channels.
 	go func() {
-		defer close(c.rStream)
-		wg := new(sync.WaitGroup)
-		wg.Add(consumerThreads)
+		defer close(reqStream)
+		defer close(respStream)
+		defer wg.Wait()
 
-		for i := 0; i < consumerThreads; i++ {
-			go func() {
-				c.consumer()
-				wg.Done()
-			}()
+		for {
+			select {
+			case <-c.context.Done():
+				return
+			case reqStream <- c.queue.Poll():
+			}
 		}
-
-		wg.Wait()
 	}()
+
+	return respStream
 }
 
-// Consumer gets URLs from the qStream until the context is cancelled.
+// Consumer gets URLs from the reqStream until the context is cancelled.
 // It adds a random delay between client calls.
-func (c *Crawler) consumer() {
+func (c *Crawler) consumer(reqStream <-chan *RequestMessage, respStream chan<- *ResponseMessage) {
 	for {
 		select {
-		case requestMessage := <-c.qStream:
+		case requestMessage := <-reqStream:
 			// Add random delay to avoid overwhelming the servers with requests.
 			time.Sleep(time.Duration(rand.Intn(randomDelay)) * time.Millisecond)
 
@@ -328,17 +309,20 @@ func (c *Crawler) consumer() {
 				Data: requestMessage.Data,
 			}
 
+			r := &ClientResponse{}
 			switch requestMessage.Method {
 			case GET:
-				rm.Response, rm.Error = c.client.Get(requestMessage.URL.String())
+				r, rm.Error = c.client.Get(requestMessage.URL.String())
 			case HEAD:
-				rm.Response, rm.Error = c.client.Head(requestMessage.URL.String())
+				r, rm.Error = c.client.Head(requestMessage.URL.String())
 			}
 
-			// Get the Time To First Byte from the client.
-			rm.TTFB = c.client.GetTTFB(rm.Response)
+			if rm.Error == nil {
+				rm.Response = r.Response
+				rm.TTFB = r.TTFB
+			}
 
-			c.rStream <- rm
+			respStream <- rm
 		case <-c.context.Done():
 			return
 		}

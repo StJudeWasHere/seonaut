@@ -22,27 +22,26 @@ type CrawlerHandler struct {
 	store               CrawlerHandlerStorage
 	broker              *Broker
 	reportManager       *ReportManager
-	client              *crawler.BasicAuthClient
 	externalLinksStatus map[string]int
+	client              crawler.Client
 }
 
 type crawlerData struct {
 	Depth int
 }
 
-func NewCrawlerHandler(s CrawlerHandlerStorage, b *Broker, r *ReportManager, c *crawler.BasicAuthClient) *CrawlerHandler {
+func NewCrawlerHandler(s CrawlerHandlerStorage, b *Broker, r *ReportManager, client crawler.Client) *CrawlerHandler {
 	return &CrawlerHandler{
 		store:               s,
 		broker:              b,
 		reportManager:       r,
-		client:              c,
 		externalLinksStatus: make(map[string]int),
+		client:              client,
 	}
 }
 
 func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project, c *crawler.Crawler) crawler.ResponseCallback {
 	return func(r *crawler.ResponseMessage) {
-
 		pageReport, htmlNode, err := s.buildPageReport(r)
 		if err != nil {
 			log.Printf("callback function error: %v", err)
@@ -139,6 +138,8 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 func (s *CrawlerHandler) buildPageReport(r *crawler.ResponseMessage) (*models.PageReport, *html.Node, error) {
 	// Check if the response caused an error and save a pageReport.
 	if r.Error != nil {
+		log.Printf("responseMessage error: %v", r.Error)
+
 		return &models.PageReport{
 			Timeout:   true,
 			URL:       r.URL.String(),
@@ -150,12 +151,15 @@ func (s *CrawlerHandler) buildPageReport(r *crawler.ResponseMessage) (*models.Pa
 	// error save a pageReport with a timeout.
 	pageReport, htmlNode, err := NewFromHTTPResponse(r.Response)
 	if err != nil {
+		log.Printf("pageReport error: %v", err)
+
 		pageReport.URL = r.URL.String()
 		pageReport.ParsedURL = r.URL
 
 		if _, ok := err.(net.Error); ok {
 			pageReport.Timeout = true
 		}
+
 		if _, ok := err.(*url.Error); ok {
 			pageReport.Timeout = true
 		}
@@ -238,7 +242,7 @@ func (s *CrawlerHandler) checkExternalLinks(pageReport *models.PageReport) {
 		statusCode := -1
 		res, err := s.client.Head(l.URL)
 		if err == nil {
-			statusCode = res.StatusCode
+			statusCode = res.Response.StatusCode
 		}
 
 		s.externalLinksStatus[l.URL] = statusCode

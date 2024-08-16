@@ -1,39 +1,38 @@
 package crawler
 
-import (
-	"context"
-)
-
 type Queue struct {
 	in     chan *RequestMessage
 	out    chan *RequestMessage
 	ack    chan string
 	count  chan int
 	active chan bool
+	done   chan struct{}
 }
 
-func NewQueue(ctx context.Context) *Queue {
+func NewQueue() *Queue {
 	q := Queue{
 		in:     make(chan *RequestMessage),
 		out:    make(chan *RequestMessage),
 		ack:    make(chan string),
 		count:  make(chan int),
 		active: make(chan bool),
+		done:   make(chan struct{}),
 	}
 
-	go q.manage(ctx)
+	go q.manage()
 
 	return &q
 }
 
 // Manage the queue with push, poll, and acknowledgement of elements in the queue.
-func (q *Queue) manage(ctx context.Context) {
+func (q *Queue) manage() {
 	defer func() {
 		close(q.in)
 		close(q.out)
 		close(q.ack)
 		close(q.count)
 		close(q.active)
+		close(q.done)
 	}()
 
 	queue := []*RequestMessage{}
@@ -56,7 +55,7 @@ func (q *Queue) manage(ctx context.Context) {
 		}
 
 		select {
-		case <-ctx.Done():
+		case <-q.done:
 			return
 		case q.count <- len(queue):
 		case q.active <- (len(active) > 0 || len(queue) > 0):
@@ -98,4 +97,9 @@ func (q *Queue) Count() int {
 // Active returns true if the queue is not empty or has active elements.
 func (q *Queue) Active() bool {
 	return <-q.active
+}
+
+// Done stops the queue and closes all of its channels.
+func (q *Queue) Done() {
+	q.done <- struct{}{}
 }

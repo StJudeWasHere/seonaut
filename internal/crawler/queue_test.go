@@ -1,7 +1,6 @@
 package crawler_test
 
 import (
-	"context"
 	"net/url"
 	"testing"
 
@@ -22,7 +21,7 @@ func TestFIFO(t *testing.T) {
 	el1 := &crawler.RequestMessage{URL: url1}
 	el2 := &crawler.RequestMessage{URL: url2}
 
-	queue := crawler.NewQueue(context.Background())
+	queue := crawler.NewQueue()
 	queue.Push(el1)
 	queue.Push(el2)
 
@@ -35,10 +34,12 @@ func TestFIFO(t *testing.T) {
 	if p2 != el2 {
 		t.Errorf("%v != %v", p2, el2)
 	}
+
+	queue.Done()
 }
 
 func TestActiveNotActive(t *testing.T) {
-	queue := crawler.NewQueue(context.Background())
+	queue := crawler.NewQueue()
 	url1 := new(url.URL)
 	url1.Scheme = "https"
 	url1.Host = "example.com"
@@ -68,4 +69,6 @@ func TestActiveNotActive(t *testing.T) {
 	if active != false {
 		t.Errorf("Queue should not be active. Is: %v", active)
 	}
+
+	queue.Done()
 }

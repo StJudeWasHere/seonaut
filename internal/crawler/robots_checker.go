@@ -11,16 +11,14 @@ import (
 type RobotsChecker struct {
 	robotsMap map[string]*robotstxt.RobotsData
 	rlock     *sync.RWMutex
-	client    CrawlerClient
-	userAgent string
+	client    Client
 }
 
-func NewRobotsChecker(client CrawlerClient, ua string) *RobotsChecker {
+func NewRobotsChecker(client Client) *RobotsChecker {
 	return &RobotsChecker{
 		robotsMap: make(map[string]*robotstxt.RobotsData),
 		rlock:     &sync.RWMutex{},
 		client:    client,
-		userAgent: ua,
 	}
 }
 
@@ -36,7 +34,7 @@ func (r *RobotsChecker) IsBlocked(u *url.URL) bool {
 		path += "?" + u.Query().Encode()
 	}
 
-	return !robot.TestAgent(path, r.userAgent)
+	return !robot.TestAgent(path, r.client.GetUA())
 }
 
 // Returns true if the robots.txt file exists and is valid
@@ -78,14 +76,14 @@ func (r *RobotsChecker) getRobotsMap(u *url.URL) (*robotstxt.RobotsData, error) 
 		r.robotsMap[u.Host] = nil
 		return nil, err
 	}
-	defer resp.Body.Close()
+	defer resp.Response.Body.Close()
 
-	if resp.StatusCode != 200 {
+	if resp.Response.StatusCode != 200 {
 		r.robotsMap[u.Host] = nil
 		return nil, errors.New("robots.txt file does not exist")
 	}
 
-	robot, err = robotstxt.FromResponse(resp)
+	robot, err = robotstxt.FromResponse(resp.Response)
 	if err != nil {
 		r.robotsMap[u.Host] = nil
 		return nil, err

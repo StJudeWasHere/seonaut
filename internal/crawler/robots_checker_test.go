@@ -13,16 +13,10 @@ import (
 
 type MockClient struct{}
 
-func (t *MockClient) Head(u string) (*http.Response, error) {
-	return &http.Response{}, nil
+func (t *MockClient) Head(u string) (*crawler.ClientResponse, error) {
+	return &crawler.ClientResponse{}, nil
 }
-func (t *MockClient) Do(req *http.Request) (*http.Response, error) {
-	return &http.Response{}, nil
-}
-func (t *MockClient) GetTTFB(resp *http.Response) int {
-	return 0
-}
-func (t *MockClient) Get(u string) (*http.Response, error) {
+func (t *MockClient) Get(u string) (*crawler.ClientResponse, error) {
 	r := &http.Response{}
 	if strings.HasPrefix(u, "https://example.com/") {
 		body := `
@@ -37,12 +31,16 @@ func (t *MockClient) Get(u string) (*http.Response, error) {
 		r.StatusCode = 404
 	}
 
-	return r, nil
+	return &crawler.ClientResponse{Response: r}, nil
+}
+
+func (t *MockClient) GetUA() string {
+	return "TEST UA"
 }
 
 // TestIsBlocked tests URLs allowed and disallowed in the robots.txt file.
 func TestIsBlocked(t *testing.T) {
-	robotsChecker := crawler.NewRobotsChecker(&MockClient{}, "Test UA")
+	robotsChecker := crawler.NewRobotsChecker(&MockClient{})
 	u, err := url.Parse("https://example.com/disallowed")
 	if err != nil {
 		t.Errorf("url parse error %v", err)
@@ -64,7 +62,7 @@ func TestIsBlocked(t *testing.T) {
 
 // TestRobotsExist tests if the robots.txt file exists for a given domain.
 func TestRobotsExist(t *testing.T) {
-	robotsChecker := crawler.NewRobotsChecker(&MockClient{}, "Test UA")
+	robotsChecker := crawler.NewRobotsChecker(&MockClient{})
 	u, err := url.Parse("https://norobots.com/")
 	if err != nil {
 		t.Errorf("url parse error %v", err)
@@ -86,7 +84,7 @@ func TestRobotsExist(t *testing.T) {
 
 // TestGetSitemap tests if robots.txt file has a sitemaps list.
 func TestGetSitemap(t *testing.T) {
-	robotsChecker := crawler.NewRobotsChecker(&MockClient{}, "Test UA")
+	robotsChecker := crawler.NewRobotsChecker(&MockClient{})
 	u, err := url.Parse("https://example.com/")
 	if err != nil {
 		t.Errorf("url parse error %v", err)

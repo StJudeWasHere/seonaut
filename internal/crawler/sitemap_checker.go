@@ -9,10 +9,10 @@ import (
 
 type SitemapChecker struct {
 	limit  int
-	client CrawlerClient
+	client Client
 }
 
-func NewSitemapChecker(client CrawlerClient, limit int) *SitemapChecker {
+func NewSitemapChecker(client Client, limit int) *SitemapChecker {
 	return &SitemapChecker{
 		limit:  limit,
 		client: client,
@@ -37,7 +37,7 @@ func (sc *SitemapChecker) urlExists(URL string) bool {
 		return false
 	}
 
-	return resp.StatusCode >= 200 && resp.StatusCode < 300
+	return resp.Response.StatusCode >= 200 && resp.Response.StatusCode < 300
 }
 
 // Parse the sitemaps using a callback function on each entry
@@ -59,9 +59,9 @@ func (sc *SitemapChecker) ParseSitemaps(URLs []string, callback func(u string)) 
 				if err != nil {
 					return
 				}
-				defer resp.Body.Close()
+				defer resp.Response.Body.Close()
 
-				sitemap.Parse(resp.Body, func(e sitemap.Entry) error {
+				sitemap.Parse(resp.Response.Body, func(e sitemap.Entry) error {
 					callback(e.GetLocation())
 
 					lock.Lock()

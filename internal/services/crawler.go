@@ -4,7 +4,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -16,6 +18,7 @@ import (
 const (
 	CrawlLimit      = 20000 // Max number of page reports that will be created
 	LastCrawlsLimit = 5     // Max number returned by GetLastCrawls
+	ClientTimeout   = 10    // HTTP client timeout in seconds.
 )
 
 type CrawlerServiceStorage interface {
@@ -157,15 +160,28 @@ func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project, b *models.Bas
 		IgnoreRobotsTxt: p.IgnoreRobotsTxt,
 		FollowNofollow:  p.FollowNofollow,
 		IncludeNoindex:  p.IncludeNoindex,
-		UserAgent:       s.config.Agent,
 		CrawlSitemap:    p.CrawlSitemap,
 		AllowSubdomains: p.AllowSubdomains,
-		AuthUser:        b.AuthUser,
-		AuthPass:        b.AuthPass,
 	}
 
+	mainDomain := strings.TrimPrefix(u.Host, "www.")
+
+	httpClient := &http.Client{
+		Timeout: ClientTimeout * time.Second,
+		CheckRedirect: func(r *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+
+	client := crawler.NewBasicClient(&crawler.ClientOptions{
+		UserAgent:        s.config.Agent,
+		BasicAuthDomains: []string{mainDomain, "www." + mainDomain},
+		AuthUser:         b.AuthUser,
+		AuthPass:         b.AuthPass,
+	}, httpClient)
+
 	// Creates a new crawler with the crawler's response handler.
-	s.crawlers[p.Id] = crawler.NewCrawler(u, options)
+	s.crawlers[p.Id] = crawler.NewCrawler(u, options, client)
 
 	return s.crawlers[p.Id], nil
 }

@@ -57,6 +57,7 @@ func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 	err = h.CrawlerService.StartCrawler(p, models.BasicAuth{})
 	if err != nil {
 		log.Printf("StartCrawler: %s %v\n", p.URL, err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 

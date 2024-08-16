@@ -11,12 +11,16 @@ import (
 
 const (
 	// HTTP client timeout in seconds.
-	clientTimeOut = 10
+	clientTimeout = 10
 )
+
+type HTTPRequester interface {
+	Do(req *http.Request) (*http.Response, error)
+}
 
 type BasicAuthClient struct {
 	Options *ClientOptions
-	client  *http.Client
+	client  HTTPRequester
 	ttfbMap map[*http.Response]int
 	mu      sync.Mutex
 }
@@ -30,7 +34,7 @@ type ClientOptions struct {
 
 func NewClient(options *ClientOptions) *BasicAuthClient {
 	httpClient := &http.Client{
-		Timeout: clientTimeOut * time.Second,
+		Timeout: clientTimeout * time.Second,
 		CheckRedirect: func(r *http.Request, via []*http.Request) error {
 			return http.ErrUseLastResponse
 		},
@@ -47,12 +51,12 @@ func NewClient(options *ClientOptions) *BasicAuthClient {
 func (c *BasicAuthClient) request(method, u string) (*http.Response, error) {
 	req, err := http.NewRequest(method, u, nil)
 	if err != nil {
-		return &http.Response{}, err
+		return nil, err
 	}
 
 	domain, err := url.Parse(u)
 	if err != nil {
-		return &http.Response{}, err
+		return nil, err
 	}
 
 	if c.Options.AuthUser != "" && c.isBasicAuthDomain(domain.Host) {
@@ -88,8 +92,8 @@ func (c *BasicAuthClient) Head(u string) (*http.Response, error) {
 func (c *BasicAuthClient) Do(req *http.Request) (*http.Response, error) {
 	req.Header.Set("User-Agent", c.Options.UserAgent)
 
-	var start time.Time
-	var ttfb int
+	start := time.Now()
+	ttfb := 0
 	trace := &httptrace.ClientTrace{
 		GotFirstResponseByte: func() {
 			ttfb = int(math.Ceil(float64(time.Since(start) / time.Millisecond))) // Time To First Byte in milliseconds
@@ -97,7 +101,6 @@ func (c *BasicAuthClient) Do(req *http.Request) (*http.Response, error) {
 	}
 	req = req.WithContext(httptrace.WithClientTrace(req.Context(), trace))
 
-	start = time.Now()
 	resp, err := c.client.Do(req)
 	if err != nil {
 		return resp, err

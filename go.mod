@@ -1,8 +1,6 @@
 module github.com/stjudewashere/seonaut
 
-go 1.21
-
-toolchain go1.21.2
+go 1.23
 
 require (
 	github.com/antchfx/htmlquery v1.3.2
@@ -10,7 +8,7 @@ require (
 	github.com/golang-migrate/migrate/v4 v4.17.1
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/securecookie v1.1.2
-	github.com/gorilla/sessions v1.3.0
+	github.com/gorilla/sessions v1.4.0
 	github.com/gorilla/websocket v1.5.3
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/oxffaa/gopher-parse-sitemap v0.0.0-20191021113419-005d2eb1def4

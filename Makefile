@@ -13,16 +13,6 @@ vet:
 	go vet ./internal/...
 .PHONY: vet
 
-# Compile for the linux amd64 platform
-linux:
-	GOOS=linux GOARCH=amd64 go build -o bin/seonaut cmd/server/main.go
-.PHONY: linux
-
-# Delete files in the bin folder
-clean:
-	find ./bin ! -name .gitignore -delete
-.PHONY: clean
-
 # Run docker compose
 docker:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build

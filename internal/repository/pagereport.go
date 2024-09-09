@@ -340,7 +340,7 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 				in_sitemap,
 				depth,
 				body_hash,
-				ttf
+				ttfb
 			FROM pagereports
 			WHERE crawl_id = ?`
 

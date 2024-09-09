@@ -3,6 +3,7 @@ package services
 import (
 	"errors"
 	"net/url"
+	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -28,7 +29,10 @@ func NewProjectService(s ProjectServiceStorage) *ProjectService {
 }
 
 // SaveProject stores a new project.
+// It trims the spaces in the project's URL field and checks the scheme to
+// make sure it is http or https.
 func (s *ProjectService) SaveProject(project *models.Project, userId int) error {
+	project.URL = strings.TrimSpace(project.URL)
 	parsedURL, err := url.Parse(project.URL)
 	if err != nil {
 		return err

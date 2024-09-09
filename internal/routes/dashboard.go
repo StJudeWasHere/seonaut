@@ -12,9 +12,9 @@ type dashboardHandler struct {
 	*services.Container
 }
 
-// handleDashboard handles the dashboard of a project with all the needed data to render
+// indexHandler handles the dashboard of a project with all the needed data to render
 // the charts. It expects a query parameter "pid" containing the project id.
-func (h *dashboardHandler) handleDashboard(w http.ResponseWriter, r *http.Request) {
+func (h *dashboardHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)

@@ -11,13 +11,9 @@ type userHandler struct {
 	*services.Container
 }
 
-// handleSignup handles the signup functionality for the application.
+// signupGetHandler handles the GET signup request ehich displays the sign up form.
 // It allows users to sign up by providing their email and password.
-// Upon successful signup, the user is automatically signed in and redirected to the home page.
-// The function handles both GET and POST HTTP methods.
-// GET: Renders the signup form.
-// POST: Processes the signup form data, performs signup, signs the user in, and redirects to the home page.
-func (h *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
+func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
 	data := &struct {
 		Email string
 		Error bool
@@ -28,38 +24,49 @@ func (h *userHandler) handleSignup(w http.ResponseWriter, r *http.Request) {
 		Data:      data,
 	}
 
-	if r.Method == http.MethodPost {
-		err := r.ParseForm()
-		if err != nil {
-			log.Printf("serveSignup ParseForm: %v", err)
-			http.Redirect(w, r, "/signup", http.StatusSeeOther)
-			return
-		}
+	h.Renderer.RenderTemplate(w, "signup", pageView)
+}
 
-		data.Email = r.FormValue("email")
-		password := r.FormValue("password")
+// signupPostHandler handles the POST request of the signup form.
+// Upon successful signup, the user is automatically signed in and redirected to the home page.
+func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("serveSignup ParseForm: %v", err)
+		http.Redirect(w, r, "/signup", http.StatusSeeOther)
+		return
+	}
 
-		u, err := h.UserService.SignUp(data.Email, password)
-		if err != nil {
-			log.Printf("serveSignup SignUp: %v", err)
-			data.Error = true
-			h.Renderer.RenderTemplate(w, "signup", pageView)
-			return
-		}
-
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+	u, err := h.UserService.SignUp(email, password)
+	if err == nil {
 		h.CookieSession.SetSession(u, w, r)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
+	log.Printf("serveSignup SignUp: %v", err)
+
+	data := &struct {
+		Email string
+		Error bool
+	}{
+		Email: email,
+		Error: true,
+	}
+
+	pageView := &PageView{
+		PageTitle: "SIGNUP_VIEW",
+		Data:      data,
+	}
+
 	h.Renderer.RenderTemplate(w, "signup", pageView)
 }
 
-// handleDeleteUser handles the HTTP GET and POST requests for the delete user account functionality.
-// The function handles both GET and POST HTTP methods.
-// GET: it renders the delete page with the appropriate data.
-// POST: it sign's out the user and deletes the account including all its associated data.
-func (h *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
+// deleteGetHandler handles the HTTP GET request for the delete user account functionality.
+// it renders the delete page with the appropriate data.
+func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
@@ -80,67 +87,103 @@ func (h *userHandler) handleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	for _, v := range pv {
 		if v.Crawl.Crawling || v.Project.Deleting {
 			data.Crawling = true
-			h.Renderer.RenderTemplate(w, "delete_account", pageView)
-			return
+			break
 		}
-	}
-
-	if r.Method == http.MethodPost {
-		h.CookieSession.DestroySession(w, r)
-		h.UserService.DeleteUser(user)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
 	}
 
 	h.Renderer.RenderTemplate(w, "delete_account", pageView)
 }
 
-// handleSignin handles the HTTP GET and POST requests for the sign-in functionality.
-// The function handles both GET and POST HTTP methods.
-// GET: it renders the sign-in page with the appropriate data.
-// POST: it validates the user's credentials and creates a session if the sign-in is successful.
-func (h *userHandler) handleSignin(w http.ResponseWriter, r *http.Request) {
-	data := &struct {
-		Email string
-		Error bool
-	}{}
-
-	pageView := &PageView{
-		PageTitle: "SIGNIN_VIEW",
-		Data:      data,
+// deletePostHandler handles the POST request to delete an account.
+// After deleting the user and all its associated data it destroys the session
+// and redirects home.
+func (h *userHandler) deletePostHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
 	}
 
-	if r.Method == http.MethodPost {
-		err := r.ParseForm()
-		if err != nil {
-			log.Printf("serveSignin ParseForm: %v\n", err)
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-			return
-		}
+	h.UserService.DeleteUser(user)
+	h.CookieSession.DestroySession(w, r)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
 
-		data.Email = r.FormValue("email")
-		password := r.FormValue("password")
-
-		u, err := h.UserService.SignIn(data.Email, password)
-		if err == nil {
-			h.CookieSession.SetSession(u, w, r)
-			http.Redirect(w, r, "/", http.StatusSeeOther)
-			return
-		}
-
-		log.Printf("serveSignin SignIn: %v\n", err)
-		data.Error = true
+// signinGetHandler handles the HTTP GET request for the sign-in functionality.
+// It renders the sign-in page with the appropriate data.
+func (h *userHandler) signinGetHandler(w http.ResponseWriter, r *http.Request) {
+	pageView := &PageView{
+		PageTitle: "SIGNIN_VIEW",
+		Data: &struct {
+			Email string
+			Error bool
+		}{},
 	}
 
 	h.Renderer.RenderTemplate(w, "signin", pageView)
 }
 
-// handleAccount handles the HTTP POST and GET requests for the account management functionality.
-// The function handles both GET and POST HTTP methods.
-// POST: it allows users to change their credentials by verifying the current password and
+// signinGetHandler handles the HTTP POST request for the sign-in functionality.
+// It validates the user's credentials and creates a session if the sign-in is successful.
+func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) {
+	err := r.ParseForm()
+	if err != nil {
+		log.Printf("serveSignin ParseForm: %v\n", err)
+		http.Redirect(w, r, "/signin", http.StatusSeeOther)
+		return
+	}
+
+	email := r.FormValue("email")
+	password := r.FormValue("password")
+
+	u, err := h.UserService.SignIn(email, password)
+	if err != nil {
+		log.Printf("serveSignin SignIn: %v\n", err)
+
+		pageView := &PageView{
+			PageTitle: "SIGNIN_VIEW",
+			Data: &struct {
+				Email string
+				Error bool
+			}{
+				Email: email,
+				Error: true,
+			},
+		}
+
+		h.Renderer.RenderTemplate(w, "signin", pageView)
+		return
+	}
+
+	h.CookieSession.SetSession(u, w, r)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// editGetHandler handles the HTTP GET request for the account management functionality.
+// It renders the account management form with the appropriate data.
+func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pageView := &PageView{
+		PageTitle: "ACCOUNT_VIEW",
+		User:      *user,
+		Data: &struct {
+			Error        bool
+			ErrorMessage string
+		}{},
+	}
+
+	h.Renderer.RenderTemplate(w, "account", pageView)
+}
+
+// editPostHandler handles the HTTP POST request for the account management functionality.
+// It allows users to change their credentials by verifying the current password and
 // updating the password with a new one.
-// GET: it renders the account management form with the appropriate data.
-func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
+func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
@@ -158,42 +201,37 @@ func (h *userHandler) handleAccount(w http.ResponseWriter, r *http.Request) {
 		User:      *user,
 	}
 
-	if r.Method == http.MethodPost {
-		err := r.ParseForm()
-		if err != nil {
-			http.Redirect(w, r, "/signin", http.StatusSeeOther)
-			return
-		}
-
-		password := r.FormValue("password")
-		newPassword := r.FormValue("new_password")
-
-		_, err = h.UserService.SignIn(user.Email, password)
-		if err != nil {
-			data.Error = true
-			data.ErrorMessage = "Current password is not correct."
-			h.Renderer.RenderTemplate(w, "account", pageView)
-			return
-		}
-
-		err = h.UserService.UpdatePassword(user.Email, newPassword)
-		if err != nil {
-			data.Error = true
-			data.ErrorMessage = "New password is not valid."
-			h.Renderer.RenderTemplate(w, "account", pageView)
-			return
-		}
-
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+	err := r.ParseForm()
+	if err != nil {
+		http.Redirect(w, r, "/signin", http.StatusSeeOther)
 		return
 	}
 
-	h.Renderer.RenderTemplate(w, "account", pageView)
+	password := r.FormValue("password")
+	newPassword := r.FormValue("new_password")
+
+	_, err = h.UserService.SignIn(user.Email, password)
+	if err != nil {
+		data.Error = true
+		data.ErrorMessage = "Current password is not correct."
+		h.Renderer.RenderTemplate(w, "account", pageView)
+		return
+	}
+
+	err = h.UserService.UpdatePassword(user.Email, newPassword)
+	if err != nil {
+		data.Error = true
+		data.ErrorMessage = "New password is not valid."
+		h.Renderer.RenderTemplate(w, "account", pageView)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// handleSignout is a handler function that handles the user's signout request.
+// signoutHandler is a handler function that handles the user's signout request.
 // It clears the session data related to authenticated user.
-func (h *userHandler) handleSignout(w http.ResponseWriter, r *http.Request) {
+func (h *userHandler) signoutHandler(w http.ResponseWriter, r *http.Request) {
 	h.CookieSession.DestroySession(w, r)
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

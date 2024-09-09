@@ -21,56 +21,63 @@ type PageView struct {
 func NewServer(container *services.Container) {
 	// Handle static files
 	fileServer := http.FileServer(http.Dir("./web/static"))
-	http.Handle("/resources/", http.StripPrefix("/resources", fileServer))
-	http.Handle("/robots.txt", fileServer)
-	http.Handle("/favicon.ico", fileServer)
+	http.Handle("GET /resources/", http.StripPrefix("/resources", fileServer))
+	http.Handle("GET /robots.txt", fileServer)
+	http.Handle("GET /favicon.ico", fileServer)
 
 	// Crawler routes
 	crawlHandler := crawlHandler{container}
-	http.HandleFunc("/crawl", container.CookieSession.Auth(crawlHandler.handleCrawl))
-	http.HandleFunc("/crawl/stop", container.CookieSession.Auth(crawlHandler.handleStopCrawl))
-	http.HandleFunc("/crawl/live", container.CookieSession.Auth(crawlHandler.handleCrawlLive))
-	http.HandleFunc("/crawl/auth", container.CookieSession.Auth(crawlHandler.handleCrawlAuth))
-	http.HandleFunc("/crawl/ws", container.CookieSession.Auth(crawlHandler.handleCrawlWs))
+	http.HandleFunc("GET /crawl/start", container.CookieSession.Auth(crawlHandler.startHandler))
+	http.HandleFunc("GET /crawl/stop", container.CookieSession.Auth(crawlHandler.stopHandler))
+	http.HandleFunc("GET /crawl/live", container.CookieSession.Auth(crawlHandler.liveCrawlHandler))
+	http.HandleFunc("GET /crawl/auth", container.CookieSession.Auth(crawlHandler.authGetHandler))
+	http.HandleFunc("POST /crawl/auth", container.CookieSession.Auth(crawlHandler.authPostHandler))
+	http.HandleFunc("GET /crawl/ws", container.CookieSession.Auth(crawlHandler.wsHandler))
 
 	// Dashboard route
 	dashboardHandler := dashboardHandler{container}
-	http.HandleFunc("/dashboard", container.CookieSession.Auth(dashboardHandler.handleDashboard))
+	http.HandleFunc("GET /dashboard", container.CookieSession.Auth(dashboardHandler.indexHandler))
 
 	// URL explorer route
 	explorerHandler := explorerHandler{container}
-	http.HandleFunc("/explorer", container.CookieSession.Auth(explorerHandler.handleExplorer))
+	http.HandleFunc("GET /explorer", container.CookieSession.Auth(explorerHandler.indexHandler))
 
 	// Data export routes
 	exportHandler := exportHandler{container}
-	http.HandleFunc("/download", container.CookieSession.Auth(exportHandler.handleDownloadCSV))
-	http.HandleFunc("/sitemap", container.CookieSession.Auth(exportHandler.handleSitemap))
-	http.HandleFunc("/export", container.CookieSession.Auth(exportHandler.handleExport))
-	http.HandleFunc("/export/download", container.CookieSession.Auth(exportHandler.handleExportResources))
+	http.HandleFunc("GET /export", container.CookieSession.Auth(exportHandler.indexHandler))
+	http.HandleFunc("GET /export/csv", container.CookieSession.Auth(exportHandler.csvHandler))
+	http.HandleFunc("GET /export/sitemap", container.CookieSession.Auth(exportHandler.sitemapHandler))
+	http.HandleFunc("GET /export/resources", container.CookieSession.Auth(exportHandler.resourcesHandler))
 
 	// Issues routes
 	issueHandler := issueHandler{container}
-	http.HandleFunc("/issues", container.CookieSession.Auth(issueHandler.handleIssues))
-	http.HandleFunc("/issues/view", container.CookieSession.Auth(issueHandler.handleIssuesView))
+	http.HandleFunc("GET /issues", container.CookieSession.Auth(issueHandler.indexHandler))
+	http.HandleFunc("GET /issues/view", container.CookieSession.Auth(issueHandler.viewHandler))
 
 	// Project routes
 	projectHandler := projectHandler{container}
-	http.HandleFunc("/", container.CookieSession.Auth(projectHandler.handleHome))
-	http.HandleFunc("/project/add", container.CookieSession.Auth(projectHandler.handleProjectAdd))
-	http.HandleFunc("/project/edit", container.CookieSession.Auth(projectHandler.handleProjectEdit))
-	http.HandleFunc("/project/delete", container.CookieSession.Auth(projectHandler.handleDeleteProject))
+	http.HandleFunc("GET /", container.CookieSession.Auth(projectHandler.indexHandler))
+	http.HandleFunc("GET /project/add", container.CookieSession.Auth(projectHandler.addGetHandler))
+	http.HandleFunc("POST /project/add", container.CookieSession.Auth(projectHandler.addPostHandler))
+	http.HandleFunc("GET /project/edit", container.CookieSession.Auth(projectHandler.editGetHandler))
+	http.HandleFunc("POST /project/edit", container.CookieSession.Auth(projectHandler.editPostHandler))
+	http.HandleFunc("GET /project/delete", container.CookieSession.Auth(projectHandler.deleteHandler))
 
 	// Resource route
 	resourceHandler := resourceHandler{container}
-	http.HandleFunc("/resources", container.CookieSession.Auth(resourceHandler.handleResourcesView))
+	http.HandleFunc("GET /resources", container.CookieSession.Auth(resourceHandler.indexHandler))
 
 	// User routes
 	userHandle := userHandler{container}
-	http.HandleFunc("/signup", userHandle.handleSignup)
-	http.HandleFunc("/signin", userHandle.handleSignin)
-	http.HandleFunc("/signout", container.CookieSession.Auth(userHandle.handleSignout))
-	http.HandleFunc("/account", container.CookieSession.Auth(userHandle.handleAccount))
-	http.HandleFunc("/account/delete", container.CookieSession.Auth((userHandle.handleDeleteUser)))
+	http.HandleFunc("GET /signup", userHandle.signupGetHandler)
+	http.HandleFunc("POST /signup", userHandle.signupPostHandler)
+	http.HandleFunc("GET /signin", userHandle.signinGetHandler)
+	http.HandleFunc("POST /signin", userHandle.signinPostHandler)
+	http.HandleFunc("GET /account", container.CookieSession.Auth(userHandle.editGetHandler))
+	http.HandleFunc("POST /account", container.CookieSession.Auth(userHandle.editPostHandler))
+	http.HandleFunc("GET /account/delete", container.CookieSession.Auth((userHandle.deleteGetHandler)))
+	http.HandleFunc("POST /account/delete", container.CookieSession.Auth((userHandle.deletePostHandler)))
+	http.HandleFunc("GET /signout", container.CookieSession.Auth(userHandle.signoutHandler))
 
 	fmt.Printf("Starting server at %s on port %d...\n", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port), nil)

@@ -68,16 +68,16 @@ func NewServer(container *services.Container) {
 	http.HandleFunc("GET /resources", container.CookieSession.Auth(resourceHandler.indexHandler))
 
 	// User routes
-	userHandle := userHandler{container}
-	http.HandleFunc("GET /signup", userHandle.signupGetHandler)
-	http.HandleFunc("POST /signup", userHandle.signupPostHandler)
-	http.HandleFunc("GET /signin", userHandle.signinGetHandler)
-	http.HandleFunc("POST /signin", userHandle.signinPostHandler)
-	http.HandleFunc("GET /account", container.CookieSession.Auth(userHandle.editGetHandler))
-	http.HandleFunc("POST /account", container.CookieSession.Auth(userHandle.editPostHandler))
-	http.HandleFunc("GET /account/delete", container.CookieSession.Auth((userHandle.deleteGetHandler)))
-	http.HandleFunc("POST /account/delete", container.CookieSession.Auth((userHandle.deletePostHandler)))
-	http.HandleFunc("GET /signout", container.CookieSession.Auth(userHandle.signoutHandler))
+	userHandler := userHandler{container}
+	http.HandleFunc("GET /signup", userHandler.signupGetHandler)
+	http.HandleFunc("POST /signup", userHandler.signupPostHandler)
+	http.HandleFunc("GET /signin", userHandler.signinGetHandler)
+	http.HandleFunc("POST /signin", userHandler.signinPostHandler)
+	http.HandleFunc("GET /account", container.CookieSession.Auth(userHandler.editGetHandler))
+	http.HandleFunc("POST /account", container.CookieSession.Auth(userHandler.editPostHandler))
+	http.HandleFunc("GET /account/delete", container.CookieSession.Auth((userHandler.deleteGetHandler)))
+	http.HandleFunc("POST /account/delete", container.CookieSession.Auth((userHandler.deletePostHandler)))
+	http.HandleFunc("GET /signout", container.CookieSession.Auth(userHandler.signoutHandler))
 
 	fmt.Printf("Starting server at %s on port %d...\n", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port), nil)

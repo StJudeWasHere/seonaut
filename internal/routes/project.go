@@ -43,7 +43,7 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // addGetHandler handles the form for adding a new project.
-// This handler handles the GET requests.
+// This handler handles the GET request.
 func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
@@ -61,6 +61,7 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // addPostHandler handles the POST request to add a project.
+// This handler handles the POST request.
 func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
@@ -122,16 +123,17 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	err = h.ProjectService.SaveProject(project, user.Id)
-	if err == nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+	if err != nil {
+		pageView := &PageView{
+			User:      *user,
+			PageTitle: "ADD_PROJECT",
+			Data:      &struct{ Error bool }{Error: true},
+		}
+		h.Renderer.RenderTemplate(w, "project_add", pageView)
+		return
 	}
 
-	pageView := &PageView{
-		User:      *user,
-		PageTitle: "ADD_PROJECT",
-		Data:      &struct{ Error bool }{Error: true},
-	}
-	h.Renderer.RenderTemplate(w, "project_add", pageView)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // deleteHandler handles the deletion of a project.
@@ -262,23 +264,22 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	err = h.ProjectService.UpdateProject(&p)
-	if err == nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+	if err != nil {
+		pageView := &PageView{
+			User:      *user,
+			PageTitle: "EDIT_PROJECT",
+			Data: &struct {
+				Project models.Project
+				Error   bool
+			}{
+				Project: p,
+				Error:   true,
+			},
+		}
+
+		h.Renderer.RenderTemplate(w, "project_edit", pageView)
+		return
 	}
 
-	data := &struct {
-		Project models.Project
-		Error   bool
-	}{
-		Project: p,
-		Error:   true,
-	}
-
-	pageView := &PageView{
-		User:      *user,
-		PageTitle: "EDIT_PROJECT",
-		Data:      data,
-	}
-
-	h.Renderer.RenderTemplate(w, "project_edit", pageView)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }

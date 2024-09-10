@@ -11,17 +11,17 @@ type userHandler struct {
 	*services.Container
 }
 
-// signupGetHandler handles the GET signup request ehich displays the sign up form.
+// signupGetHandler handles the GET signup request and displays the sign up form.
 // It allows users to sign up by providing their email and password.
+// The template uses the data's Email field to pre-populate the form.
 func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
-	data := &struct {
-		Email string
-		Error bool
-	}{}
-
 	pageView := &PageView{
 		PageTitle: "SIGNUP_VIEW",
-		Data:      data,
+		Data: &struct {
+			Email        string
+			Error        bool
+			ErrorMessage string
+		}{},
 	}
 
 	h.Renderer.RenderTemplate(w, "signup", pageView)
@@ -29,43 +29,53 @@ func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
 
 // signupPostHandler handles the POST request of the signup form.
 // Upon successful signup, the user is automatically signed in and redirected to the home page.
+// In case of error the signup template is rendered with the pre-populated form using the
+// data's email field.
 func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Printf("serveSignup ParseForm: %v", err)
 		http.Redirect(w, r, "/signup", http.StatusSeeOther)
 		return
 	}
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
+
 	u, err := h.UserService.SignUp(email, password)
-	if err == nil {
-		h.CookieSession.SetSession(u, w, r)
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+	if err != nil {
+		errorMsg := "The email address or password is not valid."
+		switch err {
+		case services.ErrInvalidPassword:
+			errorMsg = "Password is not valid."
+		case services.ErrInvalidEmail:
+			errorMsg = "Email address is not valid."
+		default:
+			log.Printf("sign up error: %v", err)
+		}
+		pageView := &PageView{
+			PageTitle: "SIGNUP_VIEW",
+			Data: &struct {
+				Email        string
+				Error        bool
+				ErrorMessage string
+			}{
+				Email:        email,
+				Error:        true,
+				ErrorMessage: errorMsg,
+			},
+		}
+
+		h.Renderer.RenderTemplate(w, "signup", pageView)
 		return
 	}
 
-	log.Printf("serveSignup SignUp: %v", err)
-
-	data := &struct {
-		Email string
-		Error bool
-	}{
-		Email: email,
-		Error: true,
-	}
-
-	pageView := &PageView{
-		PageTitle: "SIGNUP_VIEW",
-		Data:      data,
-	}
-
-	h.Renderer.RenderTemplate(w, "signup", pageView)
+	h.CookieSession.SetSession(u, w, r)
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 // deleteGetHandler handles the HTTP GET request for the delete user account functionality.
 // it renders the delete page with the appropriate data.
+// A user account can not be deleted if it is crawling a project.
 func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
@@ -73,22 +83,21 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := &struct {
-		Crawling bool
-	}{}
+	crawling := false
+	pv := h.ProjectViewService.GetProjectViews((user.Id))
+	for _, v := range pv {
+		if v.Crawl.Crawling || v.Project.Deleting {
+			crawling = true
+			break
+		}
+	}
 
 	pageView := &PageView{
 		PageTitle: "DELETE_ACCOUNT_VIEW",
 		User:      *user,
-		Data:      data,
-	}
-
-	pv := h.ProjectViewService.GetProjectViews((user.Id))
-	for _, v := range pv {
-		if v.Crawl.Crawling || v.Project.Deleting {
-			data.Crawling = true
-			break
-		}
+		Data: &struct {
+			Crawling bool
+		}{Crawling: crawling},
 	}
 
 	h.Renderer.RenderTemplate(w, "delete_account", pageView)
@@ -106,17 +115,19 @@ func (h *userHandler) deletePostHandler(w http.ResponseWriter, r *http.Request) 
 
 	h.UserService.DeleteUser(user)
 	h.CookieSession.DestroySession(w, r)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/signin", http.StatusSeeOther)
 }
 
 // signinGetHandler handles the HTTP GET request for the sign-in functionality.
 // It renders the sign-in page with the appropriate data.
+// The signin form is pre-populated using the data's email field.
 func (h *userHandler) signinGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
 		PageTitle: "SIGNIN_VIEW",
 		Data: &struct {
-			Email string
-			Error bool
+			Email        string
+			Error        bool
+			ErrorMessage string
 		}{},
 	}
 
@@ -124,11 +135,13 @@ func (h *userHandler) signinGetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // signinGetHandler handles the HTTP POST request for the sign-in functionality.
-// It validates the user's credentials and creates a session if the sign-in is successful.
+// It validates the user's credentials, and if the sign in is successful, it creates a session
+// and redirects the user to the projects homepage.
+// The signin form is pre-populated using the data's email field.
+// In case of error, the signin page is rendered and the data's Error field is set to true.
 func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseForm()
 	if err != nil {
-		log.Printf("serveSignin ParseForm: %v\n", err)
 		http.Redirect(w, r, "/signin", http.StatusSeeOther)
 		return
 	}
@@ -138,7 +151,7 @@ func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) 
 
 	u, err := h.UserService.SignIn(email, password)
 	if err != nil {
-		log.Printf("serveSignin SignIn: %v\n", err)
+		log.Printf("sign in: %v", err)
 
 		pageView := &PageView{
 			PageTitle: "SIGNIN_VIEW",
@@ -159,7 +172,7 @@ func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// editGetHandler handles the HTTP GET request for the account management functionality.
+// editGetHandler handles the HTTP GET request for the account edit page.
 // It renders the account management form with the appropriate data.
 func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
@@ -180,25 +193,15 @@ func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "account", pageView)
 }
 
-// editPostHandler handles the HTTP POST request for the account management functionality.
+// editPostHandler handles the HTTP POST request for the account edit page.
 // It allows users to change their credentials by verifying the current password and
-// updating the password with a new one.
+// updating it with a new one.
+// In case of error the data's Error and ErrorMessage are populated for the template.
 func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
-	}
-
-	data := &struct {
-		Error        bool
-		ErrorMessage string
-	}{}
-
-	pageView := &PageView{
-		PageTitle: "ACCOUNT_VIEW",
-		Data:      data,
-		User:      *user,
 	}
 
 	err := r.ParseForm()
@@ -207,21 +210,33 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	password := r.FormValue("password")
+	currentPassword := r.FormValue("password")
 	newPassword := r.FormValue("new_password")
 
-	_, err = h.UserService.SignIn(user.Email, password)
+	err = h.UserService.UpdatePassword(user, currentPassword, newPassword)
 	if err != nil {
-		data.Error = true
-		data.ErrorMessage = "Current password is not correct."
-		h.Renderer.RenderTemplate(w, "account", pageView)
-		return
-	}
+		errorMsg := "An error occurred. Please try again."
+		switch err {
+		case services.ErrInvalidPassword:
+			errorMsg = "New password is not valid."
+		case services.ErrIncorrectPassword:
+			errorMsg = "Current password is incorrect."
+		default:
+			log.Printf("update password user id %d error: %v", user.Id, err)
+		}
 
-	err = h.UserService.UpdatePassword(user.Email, newPassword)
-	if err != nil {
-		data.Error = true
-		data.ErrorMessage = "New password is not valid."
+		pageView := &PageView{
+			PageTitle: "ACCOUNT_VIEW",
+			User:      *user,
+			Data: &struct {
+				Error        bool
+				ErrorMessage string
+			}{
+				Error:        true,
+				ErrorMessage: errorMsg,
+			},
+		}
+
 		h.Renderer.RenderTemplate(w, "account", pageView)
 		return
 	}
@@ -229,9 +244,10 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// signoutHandler is a handler function that handles the user's signout request.
-// It clears the session data related to authenticated user.
+// signoutHandler handles the user's signout request.
+// It clears the session data related to authenticated user and redirects to
+// the sigin page.
 func (h *userHandler) signoutHandler(w http.ResponseWriter, r *http.Request) {
 	h.CookieSession.DestroySession(w, r)
-	http.Redirect(w, r, "/", http.StatusSeeOther)
+	http.Redirect(w, r, "/signin", http.StatusSeeOther)
 }

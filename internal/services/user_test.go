@@ -23,11 +23,15 @@ var testUser = &models.User{
 
 // Create a mock storage for the user service.
 // The storage only contains the testUSer.
-type userstorage struct{}
+type userstorage struct {
+	userDeleted bool
+}
+
+var ErrUnexistingUser = errors.New("user does not exist")
 
 func (s *userstorage) UserUpdatePassword(email, hashedPassword string) error {
 	if email != testUser.Email {
-		return errors.New("user does not exist")
+		return ErrUnexistingUser
 	}
 
 	return nil
@@ -40,9 +44,13 @@ func (s *userstorage) FindUserByEmail(e string) (*models.User, error) {
 		return testUser, nil
 	}
 
-	return &models.User{}, errors.New("user does not exist")
+	return &models.User{}, services.ErrUnexistingUser
 }
-func (s *userstorage) DeleteUser(*models.User) error {
+func (s *userstorage) DeleteUser(u *models.User) error {
+	if u == testUser {
+		s.userDeleted = true
+	}
+
 	return nil
 }
 func (s *userstorage) DisableUser(*models.User) error {
@@ -65,19 +73,19 @@ func TestSignup(t *testing.T) {
 	m := []struct {
 		email    string
 		password string
-		err      bool
+		err      error
 	}{
-		{"new_user@example.com", "valid_password", false}, // Valid email and password. Expects no error.
-		{"new_user@example.com", "", true},                // Empty password. Expects an error.
-		{"", "valid_password", true},                      // Empty email. Expects an error.
-		{"invalid_email", "valid_password", true},         // Invalid email. Expects an error.
-		{email, password, true},                           // Email that already exists. Expects an error.
+		{"new_user@example.com", "valid_password", nil},               // Valid email and password. Expects no error.
+		{"new_user@example.com", "", services.ErrInvalidPassword},     // Empty password. Expects an error.
+		{"", "valid_password", services.ErrInvalidEmail},              // Empty email. Expects an error.
+		{"invalid_email", "valid_password", services.ErrInvalidEmail}, // Invalid email. Expects an error.
+		{email, password, services.ErrUserExists},                     // Email that already exists. Expects an error.
 	}
 
 	for _, v := range m {
 		_, err := userService.SignUp(v.email, v.password)
-		if (v.err == true && err == nil) || (v.err == false && err != nil) {
-			t.Errorf("Signup '%s' password '%s' should error %v", v.email, v.password, v.err)
+		if err != v.err {
+			t.Errorf("Signup '%s' password '%s' should error '%v': '%v'", v.email, v.password, v.err, err)
 		}
 	}
 }
@@ -114,19 +122,25 @@ func TestSigin(t *testing.T) {
 // If the expected error and the actual error do not match, it reports a test failure.
 func TestUpdatePassword(t *testing.T) {
 	m := []struct {
-		email    string
-		password string
-		err      bool
+		email           string
+		currentPassword string
+		newPassword     string
+		err             error
 	}{
-		{testUser.Email, "valid_password", false},        // Valid email and password. Expects no error.
-		{testUser.Email, "", true},                       // Empty password. Expects an error.
-		{"not_user@example.com", "valid_password", true}, // User does not exist. Expects an error.
+		{testUser.Email, password, "valid_password", nil},                       // Valid email and password. Expects no error.
+		{testUser.Email, password, "", services.ErrInvalidPassword},             // Empty password. Expects an error.
+		{testUser.Email, "", "valid_password", services.ErrIncorrectPassword},   // Current password is invalid.
+		{"not_user@example.com", password, "valid_password", ErrUnexistingUser}, // User does not exist. Expects an error.
 	}
 
 	for _, v := range m {
-		err := userService.UpdatePassword(v.email, v.password)
-		if (v.err == true && err == nil) || (v.err == false && err != nil) {
-			t.Errorf("Signup '%s' password '%s' should error %v", v.email, v.password, v.err)
+		u := &models.User{
+			Email:    v.email,
+			Password: testUser.Password,
+		}
+		err := userService.UpdatePassword(u, v.currentPassword, v.newPassword)
+		if err != v.err {
+			t.Errorf("Signup '%s' password '%s' should error '%v': '%v'", v.email, v.newPassword, v.err, err)
 		}
 	}
 }

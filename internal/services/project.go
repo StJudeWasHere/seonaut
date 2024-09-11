@@ -15,6 +15,7 @@ type (
 		DisableProject(*models.Project)
 		UpdateProject(p *models.Project) error
 		FindProjectById(id int, uid int) (models.Project, error)
+		FindProjectsByUser(userId int) []models.Project
 
 		DeleteProjectCrawls(*models.Project)
 	}
@@ -77,4 +78,13 @@ func (s *ProjectService) DeleteProject(p *models.Project) {
 // Update project details.
 func (s *ProjectService) UpdateProject(p *models.Project) error {
 	return s.repository.UpdateProject(p)
+}
+
+// Delete all user projects and crawl data.
+func (s *ProjectService) DeleteAllUserProjects(user *models.User) {
+	projects := s.repository.FindProjectsByUser(user.Id)
+	for _, p := range projects {
+		s.repository.DeleteProjectCrawls(&p)
+		s.repository.DeleteProject(&p)
+	}
 }

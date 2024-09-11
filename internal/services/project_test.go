@@ -21,8 +21,9 @@ type projectTestRepository struct{}
 func (s *projectTestRepository) SaveProject(project *models.Project, userId int) {}
 func (s *projectTestRepository) DeleteProject(project *models.Project)           {}
 func (s *projectTestRepository) DisableProject(project *models.Project)          {}
-func (s *projectTestRepository) UpdateProject(p *models.Project) error {
-	return nil
+func (s *projectTestRepository) UpdateProject(p *models.Project) error           { return nil }
+func (p *projectTestRepository) FindProjectsByUser(uid int) []models.Project {
+	return []models.Project{}
 }
 func (s *projectTestRepository) FindProjectById(id, uid int) (models.Project, error) {
 	p := models.Project{}

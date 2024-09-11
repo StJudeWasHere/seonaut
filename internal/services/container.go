@@ -149,17 +149,7 @@ func (c *Container) InitReportManager() {
 
 // Create the user service.
 func (c *Container) InitUserService() {
-	repository := &struct {
-		*repository.UserRepository
-		*repository.ProjectRepository
-		*repository.CrawlRepository
-	}{
-		c.userRepository,
-		c.projectRepository,
-		c.crawlRepository,
-	}
-
-	c.UserService = NewUserService(repository)
+	c.UserService = NewUserService(c.userRepository)
 }
 
 // Create the Project service.
@@ -173,6 +163,11 @@ func (c *Container) InitProjectService() {
 	}
 
 	c.ProjectService = NewProjectService(repository)
+
+	// UserService DeleteHooks are called when a user is deleted.
+	// Add a DeleteHook so it deletes all user projects and crawl
+	// data when a user is deleted.
+	c.UserService.AddDeleteHook(c.ProjectService.DeleteAllUserProjects)
 }
 
 // Create the ProjectView service.

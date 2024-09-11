@@ -56,11 +56,6 @@ func (s *userTestRepository) DeleteUser(u *models.User) error {
 func (s *userTestRepository) DisableUser(*models.User) error {
 	return nil
 }
-func (p *userTestRepository) DeleteProject(*models.Project) {}
-func (p *userTestRepository) FindProjectsByUser(uid int) []models.Project {
-	return []models.Project{}
-}
-func (p *userTestRepository) DeleteProjectCrawls(*models.Project) {}
 
 var userService = services.NewUserService(&userTestRepository{})
 

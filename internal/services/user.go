@@ -27,21 +27,19 @@ var (
 )
 
 type (
+	DeleteHook func(user *models.User)
+
 	UserServiceRepository interface {
 		UserSignup(email, hashedPassword string) (*models.User, error)
 		FindUserByEmail(email string) (*models.User, error)
 		UserUpdatePassword(email, hashedPassword string) error
 		DeleteUser(user *models.User) error
 		DisableUser(user *models.User) error
-
-		DeleteProjectCrawls(project *models.Project)
-
-		DeleteProject(project *models.Project)
-		FindProjectsByUser(userId int) []models.Project
 	}
 
 	UserService struct {
-		repository UserServiceRepository
+		repository  UserServiceRepository
+		deleteHooks []DeleteHook
 	}
 )
 
@@ -120,14 +118,18 @@ func (s *UserService) UpdatePassword(user *models.User, currentPassword, newPass
 func (s *UserService) DeleteUser(user *models.User) {
 	s.repository.DisableUser(user)
 	go func() {
-		projects := s.repository.FindProjectsByUser(user.Id)
-		for _, p := range projects {
-			s.repository.DeleteProjectCrawls(&p)
-			s.repository.DeleteProject(&p)
+		for _, h := range s.deleteHooks {
+			h(user)
 		}
 
 		s.repository.DeleteUser(user)
 	}()
+}
+
+// AddDeleteHook adds a new hook function that will be called when the user is deleted.
+// This is used for user data clean up.
+func (s *UserService) AddDeleteHook(hook DeleteHook) {
+	s.deleteHooks = append(s.deleteHooks, hook)
 }
 
 // Validate the password to make sure it follows certain criteria.

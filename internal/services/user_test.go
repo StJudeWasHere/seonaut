@@ -21,48 +21,48 @@ var testUser = &models.User{
 	Password: "$2a$10$REKj9zUr.reKqlKETKpq3OGGBhzyhQ2TQ3wOVnToroO.Qh3nuWziK",
 }
 
-// Create a mock storage for the user service.
-// The storage only contains the testUSer.
-type userstorage struct {
+// Create a mock repository for the user service.
+// The repository only contains the testUSer.
+type userTestRepository struct {
 	userDeleted bool
 }
 
 var ErrUnexistingUser = errors.New("user does not exist")
 
-func (s *userstorage) UserUpdatePassword(email, hashedPassword string) error {
+func (s *userTestRepository) UserUpdatePassword(email, hashedPassword string) error {
 	if email != testUser.Email {
 		return ErrUnexistingUser
 	}
 
 	return nil
 }
-func (s *userstorage) UserSignup(e, p string) (*models.User, error) {
+func (s *userTestRepository) UserSignup(e, p string) (*models.User, error) {
 	return &models.User{}, nil
 }
-func (s *userstorage) FindUserByEmail(e string) (*models.User, error) {
+func (s *userTestRepository) FindUserByEmail(e string) (*models.User, error) {
 	if e == testUser.Email {
 		return testUser, nil
 	}
 
 	return &models.User{}, services.ErrUnexistingUser
 }
-func (s *userstorage) DeleteUser(u *models.User) error {
+func (s *userTestRepository) DeleteUser(u *models.User) error {
 	if u == testUser {
 		s.userDeleted = true
 	}
 
 	return nil
 }
-func (s *userstorage) DisableUser(*models.User) error {
+func (s *userTestRepository) DisableUser(*models.User) error {
 	return nil
 }
-func (p *userstorage) DeleteProject(*models.Project) {}
-func (p *userstorage) FindProjectsByUser(uid int) []models.Project {
+func (p *userTestRepository) DeleteProject(*models.Project) {}
+func (p *userTestRepository) FindProjectsByUser(uid int) []models.Project {
 	return []models.Project{}
 }
-func (p *userstorage) DeleteProjectCrawls(*models.Project) {}
+func (p *userTestRepository) DeleteProjectCrawls(*models.Project) {}
 
-var userService = services.NewUserService(&userstorage{})
+var userService = services.NewUserService(&userTestRepository{})
 
 // TestSignup tests the SignUp method of the user service.
 // It verifies the behavior of the SignUp function for different input scenarios.

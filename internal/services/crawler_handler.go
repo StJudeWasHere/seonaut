@@ -14,12 +14,12 @@ import (
 	"golang.org/x/net/html"
 )
 
-type CrawlerHandlerStorage interface {
+type CrawlerHandlerRepository interface {
 	SavePageReport(*models.PageReport, int64) (*models.PageReport, error)
 }
 
 type CrawlerHandler struct {
-	store               CrawlerHandlerStorage
+	repository          CrawlerHandlerRepository
 	broker              *Broker
 	reportManager       *ReportManager
 	externalLinksStatus map[string]int
@@ -30,11 +30,11 @@ type crawlerData struct {
 	Depth int
 }
 
-func NewCrawlerHandler(s CrawlerHandlerStorage, b *Broker, r *ReportManager, client crawler.Client) *CrawlerHandler {
+func NewCrawlerHandler(r CrawlerHandlerRepository, b *Broker, m *ReportManager, client crawler.Client) *CrawlerHandler {
 	return &CrawlerHandler{
-		store:               s,
+		repository:          r,
 		broker:              b,
-		reportManager:       r,
+		reportManager:       m,
 		externalLinksStatus: make(map[string]int),
 		client:              client,
 	}
@@ -109,7 +109,7 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 		// If the pageReport is saved correctly create the page issues, otherwise
 		// log the error.
 		if !pageReport.Noindex || p.IncludeNoindex {
-			pageReport, err = s.store.SavePageReport(pageReport, crawl.Id)
+			pageReport, err = s.repository.SavePageReport(pageReport, crawl.Id)
 			if err == nil {
 				headers := make(http.Header)
 				if r.Response != nil {
@@ -186,7 +186,7 @@ func (s *CrawlerHandler) saveBlockedPageReport(u *url.URL, crawl *models.Crawl) 
 		Crawled:            false,
 	}
 
-	_, err := s.store.SavePageReport(pageReport, crawl.Id)
+	_, err := s.repository.SavePageReport(pageReport, crawl.Id)
 	if err != nil {
 		log.Printf("crawler service: SavePageReport: %v\n", err)
 	}

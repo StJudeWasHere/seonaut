@@ -16,15 +16,15 @@ const (
 	urlScheme  = "https"
 )
 
-type storage struct{}
+type projectTestRepository struct{}
 
-func (s *storage) SaveProject(project *models.Project, userId int) {}
-func (s *storage) DeleteProject(project *models.Project)           {}
-func (s *storage) DisableProject(project *models.Project)          {}
-func (s *storage) UpdateProject(p *models.Project) error {
+func (s *projectTestRepository) SaveProject(project *models.Project, userId int) {}
+func (s *projectTestRepository) DeleteProject(project *models.Project)           {}
+func (s *projectTestRepository) DisableProject(project *models.Project)          {}
+func (s *projectTestRepository) UpdateProject(p *models.Project) error {
 	return nil
 }
-func (s *storage) FindProjectById(id, uid int) (models.Project, error) {
+func (s *projectTestRepository) FindProjectById(id, uid int) (models.Project, error) {
 	p := models.Project{}
 
 	if id != gid || uid != guid {
@@ -35,9 +35,9 @@ func (s *storage) FindProjectById(id, uid int) (models.Project, error) {
 
 	return p, nil
 }
-func (s *storage) DeleteProjectCrawls(*models.Project) {}
+func (s *projectTestRepository) DeleteProjectCrawls(*models.Project) {}
 
-var service = services.NewProjectService(&storage{})
+var service = services.NewProjectService(&projectTestRepository{})
 
 func TestFindProjectById(t *testing.T) {
 	p, err := service.FindProject(gid, guid)

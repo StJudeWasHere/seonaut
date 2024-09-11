@@ -8,7 +8,7 @@ import (
 )
 
 type (
-	ExportStorage interface {
+	ExportRepository interface {
 		ExportLinks(*models.Crawl) <-chan *models.ExportLink
 		ExportExternalLinks(*models.Crawl) <-chan *models.ExportLink
 		ExportImages(crawl *models.Crawl) <-chan *models.ExportImage
@@ -21,13 +21,13 @@ type (
 	}
 
 	Exporter struct {
-		store ExportStorage
+		repository ExportRepository
 	}
 )
 
-func NewExporter(s ExportStorage) *Exporter {
+func NewExporter(r ExportRepository) *Exporter {
 	return &Exporter{
-		store: s,
+		repository: r,
 	}
 }
 
@@ -41,7 +41,7 @@ func (e *Exporter) ExportLinks(f io.Writer, crawl *models.Crawl) {
 		"Text",
 	})
 
-	lStream := e.store.ExportLinks(crawl)
+	lStream := e.repository.ExportLinks(crawl)
 
 	for v := range lStream {
 		w.Write([]string{
@@ -64,7 +64,7 @@ func (e *Exporter) ExportExternalLinks(f io.Writer, crawl *models.Crawl) {
 		"Text",
 	})
 
-	lStream := e.store.ExportExternalLinks(crawl)
+	lStream := e.repository.ExportExternalLinks(crawl)
 
 	for v := range lStream {
 		w.Write([]string{
@@ -87,7 +87,7 @@ func (e *Exporter) ExportImages(f io.Writer, crawl *models.Crawl) {
 		"Alt",
 	})
 
-	iStream := e.store.ExportImages(crawl)
+	iStream := e.repository.ExportImages(crawl)
 
 	for v := range iStream {
 		w.Write([]string{
@@ -109,7 +109,7 @@ func (e *Exporter) ExportScripts(f io.Writer, crawl *models.Crawl) {
 		"Script URL",
 	})
 
-	sStream := e.store.ExportScripts(crawl)
+	sStream := e.repository.ExportScripts(crawl)
 
 	for v := range sStream {
 		w.Write([]string{
@@ -130,7 +130,7 @@ func (e *Exporter) ExportStyles(f io.Writer, crawl *models.Crawl) {
 		"Style URL",
 	})
 
-	sStream := e.store.ExportStyles(crawl)
+	sStream := e.repository.ExportStyles(crawl)
 
 	for v := range sStream {
 		w.Write([]string{
@@ -151,7 +151,7 @@ func (e *Exporter) ExportIframes(f io.Writer, crawl *models.Crawl) {
 		"Iframe URL",
 	})
 
-	vStream := e.store.ExportIframes(crawl)
+	vStream := e.repository.ExportIframes(crawl)
 
 	for v := range vStream {
 		w.Write([]string{
@@ -172,7 +172,7 @@ func (e *Exporter) ExportAudios(f io.Writer, crawl *models.Crawl) {
 		"Audio URL",
 	})
 
-	vStream := e.store.ExportAudios(crawl)
+	vStream := e.repository.ExportAudios(crawl)
 
 	for v := range vStream {
 		w.Write([]string{
@@ -193,7 +193,7 @@ func (e *Exporter) ExportVideos(f io.Writer, crawl *models.Crawl) {
 		"Video URL",
 	})
 
-	vStream := e.store.ExportVideos(crawl)
+	vStream := e.repository.ExportVideos(crawl)
 
 	for v := range vStream {
 		w.Write([]string{
@@ -216,7 +216,7 @@ func (e *Exporter) ExportHreflangs(f io.Writer, crawl *models.Crawl) {
 		"Hreflang Language",
 	})
 
-	vStream := e.store.ExportHreflangs(crawl)
+	vStream := e.repository.ExportHreflangs(crawl)
 
 	for v := range vStream {
 		w.Write([]string{

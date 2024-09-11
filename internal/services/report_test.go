@@ -16,73 +16,73 @@ const (
 	page            = 1
 )
 
-type reportstorage struct{}
+type reportTestRepository struct{}
 
-func (s *reportstorage) CountByMediaType(i int64) *models.CountList {
+func (s *reportTestRepository) CountByMediaType(i int64) *models.CountList {
 	return &models.CountList{}
 }
 
-func (s *reportstorage) CountByStatusCode(i int64) *models.CountList {
+func (s *reportTestRepository) CountByStatusCode(i int64) *models.CountList {
 	return &models.CountList{}
 }
 
-func (s *reportstorage) CountByCanonical(i int64) int {
+func (s *reportTestRepository) CountByCanonical(i int64) int {
 	return 0
 }
 
-func (s *reportstorage) CountImagesAlt(i int64) *models.AltCount {
+func (s *reportTestRepository) CountImagesAlt(i int64) *models.AltCount {
 	return &models.AltCount{}
 }
 
-func (s *reportstorage) CountScheme(i int64) *models.SchemeCount {
+func (s *reportTestRepository) CountScheme(i int64) *models.SchemeCount {
 	return &models.SchemeCount{}
 }
 
-func (s *reportstorage) CountByNonCanonical(i int64) int {
+func (s *reportTestRepository) CountByNonCanonical(i int64) int {
 	return 0
 }
 
-func (s *reportstorage) FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link {
+func (s *reportTestRepository) FindExternalLinks(pageReport *models.PageReport, cid int64, p int) []models.Link {
 	return []models.Link{}
 }
 
-func (s *reportstorage) GetNumberOfPagesForExternalLinks(pageReport *models.PageReport, cid int64) int {
+func (s *reportTestRepository) GetNumberOfPagesForExternalLinks(pageReport *models.PageReport, cid int64) int {
 	return 0
 }
 
-func (s *reportstorage) GetNumberOfPagesForLinks(pageReport *models.PageReport, cid int64) int {
+func (s *reportTestRepository) GetNumberOfPagesForLinks(pageReport *models.PageReport, cid int64) int {
 	return 0
 }
 
-func (s *reportstorage) GetNumberOfPagesForRedirecting(pageReport *models.PageReport, cid int64) int {
+func (s *reportTestRepository) GetNumberOfPagesForRedirecting(pageReport *models.PageReport, cid int64) int {
 	return 0
 }
 
-func (s *reportstorage) FindLinks(pageReport *models.PageReport, cid int64, p int) []models.InternalLink {
+func (s *reportTestRepository) FindLinks(pageReport *models.PageReport, cid int64, p int) []models.InternalLink {
 	return []models.InternalLink{}
 }
 
-func (s *reportstorage) FindPageReportById(id int) models.PageReport {
+func (s *reportTestRepository) FindPageReportById(id int) models.PageReport {
 	return models.PageReport{Id: reportId}
 }
 
-func (s *reportstorage) FindErrorTypesByPage(reportId int, crawlId int64) []string {
+func (s *reportTestRepository) FindErrorTypesByPage(reportId int, crawlId int64) []string {
 	return []string{errorType}
 }
 
-func (s *reportstorage) FindInLinks(u string, id int64, page int) []models.InternalLink {
+func (s *reportTestRepository) FindInLinks(u string, id int64, page int) []models.InternalLink {
 	return []models.InternalLink{{PageReport: models.PageReport{Id: reportId}}}
 }
 
-func (s *reportstorage) GetNumberOfPagesForInlinks(pageReport *models.PageReport, cid int64) int {
+func (s *reportTestRepository) GetNumberOfPagesForInlinks(pageReport *models.PageReport, cid int64) int {
 	return 1
 }
 
-func (s *reportstorage) FindPageReportsRedirectingToURL(u string, id int64, page int) []models.PageReport {
+func (s *reportTestRepository) FindPageReportsRedirectingToURL(u string, id int64, page int) []models.PageReport {
 	return []models.PageReport{{Id: reportId}}
 }
 
-func (s *reportstorage) FindAllPageReportsByCrawlIdAndErrorType(id int64, e string) <-chan *models.PageReport {
+func (s *reportTestRepository) FindAllPageReportsByCrawlIdAndErrorType(id int64, e string) <-chan *models.PageReport {
 	prStream := make(chan *models.PageReport)
 	go func() {
 		defer close(prStream)
@@ -92,7 +92,7 @@ func (s *reportstorage) FindAllPageReportsByCrawlIdAndErrorType(id int64, e stri
 	return prStream
 }
 
-func (s *reportstorage) FindAllPageReportsByCrawlId(id int64) <-chan *models.PageReport {
+func (s *reportTestRepository) FindAllPageReportsByCrawlId(id int64) <-chan *models.PageReport {
 	prStream := make(chan *models.PageReport)
 
 	go func() {
@@ -104,7 +104,7 @@ func (s *reportstorage) FindAllPageReportsByCrawlId(id int64) <-chan *models.Pag
 	return prStream
 }
 
-func (s *reportstorage) FindSitemapPageReports(id int64) <-chan *models.PageReport {
+func (s *reportTestRepository) FindSitemapPageReports(id int64) <-chan *models.PageReport {
 	prStream := make(chan *models.PageReport)
 
 	go func() {
@@ -117,41 +117,41 @@ func (s *reportstorage) FindSitemapPageReports(id int64) <-chan *models.PageRepo
 	return prStream
 }
 
-func (s *reportstorage) FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport {
+func (s *reportTestRepository) FindPaginatedPageReports(cid int64, p int, term string) []models.PageReport {
 	return []models.PageReport{}
 }
 
-func (s *reportstorage) GetNumberOfPagesForPageReport(cid int64, term string) int {
+func (s *reportTestRepository) GetNumberOfPagesForPageReport(cid int64, term string) int {
 	return 0
 }
 
-func (s *reportstorage) GetStatusCodeByDepth(crawlId int64) []models.StatusCodeByDepth {
+func (s *reportTestRepository) GetStatusCodeByDepth(crawlId int64) []models.StatusCodeByDepth {
 	return []models.StatusCodeByDepth{}
 }
 
-func (s *reportstorage) FindPageReportStyles(pageReport *models.PageReport, cid int64) []string {
+func (s *reportTestRepository) FindPageReportStyles(pageReport *models.PageReport, cid int64) []string {
 	return []string{}
 }
-func (s *reportstorage) FindPageReportScripts(pageReport *models.PageReport, cid int64) []string {
+func (s *reportTestRepository) FindPageReportScripts(pageReport *models.PageReport, cid int64) []string {
 	return []string{}
 }
-func (s *reportstorage) FindPageReportVideos(pageReport *models.PageReport, cid int64) []models.Video {
+func (s *reportTestRepository) FindPageReportVideos(pageReport *models.PageReport, cid int64) []models.Video {
 	return []models.Video{}
 }
-func (s *reportstorage) FindPageReportAudios(pageReport *models.PageReport, cid int64) []string {
+func (s *reportTestRepository) FindPageReportAudios(pageReport *models.PageReport, cid int64) []string {
 	return []string{}
 }
-func (s *reportstorage) FindPageReportIframes(pageReport *models.PageReport, cid int64) []string {
+func (s *reportTestRepository) FindPageReportIframes(pageReport *models.PageReport, cid int64) []string {
 	return []string{}
 }
-func (s *reportstorage) FindPageReportImages(pageReport *models.PageReport, cid int64) []models.Image {
+func (s *reportTestRepository) FindPageReportImages(pageReport *models.PageReport, cid int64) []models.Image {
 	return []models.Image{}
 }
-func (s *reportstorage) FindPageReportHreflangs(pageReport *models.PageReport, cid int64) []models.Hreflang {
+func (s *reportTestRepository) FindPageReportHreflangs(pageReport *models.PageReport, cid int64) []models.Hreflang {
 	return []models.Hreflang{}
 }
 
-var reportservice = services.NewReportService(&reportstorage{})
+var reportservice = services.NewReportService(&reportTestRepository{})
 
 func TestGetSitemapPageReports(t *testing.T) {
 	prStream := reportservice.GetSitemapPageReports(crawlId)

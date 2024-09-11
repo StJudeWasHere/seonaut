@@ -13,34 +13,34 @@ const (
 )
 
 type (
-	IssueServiceStorage interface {
+	IssueServiceRepository interface {
 		GetNumberOfPagesForIssues(int64, string) int
 		FindPageReportIssues(int64, int, string) []models.PageReport
 		FindIssuesByTypeAndPriority(int64, int) []models.IssueGroup
 	}
 
 	IssueService struct {
-		store IssueServiceStorage
+		repository IssueServiceRepository
 	}
 )
 
-func NewIssueService(s IssueServiceStorage) *IssueService {
-	return &IssueService{store: s}
+func NewIssueService(r IssueServiceRepository) *IssueService {
+	return &IssueService{repository: r}
 }
 
 // GetIssuesCount returns an IssueCount with the number of issues by type.
 func (s *IssueService) GetIssuesCount(crawlID int64) *models.IssueCount {
 	return &models.IssueCount{
-		CriticalIssues: s.store.FindIssuesByTypeAndPriority(crawlID, Critical),
-		AlertIssues:    s.store.FindIssuesByTypeAndPriority(crawlID, Alert),
-		WarningIssues:  s.store.FindIssuesByTypeAndPriority(crawlID, Warning),
+		CriticalIssues: s.repository.FindIssuesByTypeAndPriority(crawlID, Critical),
+		AlertIssues:    s.repository.FindIssuesByTypeAndPriority(crawlID, Alert),
+		WarningIssues:  s.repository.FindIssuesByTypeAndPriority(crawlID, Warning),
 	}
 }
 
 // Returns a PaginatorView with the corresponding page reports.
 func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int, issueId string) (models.PaginatorView, error) {
 	paginator := models.Paginator{
-		TotalPages:  s.store.GetNumberOfPagesForIssues(crawlId, issueId),
+		TotalPages:  s.repository.GetNumberOfPagesForIssues(crawlId, issueId),
 		CurrentPage: currentPage,
 	}
 
@@ -58,7 +58,7 @@ func (s *IssueService) GetPaginatedReportsByIssue(crawlId int64, currentPage int
 
 	paginatorView := models.PaginatorView{
 		Paginator:   paginator,
-		PageReports: s.store.FindPageReportIssues(crawlId, currentPage, issueId),
+		PageReports: s.repository.FindPageReportIssues(crawlId, currentPage, issueId),
 	}
 
 	return paginatorView, nil

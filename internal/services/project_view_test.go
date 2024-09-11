@@ -16,10 +16,10 @@ const (
 	test_total_models = 2
 )
 
-// Create a mock storage for the projectview service.
-type testStorage struct{}
+// Create a mock repository for the projectview service.
+type projectViewTestRepository struct{}
 
-func (s *testStorage) FindProjectsByUser(uid int) []models.Project {
+func (s *projectViewTestRepository) FindProjectsByUser(uid int) []models.Project {
 	m := []models.Project{}
 
 	if uid != test_uid {
@@ -33,7 +33,7 @@ func (s *testStorage) FindProjectsByUser(uid int) []models.Project {
 	return m
 }
 
-func (s *testStorage) FindProjectById(id int, uid int) (models.Project, error) {
+func (s *projectViewTestRepository) FindProjectById(id int, uid int) (models.Project, error) {
 	if id == test_pid && uid == test_uid {
 		return models.Project{Id: test_pid, URL: test_url}, nil
 	}
@@ -41,7 +41,7 @@ func (s *testStorage) FindProjectById(id int, uid int) (models.Project, error) {
 	return models.Project{}, errors.New("Test error")
 }
 
-func (s *testStorage) GetLastCrawl(p *models.Project) models.Crawl {
+func (s *projectViewTestRepository) GetLastCrawl(p *models.Project) models.Crawl {
 	if p.Id == test_pid {
 		return models.Crawl{Id: test_cid}
 	}
@@ -49,7 +49,7 @@ func (s *testStorage) GetLastCrawl(p *models.Project) models.Crawl {
 	return models.Crawl{}
 }
 
-var projectviewService = services.NewProjectViewService(&testStorage{})
+var projectviewService = services.NewProjectViewService(&projectViewTestRepository{})
 
 // TestGetProjectView tests the GetProjectView function of the projectview service.
 // It verifies the behavior of the GetProjectView function with an existing projectview.

@@ -16,21 +16,21 @@ import (
 )
 
 type (
-	ReportManagerStorage interface {
+	ReportManagerRepository interface {
 		SaveIssues(<-chan *models.Issue)
 	}
 
 	ReportManager struct {
-		store              ReportManagerStorage
+		repository         ReportManagerRepository
 		pageCallbacks      []*models.PageIssueReporter
 		multipageCallbacks []models.MultipageCallback
 	}
 )
 
 // Create a new ReportManager with no issue reporters.
-func NewReportManager(s ReportManagerStorage) *ReportManager {
+func NewReportManager(r ReportManagerRepository) *ReportManager {
 	return &ReportManager{
-		store: s,
+		repository: r,
 	}
 }
 
@@ -55,7 +55,7 @@ func (r *ReportManager) CreatePageIssues(p *models.PageReport, htmlNode *html.No
 	wg.Add(1)
 
 	go func() {
-		r.store.SaveIssues(iStream)
+		r.repository.SaveIssues(iStream)
 		wg.Done()
 	}()
 
@@ -81,7 +81,7 @@ func (r *ReportManager) CreateMultipageIssues(crawl *models.Crawl) {
 	wg.Add(1)
 
 	go func() {
-		r.store.SaveIssues(iStream)
+		r.repository.SaveIssues(iStream)
 		wg.Done()
 	}()
 

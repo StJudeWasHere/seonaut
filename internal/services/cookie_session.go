@@ -19,17 +19,17 @@ const (
 type (
 	contextKey string
 
-	CookieSessionStorage interface {
+	CookieSessionRepository interface {
 		FindUserByEmail(email string) (*models.User, error)
 	}
 
 	CookieSession struct {
-		storage CookieSessionStorage
-		cookie  *sessions.CookieStore
+		repository CookieSessionRepository
+		cookie     *sessions.CookieStore
 	}
 )
 
-func NewCookieSession(s CookieSessionStorage) *CookieSession {
+func NewCookieSession(r CookieSessionRepository) *CookieSession {
 	authKeyOne := securecookie.GenerateRandomKey(64)
 	encryptionKeyOne := securecookie.GenerateRandomKey(32)
 
@@ -47,8 +47,8 @@ func NewCookieSession(s CookieSessionStorage) *CookieSession {
 	gob.Register(models.User{})
 
 	return &CookieSession{
-		storage: s,
-		cookie:  cookie,
+		repository: r,
+		cookie:     cookie,
 	}
 }
 
@@ -86,7 +86,7 @@ func (s *CookieSession) Auth(f func(w http.ResponseWriter, r *http.Request)) htt
 			return
 		}
 
-		user, err := s.storage.FindUserByEmail(email)
+		user, err := s.repository.FindUserByEmail(email)
 		if err != nil {
 			http.Redirect(w, r, "/signin", http.StatusSeeOther)
 			return

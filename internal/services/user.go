@@ -27,7 +27,7 @@ var (
 )
 
 type (
-	UserServiceStorage interface {
+	UserServiceRepository interface {
 		UserSignup(email, hashedPassword string) (*models.User, error)
 		FindUserByEmail(email string) (*models.User, error)
 		UserUpdatePassword(email, hashedPassword string) error
@@ -41,20 +41,20 @@ type (
 	}
 
 	UserService struct {
-		store UserServiceStorage
+		repository UserServiceRepository
 	}
 )
 
-func NewUserService(s UserServiceStorage) *UserService {
+func NewUserService(r UserServiceRepository) *UserService {
 	return &UserService{
-		store: s,
+		repository: r,
 	}
 }
 
 // SignUp validates the user email and password, if they are both valid creates a password hash
-// before storing it. If the storage is succesful it returns the new user.
+// before storing it. If succesful, it returns the new user, otherwise an error is returned.
 func (s *UserService) SignUp(email, password string) (*models.User, error) {
-	_, err := s.store.FindUserByEmail(email)
+	_, err := s.repository.FindUserByEmail(email)
 	if err == nil {
 		return nil, ErrUserExists
 	}
@@ -73,14 +73,14 @@ func (s *UserService) SignUp(email, password string) (*models.User, error) {
 		return nil, err
 	}
 
-	return s.store.UserSignup(email, string(hashedPassword))
+	return s.repository.UserSignup(email, string(hashedPassword))
 }
 
 // SignIn validates the provided email and password combination for user authentication.
 // It compares the provided password with the user's hashed password.
 // If the passwords do not match, it returns an error.
 func (s *UserService) SignIn(email, password string) (*models.User, error) {
-	u, err := s.store.FindUserByEmail(email)
+	u, err := s.repository.FindUserByEmail(email)
 	if err != nil {
 		return nil, ErrUnexistingUser
 	}
@@ -108,7 +108,7 @@ func (s *UserService) UpdatePassword(user *models.User, currentPassword, newPass
 		return err
 	}
 
-	err = s.store.UserUpdatePassword(user.Email, string(hashedPassword))
+	err = s.repository.UserUpdatePassword(user.Email, string(hashedPassword))
 	if err != nil {
 		return err
 	}
@@ -118,15 +118,15 @@ func (s *UserService) UpdatePassword(user *models.User, currentPassword, newPass
 
 // Delete a User and all its associated projects and crawl data.
 func (s *UserService) DeleteUser(user *models.User) {
-	s.store.DisableUser(user)
+	s.repository.DisableUser(user)
 	go func() {
-		projects := s.store.FindProjectsByUser(user.Id)
+		projects := s.repository.FindProjectsByUser(user.Id)
 		for _, p := range projects {
-			s.store.DeleteProjectCrawls(&p)
-			s.store.DeleteProject(&p)
+			s.repository.DeleteProjectCrawls(&p)
+			s.repository.DeleteProject(&p)
 		}
 
-		s.store.DeleteUser(user)
+		s.repository.DeleteUser(user)
 	}()
 }
 

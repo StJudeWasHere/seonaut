@@ -16,24 +16,24 @@ const (
 	reporterErrorType = 1
 )
 
-// Mock storage contains an Issues slice so we can test if issues are being received.
-type mockStorage struct {
+// Mock repository contains an Issues slice so we can test if issues are being received.
+type reportManagerTestRepository struct {
 	Issues []*models.Issue
 }
 
 // SaveIssues appends the issue to the Issues slice.
-func (s *mockStorage) SaveIssues(c <-chan *models.Issue) {
+func (s *reportManagerTestRepository) SaveIssues(c <-chan *models.Issue) {
 	for i := range c {
 		s.Issues = append(s.Issues, i)
 	}
 }
 
-// Add a PageReporter and test if new issue is sent to the storage.
+// Add a PageReporter and test if new issue is sent to the repository.
 func TestCreatePageIssuesCreatesIssue(t *testing.T) {
 
-	// Create a new mockStorage and report_manager service.
-	storage := &mockStorage{}
-	service := services.NewReportManager(storage)
+	// Create a new reportManagerTestRepository and report_manager service.
+	repository := &reportManagerTestRepository{}
+	service := services.NewReportManager(repository)
 
 	// Add a new PageReporter that detects an issue.
 	service.AddPageReporter(
@@ -50,15 +50,15 @@ func TestCreatePageIssuesCreatesIssue(t *testing.T) {
 
 	// Create the PageIssues should run the PageIssueReporter that returns true
 	// indicating an issue was found, so a new issue should be created and added
-	// to the mockStorage.
+	// to the reportManagerTestRepository.
 	service.CreatePageIssues(pageReport, &html.Node{}, &http.Header{}, crawl)
 
-	// The storage should contain exactly one issue.
-	if len(storage.Issues) != 1 {
-		t.Errorf("CreatePageIsssues: %d != 1", len(storage.Issues))
+	// The repository should contain exactly one issue.
+	if len(repository.Issues) != 1 {
+		t.Errorf("CreatePageIsssues: %d != 1", len(repository.Issues))
 	}
 
-	issue := storage.Issues[0]
+	issue := repository.Issues[0]
 
 	// Make sure the created issue contains the right ids.
 	if issue.PageReportId != pageReportId {
@@ -74,12 +74,12 @@ func TestCreatePageIssuesCreatesIssue(t *testing.T) {
 	}
 }
 
-// Add a PageReporter and test if new issue is not sent to the storage.
+// Add a PageReporter and test if new issue is not sent to the repository.
 func TestCreatePageIssuesDoesNotCreateIssue(t *testing.T) {
 
-	// Create a new mockStorage and report_manager service.
-	storage := &mockStorage{}
-	service := services.NewReportManager(storage)
+	// Create a new reportManagerTestRepository and report_manager service.
+	repository := &reportManagerTestRepository{}
+	service := services.NewReportManager(repository)
 
 	// Add a new PageReporter that detects an issue.
 	service.AddPageReporter(
@@ -98,17 +98,17 @@ func TestCreatePageIssuesDoesNotCreateIssue(t *testing.T) {
 	// indicating an issue was not found and will not be created.
 	service.CreatePageIssues(pageReport, &html.Node{}, &http.Header{}, crawl)
 
-	// The storage issues slice should be empty.
-	if len(storage.Issues) != 0 {
-		t.Errorf("CreatePageIsssues: DoesNotCreateIssue: %d != 0", len(storage.Issues))
+	// The repository issues slice should be empty.
+	if len(repository.Issues) != 0 {
+		t.Errorf("CreatePageIsssues: DoesNotCreateIssue: %d != 0", len(repository.Issues))
 	}
 }
 
 // Add a MultipageReporter and test if an issue is created.
 func TestCreateMultiPageIssues(t *testing.T) {
-	// Create a new mockStorage and report_manager service.
-	storage := &mockStorage{}
-	service := services.NewReportManager(storage)
+	// Create a new reportManagerTestRepository and report_manager service.
+	repository := &reportManagerTestRepository{}
+	service := services.NewReportManager(repository)
 
 	service.AddMultipageReporter(
 		func(c *models.Crawl) *models.MultipageIssueReporter {
@@ -130,12 +130,12 @@ func TestCreateMultiPageIssues(t *testing.T) {
 
 	service.CreateMultipageIssues(crawl)
 
-	// The storage should contain exactly one issue.
-	if len(storage.Issues) != 1 {
-		t.Errorf("CreatePageIsssues: %d != 1", len(storage.Issues))
+	// The repository should contain exactly one issue.
+	if len(repository.Issues) != 1 {
+		t.Errorf("CreatePageIsssues: %d != 1", len(repository.Issues))
 	}
 
-	issue := storage.Issues[0]
+	issue := repository.Issues[0]
 
 	// Make sure the created issue contains the right ids.
 	if issue.PageReportId != pageReportId {

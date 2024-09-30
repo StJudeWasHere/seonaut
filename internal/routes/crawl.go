@@ -26,11 +26,11 @@ type crawlHandler struct {
 	*services.Container
 }
 
-// handleCrawl handles the crawling of a project.
+// startHandler handles the crawling of a project.
 // It expects a query parameter "pid" containing the project id to be crawled.
 // In case the project requieres BasicAuth it will redirect the user to the BasicAuth
 // credentials URL. Otherwise, it starts a new crawler.
-func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) startHandler(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -64,12 +64,12 @@ func (h *crawlHandler) handleCrawl(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
 }
 
-// handleStopCrawl handles the crawler stopping.
+// stopHandler handles the crawler stopping.
 // It expects a query paramater "pid" containinng the project id that is being crawled.
 // Aftar making sure the user owns the project it is stopped.
 // In case the request is made via ajax with the X-Requested-With header it will return
 // a json response, otherwise it will redirect the user back to the live crawl page.
-func (h *crawlHandler) handleStopCrawl(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) stopHandler(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -103,12 +103,9 @@ func (h *crawlHandler) handleStopCrawl(w http.ResponseWriter, r *http.Request) {
 
 // handleCrawlAuth handles the crawling of a project with BasicAuth.
 // It expects a query parameter "pid" containing the project id to be crawled.
-// A form will be presented to the user to input the BasicAuth credentials, once the
-// form is submitted a crawler with BasicAuth is started.
-// The function handles both GET and POST HTTP methods.
-// GET: Renders the auth form.
-// POST: Processes the auth form data and starts the crawler.
-func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
+// A form will be presented to the user to input the BasicAuth credentials.
+// This handler handles the GET request.
+func (h *crawlHandler) authGetHandler(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -127,27 +124,6 @@ func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == http.MethodPost {
-		err := r.ParseForm()
-		if err != nil {
-			http.Redirect(w, r, "/crawl/auth", http.StatusSeeOther)
-			return
-		}
-
-		basicAuth := models.BasicAuth{
-			AuthUser: r.FormValue("username"),
-			AuthPass: r.FormValue("password"),
-		}
-
-		err = h.CrawlerService.StartCrawler(p, basicAuth)
-		if err != nil {
-			log.Printf("StartCrawler: %s %v\n", p.URL, err)
-			return
-		}
-
-		http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
-	}
-
 	pageView := &PageView{
 		PageTitle: "CRAWL_AUTH_VIEW",
 		Data:      struct{ Project models.Project }{Project: p},
@@ -156,11 +132,54 @@ func (h *crawlHandler) handleCrawlAuth(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "crawl_auth", pageView)
 }
 
-// handleCrawlLive handles the request for the live crawling of a project.
+// Handle the BasicAuth form. Once it is submitted a crawler with BasicAuth is started.
+// It Processes the auth form data and starts the crawler.
+// This handler handles the POST request.
+func (h *crawlHandler) authPostHandler(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	user, ok := h.CookieSession.GetUser(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	p, err := h.ProjectService.FindProject(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	err = r.ParseForm()
+	if err != nil {
+		http.Redirect(w, r, "/crawl/auth", http.StatusSeeOther)
+		return
+	}
+
+	basicAuth := models.BasicAuth{
+		AuthUser: r.FormValue("username"),
+		AuthPass: r.FormValue("password"),
+	}
+
+	err = h.CrawlerService.StartCrawler(p, basicAuth)
+	if err != nil {
+		log.Printf("StartCrawler: %s %v\n", p.URL, err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+}
+
+// liveCrawlHandler handles the request for the live crawling of a project.
 // It expects a query parameter "pid" containing the project id to be crawled.
 // This handler renders a page that will connect via websockets to display the progress
 // of the crawl.
-func (h *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) liveCrawlHandler(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -205,10 +224,10 @@ func (h *crawlHandler) handleCrawlLive(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "crawl_live", v)
 }
 
-// handleCrawlWs handles the live crawling of a project using websockets.
+// wsHandler handles the live crawling of a project using websockets.
 // It expects a query parameter "pid" containing the project id.
 // It upgrades the connection to websockets and sends the crawler messages through it.
-func (h *crawlHandler) handleCrawlWs(w http.ResponseWriter, r *http.Request) {
+func (h *crawlHandler) wsHandler(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

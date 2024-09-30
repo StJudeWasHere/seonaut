@@ -21,7 +21,7 @@ const (
 	ClientTimeout   = 10    // HTTP client timeout in seconds.
 )
 
-type CrawlerServiceStorage interface {
+type CrawlerServiceRepository interface {
 	SaveCrawl(models.Project) (*models.Crawl, error)
 	GetLastCrawl(p *models.Project) models.Crawl
 	GetLastCrawls(models.Project, int) []models.Crawl
@@ -39,7 +39,7 @@ type CrawlerServicesContainer struct {
 }
 
 type CrawlerService struct {
-	store          CrawlerServiceStorage
+	repository     CrawlerServiceRepository
 	config         *config.CrawlerConfig
 	broker         *Broker
 	reportManager  *ReportManager
@@ -48,13 +48,13 @@ type CrawlerService struct {
 	lock           *sync.RWMutex
 }
 
-func NewCrawlerService(s CrawlerServiceStorage, services CrawlerServicesContainer) *CrawlerService {
+func NewCrawlerService(r CrawlerServiceRepository, s CrawlerServicesContainer) *CrawlerService {
 	return &CrawlerService{
-		store:          s,
-		broker:         services.Broker,
-		config:         services.Config,
-		reportManager:  services.ReportManager,
-		crawlerHandler: services.CrawlerHandler,
+		repository:     r,
+		broker:         s.Broker,
+		config:         s.Config,
+		reportManager:  s.ReportManager,
+		crawlerHandler: s.CrawlerHandler,
 		crawlers:       make(map[int64]*crawler.Crawler),
 		lock:           &sync.RWMutex{},
 	}
@@ -65,8 +65,8 @@ func NewCrawlerService(s CrawlerServiceStorage, services CrawlerServicesContaine
 // running or if there's an error creating it.
 // Finally the previous crawl's data is removed and the crawl is returned.
 func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) error {
-	previousCrawl := s.store.GetLastCrawl(&p)
-	crawl, err := s.store.SaveCrawl(p)
+	previousCrawl := s.repository.GetLastCrawl(&p)
+	crawl, err := s.repository.SaveCrawl(p)
 	if err != nil {
 		return err
 	}
@@ -104,17 +104,17 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 		s.reportManager.CreateMultipageIssues(crawl)
 
 		crawl.IssuesEnd = time.Now()
-		crawl.CriticalIssues = s.store.CountIssuesByPriority(crawl.Id, Critical)
-		crawl.AlertIssues = s.store.CountIssuesByPriority(crawl.Id, Alert)
-		crawl.WarningIssues = s.store.CountIssuesByPriority(crawl.Id, Warning)
+		crawl.CriticalIssues = s.repository.CountIssuesByPriority(crawl.Id, Critical)
+		crawl.AlertIssues = s.repository.CountIssuesByPriority(crawl.Id, Alert)
+		crawl.WarningIssues = s.repository.CountIssuesByPriority(crawl.Id, Warning)
 		crawl.TotalIssues = crawl.CriticalIssues + crawl.AlertIssues + crawl.WarningIssues
 
-		s.store.UpdateCrawl(crawl)
+		s.repository.UpdateCrawl(crawl)
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 		log.Printf("Crawled %d urls in %s", crawl.TotalURLs, p.URL)
 
 		s.removeCrawler(&p)
-		s.store.DeleteCrawlData(&previousCrawl)
+		s.repository.DeleteCrawlData(&previousCrawl)
 	}()
 
 	return nil
@@ -122,7 +122,7 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 
 // Get a slice with 'LastCrawlsLimit' number of the crawls
 func (s *CrawlerService) GetLastCrawls(p models.Project) []models.Crawl {
-	crawls := s.store.GetLastCrawls(p, LastCrawlsLimit)
+	crawls := s.repository.GetLastCrawls(p, LastCrawlsLimit)
 
 	for len(crawls) < LastCrawlsLimit {
 		crawls = append(crawls, models.Crawl{Start: time.Now()})

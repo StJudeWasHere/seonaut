@@ -9,46 +9,61 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	// Error returned when the email is not a valid email.
+	ErrInvalidEmail = errors.New("user service: invalid email")
+
+	// Error returned when the password does not follow the password criteria.
+	ErrInvalidPassword = errors.New("user service: invalid password")
+
+	// Error returned when the user we are authenticating does not exist.
+	ErrUnexistingUser = errors.New("user service: user does not exist")
+
+	// Error returned when the password is incorrect for the user we are authenticating.
+	ErrIncorrectPassword = errors.New("user service: incorrect password")
+
+	// Error returned when trying to create a user that is already signed up.
+	ErrUserExists = errors.New("user service: user already exists")
+)
+
 type (
-	UserServiceStorage interface {
-		UserSignup(string, string) (*models.User, error)
-		FindUserByEmail(string) (*models.User, error)
+	DeleteHook func(user *models.User)
+
+	UserServiceRepository interface {
+		UserSignup(email, hashedPassword string) (*models.User, error)
+		FindUserByEmail(email string) (*models.User, error)
 		UserUpdatePassword(email, hashedPassword string) error
-		DeleteUser(*models.User) error
-		DisableUser(*models.User) error
-
-		DeleteProjectCrawls(*models.Project)
-
-		DeleteProject(*models.Project)
-		FindProjectsByUser(uid int) []models.Project
+		DeleteUser(user *models.User) error
+		DisableUser(user *models.User) error
 	}
 
 	UserService struct {
-		store UserServiceStorage
+		repository  UserServiceRepository
+		deleteHooks []DeleteHook
 	}
 )
 
-func NewUserService(s UserServiceStorage) *UserService {
+func NewUserService(r UserServiceRepository) *UserService {
 	return &UserService{
-		store: s,
+		repository: r,
 	}
 }
 
 // SignUp validates the user email and password, if they are both valid creates a password hash
-// before storing it. If the storage is succesful it returns the new user.
+// before storing it. If succesful, it returns the new user, otherwise an error is returned.
 func (s *UserService) SignUp(email, password string) (*models.User, error) {
-	_, err := s.store.FindUserByEmail(email)
+	_, err := s.repository.FindUserByEmail(email)
 	if err == nil {
-		return nil, errors.New("user already exists")
+		return nil, ErrUserExists
 	}
 
-	if len(password) < 1 {
-		return nil, errors.New("invalid password")
+	if !s.validPassword(password) {
+		return nil, ErrInvalidPassword
 	}
 
 	_, err = mail.ParseAddress(email)
 	if err != nil {
-		return nil, errors.New("invalid email")
+		return nil, ErrInvalidEmail
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -56,20 +71,20 @@ func (s *UserService) SignUp(email, password string) (*models.User, error) {
 		return nil, err
 	}
 
-	return s.store.UserSignup(email, string(hashedPassword))
+	return s.repository.UserSignup(email, string(hashedPassword))
 }
 
 // SignIn validates the provided email and password combination for user authentication.
 // It compares the provided password with the user's hashed password.
 // If the passwords do not match, it returns an error.
 func (s *UserService) SignIn(email, password string) (*models.User, error) {
-	u, err := s.store.FindUserByEmail(email)
+	u, err := s.repository.FindUserByEmail(email)
 	if err != nil {
-		return nil, errors.New("user does not exist")
+		return nil, ErrUnexistingUser
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password)); err != nil {
-		return nil, errors.New("incorrect password")
+		return nil, ErrIncorrectPassword
 	}
 
 	return u, nil
@@ -77,17 +92,21 @@ func (s *UserService) SignIn(email, password string) (*models.User, error) {
 
 // UpdatePassword updates the password for the user with the given email.
 // It validates the new password and generates a hashed password using bcrypt before storing it.
-func (s *UserService) UpdatePassword(email, password string) error {
-	if len(password) < 1 {
-		return errors.New("invalid password")
+func (s *UserService) UpdatePassword(user *models.User, currentPassword, newPassword string) error {
+	if !s.validPassword(newPassword) {
+		return ErrInvalidPassword
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(currentPassword)); err != nil {
+		return ErrIncorrectPassword
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(newPassword), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 
-	err = s.store.UserUpdatePassword(email, string(hashedPassword))
+	err = s.repository.UserUpdatePassword(user.Email, string(hashedPassword))
 	if err != nil {
 		return err
 	}
@@ -97,14 +116,23 @@ func (s *UserService) UpdatePassword(email, password string) error {
 
 // Delete a User and all its associated projects and crawl data.
 func (s *UserService) DeleteUser(user *models.User) {
-	s.store.DisableUser(user)
+	s.repository.DisableUser(user)
 	go func() {
-		projects := s.store.FindProjectsByUser(user.Id)
-		for _, p := range projects {
-			s.store.DeleteProjectCrawls(&p)
-			s.store.DeleteProject(&p)
+		for _, h := range s.deleteHooks {
+			h(user)
 		}
 
-		s.store.DeleteUser(user)
+		s.repository.DeleteUser(user)
 	}()
+}
+
+// AddDeleteHook adds a new hook function that will be called when the user is deleted.
+// This is used for user data clean up.
+func (s *UserService) AddDeleteHook(hook DeleteHook) {
+	s.deleteHooks = append(s.deleteHooks, hook)
+}
+
+// Validate the password to make sure it follows certain criteria.
+func (s *UserService) validPassword(password string) bool {
+	return len(password) > 1
 }

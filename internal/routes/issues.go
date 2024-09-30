@@ -12,9 +12,9 @@ type issueHandler struct {
 	*services.Container
 }
 
-// handleIssues handles the issues view of a project.
+// indexHandler handles the issues view of a project.
 // It expects a query parameter "pid" containing the project id.
-func (h *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
+func (h *issueHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
@@ -52,10 +52,10 @@ func (h *issueHandler) handleIssues(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "issues", v)
 }
 
-// handleIssuesView handles the view of project's specific issue type.
+// viewHandler handles the view of project's specific issue type.
 // It expects a query parameter "pid" containing the project id and an "eid" parameter
 // containing the issue type.
-func (h *issueHandler) handleIssuesView(w http.ResponseWriter, r *http.Request) {
+func (h *issueHandler) viewHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)

@@ -11,14 +11,14 @@
 
 				<form method="POST">
 					<label for="email">Email:</label>
-					<input type="email" name="email" value="{{ .Data.Email }}" autofocus>
+					<input type="email" name="email" value="{{ .Data.Email }}" required autofocus>
 					<label for="password">Password:</label>
-					<input type="password" name="password">
+					<input type="password" name="password" required>
 					<input type="submit" value="Sign Up">
 				</form>
 
 				{{ if .Data.Error }}
-					<p class="error">The email address or password is not valid.</p>
+					<p class="error">{{ .Data.ErrorMessage }}</p>
 				{{ end }}
 
 				<p>

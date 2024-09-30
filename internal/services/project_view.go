@@ -7,7 +7,7 @@ import (
 )
 
 type (
-	ProjectViewServiceStorage interface {
+	ProjectViewServiceRepository interface {
 		FindProjectsByUser(int) []models.Project
 		FindProjectById(id int, uid int) (models.Project, error)
 
@@ -15,18 +15,18 @@ type (
 	}
 
 	ProjectViewService struct {
-		storage ProjectViewServiceStorage
+		repository ProjectViewServiceRepository
 	}
 )
 
-func NewProjectViewService(s ProjectViewServiceStorage) *ProjectViewService {
-	return &ProjectViewService{storage: s}
+func NewProjectViewService(r ProjectViewServiceRepository) *ProjectViewService {
+	return &ProjectViewService{repository: r}
 }
 
 // GetProjectView returns a new ProjectView with the specified project
 // and the project's last crawl.
 func (s *ProjectViewService) GetProjectView(id, uid int) (*models.ProjectView, error) {
-	project, err := s.storage.FindProjectById(id, uid)
+	project, err := s.repository.FindProjectById(id, uid)
 	if err != nil {
 		return nil, err
 	}
@@ -38,7 +38,7 @@ func (s *ProjectViewService) GetProjectView(id, uid int) (*models.ProjectView, e
 
 	project.Host = parsedURL.Host
 
-	c := s.storage.GetLastCrawl(&project)
+	c := s.repository.GetLastCrawl(&project)
 
 	v := &models.ProjectView{
 		Project: project,
@@ -53,11 +53,11 @@ func (s *ProjectViewService) GetProjectView(id, uid int) (*models.ProjectView, e
 func (s *ProjectViewService) GetProjectViews(uid int) []models.ProjectView {
 	var views []models.ProjectView
 
-	projects := s.storage.FindProjectsByUser(uid)
+	projects := s.repository.FindProjectsByUser(uid)
 	for _, p := range projects {
 		pv := models.ProjectView{
 			Project: p,
-			Crawl:   s.storage.GetLastCrawl(&p),
+			Crawl:   s.repository.GetLastCrawl(&p),
 		}
 		views = append(views, pv)
 	}

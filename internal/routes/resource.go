@@ -14,7 +14,7 @@ type resourceHandler struct {
 	*services.Container
 }
 
-// handleResourcesView handles the HTTP request for the resources view page.
+// indexHandler handles the HTTP request for the resources view page.
 // It expects the following query parameters:
 // - "pid" containing the project id.
 // - "rid" the id of the resource to be loaded.
@@ -22,7 +22,7 @@ type resourceHandler struct {
 // - "ep" the explorer page number from which the user loaded this resource.
 // - "t" the tab to be loaded, which defaults to the details tab.
 // - "p" the number of page to be loaded, in case the resource page has pagination.
-func (h *resourceHandler) handleResourcesView(w http.ResponseWriter, r *http.Request) {
+func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)

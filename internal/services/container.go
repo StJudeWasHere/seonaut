@@ -122,7 +122,7 @@ func (c *Container) InitIssueService() {
 
 // Create the report service.
 func (c *Container) InitReportService() {
-	storage := &struct {
+	repository := &struct {
 		*repository.PageReportRepository
 		*repository.IssueRepository
 	}{
@@ -130,7 +130,7 @@ func (c *Container) InitReportService() {
 		c.issueRepository,
 	}
 
-	c.ReportService = NewReportService(storage)
+	c.ReportService = NewReportService(repository)
 }
 
 // Create the report manager and add all the available reporters.
@@ -149,22 +149,12 @@ func (c *Container) InitReportManager() {
 
 // Create the user service.
 func (c *Container) InitUserService() {
-	storage := &struct {
-		*repository.UserRepository
-		*repository.ProjectRepository
-		*repository.CrawlRepository
-	}{
-		c.userRepository,
-		c.projectRepository,
-		c.crawlRepository,
-	}
-
-	c.UserService = NewUserService(storage)
+	c.UserService = NewUserService(c.userRepository)
 }
 
 // Create the Project service.
 func (c *Container) InitProjectService() {
-	storage := &struct {
+	repository := &struct {
 		*repository.ProjectRepository
 		*repository.CrawlRepository
 	}{
@@ -172,12 +162,17 @@ func (c *Container) InitProjectService() {
 		c.crawlRepository,
 	}
 
-	c.ProjectService = NewProjectService(storage)
+	c.ProjectService = NewProjectService(repository)
+
+	// UserService DeleteHooks are called when a user is deleted.
+	// Add a DeleteHook so it deletes all user projects and crawl
+	// data when a user is deleted.
+	c.UserService.AddDeleteHook(c.ProjectService.DeleteAllUserProjects)
 }
 
 // Create the ProjectView service.
 func (c *Container) InitProjectViewService() {
-	storage := &struct {
+	repository := &struct {
 		*repository.ProjectRepository
 		*repository.CrawlRepository
 	}{
@@ -185,7 +180,7 @@ func (c *Container) InitProjectViewService() {
 		c.crawlRepository,
 	}
 
-	c.ProjectViewService = NewProjectViewService(storage)
+	c.ProjectViewService = NewProjectViewService(repository)
 }
 
 // Create the Export service.
@@ -212,7 +207,7 @@ func (c *Container) InitCrawlerService() {
 		CrawlerHandler: NewCrawlerHandler(c.pageReportRepository, c.PubSubBroker, c.ReportManager, client),
 		Config:         c.Config.Crawler,
 	}
-	storage := &struct {
+	repository := &struct {
 		*repository.CrawlRepository
 		*repository.IssueRepository
 	}{
@@ -220,7 +215,7 @@ func (c *Container) InitCrawlerService() {
 		c.issueRepository,
 	}
 
-	c.CrawlerService = NewCrawlerService(storage, crawlerServices)
+	c.CrawlerService = NewCrawlerService(repository, crawlerServices)
 }
 
 // Create the dashboCallbackBuilderard service.

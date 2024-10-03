@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"unicode"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 
@@ -586,17 +587,35 @@ func (p *Parser) headersLocation() string {
 func (p *Parser) parseSrcSet(srcset string) []string {
 	var imageURLs []string
 
+	srcset = strings.Trim(srcset, " ,")
 	if srcset == "" {
 		return imageURLs
 	}
 
-	imageSet := strings.Split(srcset, ",")
-	for _, s := range imageSet {
-		i := strings.Split(s, " ")
-
-		if len(i) > 0 {
-			imageURLs = append(imageURLs, strings.TrimSpace(i[0]))
+	// URLs in srcset strings can contain an optional descriptor.
+	// Also take into account URLs with commas in them.
+	parsingURL := true
+	var currentURL strings.Builder
+	for _, char := range srcset {
+		if parsingURL {
+			if unicode.IsSpace(char) {
+				if currentURL.Len() > 0 {
+					parsingURL = false
+				}
+			} else if currentURL.Len() > 0 || char != ',' {
+				currentURL.WriteRune(char)
+			}
+		} else {
+			if char == ',' {
+				parsingURL = true
+				imageURLs = append(imageURLs, strings.TrimSpace(currentURL.String()))
+				currentURL.Reset()
+			}
 		}
+	}
+
+	if currentURL.Len() > 0 {
+		imageURLs = append(imageURLs, strings.TrimSpace(currentURL.String()))
 	}
 
 	return imageURLs

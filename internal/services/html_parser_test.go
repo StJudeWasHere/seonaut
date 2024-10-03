@@ -438,3 +438,45 @@ func TestRobotsNone(t *testing.T) {
 		t.Error("NewPageReport Nofollow should be true")
 	}
 }
+
+func TestSrcset(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	images := []string{
+		"https://example.com/logo.png",
+		"https://example.com/image,c_fill,w_576.jpg",
+		"https://example.com/image,c_fill,w_276.jpg",
+		"https://example.com/image,c_fill,w_76.jpg",
+	}
+	body := []byte(
+		`<html>
+		<head></head>
+		<body>
+			<img src="` + images[0] + `"
+			srcset=",` + images[1] + ` 576w, ,` + images[2] + ` 276w,` + images[3] + `,">
+		</body>
+	</html>`)
+	statusCode := 200
+	headers := &http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, headers, body, int64(len(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(pageReport.Images) != len(images) {
+		t.Errorf("pagereport images len want: %d Got: %d", len(images), len(pageReport.Images))
+	}
+
+	for n, i := range images {
+		if pageReport.Images[n].URL != i {
+			t.Errorf("pageReport image %d should be %s. Got: %s", n, i, pageReport.Images[n].URL)
+		}
+	}
+
+}

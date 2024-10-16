@@ -1,0 +1,54 @@
+{{ define "images_alt_chart" }}
+<div id="alt-chart" class="chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let altChart = echarts.init(document.getElementById('alt-chart'));
+		altChart.setOption({
+			color: ['#F7E497', '#FD7B6A'],
+			toolbox: {
+				show: true,
+				top: "bottom",
+				left: 0,
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "alt-chart"
+					}
+				}
+			},
+			tooltip: {
+				trigger: 'item'
+			},
+			legend: {
+				top: 'top',
+				left: 'left',
+				orient: 'vertical',
+				data:  ['With alt', 'Without alt'],
+			},
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			series: [
+				{
+					center: ['50%', '55%'],
+					labelLine: {
+						show: false
+					},
+					label: {
+						show: false
+					},
+					radius: ['0%', '65%'],
+					name: 'Images alt',
+					type: 'pie',
+					data: [
+						{ value: {{ .AltCount.Alt }}, name: 'With alt' },
+						{ value: {{ .AltCount.NonAlt }}, name: 'Without alt' },
+					],
+				}
+			]
+		});
+	});
+</script>
+{{ end }}

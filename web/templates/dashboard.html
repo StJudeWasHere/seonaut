@@ -1,1072 +1,247 @@
 {{ template "head" . }}
-
+<script src="/resources/echarts.min.js?v=5.5.1" async></script>
+<script type="text/javascript">
+	window.scriptReadyQueue = [];
+	function addToQueue(fn) {
+		if (window.pageFullyLoaded) {
+			fn();
+		} else {
+			window.scriptReadyQueue.push(fn);
+		}
+	}
+	window.onload = function() {
+		window.pageFullyLoaded = true;
+		window.scriptReadyQueue.forEach(function(fn) {
+			fn();
+		});
+		window.scriptReadyQueue = [];
+	};
+</script>
 {{ with .Data }}
-<div class="panel">
+	<div class="panel">
 
-	<div class="box box-first">
-		<div class="col col-main">
-			<div class="content content-centered">
-				<h2>Dashboard</h2>
+		<div class="box box-first">
+			<div class="col col-main">
+				<div class="content content-centered">
+					<h2>Dashboard</h2>
+				</div>
+			</div>
+
+			<div class="col col-actions-l">
+				<div class="main-action">
+					<div class="content">
+						{{ .ProjectView.Project.Host }}
+					</div>
+				</div>
 			</div>
 		</div>
 
-		<div class="col col-actions-l">
-			<div class="main-action">
+		<div class="box box-highlight soft">
+			<div class="col">
 				<div class="content">
-					{{ .ProjectView.Project.Host }}
+					<h2>Crawl history</h2>
+					{{ template "crawls_timeline_chart" . }}
+				</div>
+			</div>
+
+			<div class="col">
+				<div class="content">
+					<h2>Issues history</h2>
+					{{ template "issues_timeline_chart" . }}
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content" >
+					<h2>Issue types</h2>
+					{{ template "issues_chart" . }}
+				</div>
+			</div>
+			<div class="col col-actions-l highlight">
+				<div class="content">
+					<h2 class="title">Current Crawl</h2>
+					<p class="crawler-item">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 23h-24v-19h4v-3h4v3h8v-3h4v3h4v19zm-1-15h-22v14h22v-14zm-16.501 8.794l1.032-.128c.201.93.693 1.538 1.644 1.538.957 0 1.731-.686 1.731-1.634 0-.989-.849-1.789-2.373-1.415l.115-.843c.91.09 1.88-.348 1.88-1.298 0-.674-.528-1.224-1.376-1.224-.791 0-1.364.459-1.518 1.41l-1.032-.171c.258-1.319 1.227-2.029 2.527-2.029 1.411 0 2.459.893 2.459 2.035 0 .646-.363 1.245-1.158 1.586.993.213 1.57.914 1.57 1.928 0 1.46-1.294 2.451-2.831 2.451-1.531 0-2.537-.945-2.67-2.206zm9.501 2.206h-1.031v-6.265c-.519.461-1.354.947-1.969 1.159v-.929c1.316-.576 2.036-1.402 2.336-1.965h.664v8zm7-14h-22v2h22v-2zm-16-3h-2v2h2v-2zm12 0h-2v2h2v-2z"/></svg>
+						<span> Crawled on {{ .ProjectView.Crawl.Start.Format "Jan 02, 2006" }}.</span>
+					</p>
+
+					<p class="crawler-item">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm0 11h6v1h-7v-9h1v8z"/></svg>
+						<span>
+							Crawl duration was {{ total_time .ProjectView.Crawl.Start .ProjectView.Crawl.End }}.
+						</span>
+					</p>
+				
+					<p class="crawler-item">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 23h-22v-20h22v20zm-1-14h-20v13h20v-13zm-1-7h-21v19h-1v-20h22v1zm1 2h-20v4h20v-4z"/></svg>
+						<span>
+							{{ .ProjectView.Crawl.TotalURLs }} {{ if eq .ProjectView.Crawl.TotalURLs 1 }}URL{{ else }}URLs{{end }} crawled.
+						</span>
+					</p>
+
+					<p class="crawler-item">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M14.851 11.923c-.179-.641-.521-1.246-1.025-1.749-1.562-1.562-4.095-1.563-5.657 0l-4.998 4.998c-1.562 1.563-1.563 4.095 0 5.657 1.562 1.563 4.096 1.561 5.656 0l3.842-3.841.333.009c.404 0 .802-.04 1.189-.117l-4.657 4.656c-.975.976-2.255 1.464-3.535 1.464-1.28 0-2.56-.488-3.535-1.464-1.952-1.951-1.952-5.12 0-7.071l4.998-4.998c.975-.976 2.256-1.464 3.536-1.464 1.279 0 2.56.488 3.535 1.464.493.493.861 1.063 1.105 1.672l-.787.784zm-5.703.147c.178.643.521 1.25 1.026 1.756 1.562 1.563 4.096 1.561 5.656 0l4.999-4.998c1.563-1.562 1.563-4.095 0-5.657-1.562-1.562-4.095-1.563-5.657 0l-3.841 3.841-.333-.009c-.404 0-.802.04-1.189.117l4.656-4.656c.975-.976 2.256-1.464 3.536-1.464 1.279 0 2.56.488 3.535 1.464 1.951 1.951 1.951 5.119 0 7.071l-4.999 4.998c-.975.976-2.255 1.464-3.535 1.464-1.28 0-2.56-.488-3.535-1.464-.494-.495-.863-1.067-1.107-1.678l.788-.785z"/></svg>
+						<span>
+							{{ if .ProjectView.Project.FollowNofollow }}Following internal nofollow links.
+							{{ else }}Not following nofollow links.{{ end }}
+						</span>
+					</p>
+				
+					<p class="crawler-item">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 18v1h-24v-1h24zm0-6v1h-24v-1h24zm0-6v1h-24v-1h24z" fill="#1040e2"/><path d="M24 19h-24v-1h24v1zm0-6h-24v-1h24v1zm0-6h-24v-1h24v1z"/></svg>
+						<span>
+							{{ if .ProjectView.Project.IncludeNoindex }}Including noindex pages.
+							{{ else }}Not including noindex pages.{{ end }}
+						</span>
+					</p>
+
+					<p class="crawler-item">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 20l-6.455 4-5.545-4-5.545 4-6.455-4v-20l6.455 4 5.545-4 5.545 4 6.455-4v20zm-11.5-13h-1v-5.406l-4.5 3.246v4.16h-1v-4.106l-5-3.098v17.647l5 3.099v-6.542h1v6.374l4.5-3.246v-5.128h1v5.128l4.5 3.246v-5.374h1v5.542l5-3.099v-17.647l-5 3.098v3.106h-1v-3.16l-4.5-3.246v5.406zm8.172 7.016l-1.296-1.274 1.273-1.293-.708-.702-1.272 1.294-1.294-1.271-.703.702 1.296 1.276-1.273 1.296.703.703 1.277-1.298 1.295 1.275.702-.708zm-14.102-.606c-.373 0-.741-.066-1.092-.195l.407-1.105c.221.081.451.122.685.122.26 0 .514-.05.754-.149l.448 1.09c-.383.157-.787.237-1.202.237zm-2.601-2.374c-.535 0-.969.433-.969.968 0 .534.434.968.969.968.535 0 .969-.434.969-.968 0-.535-.434-.968-.969-.968zm11.271 1.591l-1.659-.945.583-1.024 1.66.945-.584 1.024zm-6.455-.02l-.605-1.011 1.638-.981.606 1.01-1.639.982zm3.918-1.408c-.243-.101-.5-.153-.763-.153-.231 0-.457.04-.674.118l-.402-1.108c.346-.125.708-.188 1.076-.188.419 0 .83.082 1.216.243l-.453 1.088z"/></svg>
+						<span>
+							{{ if .ProjectView.Project.CrawlSitemap }} Crawling URLs in sitemap{{ else }}Not crawling URLs in sitemap{{end }}.
+						</span>
+					</p>
+
+					<p class="crawler-item">
+						{{ if .ProjectView.Crawl.SitemapExists }}
+							{{ if .ProjectView.Crawl.SitemapIsBlocked }}
+								<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 11.293l10.293-10.293.707.707-10.293 10.293 10.293 10.293-.707.707-10.293-10.293-10.293 10.293-.707-.707 10.293-10.293-10.293-10.293.707-.707 10.293 10.293z"/></svg>
+								<span>Sitemap blocked.</span>
+							{{ else }}
+								<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 4.685l-16.327 17.315-7.673-9.054.761-.648 6.95 8.203 15.561-16.501.728.685z"/></svg>
+								<span>Sitemap found.</span>
+							{{ end }}
+						{{ else }}
+
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 11.293l10.293-10.293.707.707-10.293 10.293 10.293 10.293-.707.707-10.293-10.293-10.293 10.293-.707-.707 10.293-10.293-10.293-10.293.707-.707 10.293 10.293z"/></svg>
+						<span>Sitemap not found.</span>
+
+						{{ end }}
+					</p>
+
+					<p class="crawler-item">
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 8.666c-1.838 0-3.333 1.496-3.333 3.334s1.495 3.333 3.333 3.333 3.333-1.495 3.333-3.333-1.495-3.334-3.333-3.334m0 7.667c-2.39 0-4.333-1.943-4.333-4.333s1.943-4.334 4.333-4.334 4.333 1.944 4.333 4.334c0 2.39-1.943 4.333-4.333 4.333m-1.193 6.667h2.386c.379-1.104.668-2.451 2.107-3.05 1.496-.617 2.666.196 3.635.672l1.686-1.688c-.508-1.047-1.266-2.199-.669-3.641.567-1.369 1.739-1.663 3.048-2.099v-2.388c-1.235-.421-2.471-.708-3.047-2.098-.572-1.38.057-2.395.669-3.643l-1.687-1.686c-1.117.547-2.221 1.257-3.642.668-1.374-.571-1.656-1.734-2.1-3.047h-2.386c-.424 1.231-.704 2.468-2.099 3.046-.365.153-.718.226-1.077.226-.843 0-1.539-.392-2.566-.893l-1.687 1.686c.574 1.175 1.251 2.237.669 3.643-.571 1.375-1.734 1.654-3.047 2.098v2.388c1.226.418 2.468.705 3.047 2.098.581 1.403-.075 2.432-.669 3.643l1.687 1.687c1.45-.725 2.355-1.204 3.642-.669 1.378.572 1.655 1.738 2.1 3.047m3.094 1h-3.803c-.681-1.918-.785-2.713-1.773-3.123-1.005-.419-1.731.132-3.466.952l-2.689-2.689c.873-1.837 1.367-2.465.953-3.465-.412-.991-1.192-1.087-3.123-1.773v-3.804c1.906-.678 2.712-.782 3.123-1.773.411-.991-.071-1.613-.953-3.466l2.689-2.688c1.741.828 2.466 1.365 3.465.953.992-.412 1.082-1.185 1.775-3.124h3.802c.682 1.918.788 2.714 1.774 3.123 1.001.416 1.709-.119 3.467-.952l2.687 2.688c-.878 1.847-1.361 2.477-.952 3.465.411.992 1.192 1.087 3.123 1.774v3.805c-1.906.677-2.713.782-3.124 1.773-.403.975.044 1.561.954 3.464l-2.688 2.689c-1.728-.82-2.467-1.37-3.456-.955-.988.41-1.08 1.146-1.785 3.126"/></svg>
+						<span>
+							{{ if .ProjectView.Project.IgnoreRobotsTxt }}Ignoring the robots.txt file.
+							{{ else }}Respecting robots.txt file.{{ end }}
+						</span>
+					</p>
+
+					<p class="crawler-item">
+						{{ if .ProjectView.Crawl.RobotstxtExists }}
+
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 4.685l-16.327 17.315-7.673-9.054.761-.648 6.95 8.203 15.561-16.501.728.685z"/></svg>
+						<span>Robots.txt found.</span>
+
+						{{ else }}
+
+						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 11.293l10.293-10.293.707.707-10.293 10.293 10.293 10.293-.707.707-10.293-10.293-10.293 10.293-.707-.707 10.293-10.293-10.293-10.293.707-.707 10.293 10.293z"/></svg>
+						<span>Robots.txt not found.</span>
+
+						{{ end }}
+					</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="links-box content">
+			<h2>Links</h2>
+
+			<div class="box borderless">
+				<div class="col borderless">
+					{{ template "link_types_chart" . }}
+				</div>
+
+				<div class="col">
+					{{ template "link_follow_chart" . }}
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft box-highlight">
+			<div class="col">
+				<div class="content">
+					<h2>Canonical URLs</h2>
+					{{ template "canonicals_chart" . }}
+				</div>
+			</div>
+
+			<div class="col">
+				<div class="content">
+					<h2>Images alt</h2>
+					{{ template "images_alt_chart" . }}
+				</div>
+			</div>
+
+			<div class="col">
+				<div class="content">
+					<h2>HTTPS</h2>
+					{{ template "scheme_chart" . }}
+				</div>
+			</div>
+		</div>
+
+		<div class="box">
+			<div class="col">
+				<div class="content">
+					<h2>Media type</h2>
+					{{ template "media_types_chart" . }}
+				</div>
+			</div>
+
+			<div class="col">
+				<div class="content">
+					<h2>Status code</h2>
+					{{ template "status_codes_chart" . }}
+				</div>
+			</div>
+		</div>
+
+		<div class="box">
+			<div class="col col-main borderless">
+				<div class="content">
+					<h2>Status code by depth</h2>
+					{{ template "status_depth_chart" . }}
+				</div>
+			</div>
+		</div>
+
+		<div class="box box-highlight soft">
+			<div class="col">
+				<div class="content">
+				<h2>Next Actions</h2>
+			</div>
+			</div>
+		</div>
+
+		<div class="box box-highlight">
+			<div class="col">
+				<div class="content">
+					<h2>Explore Site Issues</h2>
+					<p>Uncover issues impacting your website's performance. </p>
+					<p><a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a></p>
+				</div>
+			</div>
+
+			<div class="col">
+				<div class="content">
+					<h2>Dive into Page Details</h2>
+					<p>Get detailed insights into specific URLs.</p>
+					<p><a href="/explorer?pid={{ .ProjectView.Project.Id }}">Page Details</a></p>
+				</div>
+			</div>
+
+			<div class="col">
+				<div class="content">
+					<h2>Analyze Raw Data</h2>
+					<p>Export your data for further analysis and reporting.</p>
+					<p><a href="/export?pid={{ .ProjectView.Project.Id }}">Data Export</a></p>
 				</div>
 			</div>
 		</div>
 	</div>
-
-	<div class="box box-highlight soft">
-		<div class="col">
-			<div class="content">
-				<h2>Crawl history</h2>
-				<div id="crawl-chart" class="chart crawl-chart"></div>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="content">
-				<h2>Issues history</h2>
-				<div id="issues-timeline" class="chart issues-timeline-chart"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="box soft">
-		<div class="col col-main">
-			<div class="content" >
-				<h2>Issue types</h2>
-				<div id="issues-chart" class="chart issues-chart"></div>
-			</div>
-		</div>
-
-		<div class="col col-actions-l highlight">
-			<div class="content">
-				<h2 class="title">Current Crawl</h2>
-				<p class="crawler-item">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 23h-24v-19h4v-3h4v3h8v-3h4v3h4v19zm-1-15h-22v14h22v-14zm-16.501 8.794l1.032-.128c.201.93.693 1.538 1.644 1.538.957 0 1.731-.686 1.731-1.634 0-.989-.849-1.789-2.373-1.415l.115-.843c.91.09 1.88-.348 1.88-1.298 0-.674-.528-1.224-1.376-1.224-.791 0-1.364.459-1.518 1.41l-1.032-.171c.258-1.319 1.227-2.029 2.527-2.029 1.411 0 2.459.893 2.459 2.035 0 .646-.363 1.245-1.158 1.586.993.213 1.57.914 1.57 1.928 0 1.46-1.294 2.451-2.831 2.451-1.531 0-2.537-.945-2.67-2.206zm9.501 2.206h-1.031v-6.265c-.519.461-1.354.947-1.969 1.159v-.929c1.316-.576 2.036-1.402 2.336-1.965h.664v8zm7-14h-22v2h22v-2zm-16-3h-2v2h2v-2zm12 0h-2v2h2v-2z"/></svg>
-					<span> Crawled on {{ .ProjectView.Crawl.Start.Format "Jan 02, 2006" }}.</span>
-				</p>
-
-				<p class="crawler-item">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm0 11h6v1h-7v-9h1v8z"/></svg>
-					<span>
-						Crawl duration was {{ total_time .ProjectView.Crawl.Start .ProjectView.Crawl.End }}.
-					</span>
-				</p>
-			
-				<p class="crawler-item">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 23h-22v-20h22v20zm-1-14h-20v13h20v-13zm-1-7h-21v19h-1v-20h22v1zm1 2h-20v4h20v-4z"/></svg>
-					<span>
-						{{ .ProjectView.Crawl.TotalURLs }} {{ if eq .ProjectView.Crawl.TotalURLs 1 }}URL{{ else }}URLs{{end }} crawled.
-					</span>
-				</p>
-
-				<p class="crawler-item">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M14.851 11.923c-.179-.641-.521-1.246-1.025-1.749-1.562-1.562-4.095-1.563-5.657 0l-4.998 4.998c-1.562 1.563-1.563 4.095 0 5.657 1.562 1.563 4.096 1.561 5.656 0l3.842-3.841.333.009c.404 0 .802-.04 1.189-.117l-4.657 4.656c-.975.976-2.255 1.464-3.535 1.464-1.28 0-2.56-.488-3.535-1.464-1.952-1.951-1.952-5.12 0-7.071l4.998-4.998c.975-.976 2.256-1.464 3.536-1.464 1.279 0 2.56.488 3.535 1.464.493.493.861 1.063 1.105 1.672l-.787.784zm-5.703.147c.178.643.521 1.25 1.026 1.756 1.562 1.563 4.096 1.561 5.656 0l4.999-4.998c1.563-1.562 1.563-4.095 0-5.657-1.562-1.562-4.095-1.563-5.657 0l-3.841 3.841-.333-.009c-.404 0-.802.04-1.189.117l4.656-4.656c.975-.976 2.256-1.464 3.536-1.464 1.279 0 2.56.488 3.535 1.464 1.951 1.951 1.951 5.119 0 7.071l-4.999 4.998c-.975.976-2.255 1.464-3.535 1.464-1.28 0-2.56-.488-3.535-1.464-.494-.495-.863-1.067-1.107-1.678l.788-.785z"/></svg>
-					<span>
-						{{ if .ProjectView.Project.FollowNofollow }}Following internal nofollow links.
-						{{ else }}Not following nofollow links.{{ end }}
-					</span>
-				</p>
-			
-				<p class="crawler-item">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 18v1h-24v-1h24zm0-6v1h-24v-1h24zm0-6v1h-24v-1h24z" fill="#1040e2"/><path d="M24 19h-24v-1h24v1zm0-6h-24v-1h24v1zm0-6h-24v-1h24v1z"/></svg>
-					<span>
-						{{ if .ProjectView.Project.IncludeNoindex }}Including noindex pages.
-						{{ else }}Not including noindex pages.{{ end }}
-					</span>
-				</p>
-
-				<p class="crawler-item">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 20l-6.455 4-5.545-4-5.545 4-6.455-4v-20l6.455 4 5.545-4 5.545 4 6.455-4v20zm-11.5-13h-1v-5.406l-4.5 3.246v4.16h-1v-4.106l-5-3.098v17.647l5 3.099v-6.542h1v6.374l4.5-3.246v-5.128h1v5.128l4.5 3.246v-5.374h1v5.542l5-3.099v-17.647l-5 3.098v3.106h-1v-3.16l-4.5-3.246v5.406zm8.172 7.016l-1.296-1.274 1.273-1.293-.708-.702-1.272 1.294-1.294-1.271-.703.702 1.296 1.276-1.273 1.296.703.703 1.277-1.298 1.295 1.275.702-.708zm-14.102-.606c-.373 0-.741-.066-1.092-.195l.407-1.105c.221.081.451.122.685.122.26 0 .514-.05.754-.149l.448 1.09c-.383.157-.787.237-1.202.237zm-2.601-2.374c-.535 0-.969.433-.969.968 0 .534.434.968.969.968.535 0 .969-.434.969-.968 0-.535-.434-.968-.969-.968zm11.271 1.591l-1.659-.945.583-1.024 1.66.945-.584 1.024zm-6.455-.02l-.605-1.011 1.638-.981.606 1.01-1.639.982zm3.918-1.408c-.243-.101-.5-.153-.763-.153-.231 0-.457.04-.674.118l-.402-1.108c.346-.125.708-.188 1.076-.188.419 0 .83.082 1.216.243l-.453 1.088z"/></svg>
-					<span>
-						{{ if .ProjectView.Project.CrawlSitemap }} Crawling URLs in sitemap{{ else }}Not crawling URLs in sitemap{{end }}.
-					</span>
-				</p>
-
-				<p class="crawler-item">
-					{{ if .ProjectView.Crawl.SitemapExists }}
-						{{ if .ProjectView.Crawl.SitemapIsBlocked }}
-							<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 11.293l10.293-10.293.707.707-10.293 10.293 10.293 10.293-.707.707-10.293-10.293-10.293 10.293-.707-.707 10.293-10.293-10.293-10.293.707-.707 10.293 10.293z"/></svg>
-							<span>Sitemap blocked.</span>
-						{{ else }}
-							<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 4.685l-16.327 17.315-7.673-9.054.761-.648 6.95 8.203 15.561-16.501.728.685z"/></svg>
-							<span>Sitemap found.</span>
-						{{ end }}
-					{{ else }}
-
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 11.293l10.293-10.293.707.707-10.293 10.293 10.293 10.293-.707.707-10.293-10.293-10.293 10.293-.707-.707 10.293-10.293-10.293-10.293.707-.707 10.293 10.293z"/></svg>
-					<span>Sitemap not found.</span>
-
-					{{ end }}
-				</p>
-
-				<p class="crawler-item">
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 8.666c-1.838 0-3.333 1.496-3.333 3.334s1.495 3.333 3.333 3.333 3.333-1.495 3.333-3.333-1.495-3.334-3.333-3.334m0 7.667c-2.39 0-4.333-1.943-4.333-4.333s1.943-4.334 4.333-4.334 4.333 1.944 4.333 4.334c0 2.39-1.943 4.333-4.333 4.333m-1.193 6.667h2.386c.379-1.104.668-2.451 2.107-3.05 1.496-.617 2.666.196 3.635.672l1.686-1.688c-.508-1.047-1.266-2.199-.669-3.641.567-1.369 1.739-1.663 3.048-2.099v-2.388c-1.235-.421-2.471-.708-3.047-2.098-.572-1.38.057-2.395.669-3.643l-1.687-1.686c-1.117.547-2.221 1.257-3.642.668-1.374-.571-1.656-1.734-2.1-3.047h-2.386c-.424 1.231-.704 2.468-2.099 3.046-.365.153-.718.226-1.077.226-.843 0-1.539-.392-2.566-.893l-1.687 1.686c.574 1.175 1.251 2.237.669 3.643-.571 1.375-1.734 1.654-3.047 2.098v2.388c1.226.418 2.468.705 3.047 2.098.581 1.403-.075 2.432-.669 3.643l1.687 1.687c1.45-.725 2.355-1.204 3.642-.669 1.378.572 1.655 1.738 2.1 3.047m3.094 1h-3.803c-.681-1.918-.785-2.713-1.773-3.123-1.005-.419-1.731.132-3.466.952l-2.689-2.689c.873-1.837 1.367-2.465.953-3.465-.412-.991-1.192-1.087-3.123-1.773v-3.804c1.906-.678 2.712-.782 3.123-1.773.411-.991-.071-1.613-.953-3.466l2.689-2.688c1.741.828 2.466 1.365 3.465.953.992-.412 1.082-1.185 1.775-3.124h3.802c.682 1.918.788 2.714 1.774 3.123 1.001.416 1.709-.119 3.467-.952l2.687 2.688c-.878 1.847-1.361 2.477-.952 3.465.411.992 1.192 1.087 3.123 1.774v3.805c-1.906.677-2.713.782-3.124 1.773-.403.975.044 1.561.954 3.464l-2.688 2.689c-1.728-.82-2.467-1.37-3.456-.955-.988.41-1.08 1.146-1.785 3.126"/></svg>
-					<span>
-						{{ if .ProjectView.Project.IgnoreRobotsTxt }}Ignoring the robots.txt file.
-						{{ else }}Respecting robots.txt file.{{ end }}
-					</span>
-				</p>
-
-				<p class="crawler-item">
-					{{ if .ProjectView.Crawl.RobotstxtExists }}
-
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M24 4.685l-16.327 17.315-7.673-9.054.761-.648 6.95 8.203 15.561-16.501.728.685z"/></svg>
-					<span>Robots.txt found.</span>
-
-					{{ else }}
-
-					<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12 11.293l10.293-10.293.707.707-10.293 10.293 10.293 10.293-.707.707-10.293-10.293-10.293 10.293-.707-.707 10.293-10.293-10.293-10.293.707-.707 10.293 10.293z"/></svg>
-					<span>Robots.txt not found.</span>
-
-					{{ end }}
-				</p>
-			</div>
-		</div>
-	</div>
-
-	<div class="links-box content">
-		<h2>Links</h2>
-
-		<div class="box borderless">
-			<div class="col borderless">
-				<div id="links-chart" class="links-chart"></div>
-			</div>
-
-			<div class="col">
-				<div id="follow-chart" class="follow-chart"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="box soft box-highlight">
-		<div class="col">
-			<div class="content">
-				<h2>Canonical URLs</h2>
-				<div id="canonicalchart" class="chart"></div>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="content">
-				<h2>Images alt</h2>
-				<div id="altchart" class="chart"></div>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="content">
-				<h2>HTTPS</h2>
-				<div id="schemechart" class="chart"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="box">
-		<div class="col">
-			<div class="content">
-				<h2>Media type</h2>
-				<div id="mediachart" class="chart"></div>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="content">
-				<h2>Status code</h2>
-				<div id="statuschart" class="chart"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="box">
-		<div class="col col-main borderless">
-			<div class="content">
-				<h2>Status code by depth</h2>
-				<div id="status-depth-chart" class="status-depth-chart"></div>
-			</div>
-		</div>
-	</div>
-
-	<div class="box box-highlight soft">
-		<div class="col">
-			<div class="content">
-			<h2>Next Actions</h2>
-		</div>
-		</div>
-	</div>
-
-	<div class="box box-highlight">
-		<div class="col">
-			<div class="content">
-				<h2>Explore Site Issues</h2>
-				<p>Uncover issues impacting your website's performance. </p>
-				<p><a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a></p>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="content">
-				<h2>Dive into Page Details</h2>
-				<p>Get detailed insights into specific URLs.</p>
-				<p><a href="/explorer?pid={{ .ProjectView.Project.Id }}">Page Details</a></p>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="content">
-				<h2>Analyze Raw Data</h2>
-				<p>Export your data for further analysis and reporting.</p>
-				<p><a href="/export?pid={{ .ProjectView.Project.Id }}">Data Export</a></p>
-			</div>
-		</div>
-	</div>
-</div>
-
-<script src="/resources/echarts.min.js?v=5.5.1"></script>
-<script type="text/javascript">
-	
-	// ISSUES TIMELINE CHART
-
-	var issuesTimelineChart = echarts.init(document.getElementById('issues-timeline'));
-
-	option = {
-	  color: ['#FD7B6A', '#F7E497', '#2C7D91'],
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: {
-				type: 'none'
-			}
-		},
-		legend: {
-			top: 'top',
-			left: 'left',
-			orient: 'horizontal',
-			itemGap: (window.innerWidth >= 820 ? 50 : 10),
-		},
-		toolbox: {
-			show: true,
-			left: 'left',
-			top: 'bottom',
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "issues-timeline"
-				}
-			}
-		},
-		grid: {
-			left: 0,
-			right: 0,
-			backgroundColor: 'transparent',
-			borderWidth: 0,
-			show: true,
-		},
-		xAxis: [{
-				type: 'category',
-				boundaryGap: false,
-				data: [
-					{{ range .Crawls }}
-						'{{ .Start.Format "Jan 02" }}',
-					{{ end }}
-				]
-		}],
-		yAxis: [{
-			show: false,
-			type: 'value',
-			splitLine: {
-				lineStyle: {
-					width: 0,
-				}
-			}
-		}],
-		series: [
-		{
-			name: 'Critical',
-			type: 'line',
-			stack: 'Total',
-			lineStyle: {
-				width: 0
-			},
-			showSymbol: false,
-			areaStyle: {
-				opacity: 1,
-			},
-			emphasis: {
-				focus: 'series'
-			},
-			data: [
-			{{ range .Crawls }}
-				{{ .CriticalIssues }},
-			{{ end }}
-			]
-		},
-		{
-			name: 'Alert',
-			type: 'line',
-			stack: 'Total',
-			lineStyle: {
-				width: 0
-			},
-			showSymbol: false,
-			areaStyle: {
-				opacity: 1,
-			},
-			emphasis: {
-				focus: 'series'
-			},
-			data: [
-			{{ range .Crawls }}
-				{{ .AlertIssues }},
-			{{ end }}
-			]
-		},
-		{
-			name: 'Warning',
-			type: 'line',
-			stack: 'Total',
-			lineStyle: {
-				width: 0
-			},
-			showSymbol: false,
-			areaStyle: {
-				opacity: 1,
-			},
-			emphasis: {
-				focus: 'series'
-			},
-			data: [
-				{{ range .Crawls }}
-					{{ .WarningIssues }},
-				{{ end }}
-			]
-		},
-	  ]
-	};
-
-	issuesTimelineChart.setOption(option);
-
-	// CRAWL TIMELINE CHART
-
-	var crawlChart = echarts.init(document.getElementById('crawl-chart'));
-	option = {
-		color: ["#2C7D91", "#EAB791", "#FD7B6A"],
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: {
-				type: 'none'
-			}
-		},
-		legend: {
-			top: 'top',
-			left: 'left',
-			orient: 'horizontal',
-			itemGap: (window.innerWidth >= 820 ? 50 : 10),
-		},
-		toolbox: {
-			show: true,
-			left: 'left',
-			top: 'bottom',
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "crawls-timeline"
-				}
-			}
-		},
-		grid: {
-			left: 0,
-			right: 0,
-			backgroundColor: 'transparent',
-			borderWidth: 0,
-			show: true,
-		},
-		xAxis: [{
-				type: 'category',
-				data: [
-					{{ range .Crawls }}
-					'{{ .Start.Format "Jan 02" }}',
-					{{ end }}
-				]
-		}],
-		yAxis: [{
-				show: false,
-				type: 'value',
-				splitLine: {
-					lineStyle: {
-						width: 0,
-					}
-				}
-		}],
-		series: [
-			{
-				name: 'Index',
-				type: 'bar',
-				barGap: 0,
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .Crawls }}
-					({{ .TotalURLs }} - {{ .Noindex }}),
-					{{ end }}
-				]
-			},
-			{
-				name: 'Noindex',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .Crawls }}
-						{{ .Noindex }},
-					{{ end }}
-				]
-			},
-			{
-				name: 'Blocked',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .Crawls }}
-						{{ .BlockedByRobotstxt }},
-					{{ end }}
-				]
-			},
-		]
-	};
-
-	crawlChart.setOption(option);
-
-
-	// MEDIA TYPES CHART
-
-	var mediaChart = echarts.init(document.getElementById('mediachart'));
-
-	var option = {
-		color: ['#F7E497', '#FD7B6A', '#EAB791','#2C7D91'],
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "media-type-chart"
-				}
-			}
-		},
-		tooltip: {
-			trigger: 'item'
-		},
-		legend: {
-			top: 'center',
-			left: 'left',
-			orient: 'vertical',
-			textStyle: {
-				overflow: 'truncate',
-				width: '100'
-			},
-			data:  [
-				{{ range .MediaChart }}
-					'{{ .Key }}',
-				{{ end }}
-			],
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		itemStyle: {
-			color: '#c23531',
-			shadowBlur: 200,
-			shadowColor: 'rgba(0, 0, 0, 0.5)'
-		},
-		series: [
-			{
-				labelLine: {
-					show: false
-				},
-				label: {
-					show: false,
-					position: 'center'
-				},
-				radius: ['35%', '75%'],
-				name: 'Media type',
-				type: 'pie',
-				data: [
-				{{ range .MediaChart }}
-					{value: {{ .Value }},name: {{ .Key }} },
-				{{ end }}
-				],
-				left: "25%",
-			}
-		]
-	};
-
-	mediaChart.setOption(option);
-
-	// STATUS CODES CHART
-
-	var statusChart = echarts.init(document.getElementById('statuschart'));
-
-	var option = {
-		color: ['#F7E497', '#FD7B6A', '#EAB791','#2C7D91'],
-		tooltip: {
-			trigger: 'item'
-		},
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "status-code-chart"
-				}
-			}
-		},
-		legend: {
-			top: 'center',
-			left: 'left',
-			orient: 'vertical',
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		series: [
-			{
-				labelLine: {
-					show: false
-				},
-				label: {
-					show: false,
-					position: 'center'
-				},
-				radius: ['35%', '75%'],
-				name: 'Status Code',
-				type: 'pie',
-				data: [
-					{{ range .StatusChart }}
-						{value: {{ .Value }},name: {{ .Key }} },
-					{{ end }}
-				],
-				left: "25%"
-			}
-		]
-	};
-
-	statusChart.setOption(option);
-
-	// ISSUES CHART
-
-	var issuesChart = echarts.init(document.getElementById('issues-chart'));
-
-	option = {
-		color: ['#FD7B6A','#F7E497', '#2C7D91'],
-		tooltip: {
-			trigger: 'item'
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "issues"
-				}
-			}
-		},
-		series: [
-			{
-				name: 'Issues',
-				type: 'pie',
-				center: ['50%', '50%'],
-				data: [
-					{{ if .ProjectView.Crawl.CriticalIssues }}
-						{ value: {{ .ProjectView.Crawl.CriticalIssues }}, name: 'Critical Error', itemStyle: {color: '#FD7B6A'}},
-					{{ end }}
-					{{ if .ProjectView.Crawl.AlertIssues }}
-						{ value: {{ .ProjectView.Crawl.AlertIssues }}, name: 'Alert', itemStyle: {color: '#F7E497'}},
-					{{ end }}
-					{{ if .ProjectView.Crawl.WarningIssues }}
-						{ value: {{ .ProjectView.Crawl.WarningIssues }}, name: 'Warning', itemStyle: {color: '#2C7D91'}},
-					{{ end }}
-				].sort(function (a, b) {
-					return a.value - b.value;
-				}),
-				roseType: 'area',
-				radius: ['15%', '85%'],
-				label: {
-					show: (window.innerWidth >= 820 ? true : false)	
-				},
-				labelLine: {
-					show: (window.innerWidth >= 820 ? true : false),
-					smooth: 0.2,
-					length: 20,
-				},
-				animation: false,
-			}
-		]
-	};
-
-	issuesChart.setOption(option);
-
-	// LINK TYPES CHART
-
-	var linksChart = echarts.init(document.getElementById('links-chart'));
-
-	option = {
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		color: ['#2C7D91'],
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: {
-				type: 'none'
-			}
-		},
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "links"
-				}
-			}
-		},
-		legend: {
-			show: false,
-		},
-		grid: {
-			left: '0%',
-			right: '0%',
-			bottom: '20%',
-			top: '10%',
-			backgroundColor: 'transparent',
-			borderWidth: 0,
-			show: true,
-		},
-		yAxis: {
-			show: false,
-		},
-		xAxis: {
-			type: 'category',
-			data: ['Total', 'Internal', 'External', 'Sponsored', 'UGC'],
-			axisLabel: {
-				fontSize: '1rem',
-			},
-			axisLine: {
-				show: false,
-			},
-			axisTick: {
-				show: false,
-			},
-		},
-		series: [
-			{
-				type: 'bar',
-				showBackground: true,
-				data: [
-					{{ add .ProjectView.Crawl.InternalFollowLinks .ProjectView.Crawl.InternalNoFollowLinks
-						.ProjectView.Crawl.ExternalFollowLinks .ProjectView.Crawl.ExternalNoFollowLinks }},
-					{{ add .ProjectView.Crawl.InternalFollowLinks .ProjectView.Crawl.InternalNoFollowLinks }},
-					{{ add .ProjectView.Crawl.ExternalFollowLinks .ProjectView.Crawl.ExternalNoFollowLinks }},
-					{{ .ProjectView.Crawl.SponsoredLinks }},
-					{{ .ProjectView.Crawl.UGCLinks }}
-				]
-			},
-		]
-	};
-
-	linksChart.setOption(option);
-
-	// LINK FOLLOW CHART
-
-	var followChart = echarts.init(document.getElementById('follow-chart'));
-
-	option = {
-		legend: {
-			data: [
-				'Follow',
-				'Nofollow',
-			]
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		tooltip: {
-			trigger: 'item'
-		},
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "follow"
-				}
-			}
-		},
-		legend: {
-			show: false,
-		},
-		color: ['#F7E497', '#2C7D91'],
-		series: [
-		{
-			name: 'Internal',
-			type: 'pie',
-			selectedMode: 'single',
-			radius: ['0%', '35%'],
-			label: {
-				show: false,
-			},
-			labelLine: {
-				show: false
-			},
-			data: [
-				{ value: {{ .ProjectView.Crawl.InternalFollowLinks }}, name: "Follow"},
-				{ value: {{ .ProjectView.Crawl.InternalNoFollowLinks }}, name: "Nofollow"},
-			]
-		},
-		{
-			name: 'External',
-			type: 'pie',
-			radius: ['40%', '75%'],
-			label: {
-				show: (window.innerWidth >= 820 ? true : false)		
-			},
-			labelLine: {
-				show: (window.innerWidth >= 820 ? true : false),
-				smooth: 0.2,
-				length: 20,
-			},
-			data: [
-				{ value: {{ .ProjectView.Crawl.ExternalFollowLinks }}, name: "Follow"},
-				{ value: {{ .ProjectView.Crawl.ExternalNoFollowLinks }}, name: "Nofollow"},
-			]
-		}]
-	};
-
-	followChart.setOption(option);
-
-	// CANONICAL URLs CHART
-
-	var canonicalChart = echarts.init(document.getElementById('canonicalchart'));
-	var option = {
-		color: ['#F7E497', '#FD7B6A'],
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "canonical-chart"
-				}
-			}
-		},
-		tooltip: {
-			trigger: 'item'
-		},
-		legend: {
-			top: 'top',
-			left: 'left',
-			orient: 'vertical',
-			data:  ['Canonical', 'Non Canonical'],
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		series: [
-			{
-				center: ['50%', '55%'],
-				labelLine: {
-					show: false
-				},
-				label: {
-					show: false
-				},
-				radius: ['0%', '65%'],
-				name: 'Canonical URLs',
-				type: 'pie',
-				data: [
-					{ value: {{ .CanonicalCount.Canonical }}, name: 'Canonical' },
-					{ value: {{ .CanonicalCount.NonCanonical }}, name: 'Non Canonical' },
-				],
-			}
-		]
-	};
-
-	canonicalChart.setOption(option);
-
-	// IMAGES ALT CHART
-	
-	var altChart = echarts.init(document.getElementById('altchart'));
-	var option = {
-		color: ['#F7E497', '#FD7B6A'],
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "alt-chart"
-				}
-			}
-		},
-		tooltip: {
-			trigger: 'item'
-		},
-		legend: {
-			top: 'top',
-			left: 'left',
-			orient: 'vertical',
-			data:  ['With alt', 'Without alt'],
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		series: [
-			{
-				center: ['50%', '55%'],
-				labelLine: {
-					show: false
-				},
-				label: {
-					show: false
-				},
-				radius: ['0%', '65%'],
-				name: 'Images alt',
-				type: 'pie',
-				data: [
-					{ value: {{ .AltCount.Alt }}, name: 'With alt' },
-					{ value: {{ .AltCount.NonAlt }}, name: 'Without alt' },
-				],
-			}
-		]
-	};
-
-	altChart.setOption(option);
-
-	// SCHEME CHART
-	
-	var altChart = echarts.init(document.getElementById('schemechart'));
-	var option = {
-		color: ['#F7E497', '#FD7B6A'],
-		toolbox: {
-			show: true,
-			top: "bottom",
-			left: 0,
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "scheme-chart"
-				}
-			}
-		},
-		tooltip: {
-			trigger: 'item'
-		},
-		legend: {
-			top: 'top',
-			left: 'left',
-			orient: 'vertical',
-			data:  ['HTTPS', 'HTTP'],
-		},
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		series: [
-			{
-				center: ['50%', '55%'],
-				labelLine: {
-					show: false
-				},
-				label: {
-					show: false
-				},
-
-				radius: ['0%', '65%'],
-				name: 'Scheme',
-				type: 'pie',
-				data: [
-					{ value: {{ .SchemeCount.HTTPS }}, name: 'HTTPS' },
-					{ value: {{ .SchemeCount.HTTP }}, name: 'HTTP' },
-				],
-			}
-		]
-	};
-
-	altChart.setOption(option);
-
-	// STATUS BY DEPTH CHART
-
-	var statusByDepthChart = echarts.init(document.getElementById('status-depth-chart'));
-
-	option = {
-		color: ['#F7E497', '#EAB791', '#FD7B6A', '#2C7D91'],
-		textStyle: {
-			fontFamily: "Fira Code",
-			fontSize: "1rem",
-			fontWeight: 300,
-		},
-		tooltip: {
-			trigger: 'axis',
-			axisPointer: {
-				type: 'none'
-			}
-		},
-		legend: {
-			top: 'top',
-			left: 'left',
-			orient: 'horizontal',
-			itemGap: (window.innerWidth >= 820 ? 50 : 10),
-		},
-		toolbox: {
-			show: true,
-			left: 'left',
-			top: 'bottom',
-			feature: {
-				saveAsImage: {
-					show: true,
-					name: "status-by-depth"
-				}
-			}
-		},
-		grid: {
-			left: 25,
-			right: 10,
-			backgroundColor: 'transparent',
-			borderWidth: 0,
-			show: true,
-		},
-		xAxis: [{
-				show: false,
-		}],
-		yAxis: [{
-			type: 'category',
-			data: [
-				{{ range .StatusCodeByDepth }}
-					'{{ .Depth }}',
-				{{ end }}
-			],
-			axisLine: {
-				show: false,
-			},
-			axisTick: {
-				show: false,
-			},
-			inverse: true,
-		}],
-		series: [
-			{
-				showBackground: true,
-				backgroundStyle: {
-					color: 'rgb(234, 234, 234)',
-				},
-				name: '200',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .StatusCodeByDepth }}
-						{{ .StatusCode200 }},
-					{{ end }}
-				]
-			},
-			{
-				name: '300',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .StatusCodeByDepth }}
-						{{ .StatusCode300 }},
-					{{ end }}
-				]
-			},
-			{
-				name: '400',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .StatusCodeByDepth }}
-						{{ .StatusCode400 }},
-					{{ end }}
-				]
-			},
-			{
-				name: '500',
-				type: 'bar',
-				stack: 'total',
-				emphasis: {
-					focus: 'series'
-				},
-				data: [
-					{{ range .StatusCodeByDepth }}
-						{{ .StatusCode500 }},
-					{{ end }}
-				]
-			},
-		]
-	};
-
-	statusByDepthChart.setOption(option);
-
-</script>
-
 {{ end}}
 
 {{ template "footer" . }}

@@ -1,0 +1,75 @@
+{{ define "link_types_chart" }}
+<div id="links-chart" class="links-chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let linksChart = echarts.init(document.getElementById('links-chart'));
+		linksChart.setOption({
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			color: ['#2C7D91'],
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'none'
+				}
+			},
+			toolbox: {
+				show: true,
+				top: "bottom",
+				left: 0,
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "links"
+					}
+				}
+			},
+			legend: {
+				show: false,
+			},
+			grid: {
+				left: '0%',
+				right: '0%',
+				bottom: '20%',
+				top: '10%',
+				backgroundColor: 'transparent',
+				borderWidth: 0,
+				show: true,
+			},
+			yAxis: {
+				show: false,
+			},
+			xAxis: {
+				type: 'category',
+				data: ['Total', 'Internal', 'External', 'Sponsored', 'UGC'],
+				axisLabel: {
+					fontSize: '1rem',
+				},
+				axisLine: {
+					show: false,
+				},
+				axisTick: {
+					show: false,
+				},
+			},
+			series: [
+				{
+					type: 'bar',
+					showBackground: true,
+					data: [
+						{{ add .ProjectView.Crawl.InternalFollowLinks .ProjectView.Crawl.InternalNoFollowLinks
+							.ProjectView.Crawl.ExternalFollowLinks .ProjectView.Crawl.ExternalNoFollowLinks }},
+						{{ add .ProjectView.Crawl.InternalFollowLinks .ProjectView.Crawl.InternalNoFollowLinks }},
+						{{ add .ProjectView.Crawl.ExternalFollowLinks .ProjectView.Crawl.ExternalNoFollowLinks }},
+						{{ .ProjectView.Crawl.SponsoredLinks }},
+						{{ .ProjectView.Crawl.UGCLinks }}
+					]
+				},
+			]
+		});
+	});
+</script>
+{{ end }}

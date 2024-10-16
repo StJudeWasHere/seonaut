@@ -1,0 +1,105 @@
+{{ define "crawls_timeline_chart" }}
+<div id="crawl-chart" class="chart crawl-chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let crawlChart = echarts.init(document.getElementById('crawl-chart'));
+		crawlChart.setOption({
+			color: ["#2C7D91", "#EAB791", "#FD7B6A"],
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'none'
+				}
+			},
+			legend: {
+				top: 'top',
+				left: 'left',
+				orient: 'horizontal',
+				itemGap: (window.innerWidth >= 820 ? 50 : 10),
+			},
+			toolbox: {
+				show: true,
+				left: 'left',
+				top: 'bottom',
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "crawls-timeline"
+					}
+				}
+			},
+			grid: {
+				left: 0,
+				right: 0,
+				backgroundColor: 'transparent',
+				borderWidth: 0,
+				show: true,
+			},
+			xAxis: [{
+					type: 'category',
+					data: [
+						{{ range .Crawls }}
+						'{{ .Start.Format "Jan 02" }}',
+						{{ end }}
+					]
+			}],
+			yAxis: [{
+					show: false,
+					type: 'value',
+					splitLine: {
+						lineStyle: {
+							width: 0,
+						}
+					}
+			}],
+			series: [
+				{
+					name: 'Index',
+					type: 'bar',
+					barGap: 0,
+					stack: 'total',
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .Crawls }}
+						({{ .TotalURLs }} - {{ .Noindex }}),
+						{{ end }}
+					]
+				},
+				{
+					name: 'Noindex',
+					type: 'bar',
+					stack: 'total',
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .Crawls }}
+							{{ .Noindex }},
+						{{ end }}
+					]
+				},
+				{
+					name: 'Blocked',
+					type: 'bar',
+					stack: 'total',
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .Crawls }}
+							{{ .BlockedByRobotstxt }},
+						{{ end }}
+					]
+				},
+			]
+		});
+	});
+</script>
+{{ end }}

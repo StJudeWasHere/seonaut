@@ -1,0 +1,61 @@
+{{ define "issues_chart" }}
+<div id="issues-chart" class="chart issues-chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let issuesChart = echarts.init(document.getElementById('issues-chart'));
+		issuesChart.setOption({
+			color: ['#FD7B6A','#F7E497', '#2C7D91'],
+			tooltip: {
+				trigger: 'item'
+			},
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			toolbox: {
+				show: true,
+				top: "bottom",
+				left: 0,
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "issues"
+					}
+				}
+			},
+			series: [
+				{
+					name: 'Issues',
+					type: 'pie',
+					center: ['50%', '50%'],
+					data: [
+						{{ if .ProjectView.Crawl.CriticalIssues }}
+							{ value: {{ .ProjectView.Crawl.CriticalIssues }}, name: 'Critical Error', itemStyle: {color: '#FD7B6A'}},
+						{{ end }}
+						{{ if .ProjectView.Crawl.AlertIssues }}
+							{ value: {{ .ProjectView.Crawl.AlertIssues }}, name: 'Alert', itemStyle: {color: '#F7E497'}},
+						{{ end }}
+						{{ if .ProjectView.Crawl.WarningIssues }}
+							{ value: {{ .ProjectView.Crawl.WarningIssues }}, name: 'Warning', itemStyle: {color: '#2C7D91'}},
+						{{ end }}
+					].sort(function (a, b) {
+						return a.value - b.value;
+					}),
+					roseType: 'area',
+					radius: ['15%', '85%'],
+					label: {
+						show: (window.innerWidth >= 820 ? true : false)	
+					},
+					labelLine: {
+						show: (window.innerWidth >= 820 ? true : false),
+						smooth: 0.2,
+						length: 20,
+					},
+					animation: false,
+				}
+			]
+		});
+	});
+</script>
+{{ end }}

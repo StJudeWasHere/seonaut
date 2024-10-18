@@ -239,3 +239,6 @@ ERROR_METAS_IN_BODY_DESC: Pages that have meta tags in the document's body. The 
 
 ERROR_NOSNIPPET: Pages with the nosnippet directive
 ERROR_NOSNIPPET_DESC: The nosnippet or max-snippet:0 directives tell search engines not to display a text snippet or video preview in the search results. Review these pages to make sure this is the wanted behavior.
+
+ERROR_IMG_SIZE_ATTR: Pages containing images missing size attributes
+ERROR_IMG_SIZE_ATTR_DESC: Not setting the size attributes for images can cause layout shifts as the page loads, which can negatively impact user experience as well as SEO. Make sure your images have the corresponding size attributes in place.

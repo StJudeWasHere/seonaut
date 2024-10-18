@@ -133,3 +133,37 @@ func NewMissingImgTagInPictureReporter() *models.PageIssueReporter {
 		Callback:  c,
 	}
 }
+
+// Returns a report_manager.PageIssueReporter with a callback function to check
+// if a page has img elements without width or height attributes.
+func NewImgWithoutSizeReporter() *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		e := htmlquery.Find(htmlNode, "//img")
+		for _, n := range e {
+			w := htmlquery.SelectAttr(n, "width")
+			if w == "" {
+				return true
+			}
+
+			h := htmlquery.SelectAttr(n, "height")
+			if h == "" {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorImgWithoutSize,
+		Callback:  c,
+	}
+}

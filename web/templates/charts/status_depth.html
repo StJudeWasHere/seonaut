@@ -1,0 +1,122 @@
+{{ define "status_depth_chart" }}
+<div id="status-depth-chart" class="status-depth-chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let statusByDepthChart = echarts.init(document.getElementById('status-depth-chart'));
+		statusByDepthChart.setOption({
+			color: ['#F7E497', '#EAB791', '#FD7B6A', '#2C7D91'],
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			tooltip: {
+				trigger: 'axis',
+				axisPointer: {
+					type: 'none'
+				}
+			},
+			legend: {
+				top: 'top',
+				left: 'left',
+				orient: 'horizontal',
+				itemGap: (window.innerWidth >= 820 ? 50 : 10),
+			},
+			toolbox: {
+				show: true,
+				left: 'left',
+				top: 'bottom',
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "status-by-depth"
+					}
+				}
+			},
+			grid: {
+				left: 25,
+				right: 10,
+				backgroundColor: 'transparent',
+				borderWidth: 0,
+				show: true,
+			},
+			xAxis: [{
+					show: false,
+			}],
+			yAxis: [{
+				type: 'category',
+				data: [
+					{{ range .StatusCodeByDepth }}
+						'{{ .Depth }}',
+					{{ end }}
+				],
+				axisLine: {
+					show: false,
+				},
+				axisTick: {
+					show: false,
+				},
+				inverse: true,
+			}],
+			series: [
+				{
+					showBackground: true,
+					backgroundStyle: {
+						color: 'rgb(234, 234, 234)',
+					},
+					name: '200',
+					type: 'bar',
+					stack: 'total',
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .StatusCodeByDepth }}
+							{{ .StatusCode200 }},
+						{{ end }}
+					]
+				},
+				{
+					name: '300',
+					type: 'bar',
+					stack: 'total',
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .StatusCodeByDepth }}
+							{{ .StatusCode300 }},
+						{{ end }}
+					]
+				},
+				{
+					name: '400',
+					type: 'bar',
+					stack: 'total',
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .StatusCodeByDepth }}
+							{{ .StatusCode400 }},
+						{{ end }}
+					]
+				},
+				{
+					name: '500',
+					type: 'bar',
+					stack: 'total',
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .StatusCodeByDepth }}
+							{{ .StatusCode500 }},
+						{{ end }}
+					]
+				},
+			]
+		});
+	});
+</script>
+{{ end }}

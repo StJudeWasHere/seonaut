@@ -1,0 +1,73 @@
+{{ define "link_follow_chart" }}
+<div id="follow-chart" class="follow-chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let followChart = echarts.init(document.getElementById('follow-chart'));
+		followChart.setOption({
+			legend: {
+				data: [
+					'Follow',
+					'Nofollow',
+				]
+			},
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			tooltip: {
+				trigger: 'item'
+			},
+			toolbox: {
+				show: true,
+				top: "bottom",
+				left: 0,
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "follow"
+					}
+				}
+			},
+			legend: {
+				show: false,
+			},
+			color: ['#F7E497', '#2C7D91'],
+			series: [
+			{
+				name: 'Internal',
+				type: 'pie',
+				selectedMode: 'single',
+				radius: ['0%', '35%'],
+				label: {
+					show: false,
+				},
+				labelLine: {
+					show: false
+				},
+				data: [
+					{ value: {{ .ProjectView.Crawl.InternalFollowLinks }}, name: "Follow"},
+					{ value: {{ .ProjectView.Crawl.InternalNoFollowLinks }}, name: "Nofollow"},
+				]
+			},
+			{
+				name: 'External',
+				type: 'pie',
+				radius: ['40%', '75%'],
+				label: {
+					show: (window.innerWidth >= 820 ? true : false)		
+				},
+				labelLine: {
+					show: (window.innerWidth >= 820 ? true : false),
+					smooth: 0.2,
+					length: 20,
+				},
+				data: [
+					{ value: {{ .ProjectView.Crawl.ExternalFollowLinks }}, name: "Follow"},
+					{ value: {{ .ProjectView.Crawl.ExternalNoFollowLinks }}, name: "Nofollow"},
+				]
+			}]
+		});
+	});
+</script>
+{{ end }}

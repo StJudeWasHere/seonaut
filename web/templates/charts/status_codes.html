@@ -1,0 +1,55 @@
+{{ define "status_codes_chart" }}
+<div id="statuschart" class="chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let statusChart = echarts.init(document.getElementById('statuschart'));
+		statusChart.setOption({
+			color: ['#F7E497', '#FD7B6A', '#EAB791','#2C7D91'],
+			tooltip: {
+				trigger: 'item'
+			},
+			toolbox: {
+				show: true,
+				top: "bottom",
+				left: 0,
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "status-code-chart"
+					}
+				}
+			},
+			legend: {
+				top: 'center',
+				left: 'left',
+				orient: 'vertical',
+			},
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			series: [
+				{
+					labelLine: {
+						show: false
+					},
+					label: {
+						show: false,
+						position: 'center'
+					},
+					radius: ['35%', '75%'],
+					name: 'Status Code',
+					type: 'pie',
+					data: [
+						{{ range .StatusChart }}
+							{value: {{ .Value }},name: {{ .Key }} },
+						{{ end }}
+					],
+					left: "25%"
+				}
+			]
+		});
+	});
+</script>
+{{ end }}

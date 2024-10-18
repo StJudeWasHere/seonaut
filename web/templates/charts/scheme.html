@@ -1,0 +1,55 @@
+{{ define "scheme_chart" }}
+<div id="schemechart" class="chart"></div>
+<script type="text/javascript">	
+	addToQueue(function() {
+		let altChart = echarts.init(document.getElementById('schemechart'));
+		altChart.setOption({
+			color: ['#F7E497', '#FD7B6A'],
+			toolbox: {
+				show: true,
+				top: "bottom",
+				left: 0,
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "scheme-chart"
+					}
+				}
+			},
+			tooltip: {
+				trigger: 'item'
+			},
+			legend: {
+				top: 'top',
+				left: 'left',
+				orient: 'vertical',
+				data:  ['HTTPS', 'HTTP'],
+			},
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			series: [
+				{
+					center: ['50%', '55%'],
+					labelLine: {
+						show: false
+					},
+					label: {
+						show: false
+					},
+
+					radius: ['0%', '65%'],
+					name: 'Scheme',
+					type: 'pie',
+					data: [
+						{ value: {{ .SchemeCount.HTTPS }}, name: 'HTTPS' },
+						{ value: {{ .SchemeCount.HTTP }}, name: 'HTTP' },
+					],
+				}
+			]
+		});
+	});
+</script>
+{{ end }}

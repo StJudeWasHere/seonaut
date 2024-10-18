@@ -1,0 +1,69 @@
+{{ define "media_types_chart" }}
+<div id="mediachart" class="chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let mediaChart = echarts.init(document.getElementById('mediachart'));
+		mediaChart.setOption({
+			color: ['#F7E497', '#FD7B6A', '#EAB791','#2C7D91'],
+			toolbox: {
+				show: true,
+				top: "bottom",
+				left: 0,
+				feature: {
+					saveAsImage: {
+						show: true,
+						name: "media-type-chart"
+					}
+				}
+			},
+			tooltip: {
+				trigger: 'item'
+			},
+			legend: {
+				top: 'center',
+				left: 'left',
+				orient: 'vertical',
+				textStyle: {
+					overflow: 'truncate',
+					width: '100'
+				},
+				data:  [
+					{{ range .MediaChart }}
+						'{{ .Key }}',
+					{{ end }}
+				],
+			},
+			textStyle: {
+				fontFamily: "Fira Code",
+				fontSize: "1rem",
+				fontWeight: 300,
+			},
+			itemStyle: {
+				color: '#c23531',
+				shadowBlur: 200,
+				shadowColor: 'rgba(0, 0, 0, 0.5)'
+			},
+			series: [
+				{
+					labelLine: {
+						show: false
+					},
+					label: {
+						show: false,
+						position: 'center'
+					},
+					radius: ['35%', '75%'],
+					name: 'Media type',
+					type: 'pie',
+					data: [
+					{{ range .MediaChart }}
+						{value: {{ .Value }},name: {{ .Key }} },
+					{{ end }}
+					],
+					left: "25%",
+				}
+			]
+		});
+	});
+</script>
+{{ end }}

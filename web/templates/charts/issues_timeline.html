@@ -1,0 +1,126 @@
+{{ define "issues_timeline_chart" }}
+<div id="issues-timeline" class="chart issues-timeline-chart"></div>
+<script type="text/javascript">
+	addToQueue(function() {
+		let issuesTimelineChart = echarts.init(document.getElementById('issues-timeline'));
+		issuesTimelineChart.setOption({
+			color: ['#FD7B6A', '#F7E497', '#2C7D91'],
+				textStyle: {
+					fontFamily: "Fira Code",
+					fontSize: "1rem",
+					fontWeight: 300,
+				},
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+						type: 'none'
+					}
+				},
+				legend: {
+					top: 'top',
+					left: 'left',
+					orient: 'horizontal',
+					itemGap: (window.innerWidth >= 820 ? 50 : 10),
+				},
+				toolbox: {
+					show: true,
+					left: 'left',
+					top: 'bottom',
+					feature: {
+						saveAsImage: {
+							show: true,
+							name: "issues-timeline"
+						}
+					}
+				},
+				grid: {
+					left: 0,
+					right: 0,
+					backgroundColor: 'transparent',
+					borderWidth: 0,
+					show: true,
+				},
+				xAxis: [{
+						type: 'category',
+						boundaryGap: false,
+						data: [
+							{{ range .Crawls }}
+								'{{ .Start.Format "Jan 02" }}',
+							{{ end }}
+						]
+				}],
+				yAxis: [{
+					show: false,
+					type: 'value',
+					splitLine: {
+						lineStyle: {
+							width: 0,
+						}
+					}
+				}],
+				series: [
+				{
+					name: 'Critical',
+					type: 'line',
+					stack: 'Total',
+					lineStyle: {
+						width: 0
+					},
+					showSymbol: false,
+					areaStyle: {
+						opacity: 1,
+					},
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+					{{ range .Crawls }}
+						{{ .CriticalIssues }},
+					{{ end }}
+					]
+				},
+				{
+					name: 'Alert',
+					type: 'line',
+					stack: 'Total',
+					lineStyle: {
+						width: 0
+					},
+					showSymbol: false,
+					areaStyle: {
+						opacity: 1,
+					},
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+					{{ range .Crawls }}
+						{{ .AlertIssues }},
+					{{ end }}
+					]
+				},
+				{
+					name: 'Warning',
+					type: 'line',
+					stack: 'Total',
+					lineStyle: {
+						width: 0
+					},
+					showSymbol: false,
+					areaStyle: {
+						opacity: 1,
+					},
+					emphasis: {
+						focus: 'series'
+					},
+					data: [
+						{{ range .Crawls }}
+							{{ .WarningIssues }},
+						{{ end }}
+					]
+				},
+			]
+		});
+	});
+</script>
+{{ end }}

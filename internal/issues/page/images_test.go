@@ -264,3 +264,110 @@ func TestMissingImgTagInPictureReporterIssues(t *testing.T) {
 		t.Errorf("reportsIssue should be true")
 	}
 }
+
+// Test the NewImgWithoutSizeReporter reporter with a pageReport that the img elements
+// with size attributes. The reporter should not report the issue.
+func TestImgWithoutSizeReporterNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+	}
+
+	reporter := page.NewImgWithoutSizeReporter()
+	if reporter.ErrorType != errors.ErrorImgWithoutSize {
+		t.Errorf("error type is not correct")
+	}
+
+	source := `
+	<html>
+		<body>
+			<img src="example.jpg" width="80vw" height="100%">
+			<img src="example-2.jpg" width="400" height="400">
+		</body>
+	</html>
+`
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
+	}
+}
+
+// Test the NewImgWithoutSizeReporter reporter with a pageReport that the img elements
+// without size attributes. The reporter should report the issue.
+func TestImgWithoutSizeReporterIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		MediaType: "text/html",
+	}
+
+	reporter := page.NewImgWithoutSizeReporter()
+	if reporter.ErrorType != errors.ErrorImgWithoutSize {
+		t.Errorf("error type is not correct")
+	}
+
+	source := `
+	<html>
+		<body>
+			<img src="example.jpg">
+		</body>
+	</html>
+`
+
+	doc, err := html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+
+	// Test img only with the height attribute.
+	source = `
+	<html>
+		<body>
+			<img src="example.jpg" height="200">
+		</body>
+	</html>
+`
+
+	doc, err = html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue = reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+
+	// Test img only with the width attribute.
+	source = `
+		<html>
+			<body>
+				<img src="example.jpg" width="200">
+			</body>
+		</html>
+	`
+
+	doc, err = html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue = reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+}

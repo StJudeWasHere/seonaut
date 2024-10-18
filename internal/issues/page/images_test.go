@@ -281,7 +281,7 @@ func TestImgWithoutSizeReporterNoIssues(t *testing.T) {
 	source := `
 	<html>
 		<body>
-			<img src="example.jpg" width="80vw">
+			<img src="example.jpg" width="80vw" height="100%">
 			<img src="example-2.jpg" width="400" height="400">
 		</body>
 	</html>
@@ -339,6 +339,26 @@ func TestImgWithoutSizeReporterIssues(t *testing.T) {
 		</body>
 	</html>
 `
+
+	doc, err = html.Parse(strings.NewReader(source))
+	if err != nil {
+		t.Errorf("error parsing html source")
+	}
+
+	reportsIssue = reporter.Callback(pageReport, doc, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+
+	// Test img only with the width attribute.
+	source = `
+		<html>
+			<body>
+				<img src="example.jpg" width="200">
+			</body>
+		</html>
+	`
 
 	doc, err = html.Parse(strings.NewReader(source))
 	if err != nil {

@@ -7,6 +7,8 @@ The issues on your website are organized into three categories based on their le
 
 A hosted version of SEOnaut is available at [seonaut.org](https://seonaut.org).
 
+![seonaut](https://github.com/user-attachments/assets/6184b418-bd54-4456-9266-fcfd4ce5726d)
+
 ## Technology
 
 SEOnaut is a web based application built with the Go programming language and a MySQL database for its data storage. On the frontend side, the user interface is designed with simplicity in mind, using custom CSS and minimal vanilla Javascript. To make the dashboard interactive, the application utilizes Apache ECharts.

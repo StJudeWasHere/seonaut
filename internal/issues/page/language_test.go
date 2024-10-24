@@ -53,6 +53,28 @@ func TestInvalidLangIssues(t *testing.T) {
 	}
 }
 
+// Test the InvalidLang reporter with a PageReport that has a redirect status code.
+// The reporter should not report the issue.
+func TestInvalidLang30xNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		Lang:       "InvalidLangCode",
+		StatusCode: 301,
+	}
+
+	reporter := page.NewInvalidLangReporter()
+	if reporter.ErrorType != errors.ErrorInvalidLanguage {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("TestInvalidLangIssues: reportsIssue should be false")
+	}
+}
+
 // Test the MissingLang reporter with a PageReport that has a language attribute.
 // The reporter should not report the issue.
 func TestMissingLangNoIssues(t *testing.T) {
@@ -60,6 +82,27 @@ func TestMissingLangNoIssues(t *testing.T) {
 		Crawled:   true,
 		MediaType: "text/html",
 		Lang:      "en",
+	}
+
+	reporter := page.NewMissingLangReporter()
+	if reporter.ErrorType != errors.ErrorNoLang {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("TestMissingLangNoIssues: reportsIssue should be false")
+	}
+}
+
+// Test the MissingLang reporter with a PageReport that has a redirect status code.
+// The reporter should not report the issue.
+func TestMissingLang30xNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 301,
 	}
 
 	reporter := page.NewMissingLangReporter()

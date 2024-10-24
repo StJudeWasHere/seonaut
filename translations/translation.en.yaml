@@ -112,7 +112,7 @@ ERROR_BLOCKED: Blocked by robots.txt
 ERROR_BLOCKED_DESC: Pages blocked by robots.txt won't be crawled by search engines. Keep an eye on this list to make sure important pages are not being blocked.
 
 ERROR_ORPHAN: Orphan pages
-ERROR_ORPHAN_DESC: Pages that are not linked anywhere in your site, this means no visitors can access to it and may lead to lead to crawl wastage.
+ERROR_ORPHAN_DESC: Pages that are not linked anywhere in your site, this means no visitors can access to it and may lead to crawl wastage.
 
 NO_INDEX_IN_SITEMAP: Non-indexable pages are included in the sitemap
 NO_INDEX_IN_SITEMAP_DESC: Non-indexable pages should not be included in a sitemap, as this sends a mixed signal to the search engines. They can also slow down the crawling process and lead to incorrect indexing.

@@ -23,6 +23,10 @@ func NewInvalidLangReporter() *models.PageIssueReporter {
 			return false
 		}
 
+		if pageReport.StatusCode >= 300 && pageReport.StatusCode < 400 {
+			return false
+		}
+
 		if pageReport.Lang == "" {
 			return false
 		}
@@ -53,6 +57,10 @@ func NewMissingLangReporter() *models.PageIssueReporter {
 		}
 
 		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.StatusCode >= 300 && pageReport.StatusCode < 400 {
 			return false
 		}
 

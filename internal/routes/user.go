@@ -82,21 +82,14 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	crawling := false
-	pv := h.ProjectViewService.GetProjectViews((user.Id))
-	for _, v := range pv {
-		if v.Crawl.Crawling || v.Project.Deleting {
-			crawling = true
-			break
-		}
-	}
-
 	pageView := &PageView{
 		PageTitle: "DELETE_ACCOUNT_VIEW",
 		User:      *user,
 		Data: &struct {
 			Crawling bool
-		}{Crawling: crawling},
+		}{
+			Crawling: h.ProjectViewService.UserIsCrawling(user.Id),
+		},
 	}
 
 	h.Renderer.RenderTemplate(w, "delete_account", pageView)

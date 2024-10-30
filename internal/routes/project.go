@@ -23,19 +23,13 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	// If the user is crawling or deleting projects, set a meta refresh tag
 	// in the HTML so the page is updated with new data every few seconds.
-	refresh := false
-	views := h.ProjectViewService.GetProjectViews(user.Id)
-	for _, v := range views {
-		if v.Crawl.Id > 0 && (v.Crawl.Crawling || v.Project.Deleting) {
-			refresh = true
-		}
-	}
+	refresh := h.ProjectViewService.UserIsProcessingProjects(user.Id)
 
 	v := &PageView{
 		Data: struct {
 			Projects []models.ProjectView
 		}{
-			Projects: views,
+			Projects: h.ProjectViewService.GetProjectViews(user.Id),
 		},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",

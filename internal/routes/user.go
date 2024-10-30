@@ -13,7 +13,6 @@ type userHandler struct {
 
 // signupGetHandler handles the GET signup request and displays the sign up form.
 // It allows users to sign up by providing their email and password.
-// The template uses the data's Email field to pre-populate the form.
 func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
 		PageTitle: "SIGNUP_VIEW",
@@ -105,7 +104,7 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 
 // deletePostHandler handles the POST request to delete an account.
 // After deleting the user and all its associated data it destroys the session
-// and redirects home.
+// and redirects to the sign-in page.
 func (h *userHandler) deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
@@ -151,8 +150,6 @@ func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) 
 
 	u, err := h.UserService.SignIn(email, password)
 	if err != nil {
-		log.Printf("sign in: %v", err)
-
 		pageView := &PageView{
 			PageTitle: "SIGNIN_VIEW",
 			Data: &struct {
@@ -246,7 +243,7 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 
 // signoutHandler handles the user's signout request.
 // It clears the session data related to authenticated user and redirects to
-// the sigin page.
+// the sign-in page.
 func (h *userHandler) signoutHandler(w http.ResponseWriter, r *http.Request) {
 	h.CookieSession.DestroySession(w, r)
 	http.Redirect(w, r, "/signin", http.StatusSeeOther)

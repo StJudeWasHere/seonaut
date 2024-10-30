@@ -13,7 +13,7 @@ type projectHandler struct {
 	*services.Container
 }
 
-// Handles the user homepage request and lists all the user's projects.
+// indexHandler Handles the user homepage request and lists all the user's projects.
 func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
@@ -21,9 +21,10 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If the user is crawling or deleting projects, set a meta refresh tag
+	// in the HTML so the page is updated with new data every few seconds.
+	refresh := false
 	views := h.ProjectViewService.GetProjectViews(user.Id)
-
-	var refresh bool
 	for _, v := range views {
 		if v.Crawl.Id > 0 && (v.Crawl.Crawling || v.Project.Deleting) {
 			refresh = true
@@ -33,7 +34,9 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	v := &PageView{
 		Data: struct {
 			Projects []models.ProjectView
-		}{Projects: views},
+		}{
+			Projects: views,
+		},
 		User:      *user,
 		PageTitle: "PROJECTS_VIEW",
 		Refresh:   refresh,
@@ -42,7 +45,7 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "home", v)
 }
 
-// addGetHandler handles the form for adding a new project.
+// addGetHandler displays the form for adding a new project.
 // This handler handles the GET request.
 func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
@@ -61,7 +64,8 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // addPostHandler handles the POST request to add a project.
-// This handler handles the POST request.
+// If an there's an error updating the project a variable is set to display an error
+// message in the HTML template.
 func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
@@ -136,18 +140,18 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// deleteHandler handles the deletion of a project.
+// deleteGetHandler handles the deletion of a project.
 // It expects a query parameter "pid" containing the project id to be deleted.
 func (h *projectHandler) deleteHandler(w http.ResponseWriter, r *http.Request) {
-	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -162,19 +166,20 @@ func (h *projectHandler) deleteHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
-// editGetHandler handles the edition form of a project.
+// editGetHandler displays the edition form of a project.
 // It expects a query parameter "pid" containing the project id to be edited.
+// The form is pre-populated with the project's data.
 // Thes handler handles the GET requests.
 func (h *projectHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
-	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -201,17 +206,19 @@ func (h *projectHandler) editGetHandler(w http.ResponseWriter, r *http.Request) 
 }
 
 // editPostHandler handles project edits.
+// A variable is set if there's an error updating the project, so an error message
+// can be displayed in the HTML page.
 // This handler handles the POST request.
 func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
-	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
@@ -223,7 +230,6 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 
 	err = r.ParseForm()
 	if err != nil {
-		log.Printf("serveProjectEdit ParseForm: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

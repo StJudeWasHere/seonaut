@@ -115,6 +115,9 @@ func (s *UserService) UpdatePassword(user *models.User, currentPassword, newPass
 }
 
 // Delete a User and all its associated projects and crawl data.
+// Deleting the user data may take a while, and it's deleted in a
+// go routine. To avoid blocking the execution the user is first disabled,
+// and once the data has been deleted, the user is finally deleted.
 func (s *UserService) DeleteUser(user *models.User) {
 	s.repository.DisableUser(user)
 	go func() {

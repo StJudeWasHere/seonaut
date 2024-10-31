@@ -51,7 +51,8 @@ func (h *exportHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // csvHandler exports the pagereports of a specific project as a CSV file by issue type.
-// It expects a "pid" query parameter with the project's id.
+// It expects a "pid" query parameter with the project's id. If the "eid" query parameter
+// is set, it exports the pagereports with an specific issue type.
 func (h *exportHandler) csvHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {

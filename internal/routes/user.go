@@ -97,11 +97,18 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 
 // deletePostHandler handles the POST request to delete an account.
 // After deleting the user and all its associated data it destroys the session
-// and redirects to the sign-in page.
+// and redirects to the sign-in page. Users with projects still crawling can not
+// be deleted and are redirected to the delete page.
 func (h *userHandler) deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	crawling := h.ProjectViewService.UserIsCrawling(user.Id)
+	if crawling {
+		http.Redirect(w, r, "/account/delete", http.StatusSeeOther)
 		return
 	}
 

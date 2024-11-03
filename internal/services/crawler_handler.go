@@ -23,20 +23,18 @@ type CrawlerHandler struct {
 	broker              *Broker
 	reportManager       *ReportManager
 	externalLinksStatus map[string]int
-	client              crawler.Client
 }
 
 type crawlerData struct {
 	Depth int
 }
 
-func NewCrawlerHandler(r CrawlerHandlerRepository, b *Broker, m *ReportManager, client crawler.Client) *CrawlerHandler {
+func NewCrawlerHandler(r CrawlerHandlerRepository, b *Broker, m *ReportManager) *CrawlerHandler {
 	return &CrawlerHandler{
 		repository:          r,
 		broker:              b,
 		reportManager:       m,
 		externalLinksStatus: make(map[string]int),
-		client:              client,
 	}
 }
 
@@ -101,7 +99,7 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 
 		// Check the external links if the project is set to do so.
 		if p.CheckExternalLinks {
-			s.checkExternalLinks(pageReport)
+			s.checkExternalLinks(c.Client, pageReport)
 		}
 
 		// Save the pageReport if it hasn't the noindex attribute or if the project
@@ -231,7 +229,7 @@ func (s *CrawlerHandler) updateStatus(crawl *models.Crawl, pageReport *models.Pa
 // checkExternalLinks makes a HEAD request of the external links in a pageReport
 // and checks their status code. It stores the URL's status code in a map to
 // avoid requesting the same URL more than once.
-func (s *CrawlerHandler) checkExternalLinks(pageReport *models.PageReport) {
+func (s *CrawlerHandler) checkExternalLinks(client crawler.Client, pageReport *models.PageReport) {
 	for n, l := range pageReport.ExternalLinks {
 		status, ok := s.externalLinksStatus[l.URL]
 		if ok {
@@ -240,7 +238,7 @@ func (s *CrawlerHandler) checkExternalLinks(pageReport *models.PageReport) {
 		}
 
 		statusCode := -1
-		res, err := s.client.Head(l.URL)
+		res, err := client.Head(l.URL)
 		if err == nil {
 			statusCode = res.Response.StatusCode
 		}

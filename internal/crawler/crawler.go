@@ -57,6 +57,7 @@ type Status struct {
 }
 
 type Crawler struct {
+	Client           Client
 	status           Status
 	url              *url.URL
 	options          *Options
@@ -72,7 +73,6 @@ type Crawler struct {
 	mainDomain       string
 	cancel           context.CancelFunc
 	context          context.Context
-	client           Client
 	callback         ResponseCallback
 }
 
@@ -108,6 +108,7 @@ func NewCrawler(parsedURL *url.URL, options *Options, client Client) *Crawler {
 	ctx, cancel := context.WithTimeout(context.Background(), crawlerTimeout*time.Hour)
 
 	return &Crawler{
+		Client:         client,
 		status:         Status{Crawling: true},
 		url:            parsedURL,
 		options:        options,
@@ -120,7 +121,6 @@ func NewCrawler(parsedURL *url.URL, options *Options, client Client) *Crawler {
 		mainDomain:     mainDomain,
 		cancel:         cancel,
 		context:        ctx,
-		client:         client,
 	}
 }
 
@@ -312,9 +312,9 @@ func (c *Crawler) consumer(reqStream <-chan *RequestMessage, respStream chan<- *
 			r := &ClientResponse{}
 			switch requestMessage.Method {
 			case GET:
-				r, rm.Error = c.client.Get(requestMessage.URL.String())
+				r, rm.Error = c.Client.Get(requestMessage.URL.String())
 			case HEAD:
-				r, rm.Error = c.client.Head(requestMessage.URL.String())
+				r, rm.Error = c.Client.Head(requestMessage.URL.String())
 			}
 
 			if rm.Error == nil {

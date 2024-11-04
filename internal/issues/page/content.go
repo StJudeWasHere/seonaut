@@ -1,7 +1,10 @@
 package page
 
 import (
+	"mime"
 	"net/http"
+	"path/filepath"
+	"strings"
 
 	"golang.org/x/net/html"
 
@@ -31,6 +34,38 @@ func NewLittleContentReporter() *models.PageIssueReporter {
 
 	return &models.PageIssueReporter{
 		ErrorType: errors.ErrorLittleContent,
+		Callback:  c,
+	}
+}
+
+func NewIncorrectMediaType() *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if pageReport.MediaType == "" {
+			return true
+		}
+
+		ext := filepath.Ext(pageReport.ParsedURL.Path)
+		if ext == "" {
+			ext = ".html"
+		}
+
+		// Allow both "application/javascript" and "text/javascript" as valid types.
+		if ext == ".js" {
+			return pageReport.MediaType != "application/javascript" && pageReport.MediaType != "text/javascript"
+		}
+
+		mimeType := mime.TypeByExtension(ext)
+		mimeType = strings.Split(mimeType, ";")[0]
+
+		if mimeType == "" {
+			return false
+		}
+
+		return mimeType != pageReport.MediaType
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorIncorrectMediaType,
 		Callback:  c,
 	}
 }

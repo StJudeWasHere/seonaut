@@ -48,6 +48,7 @@ func NewServer(container *services.Container) {
 	http.HandleFunc("GET /export/csv", container.CookieSession.Auth(exportHandler.csvHandler))
 	http.HandleFunc("GET /export/sitemap", container.CookieSession.Auth(exportHandler.sitemapHandler))
 	http.HandleFunc("GET /export/resources", container.CookieSession.Auth(exportHandler.resourcesHandler))
+	http.HandleFunc("GET /export/wazc", container.CookieSession.Auth(exportHandler.waczHandler))
 
 	// Issues routes
 	issueHandler := issueHandler{container}

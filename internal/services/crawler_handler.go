@@ -38,6 +38,16 @@ func NewCrawlerHandler(r CrawlerHandlerRepository, b *Broker, m *ReportManager) 
 	}
 }
 
+func (s *CrawlerHandler) archiveCallback(crawl *models.Crawl, p *models.Project, c *crawler.Crawler, a *Archiver) crawler.ResponseCallback {
+	responseCallback := s.responseCallback(crawl, p, c)
+	return func(r *crawler.ResponseMessage) {
+		if r.Error == nil && a != nil {
+			a.AddRecord(r.Response)
+		}
+		responseCallback(r)
+	}
+}
+
 func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project, c *crawler.Crawler) crawler.ResponseCallback {
 	return func(r *crawler.ResponseMessage) {
 		pageReport, htmlNode, err := s.buildPageReport(r)

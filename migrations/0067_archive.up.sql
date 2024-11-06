@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD COLUMN `archive` tinyint NOT NULL DEFAULT '0';

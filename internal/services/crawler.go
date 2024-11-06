@@ -85,9 +85,24 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 		return err
 	}
 
-	c.OnResponse(s.crawlerHandler.responseCallback(crawl, &p, c))
-
 	go func() {
+		defer s.repository.DeleteCrawlData(&previousCrawl)
+
+		var archiver *Archiver
+		if p.Archive {
+			archiver, err = NewArchiver(p.Host)
+			if err != nil {
+				log.Printf("Failed to create archive: %v", err)
+			}
+		}
+
+		if archiver != nil {
+			defer archiver.Close()
+			c.OnResponse(s.crawlerHandler.archiveCallback(crawl, &p, c, archiver))
+		} else {
+			c.OnResponse(s.crawlerHandler.responseCallback(crawl, &p, c))
+		}
+
 		log.Printf("Crawling %s...", p.URL)
 		c.AddRequest(&crawler.RequestMessage{URL: u, Data: crawlerData{}})
 
@@ -114,7 +129,6 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 		log.Printf("Crawled %d urls in %s", crawl.TotalURLs, p.URL)
 
 		s.removeCrawler(&p)
-		s.repository.DeleteCrawlData(&previousCrawl)
 	}()
 
 	return nil

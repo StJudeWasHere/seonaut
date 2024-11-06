@@ -11,6 +11,7 @@ bin/*
 # Ignore any file in the web/static folder except favicon.ico and robots.txt
 # The frontend build will copy fonts and styles into this folder.
 
+archive/*
 web/static/*
 !web/static/favicon.ico
 !web/static/robots.txt

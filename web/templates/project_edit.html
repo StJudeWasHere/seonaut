@@ -150,6 +150,25 @@
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
+
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="archive"{{ if .Project.Archive }} checked{{ end }}>
+							<span class="slider"></span>
+						</label>
+						<span class="label">Create WACZ archive</span>
+					</div>
+					<span class="toggle-help">
+						If checked a WACZ archive will be created and available as an export option.
+					</span>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
 					<div class="toggle-container">
 						<label class="toggle" >
 							<input type="checkbox" value="1" name="basic_auth"{{ if .Project.BasicAuth }} checked{{ end }}>

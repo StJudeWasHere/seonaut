@@ -163,6 +163,20 @@
 		</div>
 	</div>
 
+	{{ if .ArchiveExists }}
+		<div class="box">
+			<div class="col col-main">
+				<div class="content">
+					<h2>Export WACZ Archive</h2>
+					<p>Export your project's crawled data as a WACZ file for archival or replaying.</p>
+				</div>
+			</div>
+
+			<div class="col col-actions">
+				<a href="/export/wazc?pid={{ .Project.Id }}" class="highlight">Download</a>
+			</div>
+		</div>
+	{{ end }}
 </div>
 
 {{ end}}

@@ -109,6 +109,11 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 		basicAuth = false
 	}
 
+	archive, err := strconv.ParseBool(r.FormValue("archive"))
+	if err != nil {
+		archive = false
+	}
+
 	project := &models.Project{
 		URL:                r.FormValue("url"),
 		IgnoreRobotsTxt:    ignoreRobotsTxt,
@@ -118,6 +123,7 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 		AllowSubdomains:    allowSubdomains,
 		BasicAuth:          basicAuth,
 		CheckExternalLinks: checkExternalLinks,
+		Archive:            archive,
 	}
 
 	err = h.ProjectService.SaveProject(project, user.Id)
@@ -261,6 +267,11 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 	p.BasicAuth, err = strconv.ParseBool(r.FormValue("basic_auth"))
 	if err != nil {
 		p.BasicAuth = false
+	}
+
+	p.Archive, err = strconv.ParseBool(r.FormValue("archive"))
+	if err != nil {
+		p.Archive = false
 	}
 
 	err = h.ProjectService.UpdateProject(&p)

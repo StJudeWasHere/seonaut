@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,14 +30,12 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
-		log.Printf("serveResourcesView pid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
 	rid, err := strconv.Atoi(r.URL.Query().Get("rid"))
 	if err != nil {
-		log.Printf("serveResourcesView rid: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -46,7 +43,6 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	eid := r.URL.Query().Get("eid")
 	ep := r.URL.Query().Get("ep")
 	if eid == "" && ep == "" {
-		log.Println("serveResourcesView: no eid or ep parameter set")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -63,7 +59,6 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
-		log.Printf("serveResourcesView GetProjectView: %v\n", err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

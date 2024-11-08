@@ -29,7 +29,7 @@ type crawlHandler struct {
 // startHandler handles the crawling of a project.
 // It expects a query parameter "pid" containing the project id to be crawled.
 // In case the project requieres BasicAuth it will redirect the user to the BasicAuth
-// credentials URL. Otherwise, it starts a new crawler.
+// credentials URL. Otherwise, it starts a new crawler and redirects to the live crawling page.
 func (h *crawlHandler) startHandler(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
@@ -56,7 +56,7 @@ func (h *crawlHandler) startHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.CrawlerService.StartCrawler(p, models.BasicAuth{})
 	if err != nil {
-		log.Printf("StartCrawler: %s %v\n", p.URL, err)
+		log.Printf("start crawler for %s error: %v\n", p.URL, err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -65,7 +65,7 @@ func (h *crawlHandler) startHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // stopHandler handles the crawler stopping.
-// It expects a query paramater "pid" containinng the project id that is being crawled.
+// It expects a query paramater "pid" containing the id of the project to be stopped.
 // Aftar making sure the user owns the project it is stopped.
 // In case the request is made via ajax with the X-Requested-With header it will return
 // a json response, otherwise it will redirect the user back to the live crawl page.
@@ -133,8 +133,8 @@ func (h *crawlHandler) authGetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Handle the BasicAuth form. Once it is submitted a crawler with BasicAuth is started.
-// It Processes the auth form data and starts the crawler.
-// This handler handles the POST request.
+// It processes the auth form data and starts the crawler.
+// This handler handles the POST request and redirects to the live crawl page.
 func (h *crawlHandler) authPostHandler(w http.ResponseWriter, r *http.Request) {
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
@@ -167,7 +167,7 @@ func (h *crawlHandler) authPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.CrawlerService.StartCrawler(p, basicAuth)
 	if err != nil {
-		log.Printf("StartCrawler: %s %v\n", p.URL, err)
+		log.Printf("start basic auth crawler for %s error: %v\n", p.URL, err)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}

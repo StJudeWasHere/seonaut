@@ -64,3 +64,29 @@ func (s *ProjectViewService) GetProjectViews(uid int) []models.ProjectView {
 
 	return views
 }
+
+// UserIsCrawling returns true if the user has any project that is currently crawling.
+// Otherwise it returns false.
+func (s *ProjectViewService) UserIsCrawling(uid int) bool {
+	pv := s.GetProjectViews((uid))
+	for _, v := range pv {
+		if v.Crawl.Crawling || v.Project.Deleting {
+			return true
+		}
+	}
+
+	return false
+}
+
+// Returns true if the user is crawling or deleting projects.
+// Otherwise it returns false.
+func (s *ProjectViewService) UserIsProcessingProjects(uid int) bool {
+	views := s.GetProjectViews(uid)
+	for _, v := range views {
+		if v.Crawl.Id > 0 && (v.Crawl.Crawling || v.Project.Deleting) {
+			return true
+		}
+	}
+
+	return false
+}

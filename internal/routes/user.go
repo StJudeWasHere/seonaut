@@ -13,7 +13,6 @@ type userHandler struct {
 
 // signupGetHandler handles the GET signup request and displays the sign up form.
 // It allows users to sign up by providing their email and password.
-// The template uses the data's Email field to pre-populate the form.
 func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
 		PageTitle: "SIGNUP_VIEW",
@@ -83,21 +82,14 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	crawling := false
-	pv := h.ProjectViewService.GetProjectViews((user.Id))
-	for _, v := range pv {
-		if v.Crawl.Crawling || v.Project.Deleting {
-			crawling = true
-			break
-		}
-	}
-
 	pageView := &PageView{
 		PageTitle: "DELETE_ACCOUNT_VIEW",
 		User:      *user,
 		Data: &struct {
 			Crawling bool
-		}{Crawling: crawling},
+		}{
+			Crawling: h.ProjectViewService.UserIsCrawling(user.Id),
+		},
 	}
 
 	h.Renderer.RenderTemplate(w, "delete_account", pageView)
@@ -105,11 +97,18 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 
 // deletePostHandler handles the POST request to delete an account.
 // After deleting the user and all its associated data it destroys the session
-// and redirects home.
+// and redirects to the sign-in page. Users with projects still crawling can not
+// be deleted and are redirected to the delete page.
 func (h *userHandler) deletePostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	crawling := h.ProjectViewService.UserIsCrawling(user.Id)
+	if crawling {
+		http.Redirect(w, r, "/account/delete", http.StatusSeeOther)
 		return
 	}
 
@@ -151,8 +150,6 @@ func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) 
 
 	u, err := h.UserService.SignIn(email, password)
 	if err != nil {
-		log.Printf("sign in: %v", err)
-
 		pageView := &PageView{
 			PageTitle: "SIGNIN_VIEW",
 			Data: &struct {
@@ -246,7 +243,7 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 
 // signoutHandler handles the user's signout request.
 // It clears the session data related to authenticated user and redirects to
-// the sigin page.
+// the sign-in page.
 func (h *userHandler) signoutHandler(w http.ResponseWriter, r *http.Request) {
 	h.CookieSession.DestroySession(w, r)
 	http.Redirect(w, r, "/signin", http.StatusSeeOther)

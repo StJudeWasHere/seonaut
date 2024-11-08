@@ -52,7 +52,7 @@ func (h *issueHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "issues", v)
 }
 
-// viewHandler handles the view of project's specific issue type.
+// viewHandler handles the view of the project's issues by an specific type.
 // It expects a query parameter "pid" containing the project id and an "eid" parameter
 // containing the issue type.
 func (h *issueHandler) viewHandler(w http.ResponseWriter, r *http.Request) {

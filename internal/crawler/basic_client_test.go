@@ -4,9 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
-	"reflect"
 	"testing"
-	"unsafe"
 
 	"github.com/stjudewashere/seonaut/internal/crawler"
 )
@@ -26,18 +24,6 @@ func (m *mockClient) Do(req *http.Request) (*http.Response, error) {
 	return &http.Response{
 		StatusCode: http.StatusOK,
 	}, nil
-}
-
-// Replaces the http.Client with a mockClient.
-func newTestClient(client *crawler.BasicClient) *mockClient {
-	mock := &mockClient{}
-
-	// Replace the internal HTTP client with the mock
-	clientField := reflect.ValueOf(client).Elem().FieldByName("client")
-	clientField = reflect.NewAt(clientField.Type(), unsafe.Pointer(clientField.UnsafeAddr())).Elem()
-	clientField.Set(reflect.ValueOf(mock))
-
-	return mock
 }
 
 // Test user agent in Get requests.

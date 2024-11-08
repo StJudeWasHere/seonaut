@@ -145,6 +145,23 @@
 				<div class="content">
 					<div class="toggle-container">
 						<label class="toggle" >
+							<input type="checkbox" value="1" name="archive">
+							<span class="slider"></span>
+						</label>
+						<span class="label">Create WACZ archive</span>
+					</div>
+					<span class="toggle-help">
+						If checked a WACZ archive will be created and available as an export option.
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+					<div class="toggle-container">
+						<label class="toggle" >
 							<input type="checkbox" value="1" name="basic_auth">
 							<span class="slider"></span>
 						</label>
@@ -153,21 +170,21 @@
 					<span class="toggle-help">
 						Check this option if your site is password protected with HTTP Basic Auth.
 					</span>
-					</div>
 				</div>
 			</div>
+		</div>
 
-			<div class="box box-highlight">
-				<div class="col col-main">
-					<div class="content-s">
+		<div class="box box-highlight">
+			<div class="col col-main">
+				<div class="content-s">
 
-						<input type="submit" value="Save" class="inline"> or <a href="/">cancel</a>.
+					<input type="submit" value="Save" class="inline"> or <a href="/">cancel</a>.
 
-					</div>
 				</div>
 			</div>
+		</div>
 
-		</form>
+	</form>
 </div>
 
 {{ template "footer" . }}

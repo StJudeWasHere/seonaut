@@ -17,4 +17,5 @@ type Project struct {
 	Deleting           bool
 	BasicAuth          bool
 	CheckExternalLinks bool
+	Archive            bool
 }

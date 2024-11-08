@@ -9,22 +9,32 @@
 					<span class="logo"><a href="/signin">SEOnaut</a></span>
 				</div>
 
-				<form method="POST">
-					<label for="email">Email:</label>
-					<input type="email" name="email" value="{{ .Data.Email }}" required autofocus>
-					<label for="password">Password:</label>
-					<input type="password" name="password" required>
-					<input type="submit" value="Sign Up">
-				</form>
+				<div class="form-container">
+					<div class="content">
+						<h1>Create your SEOnaut account</h1>
+						<form method="POST">
+							<label for="email">Email:</label>
+							<input type="email" name="email" value="{{ .Data.Email }}" required autofocus>
+							<label for="password">Password:</label>
+							<input type="password" name="password" required>
+							<input type="submit" value="Sign Up">
+						</form>
 
-				{{ if .Data.Error }}
-					<p class="error">{{ .Data.ErrorMessage }}</p>
-				{{ end }}
+						{{ if .Data.Error }}
+							<p class="error">{{ .Data.ErrorMessage }}</p>
+						{{ end }}
+					</div>
 
-				<p>
-					Already have an account? <a href="/signin">Sign in</a>
-				</p>
+					<div class="box-footer">
+						<div class="content">
+							Already have an account? <a href="/signin">Sign in</a>
+						</div>
+					</div>
+				</div>
 
+				<div class="credentials-text">
+					<small>SEOnaut allows you to scan your site for issues, prioritize fixes by impact, and provide recommendations to enhance your online visibility. Sign up to start optimizing your website!</small>
+				</div>
 			</div>
 		</div>
 	</div>

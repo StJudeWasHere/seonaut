@@ -242,3 +242,6 @@ ERROR_NOSNIPPET_DESC: The nosnippet or max-snippet:0 directives tell search engi
 
 ERROR_IMG_SIZE_ATTR: Pages containing images missing size attributes
 ERROR_IMG_SIZE_ATTR_DESC: Not setting the size attributes for images can cause layout shifts as the page loads, which can negatively impact user experience as well as SEO. Make sure your images have the corresponding size attributes in place.
+
+ERROR_INCORRECT_MEDIA_TYPE: URLs with incorrect media type
+ERROR_INCORRECT_MEDIA_TYPE_DESC: Having URLs with incorrect MIME types can hurt SEO by causing browsers to misinterpret or fail to render content, which can impact user experience and search engine indexing.

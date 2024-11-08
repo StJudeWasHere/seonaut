@@ -9,22 +9,32 @@
 					<span class="logo"><a href="/signin">SEOnaut</a></span>
 				</div>
 	
-				<form method="POST">
-					<label for="email">Email:</label>
-					<input type="email" name="email" value="{{ .Data.Email }}" required autofocus>
-					<label for="password">Password:</label>
-					<input type="password" name="password" required>
-					<input type="submit" value="Sign In">
-				</form>
+				<div class="form-container">
+					<div class="content">
+						<h1>Sign in to your account</h1>
+						<form method="POST">
+							<label for="email">Email:</label>
+							<input type="email" name="email" value="{{ .Data.Email }}" required autofocus>
+							<label for="password">Password:</label>
+							<input type="password" name="password" required>
+							<input type="submit" value="Sign In">
+						</form>
 
-				{{ if .Data.Error }}
-					<p class="error">The email address or password is not valid.</p>
-				{{ end }}
+						{{ if .Data.Error }}
+							<p class="error">The email address or password is not valid.</p>
+						{{ end }}
+					</div>
 
-				<p>
-					New to SEOnaut? <a href="/signup">Sign up</a>
-				</p>
+					<div class="box-footer">
+						<div class="content">
+							New to SEOnaut? <a href="/signup">Sign up</a>
+						</div>
+					</div>
+				</div>
 
+				<div class="credentials-text">
+					<small>Welcome back! Sign in to access detailed reports and uncover opportunities to improve your website's crawlability and boost your rankings.</small>
+				</div>
 			</div>
 		</div>
 	</div>

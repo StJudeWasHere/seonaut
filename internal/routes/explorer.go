@@ -18,27 +18,23 @@ type explorerHandler struct {
 // It expects a query parameter "pid" containing the project id, the "p" parameter containing the current
 // page in the paginator, and the "term" parameter used to perform the pagereport search.
 func (h *explorerHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
-	// Get user from the request's context
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
 		return
 	}
 
-	// Get the project id
 	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
 
-	// Get the page number and set page number to 1 if the parameter is not set
 	page, err := strconv.Atoi(r.URL.Query().Get("p"))
 	if err != nil {
 		page = 1
 	}
 
-	// Get the project view
 	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -47,7 +43,6 @@ func (h *explorerHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	term := r.URL.Query().Get("term")
 
-	// Get the paginated reports
 	paginatorView, err := h.ReportService.GetPaginatedReports(pv.Crawl.Id, page, term)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)

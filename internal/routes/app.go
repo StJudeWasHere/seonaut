@@ -48,6 +48,7 @@ func NewServer(container *services.Container) {
 	http.HandleFunc("GET /export/csv", container.CookieSession.Auth(exportHandler.csvHandler))
 	http.HandleFunc("GET /export/sitemap", container.CookieSession.Auth(exportHandler.sitemapHandler))
 	http.HandleFunc("GET /export/resources", container.CookieSession.Auth(exportHandler.resourcesHandler))
+	http.HandleFunc("GET /export/wazc", container.CookieSession.Auth(exportHandler.waczHandler))
 
 	// Issues routes
 	issueHandler := issueHandler{container}
@@ -82,6 +83,6 @@ func NewServer(container *services.Container) {
 	fmt.Printf("Starting server at %s on port %d...\n", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port), nil)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error starting server: %v", err)
 	}
 }

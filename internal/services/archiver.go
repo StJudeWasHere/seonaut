@@ -4,7 +4,6 @@ import (
 	"archive/zip"
 	"bytes"
 	"compress/gzip"
-	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -14,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
 	"strings"
 	"time"
 
@@ -123,7 +123,7 @@ func (s *Archiver) AddRecord(response *http.Response) {
 		Length:    fmt.Sprintf("%d", len(contentBuffer.Bytes())),
 		Mime:      response.Header.Get("Content-Type"),
 		Filename:  filePath,
-		Digest:    fmt.Sprintf("%x", md5.Sum(contentBuffer.Bytes())),
+		Digest:    fmt.Sprintf("sha-256:%x", sha256.Sum256(contentBuffer.Bytes())),
 		Offset:    fmt.Sprintf("%d", 0),
 	}
 
@@ -164,6 +164,7 @@ func (s *Archiver) Close() {
 	}
 	indexWriter := gzip.NewWriter(indexFile)
 
+	cdx := []string{}
 	for _, entry := range s.cdxjEntries {
 		parsedURL, err := url.Parse(entry.TargetURI)
 		if err != nil {
@@ -171,22 +172,24 @@ func (s *Archiver) Close() {
 			continue
 		}
 		domainParts := strings.Split(parsedURL.Hostname(), ".")
-		for i := len(domainParts) - 1; i >= 0; i-- {
-			indexWriter.Write([]byte(domainParts[i]))
-			if i > 0 {
-				indexWriter.Write([]byte(","))
-			}
-		}
-		indexWriter.Write([]byte(")/"))
+		slices.Reverse(domainParts)
+		searchableURL := strings.Join(domainParts, ",")
+		searchableURL = searchableURL + ")" + parsedURL.RequestURI()
 
 		cdxjLine := fmt.Sprintf(
-			"%s %s\n",
+			"%s %s %s\n",
+			searchableURL,
 			entry.Timestamp,
 			fmt.Sprintf(`{"offset":"%s","status":"%s","length":"%s","mime":"%s","filename":"%s","url":"%s","digest":"%s"}`,
 				entry.Offset, entry.Status, entry.Length, entry.Mime, entry.Filename, entry.TargetURI, entry.Digest,
 			),
 		)
-		indexWriter.Write([]byte(cdxjLine))
+		cdx = append(cdx, cdxjLine)
+
+	}
+	slices.Sort(cdx)
+	for _, e := range cdx {
+		indexWriter.Write([]byte(e))
 	}
 	indexWriter.Close()
 

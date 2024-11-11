@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/url"
 	"os"
+	"strconv"
 	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -99,7 +100,7 @@ func (s *ProjectService) DeleteAllUserProjects(user *models.User) {
 // ArchiveExists checks if a wacz file exists for the current project.
 // It returns true if it exists, otherwise it returns false.
 func (s *ProjectService) ArchiveExists(p *models.Project) bool {
-	_, err := os.Stat(ArchiveDir + p.Host + ".wacz")
+	_, err := os.Stat(ArchiveDir + "/" + strconv.FormatInt(p.Id, 10) + "/" + p.Host + ".wacz")
 	return err == nil
 }
 
@@ -110,7 +111,7 @@ func (s *ProjectService) DeleteArchive(p *models.Project) {
 		return
 	}
 
-	os.Remove(ArchiveDir + p.Host + ".wacz")
+	os.Remove(ArchiveDir + "/" + strconv.FormatInt(p.Id, 10) + "/" + p.Host + ".wacz")
 }
 
 // GetArchiveFilePath returns the project's wacz file path if it exists,
@@ -120,5 +121,5 @@ func (s *ProjectService) GetArchiveFilePath(p *models.Project) (string, error) {
 		return "", errors.New("WACZ archive file does not exist")
 	}
 
-	return ArchiveDir + p.Host + ".wacz", nil
+	return ArchiveDir + "/" + strconv.FormatInt(p.Id, 10) + "/" + p.Host + ".wacz", nil
 }

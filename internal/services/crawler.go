@@ -90,7 +90,7 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 
 		var archiver *Archiver
 		if p.Archive {
-			archiver, err = NewArchiver(p.Host)
+			archiver, err = NewArchiver(p)
 			if err != nil {
 				log.Printf("Failed to create archive: %v", err)
 			}

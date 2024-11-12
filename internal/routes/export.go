@@ -45,7 +45,7 @@ func (h *exportHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archiveExists := h.Container.ProjectService.ArchiveExists(&pv.Project)
+	archiveExists := h.Container.ArchiveService.ArchiveExists(&pv.Project)
 	h.Renderer.RenderTemplate(w, "export", &PageView{
 		User:      *user,
 		PageTitle: "EXPORT_VIEW",
@@ -201,7 +201,7 @@ func (h *exportHandler) waczHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	archiveFilePath, err := h.Container.ProjectService.GetArchiveFilePath(&p)
+	archiveFilePath, err := h.Container.ArchiveService.GetArchiveFilePath(&p)
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return

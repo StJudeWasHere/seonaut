@@ -29,6 +29,10 @@ type crawlerData struct {
 	Depth int
 }
 
+type Archiver interface {
+	AddRecord(*http.Response)
+}
+
 func NewCrawlerHandler(r CrawlerHandlerRepository, b *Broker, m *ReportManager) *CrawlerHandler {
 	return &CrawlerHandler{
 		repository:          r,
@@ -38,7 +42,7 @@ func NewCrawlerHandler(r CrawlerHandlerRepository, b *Broker, m *ReportManager) 
 	}
 }
 
-func (s *CrawlerHandler) archiveCallback(crawl *models.Crawl, p *models.Project, c *crawler.Crawler, a *Archiver) crawler.ResponseCallback {
+func (s *CrawlerHandler) archiveCallback(crawl *models.Crawl, p *models.Project, c *crawler.Crawler, a Archiver) crawler.ResponseCallback {
 	responseCallback := s.responseCallback(crawl, p, c)
 	return func(r *crawler.ResponseMessage) {
 		if r.Error == nil && a != nil {

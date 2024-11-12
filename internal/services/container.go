@@ -29,6 +29,7 @@ type Container struct {
 	CrawlerService     *CrawlerService
 	Renderer           *Renderer
 	CookieSession      *CookieSession
+	ArchiveService     *ArchiveService
 
 	db                   *sql.DB
 	issueRepository      *repository.IssueRepository
@@ -44,6 +45,7 @@ func NewContainer(configFile string) *Container {
 	c := &Container{}
 	c.InitConfig(configFile)
 	c.InitDB()
+	c.InitArchiveService()
 	c.InitRepositories()
 	c.InitPubSubBroker()
 	c.InitIssueService()
@@ -159,7 +161,7 @@ func (c *Container) InitProjectService() {
 		c.crawlRepository,
 	}
 
-	c.ProjectService = NewProjectService(repository)
+	c.ProjectService = NewProjectService(repository, c.ArchiveService)
 
 	// UserService DeleteHooks are called when a user is deleted.
 	// Add a DeleteHook so it deletes all user projects and crawl
@@ -191,6 +193,7 @@ func (c *Container) InitCrawlerService() {
 		Broker:         c.PubSubBroker,
 		ReportManager:  c.ReportManager,
 		CrawlerHandler: NewCrawlerHandler(c.pageReportRepository, c.PubSubBroker, c.ReportManager),
+		ArchiveService: c.ArchiveService,
 		Config:         c.Config.Crawler,
 	}
 	repository := &struct {
@@ -225,4 +228,8 @@ func (c *Container) InitRenderer() {
 // Create cookie session handler
 func (c *Container) InitCookieSession() {
 	c.CookieSession = NewCookieSession(c.userRepository)
+}
+
+func (c *Container) InitArchiveService() {
+	c.ArchiveService = NewArchiveService("archive")
 }

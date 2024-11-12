@@ -63,18 +63,24 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	pageReportView := h.ReportService.GetPageReport(rid, pv.Crawl.Id, tab, page)
+
+	source := h.Container.ArchiveService.ReadArchive(&pv.Project, pageReportView.PageReport.URL)
+
 	data := &struct {
 		PageReportView *models.PageReportView
 		ProjectView    *models.ProjectView
 		Eid            string
 		Ep             string
 		Tab            string
+		Source         string
 	}{
 		ProjectView:    pv,
 		Eid:            eid,
 		Ep:             ep,
 		Tab:            tab,
-		PageReportView: h.ReportService.GetPageReport(rid, pv.Crawl.Id, tab, page),
+		PageReportView: pageReportView,
+		Source:         source,
 	}
 
 	pageView := &PageView{

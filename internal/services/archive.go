@@ -2,8 +2,11 @@ package services
 
 import (
 	"errors"
+	"log"
 	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/archiver"
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -26,11 +29,22 @@ func (s *ArchiveService) GetArchiveWriter(p *models.Project) (*archiver.Writer, 
 }
 
 // ReadArchive reads an URLs WACZ record from a project's archive.
-func (s *ArchiveService) ReadArchive(p *models.Project, urlStr string) string {
+func (s *ArchiveService) ReadArchiveRecord(p *models.Project, urlStr string) *models.ArchiveRecord {
 	waczPath := s.getArchiveFile(p)
 	reader := archiver.NewReader(waczPath)
 
-	return reader.ReadArchive(urlStr)
+	content := reader.ReadArchive(urlStr)
+
+	record := &models.ArchiveRecord{}
+	index := strings.Index(content, "\r\n\r\n")
+	if index != -1 {
+		record.Headers = content[:index]
+		record.Body = strings.TrimSpace(content[index+1:])
+	} else {
+		record.Headers = content
+	}
+
+	return record
 }
 
 // ArchiveExists checks if a wacz file exists for the current project.
@@ -50,6 +64,24 @@ func (s *ArchiveService) DeleteArchive(p *models.Project) {
 
 	file := s.getArchiveFile(p)
 	os.Remove(file)
+
+	// Check if the archive directory is empty and remove it.
+	dir := filepath.Dir(file)
+	d, err := os.Open(dir)
+	if err != nil {
+		log.Printf("failed to open archive dir %s: %v", dir, err)
+		return
+	}
+
+	_, err = d.ReadDir(1)
+	if err == nil {
+		return // dir is not empty.
+	}
+
+	err = os.Remove(dir)
+	if err != nil {
+		log.Printf("failed to remove empty archive dir %s: %v", dir, err)
+	}
 }
 
 // GetArchiveFilePath returns the project's wacz file path if it exists,

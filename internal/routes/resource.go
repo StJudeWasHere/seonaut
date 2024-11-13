@@ -92,6 +92,8 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "resources", pageView)
 }
 
+// archiveHandler the HTTP request for the archive page. It loads the data from the
+// archive and displays the source code of the crawler's response for a specific resource.
 func (h *resourceHandler) archiveHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
@@ -142,19 +144,7 @@ func (h *resourceHandler) archiveHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	archive := h.Container.ArchiveService.ReadArchive(&pv.Project, pageReportView.PageReport.URL)
-
-	var headers, body string
-	index := strings.Index(archive, "\r\n\r\n")
-	if index != -1 {
-		// Split the string into two parts: before and after the first newline
-		headers = archive[:index]
-		body = strings.TrimSpace(archive[index+1:])
-	} else {
-		// If there's no newline, the entire text is the first part
-		headers = archive
-		body = ""
-	}
+	record := h.Container.ArchiveService.ReadArchiveRecord(&pv.Project, pageReportView.PageReport.URL)
 
 	data := &struct {
 		PageReportView *models.PageReportView
@@ -162,16 +152,14 @@ func (h *resourceHandler) archiveHandler(w http.ResponseWriter, r *http.Request)
 		Eid            string
 		Ep             string
 		Tab            string
-		Headers        string
-		Body           string
+		ArchiveRecord  *models.ArchiveRecord
 	}{
 		ProjectView:    pv,
 		PageReportView: pageReportView,
 		Eid:            eid,
 		Ep:             ep,
 		Tab:            tab,
-		Headers:        headers,
-		Body:           body,
+		ArchiveRecord:  record,
 	}
 
 	pageView := &PageView{

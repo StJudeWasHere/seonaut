@@ -27,6 +27,8 @@ func NewReader(waczPath string) *Reader {
 	}
 }
 
+// ReadArchive reads the archive and returns the contents of the warc record for
+// the specified URL as a string.
 func (s *Reader) ReadArchive(urlStr string) (content string) {
 	wacz, err := zip.OpenReader(s.waczPath)
 	if err != nil {
@@ -73,6 +75,8 @@ func (s *Reader) ReadArchive(urlStr string) (content string) {
 	return string(c)
 }
 
+// getCDXEntry Looks for the specified URL in the index file and returns an IndexEntry if found,
+// otherwise it returns an error.
 func (s *Reader) getCDXEntry(wacz *zip.ReadCloser, urlStr string) (*IndexEntry, error) {
 	file, err := s.getZipFile(wacz, "indexes/index.cdx")
 	if err != nil {
@@ -118,6 +122,7 @@ func (s *Reader) getCDXEntry(wacz *zip.ReadCloser, urlStr string) (*IndexEntry, 
 	return &record, nil
 }
 
+// getZipFile returns a *zip.File from a wacz file. If not found it returns an error.
 func (s *Reader) getZipFile(wacz *zip.ReadCloser, waczFile string) (*zip.File, error) {
 	for _, file := range wacz.File {
 		if file.Name == waczFile {
@@ -128,6 +133,8 @@ func (s *Reader) getZipFile(wacz *zip.ReadCloser, waczFile string) (*zip.File, e
 	return nil, errors.New("warc file file not found")
 }
 
+// searchFileSegment searches the target string in WACZ file index using bynary search.
+// It loads the index contents in memory.
 func (s *Reader) searchFileSegment(offset, length int64, target string) (string, error) {
 	file, err := os.Open(s.waczPath)
 	if err != nil {

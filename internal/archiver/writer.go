@@ -233,7 +233,6 @@ func (s *Writer) createIndex() error {
 
 // addPage adds a new page record in the pages.jsonl file.
 func (s *Writer) createPages() error {
-	// Add the pages.jsonl and add the file header
 	pagesWriter, err := s.waczWriter.Create("pages/pages.jsonl")
 	if err != nil {
 		return err

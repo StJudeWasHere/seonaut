@@ -50,12 +50,12 @@
 			<div class="content">
 				<h2>Headers</h2>
 				<p>This block shows the response headers as received by the crawler.</p>
-				<pre class="archive"><code>{{ .Headers }}</code></pre>
+				<pre class="archive"><code>{{ .ArchiveRecord.Headers }}</code></pre>
 
-				{{ if .Body }}
+				{{ if .ArchiveRecord.Body }}
 				<h2>Body</h2>
 				<p>This block shows the response body as received by the crawler.</p>
-				<pre class="archive"><code>{{ .Body }}</code></pre>
+				<pre class="archive"><code>{{ .ArchiveRecord.Body }}</code></pre>
 				{{ end }}
 			</div>
 		</div>

@@ -21,17 +21,15 @@ import (
 	"github.com/slyrz/warc"
 )
 
-const ArchiveDir = "archive/"
-
 type Writer struct {
-	file        *os.File
-	cdxjEntries []CDXJEntry
-	waczWriter  *zip.Writer
-	warcWriter  *warc.Writer
-	warcOffset  int
+	file         *os.File
+	indexEntries []IndexEntry
+	waczWriter   *zip.Writer
+	warcWriter   *warc.Writer
+	warcOffset   int
 }
 
-type CDXJEntry struct {
+type IndexEntry struct {
 	URL          string    `json:"url"`
 	Offset       int       `json:"offset"`
 	Status       string    `json:"status"`
@@ -124,7 +122,7 @@ func (s *Writer) AddRecord(response *http.Response) {
 		return
 	}
 
-	cdxjEntry := CDXJEntry{
+	indexEntry := IndexEntry{
 		Status:       fmt.Sprintf("%d", response.StatusCode),
 		Length:       recordLen,
 		Mime:         response.Header.Get("Content-Type"),
@@ -136,7 +134,7 @@ func (s *Writer) AddRecord(response *http.Response) {
 		parsedURL:    *response.Request.URL,
 		URL:          response.Request.URL.String(),
 	}
-	s.cdxjEntries = append(s.cdxjEntries, cdxjEntry)
+	s.indexEntries = append(s.indexEntries, indexEntry)
 
 	s.warcOffset += recordLen
 }
@@ -209,7 +207,7 @@ func (s *Writer) createIndex() error {
 	}
 
 	cdx := []string{}
-	for _, entry := range s.cdxjEntries {
+	for _, entry := range s.indexEntries {
 		domainParts := strings.Split(entry.parsedURL.Hostname(), ".")
 		slices.Reverse(domainParts)
 		searchableURL := strings.Join(domainParts, ",")
@@ -245,7 +243,7 @@ func (s *Writer) createPages() error {
 	header += "\n"
 	pagesWriter.Write([]byte(header))
 
-	for _, e := range s.cdxjEntries {
+	for _, e := range s.indexEntries {
 		page := PageEntry{
 			URL: e.parsedURL.String(),
 			TS:  e.time.Format(time.RFC3339),

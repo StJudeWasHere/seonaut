@@ -115,7 +115,6 @@
 		</div>
 	</div>
 
-	<textarea>{{ .Source }}</textarea>
 	{{ $cid := .ProjectView.Crawl.Id }}
 	{{ $pid := .ProjectView.Project.Id }}
 	{{ $crawlSitemap := .ProjectView.Project.CrawlSitemap }}
@@ -127,6 +126,9 @@
 			<div class="col col-main">
 				<div class="content">
 					General details about this URL.
+					{{ if .Archived }}
+					<br>This project is archived: <a href="/archive{{ $parameters }}">view archived response</a>.
+					{{ end }}
 				</div>
 			</div>
 		</div>

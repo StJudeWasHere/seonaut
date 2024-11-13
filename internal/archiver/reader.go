@@ -2,14 +2,16 @@ package archiver
 
 import (
 	"archive/zip"
-	"bufio"
 	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"log"
+	"net/url"
 	"os"
+	"slices"
+	"sort"
 	"strings"
 
 	"github.com/slyrz/warc"
@@ -38,7 +40,12 @@ func (s *Reader) ReadArchive(urlStr string) (content string) {
 		return ""
 	}
 
-	zipoffset, err := s.getWarcOffset(wacz)
+	file, err := s.getZipFile(wacz, "data/data.warc")
+	if err != nil {
+		return ""
+	}
+
+	zipoffset, err := file.DataOffset()
 	if err != nil {
 		return ""
 	}
@@ -52,7 +59,6 @@ func (s *Reader) ReadArchive(urlStr string) (content string) {
 
 	buffer := make([]byte, record.Length)
 
-	// Read a specific chunk from the file starting from 'offset'
 	_, err = f.ReadAt(buffer, zipoffset+int64(record.Offset))
 	if err != nil && err.Error() != "EOF" {
 		log.Println(err)
@@ -62,61 +68,98 @@ func (s *Reader) ReadArchive(urlStr string) (content string) {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println(string(buffer))
 
 	c, _ := io.ReadAll(r.Content)
 	return string(c)
 }
 
-func (s *Reader) getCDXEntry(wacz *zip.ReadCloser, urlStr string) (*CDXJEntry, error) {
-	indexFile, err := wacz.Open("indexes/index.cdx")
+func (s *Reader) getCDXEntry(wacz *zip.ReadCloser, urlStr string) (*IndexEntry, error) {
+	file, err := s.getZipFile(wacz, "indexes/index.cdx")
 	if err != nil {
-		log.Printf("failed to open index file %v", err)
+		return nil, err
+	}
+	offset, err := file.DataOffset()
+	if err != nil {
+		return nil, err
+	}
+	size := file.FileInfo().Size()
+
+	parsedURL, err := url.Parse(urlStr)
+	if err != nil {
 		return nil, err
 	}
 
-	var record CDXJEntry
-	scanner := bufio.NewScanner(indexFile)
-	for scanner.Scan() {
-		line := scanner.Text()
+	domainParts := strings.Split(parsedURL.Hostname(), ".")
+	slices.Reverse(domainParts)
+	searchableURL := strings.Join(domainParts, ",")
+	searchableURL = searchableURL + ")" + parsedURL.RequestURI()
 
-		if strings.Contains(line, urlStr) {
-			// Find the JSON part of the line by locating the first '{' character
-			jsonStart := strings.Index(line, "{")
-			if jsonStart == -1 {
-				fmt.Println("JSON data not found in line:", line)
-				continue
-			}
-
-			// Extract the JSON substring
-			jsonData := line[jsonStart:]
-
-			// Parse the JSON data into the Record struct
-			err := json.Unmarshal([]byte(jsonData), &record)
-			if err != nil {
-				fmt.Println("Error parsing JSON:", err)
-				continue
-			}
-
-			return &record, nil
-		}
+	line, err := s.searchFileSegment(offset, size, searchableURL)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil, errors.New("URL not found in index file")
+	var record IndexEntry
+
+	jsonStart := strings.Index(line, "{")
+	if jsonStart == -1 {
+		fmt.Println("JSON data not found in line:", line)
+		return nil, fmt.Errorf("invalid IndexEntry %s", line)
+	}
+
+	// Extract the JSON substring
+	jsonData := line[jsonStart:]
+
+	err = json.Unmarshal([]byte(jsonData), &record)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing JSON: %w", err)
+	}
+
+	return &record, nil
 }
 
-func (s *Reader) getWarcOffset(wacz *zip.ReadCloser) (int64, error) {
-	var zipOffset int64
-	var err error
+func (s *Reader) getZipFile(wacz *zip.ReadCloser, waczFile string) (*zip.File, error) {
 	for _, file := range wacz.File {
-		if file.Name == "data/data.warc" {
-			zipOffset, err = file.DataOffset()
-			if err != nil {
-				return zipOffset, err
-			}
-			return zipOffset, nil
+		if file.Name == waczFile {
+			return file, nil
 		}
 	}
 
-	return zipOffset, errors.New("warc file file not found")
+	return nil, errors.New("warc file file not found")
+}
+
+func (s *Reader) searchFileSegment(offset, length int64, target string) (string, error) {
+	file, err := os.Open(s.waczPath)
+	if err != nil {
+		return "", fmt.Errorf("failed to open file: %v", err)
+	}
+	defer file.Close()
+
+	// Seek to the specified offset
+	_, err = file.Seek(offset, 0)
+	if err != nil {
+		return "", fmt.Errorf("failed to seek to offset: %v", err)
+	}
+
+	// Read the specified length of bytes
+	buffer := make([]byte, length)
+	_, err = file.Read(buffer)
+	if err != nil {
+		return "", fmt.Errorf("failed to read segment: %v", err)
+	}
+
+	// Split the buffer into lines
+	lines := strings.Split(string(buffer), "\n")
+
+	// Perform binary search on lines in memory using sort.Search
+	index := sort.Search(len(lines), func(i int) bool {
+		return lines[i] >= target
+	})
+
+	// Check if the found line starts with the target prefix
+	if index < len(lines) && strings.HasPrefix(lines[index], target) {
+		return lines[index], nil // Found the line
+	}
+
+	return "", fmt.Errorf("no line starting with '%s' found", target)
 }

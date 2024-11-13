@@ -64,8 +64,8 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageReportView := h.ReportService.GetPageReport(rid, pv.Crawl.Id, tab, page)
-
-	source := h.Container.ArchiveService.ReadArchive(&pv.Project, pageReportView.PageReport.URL)
+	isArchived := h.Container.ArchiveService.ArchiveExists(&pv.Project)
+	isTextMedia := strings.HasPrefix(pageReportView.PageReport.MediaType, "text/")
 
 	data := &struct {
 		PageReportView *models.PageReportView
@@ -73,14 +73,14 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Eid            string
 		Ep             string
 		Tab            string
-		Source         string
+		Archived       bool
 	}{
 		ProjectView:    pv,
 		Eid:            eid,
 		Ep:             ep,
 		Tab:            tab,
 		PageReportView: pageReportView,
-		Source:         source,
+		Archived:       isArchived && isTextMedia,
 	}
 
 	pageView := &PageView{
@@ -90,4 +90,95 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.Renderer.RenderTemplate(w, "resources", pageView)
+}
+
+func (h *resourceHandler) archiveHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	rid, err := strconv.Atoi(r.URL.Query().Get("rid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	eid := r.URL.Query().Get("eid")
+	ep := r.URL.Query().Get("ep")
+	if eid == "" && ep == "" {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	tab := r.URL.Query().Get("t")
+	if tab == "" {
+		tab = "details"
+	}
+
+	pv, err := h.ProjectViewService.GetProjectView(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	isArchived := h.Container.ArchiveService.ArchiveExists(&pv.Project)
+	if !isArchived {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	pageReportView := h.ReportService.GetPageReport(rid, pv.Crawl.Id, "default", 1)
+	isTextMedia := strings.HasPrefix(pageReportView.PageReport.MediaType, "text/")
+	if !isTextMedia {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	archive := h.Container.ArchiveService.ReadArchive(&pv.Project, pageReportView.PageReport.URL)
+
+	var headers, body string
+	index := strings.Index(archive, "\r\n\r\n")
+	if index != -1 {
+		// Split the string into two parts: before and after the first newline
+		headers = archive[:index]
+		body = strings.TrimSpace(archive[index+1:])
+	} else {
+		// If there's no newline, the entire text is the first part
+		headers = archive
+		body = ""
+	}
+
+	data := &struct {
+		PageReportView *models.PageReportView
+		ProjectView    *models.ProjectView
+		Eid            string
+		Ep             string
+		Tab            string
+		Headers        string
+		Body           string
+	}{
+		ProjectView:    pv,
+		PageReportView: pageReportView,
+		Eid:            eid,
+		Ep:             ep,
+		Tab:            tab,
+		Headers:        headers,
+		Body:           body,
+	}
+
+	pageView := &PageView{
+		Data:      data,
+		User:      *user,
+		PageTitle: "ARCHIVE_VIEW",
+	}
+
+	h.Renderer.RenderTemplate(w, "archive", pageView)
 }

@@ -92,15 +92,20 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 		defer s.removeCrawler(&p)
 		defer s.repository.DeleteCrawlData(&previousCrawl)
 
+		archiveEnabled := false
 		if p.Archive {
 			archiver, err := s.ArchiveService.GetArchiveWriter(&p)
 			if err != nil {
 				log.Printf("Failed to create archive: %v", err)
-				c.OnResponse(s.crawlerHandler.responseCallback(crawl, &p, c))
 			} else {
 				defer archiver.Close()
 				c.OnResponse(s.crawlerHandler.archiveCallback(crawl, &p, c, archiver))
+				archiveEnabled = true
 			}
+		}
+
+		if !archiveEnabled {
+			c.OnResponse(s.crawlerHandler.responseCallback(crawl, &p, c))
 		}
 
 		log.Printf("Crawling %s...", p.URL)

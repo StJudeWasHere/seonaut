@@ -1,0 +1,66 @@
+{{ template "head" . }}
+
+{{ with .Data }}
+<a name="menu"></a>
+
+<div class="panel">
+
+	<div class="box box-first">
+		<div class="col col-main">
+			<div class="content">
+				{{ if .Eid }}
+					<a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a> 
+					/ 
+					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a>
+					/
+					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}">Details</a>	
+				{{ else if .Ep }}
+					<a href="/explorer?pid={{ .ProjectView.Project.Id }}">Page Details</a>
+					/
+					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&ep=1">Details</a>	
+				{{ end }}
+			</div>
+		</div>
+
+		<div class="col col-actions-l">
+			<div class="main-action">
+				<div class="content">
+					<a href="/dashboard?pid={{ .ProjectView.Project.Id }}">{{ .ProjectView.Project.Host }}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="box box-highlight">
+		<div class="col col-main">
+			<div class="content">
+				<div class="url">
+					{{ if .PageReportView.PageReport.Title }}
+					{{ .PageReportView.PageReport.Title }} <br>
+					{{ end }}
+					{{ .PageReportView.PageReport.URL }}
+					<a class="borderless" href="{{ .PageReportView.PageReport.URL }}" target="_blank">↗</a>
+				</div>
+			 </div>
+		</div>
+	</div>
+
+	<div class="box box-highlight">
+		<div class="col col-main">
+			<div class="content">
+				<h2>Headers</h2>
+				<p>This block shows the response headers as received by the crawler.</p>
+				<pre class="archive"><code>{{ .ArchiveRecord.Headers }}</code></pre>
+
+				{{ if .ArchiveRecord.Body }}
+				<h2>Body</h2>
+				<p>This block shows the response body as received by the crawler.</p>
+				<pre class="archive"><code>{{ .ArchiveRecord.Body }}</code></pre>
+				{{ end }}
+			</div>
+		</div>
+	</div>
+
+</div>
+{{ end }}
+{{ template "footer" . }}

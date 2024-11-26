@@ -67,6 +67,7 @@ func NewServer(container *services.Container) {
 	// Resource route
 	resourceHandler := resourceHandler{container}
 	http.HandleFunc("GET /resources", container.CookieSession.Auth(resourceHandler.indexHandler))
+	http.HandleFunc("GET /archive", container.CookieSession.Auth(resourceHandler.archiveHandler))
 
 	// User routes
 	userHandler := userHandler{container}

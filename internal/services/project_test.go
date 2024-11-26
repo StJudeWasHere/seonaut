@@ -38,7 +38,11 @@ func (s *projectTestRepository) FindProjectById(id, uid int) (models.Project, er
 }
 func (s *projectTestRepository) DeleteProjectCrawls(*models.Project) {}
 
-var service = services.NewProjectService(&projectTestRepository{})
+type ArchiveDeleter struct{}
+
+func (ad *ArchiveDeleter) DeleteArchive(p *models.Project) {}
+
+var service = services.NewProjectService(&projectTestRepository{}, &ArchiveDeleter{})
 
 func TestFindProjectById(t *testing.T) {
 	p, err := service.FindProject(gid, guid)

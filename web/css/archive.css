@@ -1,0 +1,14 @@
+.archive {
+    background-color: var(--light-bg-color);
+    border: 1px solid var(--border-color);
+    font-family: 'Nimbus Mono PS', 'Courier New', monospace;
+    font-size: .85rem;
+    margin-bottom: calc(var(--line-height) * 2);
+    overflow: scroll;
+    padding: var(--line-height) 1.5rem;
+    max-height: calc(var(--line-height) * 20);
+}
+
+.archive:last-child {
+    margin-bottom: 0;
+}

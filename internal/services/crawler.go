@@ -35,6 +35,7 @@ type CrawlerServicesContainer struct {
 	Broker         *Broker
 	ReportManager  *ReportManager
 	CrawlerHandler *CrawlerHandler
+	ArchiveService *ArchiveService
 	Config         *config.CrawlerConfig
 }
 
@@ -44,6 +45,7 @@ type CrawlerService struct {
 	broker         *Broker
 	reportManager  *ReportManager
 	crawlerHandler *CrawlerHandler
+	ArchiveService *ArchiveService
 	crawlers       map[int64]*crawler.Crawler
 	lock           *sync.RWMutex
 }
@@ -55,6 +57,7 @@ func NewCrawlerService(r CrawlerServiceRepository, s CrawlerServicesContainer) *
 		config:         s.Config,
 		reportManager:  s.ReportManager,
 		crawlerHandler: s.CrawlerHandler,
+		ArchiveService: s.ArchiveService,
 		crawlers:       make(map[int64]*crawler.Crawler),
 		lock:           &sync.RWMutex{},
 	}
@@ -86,20 +89,22 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 	}
 
 	go func() {
+		defer s.removeCrawler(&p)
 		defer s.repository.DeleteCrawlData(&previousCrawl)
 
-		var archiver *Archiver
+		archiveEnabled := false
 		if p.Archive {
-			archiver, err = NewArchiver(p.Host)
+			archiver, err := s.ArchiveService.GetArchiveWriter(&p)
 			if err != nil {
 				log.Printf("Failed to create archive: %v", err)
+			} else {
+				defer archiver.Close()
+				c.OnResponse(s.crawlerHandler.archiveCallback(crawl, &p, c, archiver))
+				archiveEnabled = true
 			}
 		}
 
-		if archiver != nil {
-			defer archiver.Close()
-			c.OnResponse(s.crawlerHandler.archiveCallback(crawl, &p, c, archiver))
-		} else {
+		if !archiveEnabled {
 			c.OnResponse(s.crawlerHandler.responseCallback(crawl, &p, c))
 		}
 
@@ -127,8 +132,6 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 		s.repository.UpdateCrawl(crawl)
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 		log.Printf("Crawled %d urls in %s", crawl.TotalURLs, p.URL)
-
-		s.removeCrawler(&p)
 	}()
 
 	return nil

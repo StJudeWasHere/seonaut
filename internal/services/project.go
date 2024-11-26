@@ -3,13 +3,15 @@ package services
 import (
 	"errors"
 	"net/url"
-	"os"
 	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
 
 type (
+	ArchiveRemover interface {
+		DeleteArchive(*models.Project)
+	}
 	ProjectServiceRepository interface {
 		SaveProject(*models.Project, int)
 		DeleteProject(*models.Project)
@@ -22,12 +24,16 @@ type (
 	}
 
 	ProjectService struct {
-		repository ProjectServiceRepository
+		repository     ProjectServiceRepository
+		archiveRemover ArchiveRemover
 	}
 )
 
-func NewProjectService(r ProjectServiceRepository) *ProjectService {
-	return &ProjectService{repository: r}
+func NewProjectService(r ProjectServiceRepository, a ArchiveRemover) *ProjectService {
+	return &ProjectService{
+		repository:     r,
+		archiveRemover: a,
+	}
 }
 
 // SaveProject stores a new project.
@@ -73,14 +79,14 @@ func (s *ProjectService) DeleteProject(p *models.Project) {
 	go func() {
 		s.repository.DeleteProjectCrawls(p)
 		s.repository.DeleteProject(p)
-		s.DeleteArchive(p)
+		s.archiveRemover.DeleteArchive(p)
 	}()
 }
 
 // Update project details.
 func (s *ProjectService) UpdateProject(p *models.Project) error {
 	if !p.Archive {
-		s.DeleteArchive(p)
+		s.archiveRemover.DeleteArchive(p)
 	}
 
 	return s.repository.UpdateProject(p)
@@ -92,33 +98,6 @@ func (s *ProjectService) DeleteAllUserProjects(user *models.User) {
 	for _, p := range projects {
 		s.repository.DeleteProjectCrawls(&p)
 		s.repository.DeleteProject(&p)
-		s.DeleteArchive(&p)
+		s.archiveRemover.DeleteArchive(&p)
 	}
-}
-
-// ArchiveExists checks if a wacz file exists for the current project.
-// It returns true if it exists, otherwise it returns false.
-func (s *ProjectService) ArchiveExists(p *models.Project) bool {
-	_, err := os.Stat(ArchiveDir + p.Host + ".wacz")
-	return err == nil
-}
-
-// DeleteArchive removes the wacz archive file for a given project.
-// It checks if the file exists before removing it.
-func (s *ProjectService) DeleteArchive(p *models.Project) {
-	if !s.ArchiveExists(p) {
-		return
-	}
-
-	os.Remove(ArchiveDir + p.Host + ".wacz")
-}
-
-// GetArchiveFilePath returns the project's wacz file path if it exists,
-// otherwise it returns an error.
-func (s *ProjectService) GetArchiveFilePath(p *models.Project) (string, error) {
-	if !s.ArchiveExists(p) {
-		return "", errors.New("WACZ archive file does not exist")
-	}
-
-	return ArchiveDir + p.Host + ".wacz", nil
 }

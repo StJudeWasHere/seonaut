@@ -478,5 +478,26 @@ func TestSrcset(t *testing.T) {
 			t.Errorf("pageReport image %d should be %s. Got: %s", n, i, pageReport.Images[n].URL)
 		}
 	}
+}
 
+func TestEmptyBody(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	body := []byte("")
+	statusCode := 404
+	headers := &http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, headers, body, int64(len(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if pageReport.StatusCode != statusCode {
+		t.Errorf("pageReport status code should be %d but received %d", statusCode, pageReport.StatusCode)
+	}
 }

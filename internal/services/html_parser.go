@@ -68,7 +68,7 @@ func NewHTMLParser(u *url.URL, status int, headers *http.Header, body []byte, co
 		return &pageReport, parser.getHtmlNode(), nil
 	}
 
-	if isHTML(&pageReport) {
+	if isHTML(&pageReport) && size > 0 {
 		pageReport.Lang = parser.lang()
 		pageReport.Title = parser.htmlTitle()
 		pageReport.Description = parser.htmlMetaDescription()

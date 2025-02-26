@@ -645,23 +645,51 @@ func (p *Parser) newLink(n *html.Node) (models.Link, error) {
 	return l, nil
 }
 
-// Return an absolute URL removing the URL fragment
+// Return an absolute URL removing the URL fragment and taking into account
+// the document's base tag if it exists.
 func (p *Parser) absoluteURL(s string) (*url.URL, error) {
 	u, err := url.Parse(strings.TrimSpace(s))
 	if err != nil {
-		return &url.URL{}, err
+		return nil, err
 	}
 
-	a := p.ParsedURL.ResolveReference(u)
-	a.Fragment = ""
+	base := p.ParsedURL
+	if htmlBase, err := p.htmlBase(); err == nil {
+		u = htmlBase.JoinPath(u.Path)
+		if htmlBase.IsAbs() {
+			base = htmlBase
+		}
+	}
 
+	a := base.ResolveReference(u)
+	a.Fragment = ""
 	if a.Path == "" {
 		a.Path = "/"
 	}
 
 	if a.Scheme != "http" && a.Scheme != "https" {
-		return &url.URL{}, errors.New("protocol not supported")
+		return nil, errors.New("protocol not supported")
 	}
 
 	return a, nil
+}
+
+// htmlBase returns the url in the base tag if it exists. Otherwise it returns an error.
+func (p *Parser) htmlBase() (*url.URL, error) {
+	base, err := htmlquery.Query(p.doc, "//head/base[@href]")
+	if err != nil {
+		return nil, err
+	}
+
+	if base == nil {
+		return nil, errors.New("document does not have a base tag")
+	}
+
+	href := htmlquery.SelectAttr(base, "href")
+	parsed, err := url.Parse(strings.TrimSpace(href))
+	if err != nil {
+		return nil, err
+	}
+
+	return parsed, nil
 }

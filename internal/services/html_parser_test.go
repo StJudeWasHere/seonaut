@@ -501,3 +501,63 @@ func TestEmptyBody(t *testing.T) {
 		t.Errorf("pageReport status code should be %d but received %d", statusCode, pageReport.StatusCode)
 	}
 }
+
+func TestBase(t *testing.T) {
+	u, err := url.Parse("https://example-base.com")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	body := []byte(
+		`<html>
+		<head><base href="https://example-base.com/test"></head>
+		<body><a href="/page.html">link</a></body>
+	</html>`)
+	statusCode := 200
+	headers := &http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, headers, body, int64(len(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(pageReport.Links) != 1 {
+		t.Fatal("A link with base URL was expected")
+	}
+
+	if pageReport.Links[0].URL != "https://example-base.com/test/page.html" {
+		t.Errorf("Link with base URL does not match, got %s", pageReport.Links[0].URL)
+	}
+}
+
+func TestBaseRelativeURL(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	body := []byte(
+		`<html>
+		<head><base href="/test"></head>
+		<body><a href="/page.html">link</a></body>
+	</html>`)
+	statusCode := 200
+	headers := &http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, headers, body, int64(len(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(pageReport.Links) != 1 {
+		t.Fatal("A link with base URL was expected")
+	}
+
+	if pageReport.Links[0].URL != "https://example.com/test/page.html" {
+		t.Errorf("Link with base URL does not match, got %s", pageReport.Links[0].URL)
+	}
+}

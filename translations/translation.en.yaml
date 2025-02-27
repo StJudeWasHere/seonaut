@@ -246,3 +246,6 @@ ERROR_IMG_SIZE_ATTR_DESC: Not setting the size attributes for images can cause l
 
 ERROR_INCORRECT_MEDIA_TYPE: URLs with incorrect media type
 ERROR_INCORRECT_MEDIA_TYPE_DESC: Having URLs with incorrect MIME types can hurt SEO by causing browsers to misinterpret or fail to render content, which can impact user experience and search engine indexing.
+
+ERROR_DUPLICATED_ID: Pages containing elements with duplicated IDs
+ERROR_DUPLICATED_ID_DESC: Having elements with duplicate IDs confuses assistive technologies and JavaScript, leading to navigation issues and unpredictable behavior. This could impact user experience and SEO. Make sure IDs are unique.

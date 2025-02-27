@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(75, "ERROR_DUPLICATED_ID", 3);

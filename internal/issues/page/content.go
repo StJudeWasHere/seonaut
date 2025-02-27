@@ -8,6 +8,7 @@ import (
 
 	"golang.org/x/net/html"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/issues/errors"
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -66,6 +67,44 @@ func NewIncorrectMediaType() *models.PageIssueReporter {
 
 	return &models.PageIssueReporter{
 		ErrorType: errors.ErrorIncorrectMediaType,
+		Callback:  c,
+	}
+}
+
+func NewDuplicatedId() *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
+			return false
+		}
+
+		e := htmlquery.Find(htmlNode, "//*[@id]")
+		ids := make(map[string]bool)
+		for _, n := range e {
+			id := htmlquery.SelectAttr(n, "id")
+			if id == "" {
+				continue
+			}
+
+			if ids[id] {
+				return true
+			}
+
+			ids[id] = true
+		}
+
+		return false
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorDuplicatedId,
 		Callback:  c,
 	}
 }

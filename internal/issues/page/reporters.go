@@ -67,6 +67,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		// Add content issue reporters
 		NewLittleContentReporter(),
 		NewIncorrectMediaType(),
+		NewDuplicatedId(),
 
 		// Add scheme issue reporters
 		NewHTTPSchemeReporter(),

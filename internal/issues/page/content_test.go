@@ -3,8 +3,10 @@ package page_test
 import (
 	"net/http"
 	"net/url"
+	"strings"
 	"testing"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/issues/errors"
 	"github.com/stjudewashere/seonaut/internal/issues/page"
 	"github.com/stjudewashere/seonaut/internal/models"
@@ -131,5 +133,69 @@ func TestIncorrectMediaTypeIssues(t *testing.T) {
 	reportsIssue = reporter.Callback(pageReport, &html.Node{}, &http.Header{})
 	if reportsIssue == false {
 		t.Errorf("reportsIssue should be true")
+	}
+}
+
+func TestDuplicatedIdIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	reporter := page.NewDuplicatedId()
+	if reporter.ErrorType != errors.ErrorDuplicatedId {
+		t.Errorf("error type is not correct")
+	}
+
+	html := strings.NewReader(`
+		<html>
+			<body>
+				<div id="header">Header 1</div>
+				<div id="header2">Header 2</div>
+				<span id="header">Header 3</div>
+			</body>
+		</html>`)
+
+	doc, err := htmlquery.Parse(html)
+	if err != nil {
+		t.Errorf("error parsing html")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+}
+
+func TestDuplicatedIdNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	reporter := page.NewDuplicatedId()
+	if reporter.ErrorType != errors.ErrorDuplicatedId {
+		t.Errorf("error type is not correct")
+	}
+
+	html := strings.NewReader(`
+		<html>
+			<body>
+				<div id="header">Header 1</div>
+				<div id="header2">Header 2</div>
+				<span id="header3">Header 3</div>
+			</body>
+		</html>`)
+
+	doc, err := htmlquery.Parse(html)
+	if err != nil {
+		t.Errorf("error parsing html")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
 	}
 }

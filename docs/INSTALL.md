@@ -68,7 +68,23 @@ Before installing SEOnaut, ensure the following are installed on your system:
 
    `go run -race cmd/server/main.go -c path/to/your/config`
 
-4. **Access the Application**  
+4. **Compile the CSS**  
+   To compile the CSS you'll need to install esbuild. Then you can compile the CSS:
+
+```
+   esbuild ./web/css/style.css \
+      --bundle \
+      --minify \
+      --outdir=./web/static \
+      --public-path=/resources \
+      --loader:.woff=file \
+      --loader:.woff2=file \
+      --loader:.png=file
+```
+
+   Alternatively you can use `make front` to compile the CSS or `make watch` to compile and monitor CSS file changes while developing.
+
+5. **Access the Application**  
    Navigate to:
 
    `http://localhost:9000`

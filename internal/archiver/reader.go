@@ -39,16 +39,19 @@ func (s *Reader) ReadArchive(urlStr string) (content string) {
 
 	record, err := s.getCDXEntry(wacz, urlStr)
 	if err != nil {
+		log.Printf("error getting wacz entry %v", err)
 		return ""
 	}
 
 	file, err := s.getZipFile(wacz, "data/data.warc")
 	if err != nil {
+		log.Printf("error getting warc zip file %v", err)
 		return ""
 	}
 
 	zipoffset, err := file.DataOffset()
 	if err != nil {
+		log.Printf("error in zip file offset %v", err)
 		return ""
 	}
 
@@ -133,7 +136,7 @@ func (s *Reader) getZipFile(wacz *zip.ReadCloser, waczFile string) (*zip.File, e
 	return nil, errors.New("warc file file not found")
 }
 
-// searchFileSegment searches the target string in WACZ file index using bynary search.
+// searchFileSegment searches the target string in WACZ file index using binary search.
 // It loads the index contents in memory.
 func (s *Reader) searchFileSegment(offset, length int64, target string) (string, error) {
 	file, err := os.Open(s.waczPath)
@@ -155,8 +158,13 @@ func (s *Reader) searchFileSegment(offset, length int64, target string) (string,
 		return "", fmt.Errorf("failed to read segment: %v", err)
 	}
 
-	// Split the buffer into lines
-	lines := strings.Split(string(buffer), "\n")
+	// Split the buffer into lines making sure to avoid empty lines
+	lines := make([]string, 0)
+	for _, line := range strings.Split(string(buffer), "\n") {
+		if strings.TrimSpace(line) != "" {
+			lines = append(lines, line)
+		}
+	}
 
 	// Perform binary search on lines in memory using sort.Search
 	index := sort.Search(len(lines), func(i int) bool {

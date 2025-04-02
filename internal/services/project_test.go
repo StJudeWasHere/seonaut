@@ -12,6 +12,7 @@ const (
 	gid        = 1
 	guid       = 1
 	projectURL = "https://example.com"
+	userAgent  = "TEST UserAgent"
 	urlHost    = "example.com"
 	urlScheme  = "https"
 )
@@ -65,10 +66,16 @@ func TestFindProjectById(t *testing.T) {
 }
 
 func TestSaveProject(t *testing.T) {
-	// Valid URL
-	err := service.SaveProject(&models.Project{URL: projectURL}, guid)
+	// Valid URL and valid User-Agent
+	err := service.SaveProject(&models.Project{URL: projectURL, UserAgent: userAgent}, guid)
 	if err != nil {
-		t.Error("TestSaveProject: should not return error")
+		t.Errorf("TestSaveProject: should not return error %v", err)
+	}
+
+	// Valid URL and empty User-Agent
+	err = service.SaveProject(&models.Project{URL: projectURL}, guid)
+	if err == nil {
+		t.Errorf("TestSaveProject: empty UserAgent should return error")
 	}
 
 	// Not valid URL

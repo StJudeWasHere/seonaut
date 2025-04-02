@@ -18,4 +18,5 @@ type Project struct {
 	BasicAuth          bool
 	CheckExternalLinks bool
 	Archive            bool
+	UserAgent          string
 }

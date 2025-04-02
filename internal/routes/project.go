@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"strconv"
@@ -51,7 +52,11 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
 		User:      *user,
 		PageTitle: "ADD_PROJECT",
-		Data:      &struct{ Error bool }{},
+		Data: &struct {
+			URLError       bool
+			UserAgentError bool
+			UserAgent      string
+		}{UserAgent: h.Config.Crawler.Agent},
 	}
 
 	h.Renderer.RenderTemplate(w, "project_add", pageView)
@@ -114,6 +119,16 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 		archive = false
 	}
 
+	customUserAgent, err := strconv.ParseBool(r.FormValue("custom_user_agent"))
+	if err != nil {
+		customUserAgent = false
+	}
+
+	userAgent := h.Config.Crawler.Agent
+	if customUserAgent {
+		userAgent = r.FormValue("custom_user_agent_text")
+	}
+
 	project := &models.Project{
 		URL:                r.FormValue("url"),
 		IgnoreRobotsTxt:    ignoreRobotsTxt,
@@ -124,6 +139,7 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 		BasicAuth:          basicAuth,
 		CheckExternalLinks: checkExternalLinks,
 		Archive:            archive,
+		UserAgent:          userAgent,
 	}
 
 	err = h.ProjectService.SaveProject(project, user.Id)
@@ -131,7 +147,15 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 		pageView := &PageView{
 			User:      *user,
 			PageTitle: "ADD_PROJECT",
-			Data:      &struct{ Error bool }{Error: true},
+			Data: &struct {
+				URLError       bool
+				UserAgentError bool
+				UserAgent      string
+			}{
+				URLError:       errors.Is(err, services.ErrProtocolNotSupported),
+				UserAgentError: errors.Is(err, services.ErrUserAgent),
+				UserAgent:      h.Config.Crawler.Agent,
+			},
 		}
 		h.Renderer.RenderTemplate(w, "project_add", pageView)
 		return
@@ -190,10 +214,13 @@ func (h *projectHandler) editGetHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	data := &struct {
-		Project models.Project
-		Error   bool
+		Project         models.Project
+		Error           bool
+		UserAgentError  bool
+		CustomUserAgent bool
 	}{
-		Project: p,
+		Project:         p,
+		CustomUserAgent: h.Config.Crawler.Agent != p.UserAgent,
 	}
 
 	pageView := &PageView{
@@ -274,17 +301,32 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 		p.Archive = false
 	}
 
+	customUserAgent, err := strconv.ParseBool(r.FormValue("custom_user_agent"))
+	if err != nil {
+		customUserAgent = false
+	}
+
+	if customUserAgent {
+		p.UserAgent = r.FormValue("custom_user_agent_text")
+	} else {
+		p.UserAgent = h.Config.Crawler.Agent
+	}
+
 	err = h.ProjectService.UpdateProject(&p)
 	if err != nil {
 		pageView := &PageView{
 			User:      *user,
 			PageTitle: "EDIT_PROJECT",
 			Data: &struct {
-				Project models.Project
-				Error   bool
+				Project         models.Project
+				Error           bool
+				UserAgentError  bool
+				CustomUserAgent bool
 			}{
-				Project: p,
-				Error:   true,
+				Project:         p,
+				Error:           true,
+				UserAgentError:  errors.Is(err, services.ErrUserAgent),
+				CustomUserAgent: h.Config.Crawler.Agent != p.UserAgent,
 			},
 		}
 

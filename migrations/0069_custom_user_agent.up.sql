@@ -1,0 +1,1 @@
+ALTER TABLE `projects` ADD COLUMN `user_agent` varchar(500) NOT NULL DEFAULT 'Mozilla/5.0 (compatible; SEOnautBot/1.0; +https://seonaut.org/bot)';

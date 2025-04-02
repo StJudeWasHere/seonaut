@@ -29,6 +29,9 @@ type (
 	}
 )
 
+var ErrProtocolNotSupported = errors.New("protocol not supported")
+var ErrUserAgent = errors.New("user agent string must not be empty")
+
 func NewProjectService(r ProjectServiceRepository, a ArchiveRemover) *ProjectService {
 	return &ProjectService{
 		repository:     r,
@@ -47,7 +50,12 @@ func (s *ProjectService) SaveProject(project *models.Project, userId int) error 
 	}
 
 	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-		return errors.New("protocol not supported")
+		return ErrProtocolNotSupported
+	}
+
+	project.UserAgent = strings.TrimSpace(project.UserAgent)
+	if project.UserAgent == "" {
+		return ErrUserAgent
 	}
 
 	s.repository.SaveProject(project, userId)
@@ -87,6 +95,11 @@ func (s *ProjectService) DeleteProject(p *models.Project) {
 func (s *ProjectService) UpdateProject(p *models.Project) error {
 	if !p.Archive {
 		s.archiveRemover.DeleteArchive(p)
+	}
+
+	p.UserAgent = strings.TrimSpace(p.UserAgent)
+	if p.UserAgent == "" {
+		return ErrUserAgent
 	}
 
 	return s.repository.UpdateProject(p)

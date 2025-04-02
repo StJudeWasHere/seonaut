@@ -190,8 +190,13 @@ func (s *CrawlerService) addCrawler(u *url.URL, p *models.Project, b *models.Bas
 		},
 	}
 
+	// Make sure the user agent is not empty
+	if p.UserAgent == "" {
+		p.UserAgent = s.config.Agent
+	}
+
 	client := crawler.NewBasicClient(&crawler.ClientOptions{
-		UserAgent:        s.config.Agent,
+		UserAgent:        p.UserAgent,
 		BasicAuthDomains: []string{mainDomain, "www." + mainDomain},
 		AuthUser:         b.AuthUser,
 		AuthPass:         b.AuthPass,

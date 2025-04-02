@@ -179,9 +179,33 @@
 					<span class="toggle-help">
 						Check this option if your site is password protected with HTTP Basic Auth.
 					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+					<div class="toggle-container">
+						<label class="toggle" >
+							<input type="checkbox" value="1" name="custom_user_agent" id="custom_user_agent"{{ if .CustomUserAgent }} checked{{ end }}>
+							<span class="slider"></span>
+						</label>
+						<span class="label">Custom User-Agent</span>
+					</div>
+					<div class="toggle-help">
+						<p>Set a custom User-Agent for SEOnaut's crawler when fetching URLs.</p>
+						<div id="user_agent_input">
+							<label for="custom_user_agent_text">Enter your custom User-Agent string:</label>
+							<input type="text" name="custom_user_agent_text" value="{{ .Project.UserAgent }}" maxlength="255" required>
+							{{ if .UserAgentError }}
+								<p class="error">The User-Agent is not valid.</p>
+							{{ end }}
+						</div>	
 					</div>
 				</div>
 			</div>
+		</div>
 
 		<div class="box box-highlight">
 			<div class="col col-main">
@@ -208,8 +232,22 @@
 			</div>		
 		</div>
 	</div>
-		
+
 </div>
+
+<script type="text/javascript">
+	let userAgent = document.getElementById('custom_user_agent');
+	let userAgentInput = document.getElementById('user_agent_input');
+	let toggleUserAgentInput = checked => userAgentInput.style.display = checked ? 'block' : 'none';
+
+	// Initially hide the input if checkbox is not checked
+	{{ if or .UserAgentError .CustomUserAgent }}userAgent.checked = true;{{ end }}
+	toggleUserAgentInput(userAgent.checked)
+
+	userAgent.addEventListener('change', function(e) {
+		toggleUserAgentInput(e.currentTarget.checked);
+	});
+</script>
 
 {{ end }}
 

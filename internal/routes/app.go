@@ -81,6 +81,10 @@ func NewServer(container *services.Container) {
 	http.HandleFunc("POST /account/delete", container.CookieSession.Auth((userHandler.deletePostHandler)))
 	http.HandleFunc("GET /signout", container.CookieSession.Auth(userHandler.signoutHandler))
 
+	// Support SEOnaut
+	supportHandler := supportHandler{container}
+	http.HandleFunc("GET /support-seonaut", container.CookieSession.Auth(supportHandler.handleSupportSEOnaut))
+
 	fmt.Printf("Starting server at %s on port %d...\n", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port), nil)
 	if err != nil {

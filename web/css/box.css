@@ -41,6 +41,10 @@
 	width: 10rem;
 }
 
+.box .col-m {
+	width: 20rem;
+}
+
 .box.inverted {
 	border-top: 1px dotted var(--primary-color);
 }

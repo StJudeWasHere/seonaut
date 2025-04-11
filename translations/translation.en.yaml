@@ -26,76 +26,76 @@ DELETE_ACCOUNT_VIEW: Delete Account
 ARCHIVE_VIEW: Archive Source Code
 SUPPORT_SEONAUT_VIEW: SEOnaut Project
 
-ERROR_50x: Status 50x
+ERROR_50x: URLs returning status code 50x
 ERROR_50x_DESC: This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't load properly and show an error page instead, scaring your users and annoying search engines.
 
-ERROR_40x: Status 40x
-ERROR_40x_DESC: This pages are missing and both your users and search engines are getting lost.
+ERROR_40x: URLs returning status code 40x
+ERROR_40x_DESC: This pages are missing and both your users and search engines are getting lost. It may signal to search engines that your site isn't well maintained. Over time, too many broken links can impact crawl efficiency and dilute your site's authority.
 
-ERROR_30x: Status 30x
+ERROR_30x: URLs returning status code 30x
 ERROR_30x_DESC: URLs causing redirects are sending users and search engines to a different page, this can waste the search engine's crawl budget and create redirect chains.
 
-ERROR_REDIRECT_CHAIN: Redirect chain
+ERROR_REDIRECT_CHAIN: URLs causing a redirect chain
 ERROR_REDIRECT_CHAIN_DESC: Redirect chains are URLs that redirect to other URLs that also redirect somewhere else, creating a chain of redirects.
 
-ERROR_REDIRECT_LOOP: Redirect loop
+ERROR_REDIRECT_LOOP: URLs causing a redirect loop
 ERROR_REDIRECT_LOOP_DESC: Redirect loops are a couple of URLs that redirect to each other creating a never ending loop of redirects.
 
-ERROR_DUPLICATED_TITLE: Duplicated title
+ERROR_DUPLICATED_TITLE: Pages with duplicated title
 ERROR_DUPLICATED_TITLE_DESC: The title tag is considered one of the most important elements for on-page SEO. If multiple pages have the same title, they will compete for a given search query confusing search engines.
 
-ERROR_LONG_TITLE: Long title
+ERROR_LONG_TITLE: Pages with long title
 ERROR_LONG_TITLE_DESC: Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.
 
-ERROR_SHORT_TITLE: Short title
-ERROR_SHORT_TITLE_DESC: This pages have titles that are too short. Search engines will be happier if you provide longer titles.
+ERROR_SHORT_TITLE: Pages short title
+ERROR_SHORT_TITLE_DESC: These pages have titles that are too short. Search engines will be happier if you provide longer titles.
   
-ERROR_EMPTY_TITLE: Missing title
+ERROR_EMPTY_TITLE: Pages with missing title
 ERROR_EMPTY_TITLE_DESC: The page title is one of the most important elements for search engines.
 
-ERROR_EMPTY_DESCRIPTION: Missing description
+ERROR_EMPTY_DESCRIPTION: Pages with missing meta description
 ERROR_EMPTY_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
   
-ERROR_SHORT_DESCRIPTION: Short description
+ERROR_SHORT_DESCRIPTION: Pages with short meta description
 ERROR_SHORT_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
 
-ERROR_LONG_DESCRIPTION: Long description
+ERROR_LONG_DESCRIPTION: Pages with long meta description
 ERROR_LONG_DESCRIPTION_DESC: Description tags are not a ranking factor for search engines, but having good quality descriptions will get more accurate information in the search results. Long descriptions will often get truncated, making them not so sexy for users.
 
-ERROR_DUPLICATED_DESCRIPTION: Duplicated description
+ERROR_DUPLICATED_DESCRIPTION: Pages with duplicated meta description
 ERROR_DUPLICATED_DESCRIPTION_DESC: It is recomended to have unique descriptions for each page so search engines can understand better your page.
 
-ERROR_LITTLE_CONTENT: Little content
+ERROR_LITTLE_CONTENT: Pages with little content
 ERROR_LITTLE_CONTENT_DESC: Pages with little content are not really useful for users or search engines, consider adding more content to your pages.
 
-ERROR_IMAGES_NO_ALT: No alt attribute
+ERROR_IMAGES_NO_ALT: Pages containing images with no alt attribute
 ERROR_IMAGES_NO_ALT_DESC: The image alt attribute improves your site's accessibility, it also helps search engines understand better your images.
 
-ERROR_NO_H1: Missing H1
+ERROR_NO_H1: Pages missing the H1 heading
 ERROR_NO_H1_DESC: The H1 tag describes the main topic of the page, without it both your users and search engine will find it harder to figure what the page is talking about.
 
-ERROR_NO_LANG: Missing language attribute
+ERROR_NO_LANG: Pages missing the language attribute
 ERROR_NO_LANG_DESC: The language attribute is particularly usefull for screen readers and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.
 
-ERROR_HTTP_LINKS: HTTPS to HTTP
+ERROR_HTTP_LINKS: HTTPS URLs with links to HTTP URLs
 ERROR_HTTP_LINKS_DESC: Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.
 
-ERROR_HREFLANG_RETURN: Missing hreflang
+ERROR_HREFLANG_RETURN: Pages missing the hreflang
 ERROR_HREFLANG_RETURN_DESC: When referencing a page with hreflang, that page must reference back with a hreflang tag too.
 
-ERROR_TOO_MANY_LINKS: Too many Links
+ERROR_TOO_MANY_LINKS: Pages with too many Links
 ERROR_TOO_MANY_LINKS_DESC: The SEO link juice is divided between all the links in the page, the more links in a page the less amount of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the nofollow attribute.
 
 ERROR_INTERNAL_NOFOLLOW: Internal nofollow links
 ERROR_INTERNAL_NOFOLLOW_DESC: Internal links in general should not use the nofollow attribute unless they link to pages you don't want indexed by search engines. Review the internal links and make sure important pages are linked without the nofollow attribute.
 
-ERROR_EXTERNAL_WITHOUT_NOFOLLOW: External follow links
+ERROR_EXTERNAL_WITHOUT_NOFOLLOW: Pages with external follow links
 ERROR_EXTERNAL_WITHOUT_NOFOLLOW_DESC: Follow links will pass SEO authority to external sites. You may want to keep an eye on it to avoid link spam in comments and user generated content.
 
 ERROR_CANONICALIZED_NON_CANONICAL: Canonicalized to non canonical
 ERROR_CANONICALIZED_NON_CANONICAL_DESC: Pages canonicalized to a non canonical URL. Canonicalized pages should point to a canonical page, replace the canonical link URL in this pages so they point to a canonical one.
 
-ERROR_NOT_VALID_HEADINGS: Not valid headings order
+ERROR_NOT_VALID_HEADINGS: Pages with not valid headings order
 ERROR_NOT_VALID_HEADINGS_DESC: The heading tags in this pages don't follow the correct order. Change the H tags so they start with H1 and follow the correct order.
   
 ERROR_HREFLANG_TO_NON_CANONICAL: Hreflang to non canonical page
@@ -110,22 +110,22 @@ ERROR_NO_INDEXABLE_DESC: Pages using the noindex attribute won't be indexed by s
 ERROR_HREFLANG_NO_INDEXABLE: Hreflang to a non indexable page
 ERROR_HREFLANG_NO_INDEXABLE_DESC: Hreflangs should link to indexable pages, linking them to pages using the noindex attribute will confuse search engines.
 
-ERROR_BLOCKED: Blocked by robots.txt
+ERROR_BLOCKED: URLs blocked by robots.txt
 ERROR_BLOCKED_DESC: Pages blocked by robots.txt won't be crawled by search engines. Keep an eye on this list to make sure important pages are not being blocked.
 
 ERROR_ORPHAN: Orphan pages
 ERROR_ORPHAN_DESC: Pages that are not linked anywhere in your site, this means no visitors can access to it and may lead to crawl wastage.
 
-NO_INDEX_IN_SITEMAP: Non-indexable pages are included in the sitemap
+NO_INDEX_IN_SITEMAP: Non-indexable pages included in the sitemap
 NO_INDEX_IN_SITEMAP_DESC: Non-indexable pages should not be included in a sitemap, as this sends a mixed signal to the search engines. They can also slow down the crawling process and lead to incorrect indexing.
 
-BLOCKED_IN_SITEMAP: Blocked pages are included in the sitemap
+BLOCKED_IN_SITEMAP: Blocked pages included in the sitemap
 BLOCKED_IN_SITEMAP_DESC: Pages blocked by the robots.txt file should not be included in the sitemap, as this sends a mixed signal to the search engines. They can also slow down the crawling process and lead to incorrect indexing.
 
 NON_CANONICAL_IN_SITEMAP: Non-canonical pages included in the sitemap
 NON_CANONICAL_IN_SITEMAP_DESC: Non-canonical pages should not be included in a sitemap as they can mislead search engines, waste time and resources, and lead to incorrect indexing.
 
-INCOMING_FOLLOW_NOFOLLOW: Incoming follow and nofollow links
+INCOMING_FOLLOW_NOFOLLOW: Pages with incoming follow and nofollow links
 INCOMING_FOLLOW_NOFOLLOW_DESC: Having pages with internal incoming follow and nofollow links can dilute the authority and relevance signals, confusing search engines and making it less likely to rank high in search engine results.
 
 INVALID_LANG: Pages with invalid lang attribute

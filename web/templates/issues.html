@@ -24,48 +24,6 @@
 		
 	{{ $pid := .ProjectView.Project.Id }}
 
-	<div class="box box-highlight">
-		<div class="col">
-			<div class="content" >
-				<h2>
-					{{ if ne .ProjectView.Crawl.CriticalIssues 0 }}
-						<a href="#critical" class="borderless">{{ .ProjectView.Crawl.CriticalIssues }} Critical Issues</a>
-					{{ else }}
-						{{ .ProjectView.Crawl.CriticalIssues }} Critical Issues
-					{{ end }}
-					
-				</h2>
-				<p>Critical errors affecting your ranking. Fix them first.</p>
-			</div>
-		</div>
-		
-		<div class="col">
-			<div class="content">
-				<h2>
-					{{ if ne .ProjectView.Crawl.AlertIssues 0 }}
-						<a href="#alert" class="borderless">{{ .ProjectView.Crawl.AlertIssues }} Alerts</a>
-					{{ else }}
-						{{ .ProjectView.Crawl.AlertIssues }} Alerts
-					{{ end }}
-				</h2>
-				<p>Issues that are holding your site back. Fix them next.</p>
-			</div>
-		</div>
-
-		<div class="col">
-			<div class="content">
-				<h2>
-					{{ if ne .ProjectView.Crawl.WarningIssues 0 }}
-						<a href="#warning" class="borderless">{{ .ProjectView.Crawl.WarningIssues }} Warnings</a>
-					{{ else }}
-						{{ .ProjectView.Crawl.WarningIssues }} Warnings
-					{{ end }}
-				</h2>
-				<p>Issues you may want to keep an eye on.</p>
-			</div>
-		</div>
-	</div>
-
 	{{ if and (eq .ProjectView.Crawl.CriticalIssues 0) (and (eq .ProjectView.Crawl.WarningIssues 0) (eq .ProjectView.Crawl.AlertIssues 0)) }}
 		<div class="box box-highlight">
 			<div class="col col-main ">
@@ -78,31 +36,33 @@
 	{{ end }}
 
 	{{ if .IssueCount.CriticalIssues }}
-		{{ range .IssueCount.CriticalIssues }}
-			<a name="critical"></a>
-			<div class="box borderless">
-				<div class="col col-main">
-					<div class="content">
-						<h2>{{ trans .ErrorType }}</h2>
-						<p>{{ trans (print .ErrorType "_DESC") }}</p>
-					</div>
-				</div>
-
-				<div class="col col-actions">
-					<a href="/export/csv?pid={{ $pid }}&eid={{ .ErrorType }}">Download URLs</a>
-					<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}" class="highlight">View URLs</a>
-				</div>
+		<div class="box soft">
+			<div class="content content-alert">
+				<h2>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+					{{ if ne .ProjectView.Crawl.CriticalIssues 0 }}
+						{{ .ProjectView.Crawl.CriticalIssues }} Critical
+					{{ else }}
+						{{ .ProjectView.Crawl.CriticalIssues }} Critical
+					{{ end }}
+				</h2>
+				<p>Fix these first. They're likely hurting your rankings.</p>
 			</div>
-
-			<div class="box box-highlight inverted always-row">
-				<div class="col col-s bg-alert">
-					<div class="content content-s">
-						CRITICAL
+		</div>
+		{{ range .IssueCount.CriticalIssues }}
+			<div class="box soft">
+				<div class="col col-main highlight">
+					<div class="content">
+						<details class="issue-details">
+							<summary> {{ trans .ErrorType }}</summary>
+							<p>{{ trans (print .ErrorType "_DESC") }}</p>
+						</details>
 					</div>
 				</div>
-				<div clas="col">
-					<div class="content content-s">
-						{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+
+				<div class="col col-m highlight aligned">
+					<div class="content">
+						<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
 					</div>
 				</div>
 			</div>
@@ -110,31 +70,33 @@
 	{{ end }}
 
 	{{ if .IssueCount.AlertIssues }}
-		{{ range .IssueCount.AlertIssues }}
-			<a name="alert"></a>
-			<div class="box borderless">
-				<div class="col col-main">
-					<div class="content">
-						<h2>{{ trans .ErrorType }}</h2>
-						<p>{{ trans (print .ErrorType "_DESC") }}</p>
-					</div>
-				</div>
-
-				<div class="col col-actions">
-					<a href="/export/csv?pid={{ $pid }}&eid={{ .ErrorType }}">Download URLs</a>
-					<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}" class="highlight">View URLs</a>
-				</div>
+		<div class="box soft">
+			<div class="content content-alert">
+				<h2>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-triangle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> 
+					{{ if ne .ProjectView.Crawl.AlertIssues 0 }}
+						{{ .ProjectView.Crawl.AlertIssues }} Alerts
+					{{ else }}
+						{{ .ProjectView.Crawl.AlertIssues }} Alerts
+					{{ end }}
+				</h2>
+				<p>Fixing these can help improve your site's SEO performance.</p>
 			</div>
-
-			<div class="box box-highlight inverted always-row" >
-				<div class="col col-s bg-alert">
-					<div class="content content-s">
-						ALERT
+		</div>
+		{{ range .IssueCount.AlertIssues }}
+			<div class="box soft">
+				<div class="col col-main highlight">
+					<div class="content">
+						<details class="issue-details">
+							<summary> {{ trans .ErrorType }}</summary>
+							<p>{{ trans (print .ErrorType "_DESC") }}</p>
+						</details>
 					</div>
 				</div>
-				<div clas="col">
-					<div class="content content-s">
-						{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+
+				<div class="col col-m highlight aligned">
+					<div class="content">
+						<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
 					</div>
 				</div>
 			</div>
@@ -142,31 +104,33 @@
 	{{ end }}
 
 	{{ if .IssueCount.WarningIssues }}
-		{{ range .IssueCount.WarningIssues }}
-			<a name="warning"></a>
-			<div class="box borderless">
-				<div class="col col-main">
-					<div class="content">
-						<h2>{{ trans .ErrorType }}</h2>
-						<p>{{ trans (print .ErrorType "_DESC") }}</p>
-					</div>
-				</div>
-
-				<div class="col col-actions">
-					<a href="/export/csv?pid={{ $pid }}&eid={{ .ErrorType }}">Download URLs</a>
-					<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}" class="highlight">View URLs</a>
-				</div>
+		<div class="box soft">
+			<div class="content content-alert">
+				<h2>
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+					{{ if ne .ProjectView.Crawl.WarningIssues 0 }}
+						{{ .ProjectView.Crawl.WarningIssues }} Warnings
+					{{ else }}
+						{{ .ProjectView.Crawl.WarningIssues }} Warnings
+					{{ end }}
+				</h2>
+				<p>These issues may not be significant depending on your goals, but they're worth monitoring.</p>
 			</div>
-
-			<div class="box box-highlight inverted always-row">
-				<div class="col col-s bg-alert">
-					<div class="content content-s">
-						WARNING
+		</div>
+		{{ range .IssueCount.WarningIssues }}
+			<div class="box soft">
+				<div class="col col-main highlight">
+					<div class="content">
+						<details class="issue-details">
+							<summary> {{ trans .ErrorType }}</summary>
+							<p>{{ trans (print .ErrorType "_DESC") }}</p>
+						</details>
 					</div>
 				</div>
-				<div clas="col">
-					<div class="content content-s">
-						{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}
+
+				<div class="col col-m highlight aligned">
+					<div class="content">
+						<a href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
 					</div>
 				</div>
 			</div>

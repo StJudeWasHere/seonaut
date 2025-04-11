@@ -13,6 +13,10 @@
 	padding: calc(var(--line-height) * 2) 3rem;
 }
 
+.content-alert {
+	border-left: 1rem solid var(--alert-color);
+}
+
 .box .content-s {
 	padding: calc(var(--line-height) - 1px) 3rem var(--line-height) 3rem;
 }

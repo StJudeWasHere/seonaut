@@ -137,6 +137,10 @@ h2 {
 	margin: 0;
 }
 
+h2 svg {
+	margin-bottom: -.2rem;	
+}
+
 button {
 	cursor: pointer;
 	font-size: inherit;
@@ -249,4 +253,23 @@ select:focus {
 select:-moz-focusring {
   color: transparent;
   text-shadow: 0 0 0 #000;
+}
+
+details.issue-details summary {
+	border: 0;
+	width: 100%;
+	background:none;
+	padding: 0;
+	font-size: 1.2rem;
+	font-weight: normal;
+	line-height: var(--line-height);
+}
+
+details.issue-details summary:hover {
+    background: none;
+	box-shadow: none;
+}
+
+details[open].issue-details > summary {
+	margin-bottom: var(--line-height);
 }

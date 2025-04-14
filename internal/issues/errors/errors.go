@@ -84,4 +84,5 @@ const (
 	ErrorImgWithoutSize                          // Pages with img elements that have no size attribtues
 	ErrorIncorrectMediaType                      // URLs with incorrect media type or media type that doesn't match extension
 	ErrorDuplicatedId                            // Pages with duplicated id attributes
+	ErrorMissingViewportTag                      // Pages with missing viewport meta tag
 )

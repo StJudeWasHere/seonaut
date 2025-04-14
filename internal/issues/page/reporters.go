@@ -91,5 +91,8 @@ func GetAllReporters() []*models.PageIssueReporter {
 		// Add form reporters
 		NewFormOnHTTPReporter(),
 		NewInsecureFormReporter(),
+
+		// Add Viewport issue report
+		NewViewportTag(),
 	}
 }

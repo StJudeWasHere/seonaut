@@ -250,3 +250,6 @@ ERROR_INCORRECT_MEDIA_TYPE_DESC: Having URLs with incorrect MIME types can hurt 
 
 ERROR_DUPLICATED_ID: Pages containing elements with duplicated IDs
 ERROR_DUPLICATED_ID_DESC: Having elements with duplicate IDs confuses assistive technologies and JavaScript, leading to navigation issues and unpredictable behavior. This could impact user experience and SEO. Make sure IDs are unique.
+
+ERROR_MISSING_VIEWPORT: Pages missing the viewport meta tag
+ERROR_MISSING_VIEWPORT_DESC: A webpage missing the viewport meta tag won't display properly on mobile devices, leading to a bad user experience and lower rankings in search engine results.

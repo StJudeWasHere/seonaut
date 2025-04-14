@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(76, "ERROR_MISSING_VIEWPORT", 3);

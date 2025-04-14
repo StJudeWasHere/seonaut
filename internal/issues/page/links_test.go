@@ -294,7 +294,7 @@ func TestExternalLinkRedirectNoIssues(t *testing.T) {
 		StatusCode: 200,
 	})
 
-	reporter := page.NewExternalLinkRedirect()
+	reporter := page.NewExternalLinkRedirectReporter()
 	if reporter.ErrorType != errors.ErrorExternalLinkRedirect {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
@@ -320,7 +320,7 @@ func TestExternalLinkRedirectIssues(t *testing.T) {
 		StatusCode: 301,
 	})
 
-	reporter := page.NewExternalLinkRedirect()
+	reporter := page.NewExternalLinkRedirectReporter()
 	if reporter.ErrorType != errors.ErrorExternalLinkRedirect {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
@@ -346,7 +346,7 @@ func TestExternalLinkBrokenNoIssues(t *testing.T) {
 		StatusCode: 200,
 	})
 
-	reporter := page.NewExternalLinkBroken()
+	reporter := page.NewExternalLinkBrokenReporter()
 	if reporter.ErrorType != errors.ErrorExternalLinkBroken {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
@@ -372,7 +372,7 @@ func TestExternalLinkBrokenIssues(t *testing.T) {
 		StatusCode: 400,
 	})
 
-	reporter := page.NewExternalLinkBroken()
+	reporter := page.NewExternalLinkBrokenReporter()
 	if reporter.ErrorType != errors.ErrorExternalLinkBroken {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}

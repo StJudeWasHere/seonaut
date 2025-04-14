@@ -39,7 +39,7 @@ func NewLittleContentReporter() *models.PageIssueReporter {
 	}
 }
 
-func NewIncorrectMediaType() *models.PageIssueReporter {
+func NewIncorrectMediaTypeReporter() *models.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if pageReport.MediaType == "" {
 			return true
@@ -71,7 +71,7 @@ func NewIncorrectMediaType() *models.PageIssueReporter {
 	}
 }
 
-func NewDuplicatedId() *models.PageIssueReporter {
+func NewDuplicatedIdReporter() *models.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false

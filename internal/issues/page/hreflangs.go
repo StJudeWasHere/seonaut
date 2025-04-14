@@ -13,7 +13,7 @@ import (
 
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the hreflang values do not include an x-default option.
-func NewHreflangXDefaultMissing() *models.PageIssueReporter {
+func NewHreflangXDefaultMissingReporter() *models.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false

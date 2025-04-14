@@ -33,7 +33,7 @@ func TestViewportNoIssues(t *testing.T) {
 		t.Errorf("TestValidHeadingsOrderIssues: error parsing html")
 	}
 
-	reporter := page.NewViewportTag()
+	reporter := page.NewViewportTagReporter()
 	if reporter.ErrorType != errors.ErrorMissingViewportTag {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
@@ -65,7 +65,7 @@ func TestViewportIssues(t *testing.T) {
 		t.Errorf("TestValidHeadingsOrderIssues: error parsing html")
 	}
 
-	reporter := page.NewViewportTag()
+	reporter := page.NewViewportTagReporter()
 	if reporter.ErrorType != errors.ErrorMissingViewportTag {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
@@ -99,7 +99,7 @@ func TestEmptyViewportIssues(t *testing.T) {
 		t.Errorf("TestValidHeadingsOrderIssues: error parsing html")
 	}
 
-	reporter := page.NewViewportTag()
+	reporter := page.NewViewportTagReporter()
 	if reporter.ErrorType != errors.ErrorMissingViewportTag {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}

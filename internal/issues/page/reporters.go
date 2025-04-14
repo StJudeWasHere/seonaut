@@ -30,7 +30,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		NewNonCanonicalInSitemapReporter(),
 		NewCanonicalMultipleTagsReporter(),
 		NewCanonicalRelativeURLReporter(),
-		NewCanonicalMismatch(),
+		NewCanonicalMismatchReporter(),
 		NewDepthReporter(),
 		NewNosnippetReporter(),
 		NewMetasInBodyReporter(),
@@ -41,8 +41,8 @@ func GetAllReporters() []*models.PageIssueReporter {
 		NewExternalLinkWitoutNoFollowReporter(),
 		NewHTTPLinksReporter(),
 		NewDeadendReporter(),
-		NewExternalLinkRedirect(),
-		NewExternalLinkBroken(),
+		NewExternalLinkRedirectReporter(),
+		NewExternalLinkBrokenReporter(),
 
 		// Add image issue reporters
 		NewAltTextReporter(),
@@ -55,7 +55,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		// Add language issue reporters
 		NewInvalidLangReporter(),
 		NewMissingLangReporter(),
-		NewHreflangXDefaultMissing(),
+		NewHreflangXDefaultMissingReporter(),
 		NewHreflangMissingSelfReference(),
 		NewHreflangMismatchingLang(),
 		NewHreflangRelativeURL(),
@@ -66,8 +66,8 @@ func GetAllReporters() []*models.PageIssueReporter {
 
 		// Add content issue reporters
 		NewLittleContentReporter(),
-		NewIncorrectMediaType(),
-		NewDuplicatedId(),
+		NewIncorrectMediaTypeReporter(),
+		NewDuplicatedIdReporter(),
 
 		// Add scheme issue reporters
 		NewHTTPSchemeReporter(),
@@ -93,6 +93,6 @@ func GetAllReporters() []*models.PageIssueReporter {
 		NewInsecureFormReporter(),
 
 		// Add Viewport issue report
-		NewViewportTag(),
+		NewViewportTagReporter(),
 	}
 }

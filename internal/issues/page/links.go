@@ -159,7 +159,7 @@ func NewDeadendReporter() *models.PageIssueReporter {
 
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the media type is text/html, and contains external links with status code is between 300 and 399.
-func NewExternalLinkRedirect() *models.PageIssueReporter {
+func NewExternalLinkRedirectReporter() *models.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false
@@ -186,7 +186,7 @@ func NewExternalLinkRedirect() *models.PageIssueReporter {
 
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the media type is text/html, and contains external links with status code is greater than 399.
-func NewExternalLinkBroken() *models.PageIssueReporter {
+func NewExternalLinkBrokenReporter() *models.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false

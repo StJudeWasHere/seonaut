@@ -73,7 +73,7 @@ func TestIncorrectMediaTypeNoIssues(t *testing.T) {
 		ParsedURL: parsedURL,
 	}
 
-	reporter := page.NewIncorrectMediaType()
+	reporter := page.NewIncorrectMediaTypeReporter()
 	if reporter.ErrorType != errors.ErrorIncorrectMediaType {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
@@ -107,7 +107,7 @@ func TestIncorrectMediaTypeNoIssues(t *testing.T) {
 func TestIncorrectMediaTypeIssues(t *testing.T) {
 	pageReport := &models.PageReport{} // Test missing media type
 
-	reporter := page.NewIncorrectMediaType()
+	reporter := page.NewIncorrectMediaTypeReporter()
 	if reporter.ErrorType != errors.ErrorIncorrectMediaType {
 		t.Errorf("TestNoIssues: error type is not correct")
 	}
@@ -143,7 +143,7 @@ func TestDuplicatedIdIssues(t *testing.T) {
 		StatusCode: 200,
 	}
 
-	reporter := page.NewDuplicatedId()
+	reporter := page.NewDuplicatedIdReporter()
 	if reporter.ErrorType != errors.ErrorDuplicatedId {
 		t.Errorf("error type is not correct")
 	}
@@ -175,7 +175,7 @@ func TestDuplicatedIdNoIssues(t *testing.T) {
 		StatusCode: 200,
 	}
 
-	reporter := page.NewDuplicatedId()
+	reporter := page.NewDuplicatedIdReporter()
 	if reporter.ErrorType != errors.ErrorDuplicatedId {
 		t.Errorf("error type is not correct")
 	}

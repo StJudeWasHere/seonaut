@@ -13,7 +13,7 @@ import (
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // head does not contain a viewport meta tag or if the meta viewport tag content is empty.
-func NewViewportTag() *models.PageIssueReporter {
+func NewViewportTagReporter() *models.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false

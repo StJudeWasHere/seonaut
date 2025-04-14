@@ -164,7 +164,7 @@ func TestCanonicalMismatchNoIssues(t *testing.T) {
 			</head>
 		</html>`
 
-	reporter := page.NewCanonicalMismatch()
+	reporter := page.NewCanonicalMismatchReporter()
 	if reporter.ErrorType != errors.ErrorCanonicalMismatch {
 		t.Errorf("CanonicalTagsRelative: error type is not correct")
 	}
@@ -201,7 +201,7 @@ func TestCanonicalMismatchIssues(t *testing.T) {
 			</head>
 		</html>`
 
-	reporter := page.NewCanonicalMismatch()
+	reporter := page.NewCanonicalMismatchReporter()
 	if reporter.ErrorType != errors.ErrorCanonicalMismatch {
 		t.Errorf("CanonicalTagsRelative: error type is not correct")
 	}

@@ -82,7 +82,7 @@ func NewCanonicalRelativeURLReporter() *models.PageIssueReporter {
 // Returns a report_manager.PageIssueReporter with a callback function that returns true if
 // the media type is text/html, the status code is between 200 and 299 and the page's html
 // head canonical tag and the canonical header don't match.
-func NewCanonicalMismatch() *models.PageIssueReporter {
+func NewCanonicalMismatchReporter() *models.PageIssueReporter {
 	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
 		if !pageReport.Crawled {
 			return false

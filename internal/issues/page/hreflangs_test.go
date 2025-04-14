@@ -26,7 +26,7 @@ func TestHreflangXDefaultMissingNoIssues(t *testing.T) {
 		},
 	}
 
-	reporter := page.NewHreflangXDefaultMissing()
+	reporter := page.NewHreflangXDefaultMissingReporter()
 	if reporter.ErrorType != errors.ErrorHreflangMissingXDefault {
 		t.Errorf("HreflangXDefaultMissing: error type is not correct")
 	}
@@ -57,7 +57,7 @@ func TestHreflangXDefaultMissingIssues(t *testing.T) {
 		},
 	}
 
-	reporter := page.NewHreflangXDefaultMissing()
+	reporter := page.NewHreflangXDefaultMissingReporter()
 	if reporter.ErrorType != errors.ErrorHreflangMissingXDefault {
 		t.Errorf("HreflangXDefaultMissing: error type is not correct")
 	}

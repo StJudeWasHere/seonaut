@@ -33,13 +33,13 @@ ERROR_40x: URLs returning status code 40x
 ERROR_40x_DESC: This pages are missing and both your users and search engines are getting lost. It may signal to search engines that your site isn't well maintained. Over time, too many broken links can impact crawl efficiency and dilute your site's authority.
 
 ERROR_30x: URLs returning status code 30x
-ERROR_30x_DESC: URLs causing redirects are sending users and search engines to a different page, this can waste the search engine's crawl budget and create redirect chains.
+ERROR_30x_DESC: URLs causing redirects are sending users and search engines to a different page. Redirects can slow down page loading, confuse users and waste the search engine's crawl budget.
 
 ERROR_REDIRECT_CHAIN: URLs causing a redirect chain
-ERROR_REDIRECT_CHAIN_DESC: Redirect chains are URLs that redirect to other URLs that also redirect somewhere else, creating a chain of redirects.
+ERROR_REDIRECT_CHAIN_DESC: Redirect chains are URLs that redirect to other URLs that also redirect somewhere else, creating a chain of redirects. Redirect chains frustrate users, and make it harder for search engines to crawl and index your content efficiently.
 
 ERROR_REDIRECT_LOOP: URLs causing a redirect loop
-ERROR_REDIRECT_LOOP_DESC: Redirect loops are a couple of URLs that redirect to each other creating a never ending loop of redirects.
+ERROR_REDIRECT_LOOP_DESC: Redirect loops are a couple of URLs that redirect to each other creating a never ending loop of redirects. Redirect loops prevents users and search engines from ever reaching the destination. It leads to poor user experience, broken navigation, and blocks search engines from properly crawling and indexing your site.
 
 ERROR_DUPLICATED_TITLE: Pages with duplicated title
 ERROR_DUPLICATED_TITLE_DESC: The title tag is considered one of the most important elements for on-page SEO. If multiple pages have the same title, they will compete for a given search query confusing search engines.
@@ -51,7 +51,7 @@ ERROR_SHORT_TITLE: Pages short title
 ERROR_SHORT_TITLE_DESC: These pages have titles that are too short. Search engines will be happier if you provide longer titles.
   
 ERROR_EMPTY_TITLE: Pages with missing title
-ERROR_EMPTY_TITLE_DESC: The page title is one of the most important elements for search engines.
+ERROR_EMPTY_TITLE_DESC: Page titles help search engines understand what a page is about and are often shown in search results. Without a title, your page may rank lower, get overlooked by users, and appear unprofessional or incomplete.
 
 ERROR_EMPTY_DESCRIPTION: Pages with missing meta description
 ERROR_EMPTY_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
@@ -81,7 +81,7 @@ ERROR_HTTP_LINKS: HTTPS URLs with links to HTTP URLs
 ERROR_HTTP_LINKS_DESC: Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.
 
 ERROR_HREFLANG_RETURN: Pages missing the hreflang
-ERROR_HREFLANG_RETURN_DESC: When referencing a page with hreflang, that page must reference back with a hreflang tag too.
+ERROR_HREFLANG_RETURN_DESC: When referencing a page with hreflang, that page must reference back with a hreflang tag too. Without this two-way reference, search engines may ignore the hreflang annotations, leading to incorrect language versions being shown in search results.
 
 ERROR_TOO_MANY_LINKS: Pages with too many Links
 ERROR_TOO_MANY_LINKS_DESC: The SEO link juice is divided between all the links in the page, the more links in a page the less amount of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the nofollow attribute.
@@ -96,7 +96,7 @@ ERROR_CANONICALIZED_NON_CANONICAL: Canonicalized to non canonical
 ERROR_CANONICALIZED_NON_CANONICAL_DESC: Pages canonicalized to a non canonical URL. Canonicalized pages should point to a canonical page, replace the canonical link URL in this pages so they point to a canonical one.
 
 ERROR_NOT_VALID_HEADINGS: Pages with not valid headings order
-ERROR_NOT_VALID_HEADINGS_DESC: The heading tags in this pages don't follow the correct order. Change the H tags so they start with H1 and follow the correct order.
+ERROR_NOT_VALID_HEADINGS_DESC: The heading tags in this pages don't follow the correct order. Headings should start with an H1 and follow a clear hierarchy (H2, H3, etc.). Proper structure helps search engines understand your content and improves accessibility for screen readers.
   
 ERROR_HREFLANG_TO_NON_CANONICAL: Hreflang to non canonical page
 ERROR_HREFLANG_TO_NON_CANONICAL_DESC: Hreflang tags tell search engines where to find content in specific languages, linking hreflang tags to non canonical pages confuses search engines.

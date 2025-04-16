@@ -50,7 +50,7 @@
 			<div class="content">
 				<h2>Headers</h2>
 				<p>This block shows the response headers as received by the crawler.</p>
-				<pre class="archive"><code>{{ .ArchiveRecord.Headers }}</code></pre>
+				<pre class="archive"><code>{{ range $key, $values := .ArchiveRecord.Headers }}{{ $key }}: {{ range $values }} {{ . }}<br>{{ end }}{{ end }}</code></pre>
 
 				{{ if .ArchiveRecord.Body }}
 				<h2>Body</h2>

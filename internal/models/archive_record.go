@@ -1,6 +1,8 @@
 package models
 
+import "net/http"
+
 type ArchiveRecord struct {
-	Headers string
+	Headers http.Header
 	Body    string
 }

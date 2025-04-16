@@ -24,10 +24,3 @@ type StatusCodeByDepth struct {
 	StatusCode500 int
 }
 
-type PageReportView struct {
-	PageReport PageReport
-	ErrorTypes []string
-	InLinks    []InternalLink
-	Redirects  []PageReport
-	Paginator  Paginator
-}

@@ -1,8 +1,10 @@
 package services
 
 import (
+	"bufio"
 	"errors"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -29,22 +31,51 @@ func (s *ArchiveService) GetArchiveWriter(p *models.Project) (*archiver.Writer, 
 }
 
 // ReadArchive reads an URLs WACZ record from a project's archive.
-func (s *ArchiveService) ReadArchiveRecord(p *models.Project, urlStr string) *models.ArchiveRecord {
+func (s *ArchiveService) ReadArchiveRecord(p *models.Project, urlStr string) (*models.ArchiveRecord, error) {
 	waczPath := s.getArchiveFile(p)
 	reader := archiver.NewReader(waczPath)
 
-	content := reader.ReadArchive(urlStr)
+	content, err := reader.ReadArchive(urlStr)
+	if err != nil {
+		return nil, err
+	}
 
 	record := &models.ArchiveRecord{}
 	index := strings.Index(content, "\r\n\r\n")
 	if index != -1 {
-		record.Headers = content[:index]
+		record.Headers = s.ParseRawHeaders(content[:index])
 		record.Body = strings.TrimSpace(content[index+1:])
 	} else {
-		record.Headers = content
+		record.Headers = s.ParseRawHeaders(content)
 	}
 
-	return record
+	return record, nil
+}
+
+// ParseRawHeaders parses an HTTP header string into a map[string][]string
+func (r *ArchiveService) ParseRawHeaders(raw string) http.Header {
+	headers := http.Header{}
+	scanner := bufio.NewScanner(strings.NewReader(raw))
+
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		// Skip the status line (e.g., "HTTP/1.1 200 OK")
+		if strings.HasPrefix(line, "HTTP/") {
+			continue
+		}
+
+		parts := strings.SplitN(line, ":", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+		headers.Add(key, value)
+	}
+
+	return headers
 }
 
 // ArchiveExists checks if a wacz file exists for the current project.

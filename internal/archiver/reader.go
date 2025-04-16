@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/url"
 	"os"
 	"slices"
@@ -29,53 +28,49 @@ func NewReader(waczPath string) *Reader {
 
 // ReadArchive reads the archive and returns the contents of the warc record for
 // the specified URL as a string.
-func (s *Reader) ReadArchive(urlStr string) (content string) {
+func (s *Reader) ReadArchive(urlStr string) (string, error) {
 	wacz, err := zip.OpenReader(s.waczPath)
 	if err != nil {
-		log.Printf("failed to open reader %v", err)
-		return ""
+		return "", err
 	}
 	defer wacz.Close()
 
 	record, err := s.getCDXEntry(wacz, urlStr)
 	if err != nil {
-		log.Printf("error getting wacz entry %v", err)
-		return ""
+		return "", err
 	}
 
 	file, err := s.getZipFile(wacz, "data/data.warc")
 	if err != nil {
-		log.Printf("error getting warc zip file %v", err)
-		return ""
+		return "", err
 	}
 
 	zipoffset, err := file.DataOffset()
 	if err != nil {
-		log.Printf("error in zip file offset %v", err)
-		return ""
+		return "", err
 	}
 
 	f, err := os.OpenFile(s.waczPath, os.O_RDWR, 0644)
 	if err != nil {
-		log.Println(err)
-		return
+		return "", err
 	}
 	defer f.Close()
 
 	buffer := make([]byte, record.Length)
 
 	_, err = f.ReadAt(buffer, zipoffset+int64(record.Offset))
-	if err != nil && err.Error() != "EOF" {
-		log.Println(err)
+	if err != nil {
+		return "", err
 	}
+
 	wr, _ := warc.NewReader(bytes.NewReader(buffer))
 	r, err := wr.ReadRecord()
 	if err != nil {
-		log.Println(err)
+		return "", err
 	}
 
 	c, _ := io.ReadAll(r.Content)
-	return string(c)
+	return string(c), nil
 }
 
 // getCDXEntry Looks for the specified URL in the index file and returns an IndexEntry if found,

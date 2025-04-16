@@ -127,7 +127,11 @@
 				<div class="content">
 					General details about this URL.
 					{{ if .Archived }}
-					<br>This project is archived: <a href="/archive{{ $parameters }}">view archived response</a>.
+						<br>This project is archived: <br>
+						<a href="/archive{{ $parameters }}">View archived response</a>
+							{{ if .IsHTML }}
+							<br><a href="/replay?pid={{ .ProjectView.Project.Id }}&url={{ .PageReportView.PageReport.URL }}" target="_blank">Open in browser</a>
+							{{ end }}
 					{{ end }}
 				</div>
 			</div>

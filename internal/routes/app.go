@@ -67,7 +67,10 @@ func NewServer(container *services.Container) {
 	// Resource route
 	resourceHandler := resourceHandler{container}
 	http.HandleFunc("GET /resources", container.CookieSession.Auth(resourceHandler.indexHandler))
-	http.HandleFunc("GET /archive", container.CookieSession.Auth(resourceHandler.archiveHandler))
+
+	// Archive Handler
+	archiveHandler := archiveHandler{container}
+	http.HandleFunc("GET /archive", container.CookieSession.Auth(archiveHandler.archiveHandler))
 
 	// User routes
 	userHandler := userHandler{container}
@@ -84,6 +87,10 @@ func NewServer(container *services.Container) {
 	// Support SEOnaut
 	supportHandler := supportHandler{container}
 	http.HandleFunc("GET /support-seonaut", container.CookieSession.Auth(supportHandler.handleSupportSEOnaut))
+
+	// Replay routes
+	replayHandler := replayHandler{container}
+	http.HandleFunc("GET /replay", container.CookieSession.Auth(replayHandler.proxyHandler))
 
 	fmt.Printf("Starting server at %s on port %d...\n", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port), nil)

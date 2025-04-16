@@ -1,0 +1,98 @@
+<div id="replay-container"></div>
+
+<template id="replay-banner">
+    <style>
+        .banner {
+            position: fixed;
+            top: 0;
+            background: #F7E497;
+            color: black;
+            padding: 1.625rem 1rem;
+            text-align: center;
+            z-index: 999999;
+            font-size: 1rem;
+            font-family: 'Fira Code', monospace;
+            line-height: 1.625rem;
+            width: 100%;
+        }
+    </style>
+
+    <div class="banner">
+      <b>SEOnaut Replay</b> - You're viewing an archived version of this page
+    </div>
+</template>
+
+<script>
+    (async function initializeReplay() {
+        const container = document.getElementById("replay-container");
+
+        if (!container) return;
+
+        const shadow = container.attachShadow({ mode: 'open' });
+
+        const template = document.getElementById("replay-banner");
+        if (template && 'content' in template) {
+            const fragment = template.content.cloneNode(true);
+            shadow.appendChild(fragment);
+        }
+
+        document.body.style.paddingTop = "4.875rem";
+    })();
+</script>
+
+<script>
+    (function() {
+        const getAbsoluteUrl = (url) => {
+    // Check if the URL is already absolute
+    try {
+      const absoluteUrl = new URL(url, {{ .ProjectView.Project.URL }}); // Resolves the URL relative to the current page
+      return absoluteUrl.href;
+    } catch (e) {
+      // If URL is invalid or relative, fallback to the base URL
+      return url;
+    }
+  };
+
+      const projectId = {{ .ProjectView.Project.Id }};
+      const proxy = (url) => `/replay?pid=${projectId}&url=${encodeURIComponent(getAbsoluteUrl(url))}`;
+    
+      const originalFetch = window.fetch;
+      window.fetch = function(input, init) {
+        if (typeof input === 'string') input = proxy(input);
+        else if (input instanceof Request) input = new Request(proxy(input.url), input);
+        return originalFetch(input, init);
+      };
+    
+      const originalXhrOpen = XMLHttpRequest.prototype.open;
+      XMLHttpRequest.prototype.open = function(method, url) {
+        arguments[1] = proxy(url);
+        return originalXhrOpen.apply(this, arguments);
+      };
+    
+      const originalSetAttribute = Element.prototype.setAttribute;
+      Element.prototype.setAttribute = function(name, value) {
+        if (['src', 'href'].includes(name)) {
+          value = proxy(value);
+        }
+        return originalSetAttribute.call(this, name, value);
+      };
+    
+      const observer = new MutationObserver((mutations) => {
+        for (const mutation of mutations) {
+          for (const node of mutation.addedNodes) {
+            if (node.nodeType === 1) {
+              ['src', 'href'].forEach(attr => {
+                const val = node.getAttribute(attr);
+                if (val && !val.startsWith('/replay')) {
+                  node.setAttribute(attr, proxy(val));
+                }
+              });
+            }
+          }
+        }
+      });
+    
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+    })();
+    </script>
+    

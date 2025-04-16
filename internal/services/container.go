@@ -30,6 +30,7 @@ type Container struct {
 	Renderer           *Renderer
 	CookieSession      *CookieSession
 	ArchiveService     *ArchiveService
+	ReplayService      *ReplayService
 
 	db                   *sql.DB
 	issueRepository      *repository.IssueRepository
@@ -59,6 +60,7 @@ func NewContainer(configFile string) *Container {
 	c.InitCrawlerService()
 	c.InitRenderer()
 	c.InitCookieSession()
+	c.InitReplayContainer()
 
 	return c
 }
@@ -232,4 +234,8 @@ func (c *Container) InitCookieSession() {
 
 func (c *Container) InitArchiveService() {
 	c.ArchiveService = NewArchiveService("archive")
+}
+
+func (c *Container) InitReplayContainer() {
+	c.ReplayService = NewReplayService()
 }

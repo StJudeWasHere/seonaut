@@ -62,6 +62,8 @@ func (r *ReplayService) RewriteHTML(htmlContent []byte, p *models.Project) ([]by
 		{`//iframe`, "src"},
 		{`//source`, "src"},
 		{`//video`, "poster"},
+		{`//video`, "src"},
+		{`//audio`, "src"},
 		{`//a`, "href"},
 	} {
 		nodes := htmlquery.Find(doc, xpath.xpath)

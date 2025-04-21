@@ -42,13 +42,12 @@ func NewCrawlerHandler(r CrawlerHandlerRepository, b *Broker, m *ReportManager) 
 	}
 }
 
-func (s *CrawlerHandler) archiveCallback(crawl *models.Crawl, p *models.Project, c *crawler.Crawler, a Archiver) crawler.ResponseCallback {
-	responseCallback := s.responseCallback(crawl, p, c)
+func (s *CrawlerHandler) archiveWrapper(callback crawler.ResponseCallback, a Archiver) crawler.ResponseCallback {
 	return func(r *crawler.ResponseMessage) {
 		if r.Error == nil && a != nil {
 			a.AddRecord(r.Response)
 		}
-		responseCallback(r)
+		callback(r)
 	}
 }
 

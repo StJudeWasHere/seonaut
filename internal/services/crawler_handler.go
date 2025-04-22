@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/models"
 	"golang.org/x/net/html"
@@ -106,6 +107,26 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 			err := c.AddRequest(&crawler.RequestMessage{URL: u, IgnoreDomain: true, Data: requestData})
 			if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
 				s.saveBlockedPageReport(u, crawl)
+				crawl.BlockedByRobotstxt++
+			}
+		}
+
+		// Check preload links to add the urls to the crawler's queue.
+		preload, err := htmlquery.QueryAll(htmlNode, "//head/link[@rel=\"preload\"]/@href")
+		if err != nil {
+			log.Printf("error getting preload links %v %v", preload, err)
+		}
+
+		for _, preloadLink := range preload {
+			pl, err := absoluteURL(htmlquery.SelectAttr(preloadLink, "href"), htmlNode, pageReport.ParsedURL)
+			if err != nil {
+				log.Printf("error getting preload link href %s %v", pl.String(), err)
+				continue
+			}
+
+			err = c.AddRequest(&crawler.RequestMessage{URL: pl, IgnoreDomain: true, Data: requestData})
+			if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
+				s.saveBlockedPageReport(pl, crawl)
 				crawl.BlockedByRobotstxt++
 			}
 		}

@@ -2,7 +2,6 @@ package services
 
 import (
 	"bytes"
-	"errors"
 	"log"
 	"net/http"
 	"net/url"
@@ -162,7 +161,7 @@ func (p *Parser) htmlMetaRefreshURL() string {
 	u := strings.Split(r, ";")
 	if len(u) > 1 && strings.ToLower(u[1][:4]) == "url=" {
 		l := strings.ReplaceAll(u[1][4:], "'", "")
-		redirect, err := p.absoluteURL(l)
+		redirect, err := absoluteURL(l, p.doc, p.ParsedURL)
 		if err != nil {
 			return ""
 		}
@@ -214,7 +213,7 @@ func (p *Parser) htmlCanonical() string {
 		return ""
 	}
 
-	cu, err := p.absoluteURL(htmlquery.SelectAttr(canonical[0], "href"))
+	cu, err := absoluteURL(htmlquery.SelectAttr(canonical[0], "href"), p.doc, p.ParsedURL)
 	if err != nil {
 		return ""
 
@@ -255,7 +254,7 @@ func (p *Parser) htmlHreflang() []models.Hreflang {
 
 	for _, n := range hl {
 		if htmlquery.ExistsAttr(n, "hreflang") {
-			l, err := p.absoluteURL(htmlquery.SelectAttr(n, "href"))
+			l, err := absoluteURL(htmlquery.SelectAttr(n, "href"), p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -282,7 +281,7 @@ func (p *Parser) htmlImages() []models.Image {
 			continue
 		}
 
-		url, err := p.absoluteURL(s)
+		url, err := absoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -296,7 +295,7 @@ func (p *Parser) htmlImages() []models.Image {
 
 		imageSet := p.parseSrcSet(htmlquery.SelectAttr(n, "srcset"))
 		for _, s := range imageSet {
-			url, err := p.absoluteURL(s)
+			url, err := absoluteURL(s, p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -323,7 +322,7 @@ func (p *Parser) htmlIframes() []string {
 			continue
 		}
 
-		u, err := p.absoluteURL(s)
+		u, err := absoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -358,7 +357,7 @@ func (p *Parser) htmlPictures() []models.Image {
 		for _, s := range sources {
 			imageSet := p.parseSrcSet(htmlquery.SelectAttr(s, "srcset"))
 			for _, is := range imageSet {
-				url, err := p.absoluteURL(is)
+				url, err := absoluteURL(is, p.doc, p.ParsedURL)
 				if err != nil {
 					continue
 				}
@@ -387,7 +386,7 @@ func (p *Parser) htmlAudios() []string {
 
 		src := htmlquery.SelectAttr(n, "src")
 		if strings.TrimSpace(src) != "" {
-			url, err := p.absoluteURL(src)
+			url, err := absoluteURL(src, p.doc, p.ParsedURL)
 			if err == nil {
 				audios = append(audios, url.String())
 			}
@@ -396,7 +395,7 @@ func (p *Parser) htmlAudios() []string {
 		sources := htmlquery.Find(n, "//source")
 		for _, s := range sources {
 			src := htmlquery.SelectAttr(s, "src")
-			url, err := p.absoluteURL(src)
+			url, err := absoluteURL(src, p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -421,7 +420,7 @@ func (p *Parser) htmlVideos() []models.Video {
 		poster := ""
 		posterAttr := htmlquery.SelectAttr(n, "poster")
 		if strings.TrimSpace(posterAttr) != "" {
-			pURL, err := p.absoluteURL(posterAttr)
+			pURL, err := absoluteURL(posterAttr, p.doc, p.ParsedURL)
 			if err == nil {
 				poster = pURL.String()
 			}
@@ -429,7 +428,7 @@ func (p *Parser) htmlVideos() []models.Video {
 
 		src := htmlquery.SelectAttr(n, "src")
 		if strings.TrimSpace(src) != "" {
-			url, err := p.absoluteURL(src)
+			url, err := absoluteURL(src, p.doc, p.ParsedURL)
 			if err == nil {
 				videos = append(videos, models.Video{URL: url.String(), Poster: poster})
 			}
@@ -438,7 +437,7 @@ func (p *Parser) htmlVideos() []models.Video {
 		sources := htmlquery.Find(n, "//source")
 		for _, s := range sources {
 			src := htmlquery.SelectAttr(s, "src")
-			url, err := p.absoluteURL(src)
+			url, err := absoluteURL(src, p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -457,7 +456,7 @@ func (p *Parser) htmlScripts() []string {
 	s := htmlquery.Find(p.doc, "//script[@src]/@src")
 	for _, n := range s {
 		s := htmlquery.SelectAttr(n, "src")
-		url, err := p.absoluteURL(s)
+		url, err := absoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -476,7 +475,7 @@ func (p *Parser) htmlStyles() []string {
 	for _, n := range s {
 		s := htmlquery.SelectAttr(n, "href")
 
-		url, err := p.absoluteURL(s)
+		url, err := absoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -505,7 +504,7 @@ func (p *Parser) headersCanonical() string {
 		attr := strings.Split(lh, ";")
 		if len(attr) == 2 && strings.Contains(attr[1], `rel="canonical"`) {
 			canonicalString := strings.TrimSpace(attr[0])
-			cu, err := p.absoluteURL(canonicalString[1 : len(canonicalString)-1])
+			cu, err := absoluteURL(canonicalString[1:len(canonicalString)-1], p.doc, p.ParsedURL)
 			if err != nil {
 				return ""
 			}
@@ -571,7 +570,7 @@ func (p *Parser) headersRobots() string {
 
 // Return the contents of the HTTP Location header.
 func (p *Parser) headersLocation() string {
-	l, err := p.absoluteURL(p.Headers.Get("Location"))
+	l, err := absoluteURL(p.Headers.Get("Location"), p.doc, p.ParsedURL)
 	if err != nil {
 		return ""
 	}
@@ -624,7 +623,7 @@ func (p *Parser) parseSrcSet(srcset string) []string {
 // Build a new link from a node element
 func (p *Parser) newLink(n *html.Node) (models.Link, error) {
 	href := htmlquery.SelectAttr(n, "href")
-	u, err := p.absoluteURL(href)
+	u, err := absoluteURL(href, p.doc, p.ParsedURL)
 	if err != nil {
 		return models.Link{}, err
 	}
@@ -643,57 +642,4 @@ func (p *Parser) newLink(n *html.Node) (models.Link, error) {
 	}
 
 	return l, nil
-}
-
-// Return an absolute URL removing the URL fragment and taking into account
-// the document's base tag if it exists.
-func (p *Parser) absoluteURL(s string) (*url.URL, error) {
-	u, err := url.Parse(strings.TrimSpace(s))
-	if err != nil {
-		return nil, err
-	}
-
-	if !u.IsAbs() {
-		base, err := p.htmlBase()
-		if err != nil {
-			u = p.ParsedURL.ResolveReference(u)
-		} else {
-			u = base.JoinPath(u.Path)
-		}
-	}
-
-	u.Fragment = ""
-	if u.Path == "" {
-		u.Path = "/"
-	}
-
-	if u.Scheme != "http" && u.Scheme != "https" {
-		return nil, errors.New("protocol not supported")
-	}
-
-	return u, nil
-}
-
-// htmlBase returns the url in the base tag if it exists. Otherwise it returns an error.
-func (p *Parser) htmlBase() (*url.URL, error) {
-	base, err := htmlquery.Query(p.doc, "//head/base[@href]")
-	if err != nil || base == nil {
-		return nil, errors.New("base path is missing or empty")
-	}
-
-	href := strings.TrimSpace(htmlquery.SelectAttr(base, "href"))
-	parsed, err := url.Parse(href)
-	if err != nil {
-		return nil, errors.New("error parsing base path")
-	}
-
-	if parsed.Host == "" {
-		parsed.Host = p.ParsedURL.Host
-	}
-
-	if parsed.Scheme == "" {
-		parsed.Scheme = p.ParsedURL.Scheme
-	}
-
-	return parsed, nil
 }

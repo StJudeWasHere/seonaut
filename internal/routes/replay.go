@@ -46,7 +46,7 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	requestedURL := r.URL.Query().Get("url")
 	if requestedURL == "" {
-		http.Error(w, "URL parameter is missing", http.StatusInternalServerError)
+		http.Error(w, "URL parameter is missing", http.StatusBadRequest)
 		return
 	}
 
@@ -65,8 +65,7 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 
 	record, err := h.Container.ArchiveService.ReadArchiveRecord(&pv.Project, requestedURL)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		h.Container.Renderer.RenderTemplate(w, "replay_not_archived", data)
+		http.Error(w, "The requested URL is not archived.", http.StatusNotFound)
 		return
 	}
 

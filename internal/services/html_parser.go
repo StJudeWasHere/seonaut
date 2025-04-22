@@ -28,7 +28,15 @@ const (
 func NewFromHTTPResponse(r *http.Response) (*models.PageReport, *html.Node, error) {
 	defer r.Body.Close()
 
-	var bodyReader io.Reader = r.Body
+	var bodyCopy bytes.Buffer
+	_, err := io.Copy(&bodyCopy, r.Body)
+	if err != nil {
+		return &models.PageReport{}, &html.Node{}, err
+	}
+
+	r.Body = io.NopCloser(bytes.NewReader(bodyCopy.Bytes()))
+
+	var bodyReader io.Reader = bytes.NewReader(bodyCopy.Bytes())
 	bodyReader = io.LimitReader(bodyReader, int64(maxBodySize))
 
 	b, err := io.ReadAll(bodyReader)

@@ -3,7 +3,6 @@ package routes
 import (
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 	"github.com/stjudewashere/seonaut/internal/services"
@@ -54,11 +53,6 @@ func (h *archiveHandler) archiveHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	pageReportView := h.ReportService.GetPageReport(rid, pv.Crawl.Id, "default", 1)
-	isTextMedia := strings.HasPrefix(pageReportView.PageReport.MediaType, "text/")
-	if !isTextMedia {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
 
 	record, err := h.Container.ArchiveService.ReadArchiveRecord(&pv.Project, pageReportView.PageReport.URL)
 	if err != nil {

@@ -11,7 +11,8 @@
             text-align: center;
             z-index: 999999;
             font-size: 1rem;
-            font-family: 'Fira Code', monospace;
+            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+            font-weight: normal;
             line-height: 1.625rem;
             width: 100%;
         }
@@ -23,10 +24,10 @@
 </template>
 
 <script>
-    (async function initializeReplay() {
-        const container = document.getElementById("replay-container");
-
-        if (!container) return;
+    document.addEventListener('DOMContentLoaded', async function initializeReplay() {
+        const container = document.createElement('div');
+        container.id = "replay-container";
+        document.body.insertBefore(container, document.body.firstChild);
 
         const shadow = container.attachShadow({ mode: 'open' });
 
@@ -37,74 +38,71 @@
         }
 
         document.body.style.paddingTop = "4.875rem";
-    })();
-</script>
+    });
 
-<script>
     (function() {
         const getAbsoluteUrl = (url) => {
-    // Check if the URL is already absolute
-    try {
-      const absoluteUrl = new URL(url, {{ .ProjectView.Project.URL }}); // Resolves the URL relative to the current page
-      return absoluteUrl.href;
-    } catch (e) {
-      // If URL is invalid or relative, fallback to the base URL
-      return url;
-    }
-  };
-
-      const projectId = {{ .ProjectView.Project.Id }};
-
-      const proxy = (url) => {
-        try {
-          const urlObj = new URL(url, {{ .RequestedURL }});
-          if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
-            return `/replay?pid=${projectId}&url=${encodeURIComponent(urlObj.href)}`;
-          }
-        } catch (e) {
-          console.warn(`Invalid URL: ${url}`);
-        }
-
-        return url;
-      };
-
-      const originalFetch = window.fetch;
-      window.fetch = function(input, init) {
-        if (typeof input === 'string') input = proxy(input);
-        else if (input instanceof Request) input = new Request(proxy(input.url), input);
-        return originalFetch(input, init);
-      };
-    
-      const originalXhrOpen = XMLHttpRequest.prototype.open;
-      XMLHttpRequest.prototype.open = function(method, url) {
-        arguments[1] = proxy(url);
-        return originalXhrOpen.apply(this, arguments);
-      };
-    
-      const originalSetAttribute = Element.prototype.setAttribute;
-      Element.prototype.setAttribute = function(name, value) {
-        if (['src', 'href'].includes(name)) {
-          value = proxy(value);
-        }
-        return originalSetAttribute.call(this, name, value);
-      };
-    
-      const observer = new MutationObserver((mutations) => {
-        for (const mutation of mutations) {
-          for (const node of mutation.addedNodes) {
-            if (node.nodeType === 1) {
-              ['src', 'href'].forEach(attr => {
-                const val = node.getAttribute(attr);
-                if (val && !val.startsWith('/replay')) {
-                  node.setAttribute(attr, proxy(val));
-                }
-              });
+            // Check if the URL is already absolute
+            try {
+                const absoluteUrl = new URL(url, {{ .ProjectView.Project.URL }}); // Resolves the URL relative to the current page
+                return absoluteUrl.href;
+            } catch (e) {
+                // If URL is invalid or relative, fallback to the base URL
+                return url;
             }
-          }
-        }
-      });
-    
-      observer.observe(document.documentElement, { childList: true, subtree: true });
+        };
+
+        const projectId = {{ .ProjectView.Project.Id }};
+
+        const proxy = (url) => {
+            try {
+                const urlObj = new URL(url, {{ .RequestedURL }});
+                if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
+                    return `/replay?pid=${projectId}&url=${encodeURIComponent(urlObj.href)}`;
+                }
+            } catch (e) {
+                console.warn(`Invalid URL: ${url}`);
+            }
+
+            return url;
+        };
+
+        const originalFetch = window.fetch;
+        window.fetch = function(input, init) {
+            if (typeof input === 'string') input = proxy(input);
+            else if (input instanceof Request) input = new Request(proxy(input.url), input);
+            return originalFetch(input, init);
+        };
+
+        const originalXhrOpen = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function(method, url) {
+            arguments[1] = proxy(url);
+            return originalXhrOpen.apply(this, arguments);
+        };
+
+        const originalSetAttribute = Element.prototype.setAttribute;
+        Element.prototype.setAttribute = function(name, value) {
+            if (['src', 'href'].includes(name)) {
+                value = proxy(value);
+            }
+            return originalSetAttribute.call(this, name, value);
+        };
+
+        const observer = new MutationObserver((mutations) => {
+            for (const mutation of mutations) {
+                for (const node of mutation.addedNodes) {
+                    if (node.nodeType === 1) {
+                        ['src', 'href'].forEach(attr => {
+                            const val = node.getAttribute(attr);
+                            if (val && !val.startsWith('/replay')) {
+                                node.setAttribute(attr, proxy(val));
+                            }
+                        });
+                    }
+                }
+            }
+        });
+
+        observer.observe(document.documentElement, { childList: true, subtree: true });
     })();
-    </script>
-    
+</script>

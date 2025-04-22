@@ -1,7 +1,6 @@
 package services
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -10,12 +9,12 @@ import (
 	"net"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/models"
-	"github.com/tdewolff/parse/css"
 	"golang.org/x/net/html"
 )
 
@@ -136,7 +135,7 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 		}
 
 		// Extract URLs from the css files
-		if pageReport.ContentType == "text/css" {
+		if strings.HasPrefix(strings.ToLower(pageReport.ContentType), "text/css") {
 			body, err := io.ReadAll(r.Response.Body)
 			if err != nil {
 				log.Printf("failed to read response body: %v", err)
@@ -145,6 +144,10 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 
 			for _, u := range cssURLs {
 				u = pageReport.ParsedURL.ResolveReference(u)
+
+				if u.Scheme != "https" && u.Scheme != "http" {
+					continue
+				}
 
 				err = c.AddRequest(&crawler.RequestMessage{URL: u, IgnoreDomain: true, Data: requestData})
 				if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
@@ -373,27 +376,21 @@ func (s *CrawlerHandler) getResourceURLs(p *models.PageReport) []*url.URL {
 
 func (s *CrawlerHandler) ExtractURLsFromCSS(cssContent string) []*url.URL {
 	urls := []*url.URL{}
-	lexer := css.NewLexer(bytes.NewBufferString(cssContent))
 
-	for {
-		tokenType, tokenData := lexer.Next()
-		switch tokenType {
-		case css.ErrorToken:
-			if lexer.Err() == io.EOF {
-				return urls
-			}
-			continue
-		case css.URLToken:
-			urlStr := string(tokenData)
-			if strings.HasPrefix(urlStr, "url(") && strings.HasSuffix(urlStr, ")") {
-				urlStr = urlStr[4 : len(urlStr)-1]
-				urlStr = strings.Trim(urlStr, "'\"")
-				if u, err := url.Parse(urlStr); err == nil {
-					urls = append(urls, u)
-				} else {
-					log.Printf("Failed to parse URL: %s\n", urlStr)
-				}
+	urlRegex := regexp.MustCompile(`url\((.*?)\)`)
+	matches := urlRegex.FindAllStringSubmatch(cssContent, -1)
+
+	for _, match := range matches {
+		if len(match) > 1 {
+			urlStr := match[1]
+			urlStr = strings.Trim(urlStr, "'\"")
+			if u, err := url.Parse(urlStr); err == nil {
+				urls = append(urls, u)
+			} else {
+				log.Printf("Failed to parse URL: %s\n", urlStr)
 			}
 		}
 	}
+
+	return urls
 }

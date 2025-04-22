@@ -16,7 +16,6 @@ require (
 	github.com/oxffaa/gopher-parse-sitemap v0.0.0-20191021113419-005d2eb1def4
 	github.com/slyrz/warc v0.0.0-20150806225202-a50edd19b690
 	github.com/spf13/viper v1.20.1
-	github.com/tdewolff/parse v2.3.4+incompatible
 	github.com/temoto/robotstxt v1.1.2
 	github.com/turk/go-sitemap v0.0.0-20210912154218-82ad01095e30
 	golang.org/x/crypto v0.37.0
@@ -42,7 +41,6 @@ require (
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/spf13/pflag v1.0.6 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
-	github.com/tdewolff/test v1.0.11 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sys v0.32.0 // indirect

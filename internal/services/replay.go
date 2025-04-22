@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"github.com/antchfx/htmlquery"
@@ -117,4 +118,18 @@ func (r *ReplayService) InjectHTML(htmlContent []byte, bannerHTML string) ([]byt
 	}
 
 	return buf.Bytes(), nil
+}
+
+// RewriteCSSURLs parses css content and rewrites the urls in URLTokens so they are
+// handled by the proxy route.
+func (r *ReplayService) RewriteCSS(cssContent string, rewriteFunc func(string) string) string {
+	urlRegex := regexp.MustCompile(`url\((.*?)\)`)
+	rewrittenCSS := urlRegex.ReplaceAllStringFunc(cssContent, func(match string) string {
+		urlStr := strings.TrimPrefix(strings.TrimSuffix(match, ")"), "url(")
+		urlStr = strings.Trim(urlStr, "'\"") // Remove any surrounding quotes
+		newURL := rewriteFunc(urlStr)
+		return fmt.Sprintf("url(%s)", newURL)
+	})
+
+	return rewrittenCSS
 }

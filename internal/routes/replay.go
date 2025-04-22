@@ -2,7 +2,9 @@ package routes
 
 import (
 	"bytes"
+	"fmt"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -84,8 +86,35 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	contentType := record.Headers.Get("Content-Type")
-	isHTML := strings.HasPrefix(strings.ToLower(contentType), "text/html")
 
+	parsedRequestedURL, err := url.Parse(requestedURL)
+	if err != nil {
+		w.Write([]byte(record.Body))
+		return
+	}
+
+	if strings.HasPrefix(strings.ToLower(contentType), "text/css") {
+		rewrittenCSS := h.ReplayService.RewriteCSS(string(record.Body), func(urlStr string) string {
+			if u, err := url.Parse(urlStr); err == nil {
+				if !u.IsAbs() {
+					u = parsedRequestedURL.ResolveReference(u)
+				}
+
+				if u.Scheme != "http" && u.Scheme != "https" {
+					return urlStr
+				}
+
+				return fmt.Sprintf("/replay?pid=%d&url=%s", pv.Project.Id, u.String())
+			}
+
+			return urlStr
+		})
+
+		w.Write([]byte(rewrittenCSS))
+		return
+	}
+
+	isHTML := strings.HasPrefix(strings.ToLower(contentType), "text/html")
 	if !isHTML {
 		w.Write([]byte(record.Body))
 		return

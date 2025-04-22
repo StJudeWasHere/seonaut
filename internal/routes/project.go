@@ -16,6 +16,16 @@ type projectHandler struct {
 
 // indexHandler Handles the user homepage request and lists all the user's projects.
 func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
+
+	// The project index handler is served at the / route, which is a fallback for
+	// all the routes starting with / and matching non-existing routes that should
+	// return a 404 not found. We handle it here making sure to serve the projects index
+	// in case the path is /.
+	if r.URL.Path != "/" {
+		http.NotFound(w, r)
+		return
+	}
+
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)

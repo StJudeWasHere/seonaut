@@ -54,8 +54,20 @@
   };
 
       const projectId = {{ .ProjectView.Project.Id }};
-      const proxy = (url) => `/replay?pid=${projectId}&url=${encodeURIComponent(getAbsoluteUrl(url))}`;
-    
+
+      const proxy = (url) => {
+        try {
+          const urlObj = new URL(url, {{ .RequestedURL }});
+          if (urlObj.protocol === "http:" || urlObj.protocol === "https:") {
+            return `/replay?pid=${projectId}&url=${encodeURIComponent(urlObj.href)}`;
+          }
+        } catch (e) {
+          console.warn(`Invalid URL: ${url}`);
+        }
+
+        return url;
+      };
+
       const originalFetch = window.fetch;
       window.fetch = function(input, init) {
         if (typeof input === 'string') input = proxy(input);

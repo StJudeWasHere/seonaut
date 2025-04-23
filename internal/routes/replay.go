@@ -119,9 +119,6 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	eb := new(bytes.Buffer)
-	h.Container.Renderer.RenderTemplate(eb, "replay", data)
-
 	rawBody := []byte(record.Body)
 	rewrittenHTML, err := h.Container.ReplayService.RewriteHTML(rawBody, &pv.Project)
 	if err != nil {
@@ -129,7 +126,13 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	finalHTML, err := h.Container.ReplayService.InjectHTML(rewrittenHTML, eb.String())
+	eb := new(bytes.Buffer)
+	h.Container.Renderer.RenderTemplate(eb, "replay_banner", data)
+
+	es := new(bytes.Buffer)
+	h.Container.Renderer.RenderTemplate(es, "replay_scripts", data)
+
+	finalHTML, err := h.Container.ReplayService.InjectHTML(rewrittenHTML, es.String(), eb.String())
 	if err != nil {
 		http.Error(w, "Replay error", http.StatusInternalServerError)
 		return

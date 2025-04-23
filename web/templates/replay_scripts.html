@@ -1,46 +1,23 @@
-<div id="replay-container"></div>
-
-<template id="replay-banner">
-    <style>
-        .banner {
-            position: fixed;
-            top: 0;
-            background: #F7E497;
-            color: black;
-            padding: 1.625rem 1rem;
-            text-align: center;
-            z-index: 999999;
-            font-size: 1rem;
-            font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-            font-weight: normal;
-            line-height: 1.625rem;
-            width: 100%;
-        }
-    </style>
-
-    <div class="banner">
-      <b>SEOnaut Replay</b> - You're viewing an archived version of this page
-    </div>
-</template>
-
 <script>
-    document.addEventListener('DOMContentLoaded', async function initializeReplay() {
-        const container = document.createElement('div');
-        container.id = "replay-container";
-        document.body.insertBefore(container, document.body.firstChild);
+        document.addEventListener('DOMContentLoaded', async function initializeReplay() {
+            const container = document.createElement('div');
+            container.id = "replay-container";
+            document.body.insertBefore(container, document.body.firstChild);
 
-        const shadow = container.attachShadow({ mode: 'open' });
+            const shadow = container.attachShadow({ mode: 'open' });
 
-        const template = document.getElementById("replay-banner");
-        if (template && 'content' in template) {
-            const fragment = template.content.cloneNode(true);
-            shadow.appendChild(fragment);
-        }
+            const template = document.getElementById("replay-banner");
+            if (template && 'content' in template) {
+                const fragment = template.content.cloneNode(true);
+                shadow.appendChild(fragment);
+            }
 
-        document.body.style.paddingTop = "4.875rem";
-    });
+            document.body.style.paddingTop = "78px";
+        });
 
     (function() {
+        const projectId = {{ .ProjectView.Project.Id }};
+
         const getAbsoluteUrl = (url) => {
             // Check if the URL is already absolute
             try {
@@ -51,8 +28,6 @@
                 return url;
             }
         };
-
-        const projectId = {{ .ProjectView.Project.Id }};
 
         const proxy = (url) => {
             try {

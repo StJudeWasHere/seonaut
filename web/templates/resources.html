@@ -123,18 +123,22 @@
 
 	{{ if eq .Tab "details" }}
 		<div class="box box-highlight">
-			<div class="col col-main">
+			<div class="col col-main borderless">
 				<div class="content">
 					General details about this URL.
-					{{ if .Archived }}
-						<br>This project is archived: <br>
-						<a href="/archive{{ $parameters }}">View archived response</a>
-							{{ if .IsHTML }}
-							<br><a href="/replay?pid={{ .ProjectView.Project.Id }}&url={{ .PageReportView.PageReport.URL }}" target="_blank">Open in browser</a>
-							{{ end }}
-					{{ end }}
 				</div>
 			</div>
+			{{ if .Archived }}
+				<div class="col">
+					<div class="content">
+						This project is archived: <a href="/archive{{ $parameters }}">View archived response</a>
+						{{ if .IsHTML }}
+							<br>
+							WACZ Archive Replay: <a href="/replay?pid={{ .ProjectView.Project.Id }}&url={{ .PageReportView.PageReport.URL }}" target="_blank">Open in browser</a>
+						{{ end }}
+					</div>
+				</div>
+			{{ end }}
 		</div>
 		{{ $errorTypes := .PageReportView.ErrorTypes }}
 		{{ with .PageReportView.PageReport }}

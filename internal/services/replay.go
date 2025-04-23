@@ -83,13 +83,34 @@ func (r *ReplayService) RewriteHTML(htmlContent []byte, p *models.Project) ([]by
 
 // InjectHTML injects an HTML string into the HTML contents. It is used to inject a banner in
 // all the html responses from the WACZ archive.
-func (r *ReplayService) InjectHTML(htmlContent []byte, bannerHTML string) ([]byte, error) {
+func (r *ReplayService) InjectHTML(htmlContent []byte, scripts string, bannerHTML string) ([]byte, error) {
 	doc, err := htmlquery.Parse(bytes.NewReader(htmlContent))
 	if err != nil {
 		return nil, err
 	}
 
-	// Inject banner into <body>
+	// Inject banner into <head>
+	headNode := htmlquery.FindOne(doc, "//head")
+	if headNode != nil {
+		bannerFragment, err := html.ParseFragment(strings.NewReader(scripts), headNode)
+		if err != nil {
+			return nil, err
+		}
+
+		// Insert each node before the existing first child to preserve order
+		for i := len(bannerFragment) - 1; i >= 0; i-- {
+			node := bannerFragment[i]
+			node.Parent = headNode
+
+			// Fix siblings
+			node.NextSibling = headNode.FirstChild
+			if headNode.FirstChild != nil {
+				headNode.FirstChild.PrevSibling = node
+			}
+			headNode.FirstChild = node
+		}
+	}
+
 	bodyNode := htmlquery.FindOne(doc, "//body")
 	if bodyNode != nil {
 		bannerFragment, err := html.ParseFragment(strings.NewReader(bannerHTML), bodyNode)

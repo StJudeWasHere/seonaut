@@ -37,7 +37,7 @@
 
 	{{ if .IssueCount.CriticalIssues }}
 		<div class="box soft">
-			<div class="content content-alert">
+			<div class="content issues-critical-title">
 				<h2>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
 					{{ if ne .ProjectView.Crawl.CriticalIssues 0 }}
@@ -51,7 +51,7 @@
 		</div>
 		{{ range .IssueCount.CriticalIssues }}
 			<div class="box soft">
-				<div class="col col-main highlight">
+				<div class="col col-main issues-critical">
 					<div class="content">
 						<details class="issue-details">
 							<summary> {{ trans .ErrorType }}</summary>
@@ -60,7 +60,7 @@
 					</div>
 				</div>
 
-				<div class="col col-actions highlight aligned">
+				<div class="col col-actions highlight">
 					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
 				</div>
 			</div>
@@ -69,7 +69,7 @@
 
 	{{ if .IssueCount.AlertIssues }}
 		<div class="box soft">
-			<div class="content content-alert">
+			<div class="content issues-alert-title">
 				<h2>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-triangle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> 
 					{{ if ne .ProjectView.Crawl.AlertIssues 0 }}
@@ -83,7 +83,7 @@
 		</div>
 		{{ range .IssueCount.AlertIssues }}
 			<div class="box soft">
-				<div class="col col-main highlight">
+				<div class="col col-main issues-alert">
 					<div class="content">
 						<details class="issue-details">
 							<summary> {{ trans .ErrorType }}</summary>
@@ -92,7 +92,7 @@
 					</div>
 				</div>
 
-				<div class="col col-actions highlight aligned">
+				<div class="col col-actions highlight">
 					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
 				</div>
 			</div>
@@ -101,7 +101,7 @@
 
 	{{ if .IssueCount.WarningIssues }}
 		<div class="box soft">
-			<div class="content content-alert">
+			<div class="content issues-warning-title">
 				<h2>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
 					{{ if ne .ProjectView.Crawl.WarningIssues 0 }}
@@ -115,7 +115,7 @@
 		</div>
 		{{ range .IssueCount.WarningIssues }}
 			<div class="box soft">
-				<div class="col col-main highlight">
+				<div class="col col-main issues-warning">
 					<div class="content">
 						<details class="issue-details">
 							<summary> {{ trans .ErrorType }}</summary>
@@ -124,12 +124,37 @@
 					</div>
 				</div>
 
-				<div class="col col-actions highlight aligned">
+				<div class="col col-actions highlight">
 					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
 				</div>
 			</div>
 		{{ end }}
 	{{ end }}
+
+
+	{{ if .IssueCount.PassedIssues }}
+	<div class="box soft">
+		<div class="content issues-passed-title">
+			<h2>
+				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg>
+				Passed Issue Checks
+			</h2>
+			<p>Your site has successfully passed the following checks.</p>
+		</div>
+	</div>
+	{{ range .IssueCount.PassedIssues }}
+		<div class="box soft">
+			<div class="col col-main issues-passed">
+				<div class="content">
+					<details class="issue-details">
+						<summary> {{ trans .ErrorType }}</summary>
+						<p>{{ trans (print .ErrorType "_DESC") }}</p>
+					</details>
+				</div>
+			</div>
+		</div>
+	{{ end }}
+{{ end }}
 
 </div>
 

@@ -81,6 +81,41 @@ func (ds *IssueRepository) FindIssuesByTypeAndPriority(cid int64, p int) []model
 	return issues
 }
 
+// FindPassedIssues returns an IssueGroup model with all the issues types that have passed
+// and don't have any reported issue for the specified crawl.
+func (ds *IssueRepository) FindPassedIssues(cid int64) []models.IssueGroup {
+	issues := []models.IssueGroup{}
+	query := `
+		SELECT
+			issue_types.type,
+			issue_types.priority,
+			count(DISTINCT issues.pagereport_id) AS c
+		FROM issue_types
+		LEFT JOIN  issues ON issue_types.id = issues.issue_type_id AND issues.crawl_id = ?
+		GROUP BY issue_types.id, issue_types.type, issue_types.priority
+		HAVING COUNT(issues.id) = 0
+		ORDER BY issue_types.type;`
+
+	rows, err := ds.DB.Query(query, cid)
+	if err != nil {
+		log.Println(err)
+		return issues
+	}
+
+	for rows.Next() {
+		ig := models.IssueGroup{}
+		err := rows.Scan(&ig.ErrorType, &ig.Priority, &ig.Count)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		issues = append(issues, ig)
+	}
+
+	return issues
+}
+
 // CountIssuesByPriority returns the total number of issues of the specified priority
 // found in a crawl.
 func (ds *IssueRepository) CountIssuesByPriority(cid int64, p int) int {

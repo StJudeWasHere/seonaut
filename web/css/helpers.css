@@ -13,8 +13,36 @@
 	padding: calc(var(--line-height) * 2) 3rem;
 }
 
-.content-alert {
-	border-left: 1rem solid var(--alert-color);
+.issues-critical-title {
+	border-left: 1rem solid var(--issues-critical-highlight);
+}
+
+.issues-alert-title {
+	border-left: 1rem solid var(--issues-alert-highlight);
+}
+
+.issues-warning-title {
+	border-left: 1rem solid var(--issues-warning-highlight);
+}
+
+.issues-passed-title {
+	border-left: 1rem solid var(--issues-passed-highlight);
+}
+
+.issues-critical {
+	background-color: var(--issues-critical);
+}
+
+.issues-alert {
+	background-color: var(--issues-alert);
+}
+
+.issues-warning {
+	background-color: var(--issues-warning);
+}
+
+.issues-passed {
+	background-color: var(--issues-passed);
 }
 
 .box .content-s {

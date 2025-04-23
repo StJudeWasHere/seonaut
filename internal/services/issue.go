@@ -17,6 +17,7 @@ type (
 		GetNumberOfPagesForIssues(int64, string) int
 		FindPageReportIssues(int64, int, string) []models.PageReport
 		FindIssuesByTypeAndPriority(int64, int) []models.IssueGroup
+		FindPassedIssues(cid int64) []models.IssueGroup
 	}
 
 	IssueService struct {
@@ -34,6 +35,7 @@ func (s *IssueService) GetIssuesCount(crawlID int64) *models.IssueCount {
 		CriticalIssues: s.repository.FindIssuesByTypeAndPriority(crawlID, Critical),
 		AlertIssues:    s.repository.FindIssuesByTypeAndPriority(crawlID, Alert),
 		WarningIssues:  s.repository.FindIssuesByTypeAndPriority(crawlID, Warning),
+		PassedIssues:   s.repository.FindPassedIssues(crawlID),
 	}
 }
 

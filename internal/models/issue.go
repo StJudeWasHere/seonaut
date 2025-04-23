@@ -16,4 +16,5 @@ type IssueCount struct {
 	CriticalIssues []IssueGroup
 	AlertIssues    []IssueGroup
 	WarningIssues  []IssueGroup
+	PassedIssues   []IssueGroup
 }

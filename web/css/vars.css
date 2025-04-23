@@ -3,15 +3,11 @@
 	--light-bg-color: rgb(252,252,252);
 	--primary-color: black;
 	--primary-light-color: #777;
-	--secondary-light-color: #333;
-	--tertiary-light-color: #f5f8f9;
 	--secondary-color: white;
 	--border-color: #ccc;
 	--highlight-color: #e6f4f7;
-	--secondary-highlight-color: #c84a70;
 	--alert-color: #E17E56;
-	--light-opacity-color: rgba(256, 256, 256, .3);
-	--light-opacity-secondary-color: rgba(256, 256, 256, .4);
+	--succes-color: #648560;
 	--dark-opacity-color: rgba(0, 0, 0, .15);
 	--main-section-color: #F7E497;
 	--secondary-section-color: #2C7D91;
@@ -20,7 +16,15 @@
 	--crawler-section-secondary-color: #f1f4f0;
 	--row-issue-color: #ffe9e5;
 
-	--action-color: rgb(183, 15, 87);
+	--issues-critical-highlight: #E17E56;
+	--issues-alert-highlight: #f3d660;
+	--issues-warning-highlight: #509198;
+	--issues-passed-highlight: #648560;
+
+	--issues-critical: #ffe9e5;
+	--issues-alert: #fefcf2;
+	--issues-warning: #f0f6f7;
+	--issues-passed: #f0f4f0;
 
 	--main-fontfamily: 'Fira Code', monospace, monospace;
 	--secondary-fontfamily: "Raleway", Helvetica, Arial, sans-serif;

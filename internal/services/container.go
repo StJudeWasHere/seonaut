@@ -60,7 +60,7 @@ func NewContainer(configFile string) *Container {
 	c.InitCrawlerService()
 	c.InitRenderer()
 	c.InitCookieSession()
-	c.InitReplayContainer()
+	c.InitReplayService()
 
 	return c
 }
@@ -236,6 +236,6 @@ func (c *Container) InitArchiveService() {
 	c.ArchiveService = NewArchiveService("archive")
 }
 
-func (c *Container) InitReplayContainer() {
+func (c *Container) InitReplayService() {
 	c.ReplayService = NewReplayService()
 }

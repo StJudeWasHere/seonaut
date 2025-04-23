@@ -134,26 +134,38 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 			}
 		}
 
+		// extract urls from style elements
+		styleTags, err := htmlquery.QueryAll(htmlNode, "//style")
+		if err != nil {
+			log.Printf("error getting style elements %v", err)
+		}
+
+		var cssURLs []*url.URL
+		for _, st := range styleTags {
+			cssURLs = append(cssURLs, s.ExtractURLsFromCSS(htmlquery.InnerText(st))...)
+		}
+
 		// Extract URLs from the css files
 		if strings.HasPrefix(strings.ToLower(pageReport.ContentType), "text/css") {
 			body, err := io.ReadAll(r.Response.Body)
 			if err != nil {
 				log.Printf("failed to read response body: %v", err)
 			}
-			cssURLs := s.ExtractURLsFromCSS(string(body))
+			cssURLs = append(cssURLs, s.ExtractURLsFromCSS(string(body))...)
+		}
 
-			for _, u := range cssURLs {
-				u = pageReport.ParsedURL.ResolveReference(u)
+		// Add the extracted urls to the crawler's queue
+		for _, u := range cssURLs {
+			u = pageReport.ParsedURL.ResolveReference(u)
 
-				if u.Scheme != "https" && u.Scheme != "http" {
-					continue
-				}
+			if u.Scheme != "https" && u.Scheme != "http" {
+				continue
+			}
 
-				err = c.AddRequest(&crawler.RequestMessage{URL: u, IgnoreDomain: true, Data: requestData})
-				if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
-					s.saveBlockedPageReport(u, crawl)
-					crawl.BlockedByRobotstxt++
-				}
+			err = c.AddRequest(&crawler.RequestMessage{URL: u, IgnoreDomain: true, Data: requestData})
+			if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
+				s.saveBlockedPageReport(u, crawl)
+				crawl.BlockedByRobotstxt++
 			}
 		}
 
@@ -374,6 +386,8 @@ func (s *CrawlerHandler) getResourceURLs(p *models.PageReport) []*url.URL {
 	return urls
 }
 
+// ExtractURLsFromCSS accepts a css string and returns a slice with all the urls
+// it finds in it.
 func (s *CrawlerHandler) ExtractURLsFromCSS(cssContent string) []*url.URL {
 	urls := []*url.URL{}
 

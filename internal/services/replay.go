@@ -3,6 +3,7 @@ package services
 import (
 	"bytes"
 	"fmt"
+	"log"
 	"regexp"
 	"strings"
 
@@ -48,10 +49,28 @@ func (r *ReplayService) RewriteHTML(htmlContent []byte, rewriteFunc rewriteURL) 
 		}
 	}
 
+	// Rewrite urls in style blocks
 	styleElements := htmlquery.Find(doc, `//style`)
 	for _, el := range styleElements {
 		if el.FirstChild != nil && el.FirstChild.Type == html.TextNode {
 			el.FirstChild.Data = r.RewriteCSS(el.FirstChild.Data, rewriteFunc)
+		}
+	}
+
+	// Rewrite urls in inline css
+	// htmlquery panics if htmlNode is of type html.ErroNode
+	if doc.Type != html.ErrorNode {
+		inlineStyleElements, err := htmlquery.QueryAll(doc, "//*[@style]")
+		if err != nil {
+			log.Printf("error getting elements with style attribute: %v", err)
+		}
+
+		for _, inlineStyleElement := range inlineStyleElements {
+			for i, attr := range inlineStyleElement.Attr {
+				if attr.Key == "style" {
+					inlineStyleElement.Attr[i].Val = r.RewriteCSS(attr.Val, rewriteFunc)
+				}
+			}
 		}
 	}
 

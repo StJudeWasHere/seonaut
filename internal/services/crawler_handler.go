@@ -114,35 +114,53 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 			}
 		}
 
-		// Check preload links to add the urls to the crawler's queue.
-		preload, err := htmlquery.QueryAll(htmlNode, "//head/link[@rel=\"preload\"]/@href")
-		if err != nil {
-			log.Printf("error getting preload links %v %v", preload, err)
-		}
-
-		for _, preloadLink := range preload {
-			pl, err := absoluteURL(htmlquery.SelectAttr(preloadLink, "href"), htmlNode, pageReport.ParsedURL)
-			if err != nil {
-				log.Printf("error getting preload link href %s %v", pl.String(), err)
-				continue
-			}
-
-			err = c.AddRequest(&crawler.RequestMessage{URL: pl, IgnoreDomain: true, Data: requestData})
-			if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
-				s.saveBlockedPageReport(pl, crawl)
-				crawl.BlockedByRobotstxt++
-			}
-		}
-
-		// extract urls from style elements
-		styleTags, err := htmlquery.QueryAll(htmlNode, "//style")
-		if err != nil {
-			log.Printf("error getting style elements %v", err)
-		}
-
 		var cssURLs []*url.URL
-		for _, st := range styleTags {
-			cssURLs = append(cssURLs, s.ExtractURLsFromCSS(htmlquery.InnerText(st))...)
+
+		// htmlquery panics if htmlNode is of type html.ErroNode
+		if strings.HasPrefix(strings.ToLower(pageReport.ContentType), "text/html") && htmlNode.Type != html.ErrorNode {
+			// Check preload links to add the urls to the crawler's queue.
+			preload, err := htmlquery.QueryAll(htmlNode, "//head/link[@rel=\"preload\"]/@href")
+			if err != nil {
+				log.Printf("error getting preload links %v %v", preload, err)
+			}
+
+			for _, preloadLink := range preload {
+				pl, err := absoluteURL(htmlquery.SelectAttr(preloadLink, "href"), htmlNode, pageReport.ParsedURL)
+				if err != nil {
+					log.Printf("error getting preload link href %s %v", pl.String(), err)
+					continue
+				}
+
+				err = c.AddRequest(&crawler.RequestMessage{URL: pl, IgnoreDomain: true, Data: requestData})
+				if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
+					s.saveBlockedPageReport(pl, crawl)
+					crawl.BlockedByRobotstxt++
+				}
+			}
+
+			// extract urls from style elements
+			styleTags, err := htmlquery.QueryAll(htmlNode, "//style")
+			if err != nil {
+				log.Printf("error getting style elements %v", err)
+			}
+
+			for _, st := range styleTags {
+				cssURLs = append(cssURLs, s.ExtractURLsFromCSS(htmlquery.InnerText(st))...)
+			}
+
+			// Extract urls from inline css
+			inlineStyleElements, err := htmlquery.QueryAll(htmlNode, "//*[@style]")
+			if err != nil {
+				log.Printf("error getting elements with style attribute: %v", err)
+			}
+
+			for _, inlineStyleElement := range inlineStyleElements {
+				for _, attr := range inlineStyleElement.Attr {
+					if attr.Key == "style" {
+						cssURLs = append(cssURLs, s.ExtractURLsFromCSS(attr.Val)...)
+					}
+				}
+			}
 		}
 
 		// Extract URLs from the css files

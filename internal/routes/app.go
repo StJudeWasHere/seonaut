@@ -71,6 +71,7 @@ func NewServer(container *services.Container) {
 	// Archive Handler
 	archiveHandler := archiveHandler{container}
 	http.HandleFunc("GET /archive", container.CookieSession.Auth(archiveHandler.archiveHandler))
+	http.HandleFunc("GET /archive/download", container.CookieSession.Auth(archiveHandler.downloadHandler))
 
 	// User routes
 	userHandler := userHandler{container}

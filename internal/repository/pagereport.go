@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"log"
 	"math"
+	"net/url"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -532,6 +533,11 @@ func (ds *PageReportRepository) FindPageReportById(rid int) models.PageReport {
 	)
 	if err != nil {
 		log.Println(err)
+	}
+
+	p.ParsedURL, err = url.Parse(p.URL)
+	if err != nil {
+		log.Printf("error parsing url %s %v", p.URL, err)
 	}
 
 	return p

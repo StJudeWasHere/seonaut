@@ -2,16 +2,15 @@ package services
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
-	"net/url"
 	"regexp"
 	"strings"
 
 	"github.com/antchfx/htmlquery"
-	"github.com/stjudewashere/seonaut/internal/models"
 	"golang.org/x/net/html"
 )
+
+type rewriteURL func(string) string
 
 type ReplayService struct{}
 
@@ -20,38 +19,10 @@ func NewReplayService() *ReplayService {
 }
 
 // RewriteHTML rewrites the links and relevant URLs so they are handled by the proxy route.
-func (r *ReplayService) RewriteHTML(htmlContent []byte, p *models.Project) ([]byte, error) {
+func (r *ReplayService) RewriteHTML(htmlContent []byte, rewriteFunc rewriteURL) ([]byte, error) {
 	doc, err := htmlquery.Parse(bytes.NewReader(htmlContent))
 	if err != nil {
 		return nil, err
-	}
-
-	projectURL, err := url.Parse(p.URL)
-	if err != nil {
-		return []byte{}, errors.New("error parsing projectURL")
-	}
-
-	rewriteAttr := func(node *html.Node, attrName string) {
-		for i := range node.Attr {
-			if node.Attr[i].Key == attrName {
-
-				resolved, err := url.Parse(node.Attr[i].Val)
-				if err != nil {
-					continue
-				}
-
-				if !resolved.IsAbs() {
-					resolved = projectURL.ResolveReference(resolved)
-				}
-
-				if resolved.Scheme != "http" && resolved.Scheme != "https" {
-					continue
-				}
-
-				proxied := fmt.Sprintf("/replay?pid=%d&url=%s", p.Id, resolved.String())
-				node.Attr[i].Val = proxied
-			}
-		}
 	}
 
 	for _, xpath := range []struct {
@@ -69,7 +40,18 @@ func (r *ReplayService) RewriteHTML(htmlContent []byte, p *models.Project) ([]by
 	} {
 		nodes := htmlquery.Find(doc, xpath.xpath)
 		for _, node := range nodes {
-			rewriteAttr(node, xpath.attr)
+			for i := range node.Attr {
+				if node.Attr[i].Key == xpath.attr {
+					node.Attr[i].Val = rewriteFunc(node.Attr[i].Val)
+				}
+			}
+		}
+	}
+
+	styleElements := htmlquery.Find(doc, `//style`)
+	for _, el := range styleElements {
+		if el.FirstChild != nil && el.FirstChild.Type == html.TextNode {
+			el.FirstChild.Data = r.RewriteCSS(el.FirstChild.Data, rewriteFunc)
 		}
 	}
 
@@ -143,7 +125,7 @@ func (r *ReplayService) InjectHTML(htmlContent []byte, scripts string, bannerHTM
 
 // RewriteCSSURLs parses css content and rewrites the urls in URLTokens so they are
 // handled by the proxy route.
-func (r *ReplayService) RewriteCSS(cssContent string, rewriteFunc func(string) string) string {
+func (r *ReplayService) RewriteCSS(cssContent string, rewriteFunc rewriteURL) string {
 	urlRegex := regexp.MustCompile(`url\((.*?)\)`)
 	rewrittenCSS := urlRegex.ReplaceAllStringFunc(cssContent, func(match string) string {
 		urlStr := strings.TrimPrefix(strings.TrimSuffix(match, ")"), "url(")

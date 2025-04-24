@@ -92,22 +92,24 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if strings.HasPrefix(strings.ToLower(contentType), "text/css") {
-		rewrittenCSS := h.ReplayService.RewriteCSS(string(record.Body), func(urlStr string) string {
-			if u, err := url.Parse(urlStr); err == nil {
-				if !u.IsAbs() {
-					u = parsedRequestedURL.ResolveReference(u)
-				}
-
-				if u.Scheme != "http" && u.Scheme != "https" {
-					return urlStr
-				}
-
-				return fmt.Sprintf("/replay?pid=%d&url=%s", pv.Project.Id, u.String())
+	rewriteFunc := func(urlStr string) string {
+		if u, err := url.Parse(urlStr); err == nil {
+			if !u.IsAbs() {
+				u = parsedRequestedURL.ResolveReference(u)
 			}
 
-			return urlStr
-		})
+			if u.Scheme != "http" && u.Scheme != "https" {
+				return urlStr
+			}
+
+			return fmt.Sprintf("/replay?pid=%d&url=%s", pv.Project.Id, u.String())
+		}
+
+		return urlStr
+	}
+
+	if strings.HasPrefix(strings.ToLower(contentType), "text/css") {
+		rewrittenCSS := h.ReplayService.RewriteCSS(string(record.Body), rewriteFunc)
 
 		w.Write([]byte(rewrittenCSS))
 		return
@@ -120,7 +122,7 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rawBody := []byte(record.Body)
-	rewrittenHTML, err := h.Container.ReplayService.RewriteHTML(rawBody, &pv.Project)
+	rewrittenHTML, err := h.Container.ReplayService.RewriteHTML(rawBody, rewriteFunc)
 	if err != nil {
 		http.Error(w, "Replay error", http.StatusInternalServerError)
 		return

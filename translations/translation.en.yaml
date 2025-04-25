@@ -253,3 +253,6 @@ ERROR_DUPLICATED_ID_DESC: Having elements with duplicate IDs confuses assistive 
 
 ERROR_MISSING_VIEWPORT: Pages missing the viewport meta tag
 ERROR_MISSING_VIEWPORT_DESC: A webpage missing the viewport meta tag won't display properly on mobile devices, leading to a bad user experience and lower rankings in search engine results.
+
+ERROR_DOM_SIZE: HTML documents with an excessive DOM size
+ERROR_DOM_SIZE_DESC: Pages with a high DOM size can slow down page loading times and make it harder for search engines to crawl and index the content efficiently. Simplify your HTML structure by removing unnecessary elements and minimizing the use of nested tags.

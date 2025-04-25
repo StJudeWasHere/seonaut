@@ -108,3 +108,34 @@ func NewDuplicatedIdReporter() *models.PageIssueReporter {
 		Callback:  c,
 	}
 }
+
+// NewDOMSizeReporter returns a new reporter that returns true if the HTML document has
+// more than a specified number of nodes. Otherwise it returns false.
+func NewDOMSizeReporter(size int) *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
+			return false
+		}
+
+		if htmlNode.Type == html.ErrorNode {
+			return false
+		}
+
+		nodes := htmlquery.Find(htmlNode, "//*")
+
+		return len(nodes) > size
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorDOMSize,
+		Callback:  c,
+	}
+}

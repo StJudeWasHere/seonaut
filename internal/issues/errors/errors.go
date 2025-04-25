@@ -85,4 +85,5 @@ const (
 	ErrorIncorrectMediaType                      // URLs with incorrect media type or media type that doesn't match extension
 	ErrorDuplicatedId                            // Pages with duplicated id attributes
 	ErrorMissingViewportTag                      // Pages with missing viewport meta tag
+	ErrorDOMSize                                 // HTML documents with excessive DOM size
 )

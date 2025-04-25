@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(77, "ERROR_DOM_SIZE", 3);

@@ -68,6 +68,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		NewLittleContentReporter(),
 		NewIncorrectMediaTypeReporter(),
 		NewDuplicatedIdReporter(),
+		NewDOMSizeReporter(1500), // report html documents with more than 1500 nodes
 
 		// Add scheme issue reporters
 		NewHTTPSchemeReporter(),

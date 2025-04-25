@@ -199,3 +199,71 @@ func TestDuplicatedIdNoIssues(t *testing.T) {
 		t.Errorf("reportsIssue should be false")
 	}
 }
+
+// Test the DOMSize reporter with a document with a node count below the specified limit.
+// The reporter should not report any issue.
+func TestDOMSizeNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	reporter := page.NewDOMSizeReporter(1500)
+	if reporter.ErrorType != errors.ErrorDOMSize {
+		t.Errorf("error type is not correct")
+	}
+
+	html := strings.NewReader(`
+		<html>
+			<body>
+				<div>DOM Size Test</div>
+			</body>
+		</html>`)
+
+	doc, err := htmlquery.Parse(html)
+	if err != nil {
+		t.Errorf("error parsing html")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
+	}
+}
+
+// Test the DOMSize reporter with a document with a node count higher than the specified size.
+// The reporter should report an issue.
+func TestDOMSizeIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+	}
+
+	reporter := page.NewDOMSizeReporter(3)
+	if reporter.ErrorType != errors.ErrorDOMSize {
+		t.Errorf("error type is not correct")
+	}
+
+	html := strings.NewReader(`
+		<html>
+			<body>
+				<div>DOM Size Test</div>
+				<div>DOM Size Test</div>
+				<div>DOM Size Test</div>
+				<div>DOM Size Test</div>
+				<div>DOM Size Test</div>
+			</body>
+		</html>`)
+
+	doc, err := htmlquery.Parse(html)
+	if err != nil {
+		t.Errorf("error parsing html")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, doc, &http.Header{})
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
+	}
+}

@@ -86,4 +86,5 @@ const (
 	ErrorDuplicatedId                            // Pages with duplicated id attributes
 	ErrorMissingViewportTag                      // Pages with missing viewport meta tag
 	ErrorDOMSize                                 // HTML documents with excessive DOM size
+	ErrorPaginationLink                          // Pages with next and prev attributes missing the actual link
 )

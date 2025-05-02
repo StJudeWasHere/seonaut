@@ -1,4 +1,4 @@
-package services
+package urlutils
 
 import (
 	"errors"
@@ -11,7 +11,15 @@ import (
 
 // Return an absolute URL removing the URL fragment and taking into account
 // the document's base tag if it exists.
-func absoluteURL(s string, n *html.Node, projectURL *url.URL) (*url.URL, error) {
+func AbsoluteURL(s string, n *html.Node, projectURL *url.URL) (*url.URL, error) {
+	if n == nil {
+		return nil, errors.New("urlutils: empty node")
+	}
+
+	if projectURL == nil {
+		return nil, errors.New("urlutils: empty url")
+	}
+
 	u, err := url.Parse(strings.TrimSpace(s))
 	if err != nil {
 		return nil, err

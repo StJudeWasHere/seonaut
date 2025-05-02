@@ -15,6 +15,7 @@ import (
 	"github.com/antchfx/htmlquery"
 	"github.com/stjudewashere/seonaut/internal/crawler"
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/urlutils"
 	"golang.org/x/net/html"
 )
 
@@ -125,7 +126,7 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 			}
 
 			for _, preloadLink := range preload {
-				pl, err := absoluteURL(htmlquery.SelectAttr(preloadLink, "href"), htmlNode, pageReport.ParsedURL)
+				pl, err := urlutils.AbsoluteURL(htmlquery.SelectAttr(preloadLink, "href"), htmlNode, pageReport.ParsedURL)
 				if err != nil {
 					log.Printf("error getting preload link href %s %v", pl.String(), err)
 					continue

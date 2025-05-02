@@ -9,6 +9,7 @@ import (
 	"unicode"
 
 	"github.com/stjudewashere/seonaut/internal/models"
+	"github.com/stjudewashere/seonaut/internal/urlutils"
 
 	"github.com/antchfx/htmlquery"
 	"github.com/microcosm-cc/bluemonday"
@@ -161,7 +162,7 @@ func (p *Parser) htmlMetaRefreshURL() string {
 	u := strings.Split(r, ";")
 	if len(u) > 1 && strings.ToLower(u[1][:4]) == "url=" {
 		l := strings.ReplaceAll(u[1][4:], "'", "")
-		redirect, err := absoluteURL(l, p.doc, p.ParsedURL)
+		redirect, err := urlutils.AbsoluteURL(l, p.doc, p.ParsedURL)
 		if err != nil {
 			return ""
 		}
@@ -213,7 +214,7 @@ func (p *Parser) htmlCanonical() string {
 		return ""
 	}
 
-	cu, err := absoluteURL(htmlquery.SelectAttr(canonical[0], "href"), p.doc, p.ParsedURL)
+	cu, err := urlutils.AbsoluteURL(htmlquery.SelectAttr(canonical[0], "href"), p.doc, p.ParsedURL)
 	if err != nil {
 		return ""
 
@@ -254,7 +255,7 @@ func (p *Parser) htmlHreflang() []models.Hreflang {
 
 	for _, n := range hl {
 		if htmlquery.ExistsAttr(n, "hreflang") {
-			l, err := absoluteURL(htmlquery.SelectAttr(n, "href"), p.doc, p.ParsedURL)
+			l, err := urlutils.AbsoluteURL(htmlquery.SelectAttr(n, "href"), p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -281,7 +282,7 @@ func (p *Parser) htmlImages() []models.Image {
 			continue
 		}
 
-		url, err := absoluteURL(s, p.doc, p.ParsedURL)
+		url, err := urlutils.AbsoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -295,7 +296,7 @@ func (p *Parser) htmlImages() []models.Image {
 
 		imageSet := p.parseSrcSet(htmlquery.SelectAttr(n, "srcset"))
 		for _, s := range imageSet {
-			url, err := absoluteURL(s, p.doc, p.ParsedURL)
+			url, err := urlutils.AbsoluteURL(s, p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -322,7 +323,7 @@ func (p *Parser) htmlIframes() []string {
 			continue
 		}
 
-		u, err := absoluteURL(s, p.doc, p.ParsedURL)
+		u, err := urlutils.AbsoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -357,7 +358,7 @@ func (p *Parser) htmlPictures() []models.Image {
 		for _, s := range sources {
 			imageSet := p.parseSrcSet(htmlquery.SelectAttr(s, "srcset"))
 			for _, is := range imageSet {
-				url, err := absoluteURL(is, p.doc, p.ParsedURL)
+				url, err := urlutils.AbsoluteURL(is, p.doc, p.ParsedURL)
 				if err != nil {
 					continue
 				}
@@ -386,7 +387,7 @@ func (p *Parser) htmlAudios() []string {
 
 		src := htmlquery.SelectAttr(n, "src")
 		if strings.TrimSpace(src) != "" {
-			url, err := absoluteURL(src, p.doc, p.ParsedURL)
+			url, err := urlutils.AbsoluteURL(src, p.doc, p.ParsedURL)
 			if err == nil {
 				audios = append(audios, url.String())
 			}
@@ -395,7 +396,7 @@ func (p *Parser) htmlAudios() []string {
 		sources := htmlquery.Find(n, "//source")
 		for _, s := range sources {
 			src := htmlquery.SelectAttr(s, "src")
-			url, err := absoluteURL(src, p.doc, p.ParsedURL)
+			url, err := urlutils.AbsoluteURL(src, p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -420,7 +421,7 @@ func (p *Parser) htmlVideos() []models.Video {
 		poster := ""
 		posterAttr := htmlquery.SelectAttr(n, "poster")
 		if strings.TrimSpace(posterAttr) != "" {
-			pURL, err := absoluteURL(posterAttr, p.doc, p.ParsedURL)
+			pURL, err := urlutils.AbsoluteURL(posterAttr, p.doc, p.ParsedURL)
 			if err == nil {
 				poster = pURL.String()
 			}
@@ -428,7 +429,7 @@ func (p *Parser) htmlVideos() []models.Video {
 
 		src := htmlquery.SelectAttr(n, "src")
 		if strings.TrimSpace(src) != "" {
-			url, err := absoluteURL(src, p.doc, p.ParsedURL)
+			url, err := urlutils.AbsoluteURL(src, p.doc, p.ParsedURL)
 			if err == nil {
 				videos = append(videos, models.Video{URL: url.String(), Poster: poster})
 			}
@@ -437,7 +438,7 @@ func (p *Parser) htmlVideos() []models.Video {
 		sources := htmlquery.Find(n, "//source")
 		for _, s := range sources {
 			src := htmlquery.SelectAttr(s, "src")
-			url, err := absoluteURL(src, p.doc, p.ParsedURL)
+			url, err := urlutils.AbsoluteURL(src, p.doc, p.ParsedURL)
 			if err != nil {
 				continue
 			}
@@ -456,7 +457,7 @@ func (p *Parser) htmlScripts() []string {
 	s := htmlquery.Find(p.doc, "//script[@src]/@src")
 	for _, n := range s {
 		s := htmlquery.SelectAttr(n, "src")
-		url, err := absoluteURL(s, p.doc, p.ParsedURL)
+		url, err := urlutils.AbsoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -475,7 +476,7 @@ func (p *Parser) htmlStyles() []string {
 	for _, n := range s {
 		s := htmlquery.SelectAttr(n, "href")
 
-		url, err := absoluteURL(s, p.doc, p.ParsedURL)
+		url, err := urlutils.AbsoluteURL(s, p.doc, p.ParsedURL)
 		if err != nil {
 			continue
 		}
@@ -504,7 +505,7 @@ func (p *Parser) headersCanonical() string {
 		attr := strings.Split(lh, ";")
 		if len(attr) == 2 && strings.Contains(attr[1], `rel="canonical"`) {
 			canonicalString := strings.TrimSpace(attr[0])
-			cu, err := absoluteURL(canonicalString[1:len(canonicalString)-1], p.doc, p.ParsedURL)
+			cu, err := urlutils.AbsoluteURL(canonicalString[1:len(canonicalString)-1], p.doc, p.ParsedURL)
 			if err != nil {
 				return ""
 			}
@@ -570,7 +571,7 @@ func (p *Parser) headersRobots() string {
 
 // Return the contents of the HTTP Location header.
 func (p *Parser) headersLocation() string {
-	l, err := absoluteURL(p.Headers.Get("Location"), p.doc, p.ParsedURL)
+	l, err := urlutils.AbsoluteURL(p.Headers.Get("Location"), p.doc, p.ParsedURL)
 	if err != nil {
 		return ""
 	}
@@ -623,7 +624,7 @@ func (p *Parser) parseSrcSet(srcset string) []string {
 // Build a new link from a node element
 func (p *Parser) newLink(n *html.Node) (models.Link, error) {
 	href := htmlquery.SelectAttr(n, "href")
-	u, err := absoluteURL(href, p.doc, p.ParsedURL)
+	u, err := urlutils.AbsoluteURL(href, p.doc, p.ParsedURL)
 	if err != nil {
 		return models.Link{}, err
 	}

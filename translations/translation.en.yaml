@@ -256,3 +256,6 @@ ERROR_MISSING_VIEWPORT_DESC: A webpage missing the viewport meta tag won't displ
 
 ERROR_DOM_SIZE: HTML documents with an excessive DOM size
 ERROR_DOM_SIZE_DESC: Pages with a high DOM size can slow down page loading times and make it harder for search engines to crawl and index the content efficiently. Simplify your HTML structure by removing unnecessary elements and minimizing the use of nested tags.
+
+ERROR_PAGINATION_LINKS: Pagination URL not linked
+ERROR_PAGINATION_LINKS_DESC: Having link rel="next" and link rel="prev" tags without corresponding links in the body confuses search engines, leading to poor indexing and a frustrating navigation experience.

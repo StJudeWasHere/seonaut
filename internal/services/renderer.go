@@ -9,41 +9,32 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"gopkg.in/yaml.v3"
 )
 
 type (
+	RendererTranslator interface {
+		Trans(s string) string
+	}
+
 	RendererConfig struct {
-		TemplatesFolder  string
-		TranslationsFile string
+		TemplatesFolder string
 	}
 
 	Renderer struct {
-		translationMap map[string]interface{}
-		config         *RendererConfig
-		templates      *template.Template
+		config     *RendererConfig
+		templates  *template.Template
+		translator RendererTranslator
 	}
 )
 
 // NewRenderer will load a translation file and return a new template renderer.
-func NewRenderer(config *RendererConfig) (*Renderer, error) {
-	translation, err := os.ReadFile(config.TranslationsFile)
-	if err != nil {
-		return nil, err
-	}
-
-	m := make(map[string]interface{})
-	err = yaml.Unmarshal(translation, &m)
-	if err != nil {
-		return nil, err
-	}
-
+func NewRenderer(config *RendererConfig, translator RendererTranslator) (*Renderer, error) {
 	r := &Renderer{
-		translationMap: m,
-		config:         config,
+		translator: translator,
+		config:     config,
 	}
 
+	var err error
 	r.templates, err = findAndParseTemplates(config.TemplatesFolder, template.FuncMap{
 		"trans":      r.trans,
 		"total_time": r.totalTime,
@@ -65,16 +56,9 @@ func (r *Renderer) RenderTemplate(w io.Writer, t string, v interface{}) {
 	}
 }
 
-// Returns a translated string from the translations map.
-// The original string is returned if a translation is not found in the map.
+// Returns a translated string using the translator service.
 func (r *Renderer) trans(s string) string {
-	t, ok := r.translationMap[s]
-	if !ok {
-		log.Printf("trans: %s translation not found\n", s)
-		return s
-	}
-
-	return fmt.Sprintf("%v", t)
+	return r.translator.Trans(s)
 }
 
 // Returns the difference between the start time and the end time

@@ -166,6 +166,7 @@ func (h *exportHandler) resourcesHandler(w http.ResponseWriter, r *http.Request)
 		"audios":    h.ExportService.ExportAudios,
 		"videos":    h.ExportService.ExportVideos,
 		"hreflangs": h.ExportService.ExportHreflangs,
+		"issues":    h.ExportService.ExportAllIssues,
 	}
 
 	e, ok := m[t]

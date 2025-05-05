@@ -330,3 +330,41 @@ func (ds *ExportRepository) ExportHreflangs(crawl *models.Crawl) <-chan *models.
 
 	return vStream
 }
+
+// Export all issues by crawl through a read-only channel
+func (ds *ExportRepository) ExportIssues(crawl *models.Crawl) <-chan *models.ExportIssue {
+	vStream := make(chan *models.ExportIssue)
+
+	go func() {
+		defer close(vStream)
+
+		query := `
+		SELECT
+			pagereports.url,
+			issue_types.type,
+			issue_types.priority
+		FROM issues
+			LEFT JOIN  issue_types ON issue_types.id = issues.issue_type_id
+			LEFT JOIN pagereports ON pagereports.id = issues.pagereport_id
+		WHERE issues.crawl_id = ?
+		ORDER BY issue_types.priority ASC`
+
+		rows, err := ds.DB.Query(query, crawl.Id)
+		if err != nil {
+			log.Println(err)
+		}
+
+		for rows.Next() {
+			v := &models.ExportIssue{}
+			err := rows.Scan(&v.Url, &v.Type, &v.Priority)
+			if err != nil {
+				log.Println(err)
+				continue
+			}
+
+			vStream <- v
+		}
+	}()
+
+	return vStream
+}

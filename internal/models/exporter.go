@@ -43,3 +43,9 @@ type ExportHreflang struct {
 	Hreflang     string
 	HreflangLang string
 }
+
+type ExportIssue struct {
+	Url      string
+	Type     string
+	Priority int
+}

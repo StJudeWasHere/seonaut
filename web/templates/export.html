@@ -163,6 +163,19 @@
 		</div>
 	</div>
 
+	<div class="box">
+		<div class="col col-main">
+			<div class="content">
+				<h2>Export all issues</h2>
+				<p>Export all the issues with the affected URLs, issue type and priority.</p>
+			</div>
+		</div>
+
+		<div class="col col-actions">
+			<a href="/export/resources?pid={{ .Project.Id }}&t=issues" class="highlight">Download</a>
+		</div>
+	</div>
+
 	{{ if .ArchiveExists }}
 		<div class="box">
 			<div class="col col-main">

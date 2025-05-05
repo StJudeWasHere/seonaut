@@ -18,16 +18,22 @@ type (
 		ExportAudios(crawl *models.Crawl) <-chan *models.Audio
 		ExportVideos(crawl *models.Crawl) <-chan *models.ExportVideo
 		ExportHreflangs(crawl *models.Crawl) <-chan *models.ExportHreflang
+		ExportIssues(crawl *models.Crawl) <-chan *models.ExportIssue
 	}
 
+	ExportTranslator interface {
+		Trans(s string) string
+	}
 	Exporter struct {
 		repository ExportRepository
+		translator ExportTranslator
 	}
 )
 
-func NewExporter(r ExportRepository) *Exporter {
+func NewExporter(r ExportRepository, t ExportTranslator) *Exporter {
 	return &Exporter{
 		repository: r,
+		translator: t,
 	}
 }
 
@@ -224,6 +230,37 @@ func (e *Exporter) ExportHreflangs(f io.Writer, crawl *models.Crawl) {
 			v.OriginLang,
 			v.Hreflang,
 			v.HreflangLang,
+		})
+	}
+
+	w.Flush()
+}
+
+// Export all issues as a CSV file. It includes the URL, issue type and priority
+func (e *Exporter) ExportAllIssues(f io.Writer, crawl *models.Crawl) {
+	w := csv.NewWriter(f)
+
+	w.Write([]string{
+		"URL",
+		"Issue Type",
+		"Priority",
+	})
+
+	vStream := e.repository.ExportIssues(crawl)
+
+	for v := range vStream {
+		priority := "Warning"
+		switch v.Priority {
+		case Critical:
+			priority = "Critical"
+		case Alert:
+			priority = "Alert"
+		}
+
+		w.Write([]string{
+			v.Url,
+			e.translator.Trans(v.Type),
+			priority,
 		})
 	}
 

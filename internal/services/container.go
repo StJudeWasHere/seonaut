@@ -27,6 +27,7 @@ type Container struct {
 	ProjectViewService *ProjectViewService
 	ExportService      *Exporter
 	CrawlerService     *CrawlerService
+	Translator         *Translator
 	Renderer           *Renderer
 	CookieSession      *CookieSession
 	ArchiveService     *ArchiveService
@@ -56,6 +57,7 @@ func NewContainer(configFile string) *Container {
 	c.InitDashboardService()
 	c.InitProjectService()
 	c.InitProjectViewService()
+	c.InitTranslator()
 	c.InitExportService()
 	c.InitCrawlerService()
 	c.InitRenderer()
@@ -186,7 +188,7 @@ func (c *Container) InitProjectViewService() {
 
 // Create the Export service.
 func (c *Container) InitExportService() {
-	c.ExportService = NewExporter(c.exportRepository)
+	c.ExportService = NewExporter(c.exportRepository, c.Translator)
 }
 
 // Create Crawler service.
@@ -214,12 +216,22 @@ func (c *Container) InitDashboardService() {
 	c.DashboardService = NewDashboardService(c.dashboardRepository)
 }
 
+// Create The translator.
+func (c *Container) InitTranslator() {
+	var err error
+	c.Translator, err = NewTranslator(&TranslatorConfig{
+		TranslationsFile: "translations/translation.en.yaml",
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 // Create html renderer.
 func (c *Container) InitRenderer() {
 	renderer, err := NewRenderer(&RendererConfig{
-		TemplatesFolder:  "web/templates",
-		TranslationsFile: "translations/translation.en.yaml",
-	})
+		TemplatesFolder: "web/templates",
+	}, c.Translator)
 	if err != nil {
 		log.Fatal(err)
 	}

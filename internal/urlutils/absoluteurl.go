@@ -10,25 +10,26 @@ import (
 )
 
 // Return an absolute URL removing the URL fragment and taking into account
-// the document's base tag if it exists.
-func AbsoluteURL(s string, n *html.Node, projectURL *url.URL) (*url.URL, error) {
+// the document's base tag if it exists. Absolute URLs are created taking into account
+// the currentURL which should be absolute.
+func AbsoluteURL(urlStr string, n *html.Node, currentURL *url.URL) (*url.URL, error) {
 	if n == nil {
 		return nil, errors.New("urlutils: empty node")
 	}
 
-	if projectURL == nil {
+	if currentURL == nil {
 		return nil, errors.New("urlutils: empty url")
 	}
 
-	u, err := url.Parse(strings.TrimSpace(s))
+	u, err := url.Parse(strings.TrimSpace(urlStr))
 	if err != nil {
 		return nil, err
 	}
 
 	if !u.IsAbs() {
-		base, err := htmlBase(n, projectURL)
+		base, err := htmlBase(n, currentURL)
 		if err != nil {
-			u = projectURL.ResolveReference(u)
+			u = currentURL.ResolveReference(u)
 		} else {
 			u = base.JoinPath(u.Path)
 		}
@@ -47,7 +48,7 @@ func AbsoluteURL(s string, n *html.Node, projectURL *url.URL) (*url.URL, error) 
 }
 
 // htmlBase returns the url in the base tag if it exists. Otherwise it returns an error.
-func htmlBase(n *html.Node, projectURL *url.URL) (*url.URL, error) {
+func htmlBase(n *html.Node, currentURL *url.URL) (*url.URL, error) {
 	base, err := htmlquery.Query(n, "//head/base[@href]")
 	if err != nil || base == nil {
 		return nil, errors.New("base path is missing or empty")
@@ -60,11 +61,11 @@ func htmlBase(n *html.Node, projectURL *url.URL) (*url.URL, error) {
 	}
 
 	if parsed.Host == "" {
-		parsed.Host = projectURL.Host
+		parsed.Host = currentURL.Host
 	}
 
 	if parsed.Scheme == "" {
-		parsed.Scheme = projectURL.Scheme
+		parsed.Scheme = currentURL.Scheme
 	}
 
 	return parsed, nil

@@ -86,7 +86,7 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 		// are added as the crawler will discard the domains that are not allowed.
 		links := append(pageReport.Links, pageReport.ExternalLinks...)
 		for _, l := range links {
-			if !l.NoFollow || p.FollowNofollow {
+			if (!pageReport.Nofollow && !l.NoFollow) || p.FollowNofollow {
 				err := c.AddRequest(&crawler.RequestMessage{URL: l.ParsedURL, Data: requestData})
 				if errors.Is(err, crawler.ErrBlockedByRobotstxt) {
 					s.saveBlockedPageReport(l.ParsedURL, crawl)

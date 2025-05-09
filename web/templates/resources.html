@@ -4,6 +4,9 @@
 <a name="menu"></a>
 
 {{ $parameters := printf "?pid=%d&rid=%d" .ProjectView.Project.Id .PageReportView.PageReport.Id }}
+{{ $archived := .Archived }}
+{{ $projectId := .ProjectView.Project.Id }}
+{{ $IsHTML := .IsHTML }}
 
 <div class="panel">
 
@@ -36,14 +39,18 @@
 	<div class="box box-highlight soft">
 		<div class="col col-main">
 			<div class="content">
-				<div class="url">
-					{{ if .PageReportView.PageReport.Title }}
-					{{ .PageReportView.PageReport.Title }} <br>
-					{{ end }}
-					{{ .PageReportView.PageReport.URL }}
-					<a class="borderless" href="{{ .PageReportView.PageReport.URL }}" target="_blank">↗</a>
-				</div>
-			 </div>
+				{{ if eq .Tab "details" }} General details about the URL. {{ end }}
+				{{ if eq .Tab "inlinks" }} Inlinks are links to this URL from other pages on this website. {{ end }}
+				{{ if eq .Tab "internal" }} Internal links are the links found in this URL's HTML code that point to other pages on this website. {{ end }}
+				{{ if eq .Tab "external"}} External links are the links found in this URL's HTML code pointing to other websites. {{ end }}
+				{{ if eq .Tab "redirections" }} Redirections are the URLs from this website that are redirected to this URL. {{ end }}
+				{{ if eq .Tab "images" }} Images that are found in this URL's HTML code. Note that images shown using CSS are not included here. {{ end }}
+				{{ if eq .Tab "audios" }} Audio files that are found in this URL's HTML code. {{ end }}
+				{{ if eq .Tab "videos" }} Video files that are found in this URL's HTML code. {{ end }}
+				{{ if eq .Tab "iframes" }} Iframes that are found in this URL's HTML code. {{ end }}
+				{{ if eq .Tab "scripts" }} Script files that are found in this URL's code. {{ end }}
+				{{ if eq .Tab "styles" }} CSS files that are found in this URL's HTML code. {{ end }}
+			</div>
 		</div>
 
 		<div class="col">
@@ -121,25 +128,15 @@
 	{{ $eid := .Eid }}
 	{{ $parameters = printf "%s&t=%s" $parameters .Tab }}
 
-	{{ if eq .Tab "details" }}
-		<div class="box box-highlight">
-			<div class="col col-main borderless">
-				<div class="content">
-					General details about this URL.
-				</div>
+	<div class="box">
+		<div class="col col-main highlight">
+			<div class="content content-s">
+				<b>URL:</b> {{ .PageReportView.PageReport.URL }} <a class="borderless" href="{{ .PageReportView.PageReport.URL }}" target="_blank">↗</a>
 			</div>
-			{{ if .Archived }}
-				<div class="col">
-					<div class="content">
-						This project is archived: <a href="/archive{{ $parameters }}">View archived response</a>
-						{{ if .IsHTML }}
-							<br>
-							WACZ Archive Replay: <a href="/replay?pid={{ .ProjectView.Project.Id }}&url={{ .PageReportView.PageReport.URL }}" target="_blank">Open in browser</a>
-						{{ end }}
-					</div>
-				</div>
-			{{ end }}
 		</div>
+	</div>
+
+	{{ if eq .Tab "details" }}
 		{{ $errorTypes := .PageReportView.ErrorTypes }}
 		{{ with .PageReportView.PageReport }}
 			<div>
@@ -155,6 +152,69 @@
 							{{ if .StatusCode }}{{ .StatusCode }}{{ else }}-{{ end }}
 						</div>
 					</div>
+				</div>
+
+				<div class="box soft">
+					<div class="col borderless">
+						<div class="content">
+							<b>Content Type</b>
+						</div>
+					</div>
+
+					<div class="col">
+						<div class="content">
+							{{ if .ContentType }}{{ .ContentType }}{{ else }}-{{ end }}
+						</div>
+					</div>
+				</div>
+
+				<div class="box soft">
+					<div class="col borderless">
+						<div class="content">
+							<b>Title</b>
+						</div>
+					</div>
+
+					<div class="col">
+						<div class="content">
+							{{ if .Title }}{{ .Title }}{{ else }} - {{ end }}
+						</div>
+					</div>
+				</div>
+
+				<div class="box soft">
+					<div class="col borderless">
+						<div class="content">
+							<b>Description</b>
+						</div>
+					</div>
+
+					<div class="col">
+						<div class="content">
+							{{ if .Description }}{{ .Description }}{{ else }} - {{ end }}
+						</div>
+					</div>
+				</div>
+
+				<div class="box soft">
+					<div class="col borderless">
+						<div class="content">
+							<b>H1</b>
+						</div>
+					</div>
+
+					<div class="col borderless">
+						<div class="content">
+							{{ if .H1 }}{{ .H1 }}{{ else }}-{{ end }}
+						</div>
+					</div>
+				</div>
+
+				<div class="box soft">
+					<div class="col borderless"><div class="content"><b>H2</b></div></div>
+					<div class="col borderless"><div class="content">
+						{{ if .H2 }}{{ .H2 }}{{ else }} - {{ end }}
+					</div></div>
 				</div>
 
 				<div class="box soft">
@@ -186,20 +246,6 @@
 						</div>
 					</div>
 				{{ end }}
-
-				<div class="box soft">
-					<div class="col borderless">
-						<div class="content">
-							<b>Content Type</b>
-						</div>
-					</div>
-
-					<div class="col">
-						<div class="content">
-							{{ if .ContentType }}{{ .ContentType }}{{ else }}-{{ end }}
-						</div>
-					</div>
-				</div>
 
 				<div class="box soft">
 					<div class="col borderless">
@@ -315,55 +361,6 @@
 					</div>
 				</div>
 
-				<div class="box soft">
-					<div class="col borderless">
-						<div class="content">
-							<b>Title</b>
-						</div>
-					</div>
-
-					<div class="col">
-						<div class="content">
-							{{ if .Title }}{{ .Title }}{{ else }} - {{ end }}
-						</div>
-					</div>
-				</div>
-
-				<div class="box soft">
-					<div class="col borderless">
-						<div class="content">
-							<b>Description</b>
-						</div>
-					</div>
-
-					<div class="col">
-						<div class="content">
-							{{ if .Description }}{{ .Description }}{{ else }} - {{ end }}
-						</div>
-					</div>
-				</div>
-
-				<div class="box soft">
-					<div class="col borderless">
-						<div class="content">
-							<b>H1</b>
-						</div>
-					</div>
-
-					<div class="col borderless">
-						<div class="content">
-							{{ if .H1 }}{{ .H1 }}{{ else }}-{{ end }}
-						</div>
-					</div>
-				</div>
-
-					<div class="box soft">
-						<div class="col borderless"><div class="content"><b>H2</b></div></div>
-						<div class="col borderless"><div class="content">
-							{{ if .H2 }}{{ .H2 }}{{ else }} - {{ end }}
-						</div></div>
-					</div>
-
 					<div class="box soft">
 						<div class="col borderless">
 							<div class="content">
@@ -406,6 +403,30 @@
 						</div>
 					</div>
 
+
+					<div class="box soft">
+						<div class="col borderless">
+							<div class="content">
+								<b>WACZ Archive</b>
+							</div>
+						</div>
+
+						<div class="col">
+							<div class="content">
+								{{ if $archived }}
+								<ul>
+									<li><a href="/archive{{ $parameters }}">View archived response</a></li>
+									{{ if $IsHTML }}
+										<li><a href="/replay?pid={{ $projectId }}&url={{ .URL }}" target="_blank">Open in browser</a></li>
+									{{ end }}
+								</ul>
+								{{ else }}
+									-
+								{{ end }}
+							</div>
+						</div>
+					</div>
+
 					<div class="box bg-alert">
 						<div class="col borderless">
 							<div class="content">
@@ -435,13 +456,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "inlinks" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Inlinks are links to this URL from other pages on this website.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.InLinks }}
 			{{ range .PageReportView.InLinks }}
 				<div class="box">
@@ -497,13 +511,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "redirections" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Redirections are the URLs from this website that are redirected to this URL.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.Redirects }}
 			{{ range .PageReportView.Redirects }}
 				<div class="box">
@@ -551,13 +558,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "internal" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Internal links are the links found in this URL's HTML code that point to other pages on this website.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.PageReport.InternalLinks }}
 				{{ range .PageReportView.PageReport.InternalLinks }}
 					<div class="box">
@@ -619,13 +619,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "external" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					External links are the links found in this URL's HTML code pointing to other websites.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.PageReport.ExternalLinks }}
 			{{ range .PageReportView.PageReport.ExternalLinks }}
 					<div class="box">
@@ -672,13 +665,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "images" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Images that are found in this URL's HTML code. Note that images shown using CSS are not included here.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.PageReport.Images }}
 			{{ range .PageReportView.PageReport.Images }}
 				<div class="box">
@@ -697,13 +683,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "iframes" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Iframes that are found in this URL's HTML code.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.PageReport.Iframes }}
 			{{ range .PageReportView.PageReport.Iframes }}
 				<div class="box">
@@ -720,13 +699,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "audios" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Audio files that are found in this URL's HTML code.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.PageReport.Audios }}
 			{{ range .PageReportView.PageReport.Audios }}
 				<div class="box">
@@ -743,13 +715,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "videos" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Video files that are found in this URL's HTML code.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.PageReport.Videos }}
 			{{ range .PageReportView.PageReport.Videos }}
 				<div class="box">
@@ -767,13 +732,6 @@
 	{{ end }}
 
 	{{ if eq .Tab "scripts" }}
-		<div class="box box-highlight">
-			<div class="col col-main">
-				<div class="content">
-					Script files that are found in this URL's code.
-				</div>
-			</div>
-		</div>
 		{{ if .PageReportView.PageReport.Scripts }}
 			{{ range .PageReportView.PageReport.Scripts }}
 				<div class="box">
@@ -790,13 +748,6 @@
 	{{ end }}
 	
 	{{ if eq .Tab "styles" }}
-	<div class="box box-highlight">
-		<div class="col col-main">
-			<div class="content">
-				CSS files that are found in this URL's HTML code.
-			</div>
-		</div>
-	</div>
 		{{ if .PageReportView.PageReport.Styles }}
 			{{ range .PageReportView.PageReport.Styles }}
 				<div class="box">

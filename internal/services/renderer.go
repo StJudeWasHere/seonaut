@@ -27,7 +27,7 @@ type (
 	}
 )
 
-// NewRenderer will load a translation file and return a new template renderer.
+// NewRenderer returns a new template renderer with the specified configuration.
 func NewRenderer(config *RendererConfig, translator RendererTranslator) (*Renderer, error) {
 	r := &Renderer{
 		translator: translator,
@@ -36,10 +36,10 @@ func NewRenderer(config *RendererConfig, translator RendererTranslator) (*Render
 
 	var err error
 	r.templates, err = findAndParseTemplates(config.TemplatesFolder, template.FuncMap{
-		"trans":      r.trans,
+		"trans":      r.translator.Trans,
 		"total_time": r.totalTime,
 		"add":        r.add,
-		"to_kb":      r.ToKByte,
+		"to_kb":      r.toKByte,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("renderer initialisation failed: %w", err)
@@ -56,17 +56,12 @@ func (r *Renderer) RenderTemplate(w io.Writer, t string, v interface{}) {
 	}
 }
 
-// Returns a translated string using the translator service.
-func (r *Renderer) trans(s string) string {
-	return r.translator.Trans(s)
-}
-
-// Returns the difference between the start time and the end time
+// Returns the difference between the start time and the end time.
 func (r *Renderer) totalTime(start, end time.Time) time.Duration {
 	return end.Sub(start)
 }
 
-// Add integers
+// Helper function to add integers in the templates.
 func (r *Renderer) add(i ...int) int {
 	total := 0
 	for _, v := range i {
@@ -76,8 +71,8 @@ func (r *Renderer) add(i ...int) int {
 	return total
 }
 
-// Returns an int formated as KB.
-func (r *Renderer) ToKByte(b int64) string {
+// toKByte is a helper function that returns an int64 formated as KB.
+func (r *Renderer) toKByte(b int64) string {
 	v := b / (1 << 10)
 	i := b % (1 << 10)
 

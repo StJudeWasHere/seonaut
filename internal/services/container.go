@@ -77,7 +77,7 @@ func (c *Container) InitConfig(configFile string) {
 	c.Config = config
 }
 
-// Create the sql database connection.
+// Create the sql database connection and run migrations.
 func (c *Container) InitDB() {
 	db, err := repository.SqlConnect(c.Config.DB)
 	if err != nil {
@@ -244,10 +244,12 @@ func (c *Container) InitCookieSession() {
 	c.CookieSession = NewCookieSession(c.userRepository)
 }
 
+// Init the WACZ archiver service.
 func (c *Container) InitArchiveService() {
 	c.ArchiveService = NewArchiveService("archive")
 }
 
+// Init the WACZ archive replay service.
 func (c *Container) InitReplayService() {
 	c.ReplayService = NewReplayService()
 }

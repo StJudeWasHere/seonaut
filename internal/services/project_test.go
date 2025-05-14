@@ -17,6 +17,7 @@ const (
 	urlScheme  = "https"
 )
 
+// Create a test repository for the service.
 type projectTestRepository struct{}
 
 func (s *projectTestRepository) SaveProject(project *models.Project, userId int) {}
@@ -39,12 +40,16 @@ func (s *projectTestRepository) FindProjectById(id, uid int) (models.Project, er
 }
 func (s *projectTestRepository) DeleteProjectCrawls(*models.Project) {}
 
+// Create an Archive Deleter for the service.
 type ArchiveDeleter struct{}
 
 func (ad *ArchiveDeleter) DeleteArchive(p *models.Project) {}
 
+// Create the service with the test repository and archive deleter.
 var service = services.NewProjectService(&projectTestRepository{}, &ArchiveDeleter{})
 
+// Test FindProjectById. This function parses the URL to populate
+// the Host field in the project model.
 func TestFindProjectById(t *testing.T) {
 	p, err := service.FindProject(gid, guid)
 	if err != nil {
@@ -65,28 +70,70 @@ func TestFindProjectById(t *testing.T) {
 	}
 }
 
+// Test SaveProject with different project configurations.
 func TestSaveProject(t *testing.T) {
-	// Valid URL and valid User-Agent
-	err := service.SaveProject(&models.Project{URL: projectURL, UserAgent: userAgent}, guid)
-	if err != nil {
-		t.Errorf("TestSaveProject: should not return error %v", err)
+	table := []struct {
+		name      string
+		project   *models.Project
+		wantError bool
+	}{
+		{
+			name:      "Valid URL and valid User-Agent",
+			project:   &models.Project{URL: projectURL, UserAgent: userAgent},
+			wantError: false,
+		},
+		{
+			name:      "Valid URL and empty User-Agent",
+			project:   &models.Project{URL: projectURL},
+			wantError: true,
+		},
+		{
+			name:      "Not valid URL",
+			project:   &models.Project{URL: "....", UserAgent: userAgent},
+			wantError: true,
+		},
+		{
+			name:      "Not supported scheme",
+			project:   &models.Project{URL: "ftp://example.org", UserAgent: userAgent},
+			wantError: true,
+		},
 	}
 
-	// Valid URL and empty User-Agent
-	err = service.SaveProject(&models.Project{URL: projectURL}, guid)
-	if err == nil {
-		t.Errorf("TestSaveProject: empty UserAgent should return error")
+	for _, tt := range table {
+		t.Run(tt.name, func(t *testing.T) {
+			err := service.SaveProject(tt.project, guid)
+			if (err != nil) != tt.wantError {
+				t.Errorf("SaveProject() want error %v got %v", tt.wantError, err)
+			}
+		})
+	}
+}
+
+// Test UpdateProject with different project configurations.
+func TestUpdateProject(t *testing.T) {
+	table := []struct {
+		name      string
+		project   *models.Project
+		wantError bool
+	}{
+		{
+			name:      "Valid User-Agent",
+			project:   &models.Project{URL: projectURL, UserAgent: userAgent},
+			wantError: false,
+		},
+		{
+			name:      "Empty User-Agent",
+			project:   &models.Project{URL: projectURL},
+			wantError: true,
+		},
 	}
 
-	// Not valid URL
-	err = service.SaveProject(&models.Project{URL: "...."}, guid)
-	if err == nil {
-		t.Error("TestSaveProject: invalid URL should return error")
-	}
-
-	// Not supported scheme
-	err = service.SaveProject(&models.Project{URL: "ftp://example.org"}, guid)
-	if err == nil {
-		t.Error("TestSaveProject: not supported scheme should return error")
+	for _, tt := range table {
+		t.Run(tt.name, func(t *testing.T) {
+			err := service.UpdateProject(tt.project)
+			if (err != nil) != tt.wantError {
+				t.Errorf("SaveProject() want error %v got %v", tt.wantError, err)
+			}
+		})
 	}
 }

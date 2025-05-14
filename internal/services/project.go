@@ -29,8 +29,13 @@ type (
 	}
 )
 
-var ErrProtocolNotSupported = errors.New("protocol not supported")
-var ErrUserAgent = errors.New("user agent string must not be empty")
+var (
+	// Error returned when the project's URL scheme is not http or https.
+	ErrProtocolNotSupported = errors.New("protocol not supported")
+
+	// Error returned when the project's user agent is empty.
+	ErrUserAgent = errors.New("user agent string must not be empty")
+)
 
 func NewProjectService(r ProjectServiceRepository, a ArchiveRemover) *ProjectService {
 	return &ProjectService{
@@ -42,23 +47,15 @@ func NewProjectService(r ProjectServiceRepository, a ArchiveRemover) *ProjectSer
 // SaveProject stores a new project.
 // It trims the spaces in the project's URL field and checks the scheme to
 // make sure it is http or https.
-func (s *ProjectService) SaveProject(project *models.Project, userId int) error {
-	project.URL = strings.TrimSpace(project.URL)
-	parsedURL, err := url.Parse(project.URL)
+func (s *ProjectService) SaveProject(p *models.Project, userId int) error {
+	p.URL = strings.TrimSpace(p.URL)
+
+	err := s.validateProject(p)
 	if err != nil {
 		return err
 	}
 
-	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-		return ErrProtocolNotSupported
-	}
-
-	project.UserAgent = strings.TrimSpace(project.UserAgent)
-	if project.UserAgent == "" {
-		return ErrUserAgent
-	}
-
-	s.repository.SaveProject(project, userId)
+	s.repository.SaveProject(p, userId)
 
 	return nil
 }
@@ -81,7 +78,9 @@ func (s *ProjectService) FindProject(id, uid int) (models.Project, error) {
 	return project, nil
 }
 
-// Delete a project and its related data.
+// Delete a project and its related data. Deleting the project's data can take a while
+// depending on the amount of crawled URLs, so the project is marked as disabled and the
+// actual data is deleted in go routine.
 func (s *ProjectService) DeleteProject(p *models.Project) {
 	s.repository.DisableProject(p)
 	go func() {
@@ -91,21 +90,25 @@ func (s *ProjectService) DeleteProject(p *models.Project) {
 	}()
 }
 
-// Update project details.
+// UpdateProject updates the project details. It first validates the project, then if the
+// project's archive option is false it deletes any existing archive.
 func (s *ProjectService) UpdateProject(p *models.Project) error {
-	if !p.Archive {
-		s.archiveRemover.DeleteArchive(p)
+	err := s.validateProject(p)
+	if err != nil {
+		return err
 	}
 
-	p.UserAgent = strings.TrimSpace(p.UserAgent)
-	if p.UserAgent == "" {
-		return ErrUserAgent
+	if !p.Archive {
+		s.archiveRemover.DeleteArchive(p)
 	}
 
 	return s.repository.UpdateProject(p)
 }
 
-// Delete all user projects and crawl data.
+// Delete all user projects and crawl data. This is called via a hook when users
+// are deleted, so all their data is removed. The hook is added in the container
+// when the service is initialized.
+// It removes data from the database and WACZ archive files.
 func (s *ProjectService) DeleteAllUserProjects(user *models.User) {
 	projects := s.repository.FindProjectsByUser(user.Id)
 	for _, p := range projects {
@@ -113,4 +116,24 @@ func (s *ProjectService) DeleteAllUserProjects(user *models.User) {
 		s.repository.DeleteProject(&p)
 		s.archiveRemover.DeleteArchive(&p)
 	}
+}
+
+// validateProject checks the project's URL and User-Agent to make sure they are valid.
+// It is called when a project is saved or updated.
+func (s *ProjectService) validateProject(p *models.Project) error {
+	parsedURL, err := url.Parse(p.URL)
+	if err != nil {
+		return err
+	}
+
+	if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return ErrProtocolNotSupported
+	}
+
+	p.UserAgent = strings.TrimSpace(p.UserAgent)
+	if p.UserAgent == "" {
+		return ErrUserAgent
+	}
+
+	return nil
 }

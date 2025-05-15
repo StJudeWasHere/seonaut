@@ -87,14 +87,9 @@ func (h *exportHandler) csvHandler(w http.ResponseWriter, r *http.Request) {
 		fileName = fileName + "-" + eid
 	}
 
-	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
-
-	cw := services.NewCSVWriter(w)
 	prStream := h.ReportService.GetPageReporsByIssueType(pv.Crawl.Id, eid)
-
-	for p := range prStream {
-		cw.Write(p)
-	}
+	w.Header().Add("Content-Disposition", fmt.Sprintf("attachment; filename=\"%s.csv\"", fileName))
+	h.Container.ExportService.ExportPageReports(w, prStream)
 }
 
 // sitemapHandler exports the crawled urls of a specific project as a sitemap.xml file.

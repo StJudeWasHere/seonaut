@@ -2,7 +2,10 @@ package services
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
+	"strconv"
+	"unicode/utf8"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -265,4 +268,63 @@ func (e *Exporter) ExportAllIssues(f io.Writer, crawl *models.Crawl) {
 	}
 
 	w.Flush()
+}
+
+// ExportPageReports exports the pagereport data for all the pageReports that are received
+// in the prStream channel. This export method is used to export all pageReports of crawl
+// or only the pageReports with specific issues in a crawl.
+func (e *Exporter) ExportPageReports(f io.Writer, prStream <-chan *models.PageReport) {
+	writer := csv.NewWriter(f)
+	writer.Write([]string{
+		"Status Code",
+		"URL",
+		"Redirect URL",
+		"Content Type",
+		"Canonical",
+		"Lang",
+		"Title",
+		"Title Length",
+		"Description",
+		"Description Length",
+		"Robots",
+		"Header 1",
+		"Header 2",
+		"Size",
+		"Nº of words",
+		"Depth",
+		"TTFB",
+	})
+
+	for r := range prStream {
+		writer.Write([]string{
+			fmt.Sprintf("%d", r.StatusCode),
+			r.URL,
+			r.RedirectURL,
+			r.ContentType,
+			r.Canonical,
+			r.Lang,
+			r.Title,
+			fmt.Sprint(utf8.RuneCount([]byte(r.Title))),
+			r.Description,
+			fmt.Sprint(utf8.RuneCount([]byte(r.Description))),
+			r.Robots,
+			r.H1,
+			r.H2,
+			fmt.Sprintf("%.1f KB", e.byteToKByte(r.Size)),
+			strconv.Itoa(r.Words),
+			fmt.Sprintf("%d", r.Depth),
+			fmt.Sprintf("%d ms", r.TTFB),
+		})
+
+		writer.Flush()
+	}
+}
+
+// byteToKByte is a helper function to transform bytes to KBytes.
+// It is used to format the pagereport size in the exported csv file.
+func (e *Exporter) byteToKByte(b int64) float64 {
+	v := b / (1 << 10)
+	r := b % (1 << 10)
+
+	return float64(v) + float64(r)/float64(1<<10)
 }

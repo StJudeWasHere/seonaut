@@ -43,6 +43,7 @@ func GetAllReporters() []*models.PageIssueReporter {
 		NewDeadendReporter(),
 		NewExternalLinkRedirectReporter(),
 		NewExternalLinkBrokenReporter(),
+		NewLocalhostLinksReporter(),
 
 		// Add image issue reporters
 		NewAltTextReporter(),

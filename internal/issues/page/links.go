@@ -210,3 +210,34 @@ func NewExternalLinkBrokenReporter() *models.PageIssueReporter {
 		Callback:  c,
 	}
 }
+
+// Returns a report_manager.PageIssueReporter with a callback function that returns true if
+// the pageReport contains external links to localhost or 127.0.0.1.
+func NewLocalhostLinksReporter() *models.PageIssueReporter {
+	c := func(pageReport *models.PageReport, htmlNode *html.Node, header *http.Header) bool {
+		if !pageReport.Crawled {
+			return false
+		}
+
+		if pageReport.MediaType != "text/html" {
+			return false
+		}
+
+		if pageReport.ParsedURL.Host == "localhost" || pageReport.ParsedURL.Host == "127.0.0.1" {
+			return false
+		}
+
+		for _, l := range pageReport.ExternalLinks {
+			if l.ParsedURL.Host == "localhost" || l.ParsedURL.Host == "127.0.0.1" {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	return &models.PageIssueReporter{
+		ErrorType: errors.ErrorLocalhostLinks,
+		Callback:  c,
+	}
+}

@@ -391,3 +391,55 @@ func TestExternalLinkBrokenIssues(t *testing.T) {
 		t.Errorf("TestExternalLinkBrokenIssues: reportsIssue should be true")
 	}
 }
+
+// TestLocalhostLinks tests localhost links with different configurations.
+// If the pageReport's URL is localhost the issues should not be reported.
+func TestLocalhostLinks(t *testing.T) {
+	exampleURL, err := url.Parse("https://example.com")
+	if err != nil {
+		t.Fatalf("error parsing url %v", err)
+	}
+
+	parsedLocalhostURL, err := url.Parse("https://localhost/example")
+	if err != nil {
+		t.Fatalf("error parsing url %v", err)
+	}
+
+	parsedLocalIPURL, err := url.Parse("https://127.0.0.1/example")
+	if err != nil {
+		t.Fatalf("error parsing url %v", err)
+	}
+
+	reporter := page.NewLocalhostLinksReporter()
+	if reporter.ErrorType != errors.ErrorLocalhostLinks {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	table := []struct {
+		pageReportURL *url.URL
+		url           *url.URL
+		want          bool
+	}{
+		{exampleURL, parsedLocalhostURL, true},
+		{exampleURL, parsedLocalIPURL, true},
+		{parsedLocalIPURL, parsedLocalIPURL, false},
+		{exampleURL, exampleURL, false},
+	}
+
+	for _, u := range table {
+		pageReport := &models.PageReport{
+			Crawled:    true,
+			MediaType:  "text/html",
+			StatusCode: 200,
+			ParsedURL:  u.pageReportURL,
+		}
+
+		pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{ParsedURL: u.url})
+
+		reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+		if reportsIssue != u.want {
+			t.Errorf("reportsIssue should be %v got %v", u.want, reportsIssue)
+		}
+	}
+
+}

@@ -1,0 +1,1 @@
+INSERT INTO issue_types (id, type, priority) VALUES(79, "ERROR_LOCALHOST_LINKS", 2);

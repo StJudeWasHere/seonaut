@@ -87,4 +87,5 @@ const (
 	ErrorMissingViewportTag                      // Pages with missing viewport meta tag
 	ErrorDOMSize                                 // HTML documents with excessive DOM size
 	ErrorPaginationLink                          // Pages with next and prev attributes missing the actual link
+	ErrorLocalhostLinks                          // Pages with links to localhost or 127.0.0.1
 )

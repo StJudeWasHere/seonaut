@@ -259,3 +259,6 @@ ERROR_DOM_SIZE_DESC: Pages with a high DOM size can slow down page loading times
 
 ERROR_PAGINATION_LINKS: Pagination URL not linked
 ERROR_PAGINATION_LINKS_DESC: Having link rel="next" and link rel="prev" tags without corresponding links in the body confuses search engines, leading to poor indexing and a frustrating navigation experience.
+
+ERROR_LOCALHOST_LINKS: Webpages with links to localhost
+ERROR_LOCALHOST_LINKS_DESC: Links to localhost or 127.0.0.1 are inaccessible to users and search engines, causing errors and poor SEO. To fix this, replace these links with the correct public URLs pointing to your live website.

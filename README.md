@@ -35,7 +35,7 @@ To get started with SEOnaut, follow these steps to run it using Docker:
 4. **Build and Run Docker Containers**  
    Run the following command to build and start the Docker containers:
 
-   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build`
+   `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build`
 
 5. **Access the Application**  
    Once the containers are running, open your browser and visit:

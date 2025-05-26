@@ -100,6 +100,20 @@ func TestRewriteHTML(t *testing.T) {
 			xpath: "//style",
 			want:  "body { background: url(/rewrite?url=bg.jpg); }",
 		},
+		{
+			name:  "Test image srcset rewrite",
+			html:  `<html><body><img srcset="header320.png, header640.png 640w, header960.png 960w"></body></html>`,
+			xpath: "//img",
+			attr:  "srcset",
+			want:  "/rewrite?url=header320.png, /rewrite?url=header640.png 640w, /rewrite?url=header960.png 960w",
+		},
+		{
+			name:  "Test picture source srcset rewrite",
+			html:  `<html><body><picture><source srcset="header320.png, header640.png 640w, header960.png 960w"></picture></body></html>`,
+			xpath: "//picture/source",
+			attr:  "srcset",
+			want:  "/rewrite?url=header320.png, /rewrite?url=header640.png 640w, /rewrite?url=header960.png 960w",
+		},
 	}
 
 	for _, tt := range tests {

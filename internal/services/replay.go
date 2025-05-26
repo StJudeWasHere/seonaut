@@ -26,6 +26,7 @@ func (r *ReplayService) RewriteHTML(htmlContent []byte, rewriteFunc rewriteURL) 
 		return nil, err
 	}
 
+	// Rewrite the URLs in the specified element and attribute.
 	for _, xpath := range []struct {
 		xpath, attr string
 	}{

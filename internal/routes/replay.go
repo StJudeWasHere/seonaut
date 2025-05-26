@@ -58,17 +58,13 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		RequestedURL: requestedURL,
 	}
 
-	// Avoid the browser cache
-	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
-	w.Header().Set("Pragma", "no-cache")
-	w.Header().Set("Expires", "0")
-
 	record, err := h.Container.ArchiveService.ReadArchiveRecord(&pv.Project, requestedURL)
 	if err != nil {
 		http.Error(w, "The requested URL is not archived.", http.StatusNotFound)
 		return
 	}
 
+	// Send the headers in the archived response
 	for key, values := range record.Headers {
 		switch strings.ToLower(key) {
 		case "set-cookie",
@@ -84,7 +80,10 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	contentType := record.Headers.Get("Content-Type")
+	// Avoid the browser cache
+	w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
+	w.Header().Set("Pragma", "no-cache")
+	w.Header().Set("Expires", "0")
 
 	parsedRequestedURL, err := url.Parse(requestedURL)
 	if err != nil {
@@ -92,6 +91,10 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// rewriteFunc is a function that rewrites URLs so they are proxied
+	// through the replay proxy URL. This function is passed as a parameter
+	// to the replay service rewrite methods and is used to rewrite the URLS
+	// in the HTML and CSS files.
 	rewriteFunc := func(urlStr string) string {
 		if u, err := url.Parse(urlStr); err == nil {
 			if !u.IsAbs() {
@@ -108,6 +111,9 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return urlStr
 	}
 
+	// If the requested URL is a CSS the URLs are rewritten and the resulting
+	// content is sent to the client.
+	contentType := record.Headers.Get("Content-Type")
 	if strings.HasPrefix(strings.ToLower(contentType), "text/css") {
 		rewrittenCSS := h.ReplayService.RewriteCSS(string(record.Body), rewriteFunc)
 
@@ -115,12 +121,16 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// If the requested URL is not HTML it is sent as it is in the archive
+	// as it may be an image, a JS file or any other resource.
 	isHTML := strings.HasPrefix(strings.ToLower(contentType), "text/html")
 	if !isHTML {
 		w.Write([]byte(record.Body))
 		return
 	}
 
+	// In case it is an HTML the links are rewritten so they go through the proxy.
+	// Then the replay banner and replay scripts are rendered and injected into the HTML.
 	rawBody := []byte(record.Body)
 	rewrittenHTML, err := h.Container.ReplayService.RewriteHTML(rawBody, rewriteFunc)
 	if err != nil {

@@ -1,8 +1,6 @@
 module github.com/stjudewashere/seonaut
 
-go 1.23.0
-
-toolchain go1.24.0
+go 1.24.0
 
 require (
 	github.com/antchfx/htmlquery v1.3.4

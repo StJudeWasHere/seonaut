@@ -31,13 +31,13 @@
 					center: ['50%', '50%'],
 					data: [
 						{{ if .ProjectView.Crawl.CriticalIssues }}
-							{ value: {{ .ProjectView.Crawl.CriticalIssues }}, name: 'Critical Error', itemStyle: {color: '#FD7B6A'}},
+							{ value: {{ .ProjectView.Crawl.CriticalIssues }}, name: 'خطای بحرانی', itemStyle: {color: '#FD7B6A'}},
 						{{ end }}
 						{{ if .ProjectView.Crawl.AlertIssues }}
-							{ value: {{ .ProjectView.Crawl.AlertIssues }}, name: 'Alert', itemStyle: {color: '#F7E497'}},
+							{ value: {{ .ProjectView.Crawl.AlertIssues }}, name: 'هشدار', itemStyle: {color: '#F7E497'}},
 						{{ end }}
 						{{ if .ProjectView.Crawl.WarningIssues }}
-							{ value: {{ .ProjectView.Crawl.WarningIssues }}, name: 'Warning', itemStyle: {color: '#2C7D91'}},
+							{ value: {{ .ProjectView.Crawl.WarningIssues }}, name: 'اخطار', itemStyle: {color: '#2C7D91'}},
 						{{ end }}
 					].sort(function (a, b) {
 						return a.value - b.value;

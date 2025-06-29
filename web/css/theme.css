@@ -1,0 +1,128 @@
+/* Dashboard Theme Similar to Nexus - Without Sidebar */
+
+/* Root Variables for Colors */
+:root {
+  --theme-bg-dark: #0A1F12;
+  --theme-bg-light: #F7FCF9;
+  --theme-card-bg: #FFFFFF;
+  --theme-text-primary: #333333;
+  --theme-text-secondary: #6B6B6B;
+  --theme-accent: #03A64E;
+  --theme-accent-hover: #027A3A;
+  --theme-border: #E0E0E0;
+  --theme-shadow: rgba(0, 0, 0, 0.05);
+}
+
+/* Global Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--secondary-fontfamily);
+  background-color: var(--theme-bg-light);
+  color: var(--theme-text-primary);
+}
+
+/* Header */
+.header {
+  width: 100%;
+  background-color: var(--theme-card-bg);
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px var(--theme-shadow);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Search Input */
+.header .search {
+  position: relative;
+}
+.header .search input {
+  padding: 0.5rem 2.5rem 0.5rem 1rem;
+  border: 1px solid var(--theme-border);
+  border-radius: 999px;
+  width: 250px;
+}
+.header .search .icon {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--theme-text-secondary);
+}
+
+/* Content Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 2rem;
+}
+
+/* Cards */
+.card {
+  background-color: var(--theme-card-bg);
+  border: 1px solid var(--theme-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px var(--theme-shadow);
+}
+.card h2 {
+  margin-top: 0;
+  font-size: 1.25rem;
+  color: var(--theme-text-primary);
+}
+.card p {
+  color: var(--theme-text-secondary);
+}
+
+/* Charts */
+.chart-container {
+  width: 100%;
+  height: 200px;
+  position: relative;
+}
+
+/* Progress Bars */
+.progress-bar {
+  background-color: var(--theme-bg-light);
+  border-radius: 6px;
+  overflow: hidden;
+  height: 12px;
+}
+.progress-bar .fill {
+  background-color: var(--theme-accent);
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background-color: var(--theme-accent);
+  color: var(--secondary-color);
+  font-size: 0.75rem;
+  border-radius: 999px;
+}
+
+/* Tables */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th, .table td {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--theme-border);
+}
+.table th {
+  background-color: var(--theme-bg-light);
+  color: var(--theme-text-primary);
+}
+
+/* Responsive Utility */
+@media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}

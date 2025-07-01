@@ -1,1 +1,2 @@
 TEST: test translation
+TEST_PARAMETERS: Hello %1%. You are user number %2% with username %1%

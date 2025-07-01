@@ -9,7 +9,7 @@ import (
 
 type TestTranslator struct{}
 
-func (t *TestTranslator) Trans(s string) string {
+func (t *TestTranslator) Trans(s string, args ...interface{}) string {
 	return s
 }
 

@@ -25,7 +25,7 @@ type (
 	}
 
 	ExportTranslator interface {
-		Trans(s string) string
+		Trans(s string, args ...interface{}) string
 	}
 	Exporter struct {
 		repository ExportRepository

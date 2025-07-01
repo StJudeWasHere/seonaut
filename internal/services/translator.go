@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 
 	"gopkg.in/yaml.v3"
 )
@@ -38,14 +39,18 @@ func NewTranslator(config *TranslatorConfig) (*Translator, error) {
 	}, nil
 }
 
-// Returns a translated string from the translations map.
-// The original string is returned if a translation is not found in the map.
-func (r *Translator) Trans(s string) string {
+// Trans returns a translated string with numbered parameters replaced.
+func (r *Translator) Trans(s string, args ...interface{}) string {
 	t, ok := r.translationMap[s]
 	if !ok {
 		log.Printf("trans: %s translation not found\n", s)
 		return s
 	}
 
-	return fmt.Sprintf("%v", t)
+	result := fmt.Sprintf("%v", t)
+	for i, arg := range args {
+		placeholder := fmt.Sprintf("%%%d%%", i+1)
+		result = strings.ReplaceAll(result, placeholder, fmt.Sprintf("%v", arg))
+	}
+	return result
 }

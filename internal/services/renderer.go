@@ -13,7 +13,7 @@ import (
 
 type (
 	RendererTranslator interface {
-		Trans(s string) string
+		Trans(s string, args ...interface{}) string
 	}
 
 	RendererConfig struct {

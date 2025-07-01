@@ -15,7 +15,7 @@ type userHandler struct {
 // It allows users to sign up by providing their email and password.
 func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
-		PageTitle: "SIGNUP_VIEW",
+		PageTitle: "SIGNUP_VIEW_PAGE_TITLE",
 		Data: &struct {
 			Email        string
 			Error        bool
@@ -52,7 +52,7 @@ func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) 
 			log.Printf("sign up error: %v", err)
 		}
 		pageView := &PageView{
-			PageTitle: "SIGNUP_VIEW",
+			PageTitle: "SIGNUP_VIEW_PAGE_TITLE",
 			Data: &struct {
 				Email        string
 				Error        bool
@@ -83,7 +83,7 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
-		PageTitle: "DELETE_ACCOUNT_VIEW",
+		PageTitle: "DELETE_ACCOUNT_VIEW_PAGE_TITLE",
 		User:      *user,
 		Data: &struct {
 			Crawling bool
@@ -122,7 +122,7 @@ func (h *userHandler) deletePostHandler(w http.ResponseWriter, r *http.Request) 
 // The signin form is pre-populated using the data's email field.
 func (h *userHandler) signinGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
-		PageTitle: "SIGNIN_VIEW",
+		PageTitle: "SIGNIN_VIEW_PAGE_TITLE",
 		Data: &struct {
 			Email        string
 			Error        bool
@@ -151,7 +151,7 @@ func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) 
 	u, err := h.UserService.SignIn(email, password)
 	if err != nil {
 		pageView := &PageView{
-			PageTitle: "SIGNIN_VIEW",
+			PageTitle: "SIGNIN_VIEW_PAGE_TITLE",
 			Data: &struct {
 				Email string
 				Error bool
@@ -179,7 +179,7 @@ func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
-		PageTitle: "ACCOUNT_VIEW",
+		PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 		User:      *user,
 		Data: &struct {
 			Error        bool
@@ -223,7 +223,7 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		pageView := &PageView{
-			PageTitle: "ACCOUNT_VIEW",
+			PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 			User:      *user,
 			Data: &struct {
 				Error        bool

@@ -83,7 +83,7 @@ func (h *archiveHandler) archiveHandler(w http.ResponseWriter, r *http.Request) 
 	pageView := &PageView{
 		Data:      data,
 		User:      *user,
-		PageTitle: "ARCHIVE_VIEW",
+		PageTitle: "ARCHIVE_VIEW_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "archive", pageView)

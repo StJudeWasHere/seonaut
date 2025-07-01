@@ -125,7 +125,7 @@ func (h *crawlHandler) authGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
-		PageTitle: "CRAWL_AUTH_VIEW",
+		PageTitle: "CRAWL_AUTH_VIEW_PAGE_TITLE",
 		Data:      struct{ Project models.Project }{Project: p},
 	}
 
@@ -218,7 +218,7 @@ func (h *crawlHandler) liveCrawlHandler(w http.ResponseWriter, r *http.Request) 
 			Secure:  configURL.Scheme == "https",
 		},
 		User:      *user,
-		PageTitle: "CRAWL_LIVE",
+		PageTitle: "CRAWL_LIVE_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "crawl_live", v)

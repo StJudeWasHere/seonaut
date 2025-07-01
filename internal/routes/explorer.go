@@ -58,7 +58,7 @@ func (h *explorerHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	v := &PageView{
 		Data:      view,
 		User:      *user,
-		PageTitle: "EXPLORER",
+		PageTitle: "EXPLORER_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "explorer", v)

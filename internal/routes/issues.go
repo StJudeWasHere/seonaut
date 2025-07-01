@@ -46,7 +46,7 @@ func (h *issueHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	v := &PageView{
 		Data:      ig,
 		User:      *user,
-		PageTitle: "ISSUES_VIEW",
+		PageTitle: "ISSUES_VIEW_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "issues", v)
@@ -100,7 +100,7 @@ func (h *issueHandler) viewHandler(w http.ResponseWriter, r *http.Request) {
 	v := &PageView{
 		Data:      data,
 		User:      *user,
-		PageTitle: "ISSUES_DETAIL",
+		PageTitle: "ISSUES_DETAIL_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "issues_view", v)

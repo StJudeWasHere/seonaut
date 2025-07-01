@@ -88,7 +88,7 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
 		Data:      data,
 		User:      *user,
-		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab),
+		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab) + "_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "resources", pageView)

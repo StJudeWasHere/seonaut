@@ -43,7 +43,7 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 			Projects: h.ProjectViewService.GetProjectViews(user.Id),
 		},
 		User:      *user,
-		PageTitle: "PROJECTS_VIEW",
+		PageTitle: "PROJECTS_VIEW_PAGE_TITLE",
 		Refresh:   refresh,
 	}
 
@@ -61,7 +61,7 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageView := &PageView{
 		User:      *user,
-		PageTitle: "ADD_PROJECT",
+		PageTitle: "ADD_PROJECT_PAGE_TITLE",
 		Data: &struct {
 			URLError       bool
 			UserAgentError bool
@@ -156,7 +156,7 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		pageView := &PageView{
 			User:      *user,
-			PageTitle: "ADD_PROJECT",
+			PageTitle: "ADD_PROJECT_PAGE_TITLE",
 			Data: &struct {
 				URLError       bool
 				UserAgentError bool
@@ -235,7 +235,7 @@ func (h *projectHandler) editGetHandler(w http.ResponseWriter, r *http.Request) 
 
 	pageView := &PageView{
 		User:      *user,
-		PageTitle: "EDIT_PROJECT",
+		PageTitle: "EDIT_PROJECT_PAGE_TITLE",
 		Data:      data,
 	}
 
@@ -326,7 +326,7 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		pageView := &PageView{
 			User:      *user,
-			PageTitle: "EDIT_PROJECT",
+			PageTitle: "EDIT_PROJECT_PAGE_TITLE",
 			Data: &struct {
 				Project         models.Project
 				Error           bool

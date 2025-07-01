@@ -61,7 +61,7 @@ func (h *dashboardHandler) indexHandler(w http.ResponseWriter, r *http.Request) 
 	pageView := &PageView{
 		Data:      data,
 		User:      *user,
-		PageTitle: "PROJECT_DASHBOARD",
+		PageTitle: "PROJECT_DASHBOARD_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "dashboard", pageView)

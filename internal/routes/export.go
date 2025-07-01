@@ -48,7 +48,7 @@ func (h *exportHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	archiveExists := h.Container.ArchiveService.ArchiveExists(&pv.Project)
 	h.Renderer.RenderTemplate(w, "export", &PageView{
 		User:      *user,
-		PageTitle: "EXPORT_VIEW",
+		PageTitle: "EXPORT_VIEW_PAGE_TITLE",
 		Data: struct {
 			Project       models.Project
 			ArchiveExists bool

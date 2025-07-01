@@ -20,7 +20,7 @@ func (h *supportHandler) handleSupportSEOnaut(w http.ResponseWriter, r *http.Req
 
 	pageView := &PageView{
 		User:      *user,
-		PageTitle: "SUPPORT_SEONAUT_VIEW",
+		PageTitle: "SUPPORT_SEONAUT_VIEW_PAGE_TITLE",
 	}
 
 	h.Renderer.RenderTemplate(w, "support_seonaut", pageView)

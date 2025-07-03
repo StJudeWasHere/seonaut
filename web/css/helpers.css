@@ -169,12 +169,14 @@
 }
 
 .crawler-item {
-	display: flex;
-	align-items: center;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
 }
 
-.crawler-item span {
-	margin-left: 1rem;
+.crawler-item:last-child {
+    margin-bottom: 0;
 }
 
 span.alert {

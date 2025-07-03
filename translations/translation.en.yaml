@@ -27,238 +27,238 @@ ARCHIVE_VIEW: Archive Source Code
 SUPPORT_SEONAUT_VIEW: SEOnaut Project
 
 ERROR_50x: URLs returning status code 50x
-ERROR_50x_DESC: This kind of errors usually occour due to a server bug or missconfiguration, the affected pages don't load properly and show an error page instead, scaring your users and annoying search engines.
+ERROR_50x_DESC: این نوع خطاها معمولاً به دلیل یک اشکال در سرور یا پیکربندی نادرست رخ می‌دهند، صفحات مربوطه به درستی بارگذاری نمی‌شوند و به جای آن صفحه خطا نمایش داده می‌شود، که این باعث ترس کاربران و نارضایتی موتورهای جستجو می‌شود.
 
 ERROR_40x: URLs returning status code 40x
-ERROR_40x_DESC: This pages are missing and both your users and search engines are getting lost. It may signal to search engines that your site isn't well maintained. Over time, too many broken links can impact crawl efficiency and dilute your site's authority.
+ERROR_40x_DESC: این صفحات گم شده‌اند و هم کاربران شما و هم موتورهای جستجو گم می‌شوند. این ممکن است به موتورهای جستجو نشان دهد که سایت شما به خوبی نگهداری نمی‌شود. با گذشت زمان، لینک‌های خراب زیاد می‌توانند بر کارایی کاوش تأثیر بگذارند و اعتبار سایت شما را کاهش دهند.
 
 ERROR_30x: URLs returning status code 30x
-ERROR_30x_DESC: URLs causing redirects are sending users and search engines to a different page. Redirects can slow down page loading, confuse users and waste the search engine's crawl budget.
+ERROR_30x_DESC: URLهایی که باعث انتقال می‌شوند کاربران و موتورهای جستجو را به صفحه‌ای دیگر می‌فرستند. انتقال‌ها می‌توانند به بارگذاری صفحه آسیب بزنند، کاربران را سردرگم کنند و بودجه کاوش موتور جستجو را تلف کنند.
 
 ERROR_REDIRECT_CHAIN: URLs causing a redirect chain
-ERROR_REDIRECT_CHAIN_DESC: Redirect chains are URLs that redirect to other URLs that also redirect somewhere else, creating a chain of redirects. Redirect chains frustrate users, and make it harder for search engines to crawl and index your content efficiently.
+ERROR_REDIRECT_CHAIN_DESC: زنجیره‌های ریدایرکت به URLهایی اطلاق می‌شود که به URLهای دیگری ارجاع می‌دهند که همچنین به جایی دیگر ارجاع می‌دهند و در نتیجه زنجیره‌ای از ریدایرکت‌ها ایجاد می‌کنند. زنجیره‌های ریدایرکت باعث ناامیدی کاربران می‌شوند و به موتورهای جستجو این امکان را می‌دهند که محتوای شما را به طور مؤثری جستجو و ایندکس کنند.
 
 ERROR_REDIRECT_LOOP: URLs causing a redirect loop
-ERROR_REDIRECT_LOOP_DESC: Redirect loops are a couple of URLs that redirect to each other creating a never ending loop of redirects. Redirect loops prevents users and search engines from ever reaching the destination. It leads to poor user experience, broken navigation, and blocks search engines from properly crawling and indexing your site.
+ERROR_REDIRECT_LOOP_DESC: حلقه‌های ریدایرکت مجموعه‌ای از URLها هستند که به یکدیگر ریدایرکت می‌شوند و یک چرخه بی‌پایان از ریدایرکت‌ها ایجاد می‌کنند. این حلقه‌ها باعث می‌شوند کاربران و موتورهای جستجو هرگز به مقصد نهایی نرسند. نتیجه‌ی آن تجربه‌ی کاربری ضعیف، ناوبری شکسته، و جلوگیری از کاوش و ایندکس صحیح سایت توسط موتورهای جستجو است.
 
 ERROR_DUPLICATED_TITLE: Pages with duplicated title
-ERROR_DUPLICATED_TITLE_DESC: The title tag is considered one of the most important elements for on-page SEO. If multiple pages have the same title, they will compete for a given search query confusing search engines.
+ERROR_DUPLICATED_TITLE_DESC: تگ عنوان یکی از مهم‌ترین عناصر برای سئو داخلی محسوب می‌شود. اگر چندین صفحه عنوان یکسانی داشته باشند، در یک جستجوی خاص با یکدیگر رقابت کرده و موتورهای جستجو را گیج می‌کنند.
 
 ERROR_LONG_TITLE: Pages with long title
-ERROR_LONG_TITLE_DESC: Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.
+ERROR_LONG_TITLE_DESC: عناوین طولانی تأثیری بر سئو در صفحه شما نخواهند داشت، اما معمولاً در نتایج جستجو بریده می‌شوند و تمایل دارند کلیک‌های کمتری بگیرند.
 
 ERROR_SHORT_TITLE: Pages short title
-ERROR_SHORT_TITLE_DESC: These pages have titles that are too short. Search engines will be happier if you provide longer titles.
+ERROR_SHORT_TITLE_DESC: طول عنوان این صفحات بسیار کوتاه است. موتورهای جستجو معمولاً عنوان‌های بلندتر و توصیفی‌تر را ترجیح می‌دهند.
   
 ERROR_EMPTY_TITLE: Pages with missing title
-ERROR_EMPTY_TITLE_DESC: Page titles help search engines understand what a page is about and are often shown in search results. Without a title, your page may rank lower, get overlooked by users, and appear unprofessional or incomplete.
+ERROR_EMPTY_TITLE_DESC: عنوان‌های صفحات به موتورهای جستجو کمک می‌کنند تا درک کنند یک صفحه درباره چه چیزی است و اغلب در نتایج جستجو نمایش داده می‌شوند. بدون عنوان، صفحه شما ممکن است رده پایین‌تری داشته باشد، مورد توجه کاربران قرار نگیرد و نامتعارف یا ناقص به نظر برسد.
 
 ERROR_EMPTY_DESCRIPTION: Pages with missing meta description
-ERROR_EMPTY_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
+ERROR_EMPTY_DESCRIPTION_DESC: توضیحات صفحه مستقیماً بر رتبه‌بندی موتورهای جستجو تأثیر نمی‌گذارد، اما اغلب برای نمایش پیش‌نمایش (Snippet) در نتایج جستجو از آن استفاده می‌شود.
   
 ERROR_SHORT_DESCRIPTION: Pages with short meta description
-ERROR_SHORT_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
+ERROR_SHORT_DESCRIPTION_DESC: توضیحات صفحه مستقیماً بر رتبه‌بندی موتورهای جستجو تأثیر نمی‌گذارد، اما اغلب برای نمایش پیش‌نمایش (Snippet) در نتایج جستجو از آن استفاده می‌شود.
 
 ERROR_LONG_DESCRIPTION: Pages with long meta description
-ERROR_LONG_DESCRIPTION_DESC: Description tags are not a ranking factor for search engines, but having good quality descriptions will get more accurate information in the search results. Long descriptions will often get truncated, making them not so sexy for users.
+ERROR_LONG_DESCRIPTION_DESC: تگ‌های توصیفی عامل رتبه‌بندی برای موتورهای جستجو نیستند، اما داشتن توصیف‌های با کیفیت خوب اطلاعات دقیق‌تری را در نتایج جستجو به دست خواهد آورد. توصیف‌های طولانی معمولاً کوتاه می‌شوند که باعث می‌شود برای کاربران چندان جذاب نباشند.
 
 ERROR_DUPLICATED_DESCRIPTION: Pages with duplicated meta description
-ERROR_DUPLICATED_DESCRIPTION_DESC: It is recomended to have unique descriptions for each page so search engines can understand better your page.
+ERROR_DUPLICATED_DESCRIPTION_DESC: توصیه می‌شود که برای هر صفحه توضیحات منحصر به فردی داشته باشید تا موتورهای جستجو بهتر بتوانند صفحه شما را درک کنند.
 
 ERROR_LITTLE_CONTENT: Pages with little content
-ERROR_LITTLE_CONTENT_DESC: Pages with little content are not really useful for users or search engines, consider adding more content to your pages.
+ERROR_LITTLE_CONTENT_DESC: صفحات با محتوای کم واقعاً برای کاربران یا موتورهای جستجو مفید نیستند، در نظر داشته باشید که محتوای بیشتری به صفحات خود اضافه کنید.
 
 ERROR_IMAGES_NO_ALT: Pages containing images with no alt attribute
-ERROR_IMAGES_NO_ALT_DESC: The image alt attribute improves your site's accessibility, it also helps search engines understand better your images.
+ERROR_IMAGES_NO_ALT_DESC: ویژگی alt برای تصاویر باعث بهبود دسترسی‌پذیری سایت شما می‌شود، و همچنین به موتورهای جستجو کمک می‌کند تا تصاویر شما را بهتر درک کنند.
 
 ERROR_NO_H1: Pages missing the H1 heading
-ERROR_NO_H1_DESC: The H1 tag describes the main topic of the page, without it both your users and search engine will find it harder to figure what the page is talking about.
+ERROR_NO_H1_DESC: تگ H1 موضوع اصلی صفحه را مشخص می‌کند. نبود آن باعث می‌شود هم کاربران و هم موتورهای جستجو در درک محتوای صفحه با مشکل مواجه شوند.
 
 ERROR_NO_LANG: Pages missing the language attribute
-ERROR_NO_LANG_DESC: The language attribute is particularly usefull for screen readers and it's recommended to use it. Some search engines use it to show the appropiate page to the users depending on their language, but it does not affect your search engine ranking.
+ERROR_NO_LANG_DESC: ویژگی زبان به ویژه برای نرم‌افزارهای خواندن صفحه مفید است و توصیه می‌شود از آن استفاده کنید. برخی از موتورهای جستجو از آن برای نمایش صفحه مناسب به کاربران بر اساس زبان آنها استفاده می‌کنند، اما بر رتبه‌بندی موتور جستجوی شما تأثیر نمی‌گذارد.
 
 ERROR_HTTP_LINKS: HTTPS URLs with links to HTTP URLs
-ERROR_HTTP_LINKS_DESC: Links from secure HTTPS pages to unsecured HTTP ones. Having a fully secure website rank better than those without HTTPS, it also makes your users happier.
+ERROR_HTTP_LINKS_DESC: لینک‌ها از صفحات امن HTTPS به صفحات غیر امن HTTP. داشتن یک وب‌سایت کاملاً امن رتبه بهتری نسبت به وب‌سایت‌های بدون HTTPS دارد و همچنین باعث افزایش رضایت کاربران شما می‌شود.
 
 ERROR_HREFLANG_RETURN: Pages missing the hreflang
-ERROR_HREFLANG_RETURN_DESC: When referencing a page with hreflang, that page must reference back with a hreflang tag too. Without this two-way reference, search engines may ignore the hreflang annotations, leading to incorrect language versions being shown in search results.
+ERROR_HREFLANG_RETURN_DESC: هنگام ارجاع به یک صفحه با hreflang، آن صفحه نیز باید با یک تگ hreflang به عقب ارجاع دهد. بدون این ارجاع دو طرفه، موتورهای جستجو ممکن است تگ‌های hreflang را نادیده بگیرند که منجر به نمایش نسخه‌های نادرست زبان در نتایج جستجو می‌شود.
 
 ERROR_TOO_MANY_LINKS: Pages with too many Links
-ERROR_TOO_MANY_LINKS_DESC: The SEO link juice is divided between all the links in the page, the more links in a page the less amount of juice is passed to them. Make sure all links are relevant, remove the ones that aren't or use the nofollow attribute.
+ERROR_TOO_MANY_LINKS_DESC: اعتبار سئوی لینک‌ها (Link Juice) بین تمام لینک‌های موجود در یک صفحه تقسیم می‌شود؛ هرچه تعداد لینک‌ها بیشتر باشد، سهم کمتری از این اعتبار به هرکدام منتقل می‌شود. اطمینان حاصل کنید که تمام لینک‌ها مرتبط هستند، لینک‌های غیرمرتبط را حذف کنید یا از ویژگی nofollow برای آن‌ها استفاده کنید.
 
 ERROR_INTERNAL_NOFOLLOW: Internal nofollow links
-ERROR_INTERNAL_NOFOLLOW_DESC: Internal links in general should not use the nofollow attribute unless they link to pages you don't want indexed by search engines. Review the internal links and make sure important pages are linked without the nofollow attribute.
+ERROR_INTERNAL_NOFOLLOW_DESC: به طور کلی، لینک‌های داخلی نباید از ویژگی nofollow استفاده کنند مگر اینکه به صفحاتی که نمی‌خواهید توسط موتورهای جستجو فهرست شوند، لینک دهند. لینک‌های داخلی را بررسی کنید و از اینکه صفحات مهم بدون ویژگی nofollow لینک شده‌اند اطمینان حاصل کنید.
 
 ERROR_EXTERNAL_WITHOUT_NOFOLLOW: Pages with external follow links
-ERROR_EXTERNAL_WITHOUT_NOFOLLOW_DESC: Follow links will pass SEO authority to external sites. You may want to keep an eye on it to avoid link spam in comments and user generated content.
+ERROR_EXTERNAL_WITHOUT_NOFOLLOW_DESC: پیوندهای زیر ممکن است اعتبار سئو را به سایت‌های خارجی منتقل کنند. شما ممکن است بخواهید بر روی آن نظارت کنید تا از اسپم لینک در نظرات و محتوای تولید شده توسط کاربر جلوگیری کنید.
 
 ERROR_CANONICALIZED_NON_CANONICAL: Canonicalized to non canonical
-ERROR_CANONICALIZED_NON_CANONICAL_DESC: Pages canonicalized to a non canonical URL. Canonicalized pages should point to a canonical page, replace the canonical link URL in this pages so they point to a canonical one.
+ERROR_CANONICALIZED_NON_CANONICAL_DESC: صفحات به صفحات غیر قابل نمایه‌سازی دیگر معادل سازی شده‌اند. این به‌طور اساسی به موتورهای جستجو می‌گوید که صفحه غیر قابل نمایه‌سازی نسخه ترجیحی محتوا است که می‌تواند
 
 ERROR_NOT_VALID_HEADINGS: Pages with not valid headings order
-ERROR_NOT_VALID_HEADINGS_DESC: The heading tags in this pages don't follow the correct order. Headings should start with an H1 and follow a clear hierarchy (H2, H3, etc.). Proper structure helps search engines understand your content and improves accessibility for screen readers.
+ERROR_NOT_VALID_HEADINGS_DESC: برچسب‌های عنوان در این صفحات ترتیب صحیحی ندارند. عناوین باید با H1 شروع شده و یک سلسله مراتب واضح (H2، H3 و غیره) را دنبال کنند. ساختار صحیح به موتورهای جستجو کمک می‌کند تا محتوای شما را درک کنند و به بهبود دسترسی برای نرم‌افزارهای خواندن صفحه کمک می‌کند.
   
 ERROR_HREFLANG_TO_NON_CANONICAL: Hreflang to non canonical page
-ERROR_HREFLANG_TO_NON_CANONICAL_DESC: Hreflang tags tell search engines where to find content in specific languages, linking hreflang tags to non canonical pages confuses search engines.
+ERROR_HREFLANG_TO_NON_CANONICAL_DESC: تگ‌های hreflang به موتورهای جستجو می‌گویند که کجا می‌توانند محتوا را به زبان‌های خاص پیدا کنند، اتصال تگ‌های hreflang به صفحات غیرCanonical، موتورهای جستجو را گیج می‌کند.
 
 ERROR_NOFOLLOW_INDEXABLE: Internal nofollow links to indexable pages
-ERROR_NOFOLLOW_INDEXABLE_DESC: Internal links using the nofollow attribute tell search engines to not crawl that link. For it to work properly the destination URL should use the noindex tag, otherwise search engines still can index the linked URL.
+ERROR_NOFOLLOW_INDEXABLE_DESC: لینک‌های داخلی که از ویژگی nofollow استفاده می‌کنند، به موتورهای جستجو می‌گویند که آن لینک را کاوش نکنند. برای اینکه این عملکرد به درستی کار کند، URL مقصد باید از برچسب noindex استفاده کند، در غیر این صورت موتورهای جستجو همچنان می‌توانند URL لینک شده را ایندکس کنند.
 
 ERROR_NO_INDEXABLE: Non indexable pages
-ERROR_NO_INDEXABLE_DESC: Pages using the noindex attribute won't be indexed by search engines, this is usually added to non important pages that we don't wan't to appear in search results. It may be worth reviewing them to make sure important pages are not using this attribute.
+ERROR_NO_INDEXABLE_DESC: صفحات دارای ویژگی noindex توسط موتورهای جستجو ایندکس نخواهند شد و معمولاً به صفحات غیر مهمی که نمی‌خواهیم در نتایج جستجو ظاهر شوند، اضافه می‌شود. ممکن است ارزش داشته باشد که آن‌ها را بررسی کنیم تا مطمئن شویم صفحات مهم از این ویژگی استفاده نمی‌کنند.
 
 ERROR_HREFLANG_NO_INDEXABLE: Hreflang to a non indexable page
-ERROR_HREFLANG_NO_INDEXABLE_DESC: Hreflangs should link to indexable pages, linking them to pages using the noindex attribute will confuse search engines.
+ERROR_HREFLANG_NO_INDEXABLE_DESC: اچریف لینک‌ها باید به صفحات قابل ایندکس اشاره کنند، لینک دادن به صفحاتی که از صفت noindex استفاده می‌کنند، موتورهای جستجو را سردرگم خواهد کرد.
 
 ERROR_BLOCKED: URLs blocked by robots.txt
-ERROR_BLOCKED_DESC: Pages blocked by robots.txt won't be crawled by search engines. Keep an eye on this list to make sure important pages are not being blocked.
+ERROR_BLOCKED_DESC: صفحات مسدود شده توسط robots.txt توسط موتورهای جستجو کاوش نخواهند شد. به این لیست توجه داشته باشید تا مطمئن شوید صفحات مهم مسدود نشده‌اند.
 
 ERROR_ORPHAN: Orphan pages
-ERROR_ORPHAN_DESC: Pages that are not linked anywhere in your site, this means no visitors can access to it and may lead to crawl wastage.
+ERROR_ORPHAN_DESC: صفحه‌هایی که هیچ جا در سایت شما لینک نشده‌اند، به این معنی است که هیچ بازدیدکننده‌ای نمی‌تواند به آن‌ها دسترسی پیدا کند و ممکن است منجر به اتلاف منابع کاوش شود.
 
 NO_INDEX_IN_SITEMAP: Non-indexable pages included in the sitemap
-NO_INDEX_IN_SITEMAP_DESC: Non-indexable pages should not be included in a sitemap, as this sends a mixed signal to the search engines. They can also slow down the crawling process and lead to incorrect indexing.
+NO_INDEX_IN_SITEMAP_DESC: صفحاتی که قابل ایندکس نیستند نباید در فایل سایت‌مپ قرار بگیرند، زیرا این کار سیگنال‌های متناقضی به موتورهای جستجو ارسال می‌کند. همچنین می‌تواند باعث کند شدن فرآیند کاوش (Crawling) و ایندکس نادرست صفحات شود.
 
 BLOCKED_IN_SITEMAP: Blocked pages included in the sitemap
-BLOCKED_IN_SITEMAP_DESC: Pages blocked by the robots.txt file should not be included in the sitemap, as this sends a mixed signal to the search engines. They can also slow down the crawling process and lead to incorrect indexing.
+BLOCKED_IN_SITEMAP_DESC: صفحه‌هایی که توسط فایل robots.txt مسدود شده‌اند نباید در نقشه سایت گنجانده شوند، زیرا این موضوع سیگنال‌های متناقضی به موتورهای جستجو ارسال می‌کند. همچنین، این صفحات می‌توانند فرآیند کاوش را کند کرده و منجر به ایندکس‌گذاری نادرست شوند.
 
 NON_CANONICAL_IN_SITEMAP: Non-canonical pages included in the sitemap
-NON_CANONICAL_IN_SITEMAP_DESC: Non-canonical pages should not be included in a sitemap as they can mislead search engines, waste time and resources, and lead to incorrect indexing.
+NON_CANONICAL_IN_SITEMAP_DESC: صفحاتی که کنونیکال (Canonical) نیستند نباید در فایل سایت‌مپ قرار بگیرند، زیرا ممکن است موتورهای جستجو را گمراه کنند، منابع و زمان را هدر دهند و منجر به ایندکس نادرست صفحات شوند.
 
 INCOMING_FOLLOW_NOFOLLOW: Pages with incoming follow and nofollow links
-INCOMING_FOLLOW_NOFOLLOW_DESC: Having pages with internal incoming follow and nofollow links can dilute the authority and relevance signals, confusing search engines and making it less likely to rank high in search engine results.
+INCOMING_FOLLOW_NOFOLLOW_DESC: داشتن صفحاتی با لینک‌های داخلی ورودی که برخی از آن‌ها دارای ویژگی follow و برخی دیگر nofollow هستند، می‌تواند سیگنال‌های اعتبار و ارتباط را تضعیف کند، موتورهای جستجو را دچار سردرگمی کند و احتمال رتبه گرفتن صفحه در نتایج جستجو را کاهش دهد.
 
 INVALID_LANG: Pages with invalid lang attribute
-INVALID_LANG_DESC: Pages with an invalid lang attribute can cause problems for both search engines and users. Search engines may have trouble identifying the language of the content, while users may struggle with understanding it or using assistive technologies.
+INVALID_LANG_DESC: صفحاتی که دارای ویژگی lang نامعتبر هستند می‌توانند برای موتورهای جستجو و کاربران مشکلاتی ایجاد کنند. موتورهای جستجو ممکن است در تشخیص زبان محتوای صفحه دچار مشکل شوند، و کاربران نیز ممکن است در درک محتوا یا استفاده از فناوری‌های کمکی با دشواری مواجه شوند.
 
 HTTP_SCHEME: Pages using the HTTP scheme
-HTTP_SCHEME_DESC: Pages using HTTP instead of HTTPS. Using HTTPS is important as it can provide a more secure and trustworthy website, which can lead to improved user engagement and search engine rankings.
+HTTP_SCHEME_DESC: صفحاتی که به‌جای HTTPS از HTTP استفاده می‌کنند. استفاده از HTTPS اهمیت زیادی دارد، چرا که امنیت و اعتماد بیشتری برای وب‌سایت فراهم می‌کند و می‌تواند منجر به افزایش تعامل کاربران و بهبود رتبه در موتورهای جستجو شود.
 
 DEAD_END: Dead-end pages
-DEAD_END_DESC: A dead-end page is a webpage that doesn't have any links pointing to other pages. This means that users and search engines have no way to navigate beyond the current page, making it difficult to explore the site and affecting both user experience and site crawlability.
+DEAD_END_DESC: یک صفحه بن‌بست صفحه وبی است که هیچ لینکی به صفحات دیگر ندارد. این به این معناست که کاربران و موتورهای جستجو هیچ راهی برای پیمایش فراتر از صفحه فعلی ندارند، که این موضوع کاوش در سایت را دشوار کرده و هم بر تجربه کاربر و هم بر قابلیت کاوش سایت تأثیر می‌گذارد.
 
 ERROR_CANONICALIZED_NON_INDEXABLE: Canonicalized to non-indexable
-ERROR_CANONICALIZED_NON_INDEXABLE_DESC: Pages canonicalized to other non-indexable pages. This essentially tells search engines that the non-indexable page is the preferred version of the content, which can lead to confusion and make the content less likely to be discovered by users.
+ERROR_CANONICALIZED_NON_INDEXABLE_DESC: صفحات به صفحات غیرقابل ایندکس دیگر کانونی شده‌اند. این به طور اساسی به موتورهای جستجو می‌گوید که صفحه غیرقابل ایندکس نسخه ترجیحی محتوای مورد نظر است، که می‌تواند منجر به سردرگمی شود و احتمال کشف محتوا توسط کاربران را کاهش دهد.
 
 ERROR_HREFLANG_REDIRECT: Hreflang to redirect
-ERROR_HREFLANG_REDIRECT_DESC: Pages that have hreflang links to pages that are redirected with status codes in the 30x range. This it can create confusion for search engines that may have difficulty understanding the relationship between the original page and the redirected page.
+ERROR_HREFLANG_REDIRECT_DESC: صفحه‌هایی که دارای لینک‌های hreflang به صفحاتی هستند که با کدهای وضعیت در محدوده ۳۰x ریدایرکت شده‌اند. این می‌تواند برای موتورهای جستجو سردرگمی ایجاد کند که ممکن است در درک روابط بین صفحه اصلی و صفحه ریدایرکت شده به مشکل بربخورند.
 
 ERROR_CANONICAL_REDIRECT: Canonicalized to redirect
-ERROR_CANONICAL_REDIRECT_DESC: Pages that are canonicalized to redirected URLs instead of pointing to the actual preferred version of the page. This can confuse search engines trying to navigate and understand your website.
+ERROR_CANONICAL_REDIRECT_DESC: صفحات که به URL های منتقل شده کانونی سازی شده‌اند به جای اینکه به نسخه اصلی و مورد نظر صفحه اشاره کنند. این می‌تواند به موتورهای جستجو کمک نکند که به درستی در وب‌سایت شما حرکت کنند و آن را درک کنند.
 
 ERROR_HREFLANG_ERROR: Hreflang to error
-ERROR_HREFLANG_ERROR_DESC: Pages that have hreflang tags pointing to URLs that are throwing errors with status codes in the 40x or 50x range. This makes it impossible for search engines to properly index different versions of your page, which may affect your ranking in search engines.
+ERROR_HREFLANG_ERROR_DESC: صفحه‌هایی که دارای تگ‌های hreflang هستند و به URLهایی اشاره می‌کنند که خطاهایی با کد وضعیت در محدوده ۴۰x یا ۵۰x ایجاد می‌کنند. این موضوع باعث می‌شود که موتورهای جستجو نتوانند نسخه‌های مختلف صفحه شما را به درستی ایندکس کنند، که می‌تواند بر رتبه شما در موتورهای جستجو تأثیر بگذارد.
 
 ERROR_CANONICAL_ERROR: Canonicalized to error
-ERROR_CANONICAL_ERROR_DESC: Pages that are canonicalized to URLs that are throwing errors with status codes in the 40x or 50x range. This can confuse search engines that will not be able to crawl your preferred version of the page.
+ERROR_CANONICAL_ERROR_DESC: صفحاتی که به URL هایی کانونیکال شده‌اند که خطاهایی با کد وضعیت در دامنه 40x یا 50x ایجاد می‌کنند. این موضوع می‌تواند موتورهای جستجو را سردرگم کند که نمی‌توانند نسخه مورد نظر شما از صفحه را کاوش کنند.
 
 ERROR_MULTIPLE_CANONICAL_TAGS: Multiple canonical tags
-ERROR_MULTIPLE_CANONICAL_TAGS_DESC: Pages that contain more than one canonical tag in the header section. Having more than one canonical confuses search engines about the preferred version of the page, leading to potential indexing and ranking issues.
+ERROR_MULTIPLE_CANONICAL_TAGS_DESC: صفحات که بیش از یک تگ کنونیکال در بخش هدر دارند. داشتن بیش از یک کنونیکال موتورهای جستجو را در مورد نسخه ترجیحی صفحه گیج می‌کند و می‌تواند منجر به مشکلات ایندکسینگ و رتبه‌بندی شود.
 
 ERROR_RELATIVE_CANONICAL_URL: Canonical with relative URL
-ERROR_RELATIVE_CANONICAL_URL_DESC: Pages that are using relative URLs in the canonical tag. Even though relative paths are supported by some search engines, they can cause problems in the long run such as improper page indexing and ranking. Consider using absolute URLs for a better practice.
+ERROR_RELATIVE_CANONICAL_URL_DESC: صفحاتی که از آدرس‌های نسبی (Relative URLs) در تگ کنونیکال استفاده می‌کنند. اگرچه برخی موتورهای جستجو از مسیرهای نسبی پشتیبانی می‌کنند، اما این کار در بلندمدت می‌تواند مشکلاتی مانند ایندکس و رتبه‌بندی نادرست صفحات ایجاد کند. پیشنهاد می‌شود برای رعایت بهترین روش، از آدرس‌های مطلق (Absolute URLs) استفاده کنید.
 
 ERROR_HREFLANG_XDEFAULT: Missing default language tag
-ERROR_HREFLANG_XDEFAULT_DESC: Pages missing the "x-default" hreflang value. Indicating the default language or region of a page, ensures proper indexing for users who don't match any specific hreflang tag value.
+ERROR_HREFLANG_XDEFAULT_DESC: صفحات فاقد مقدار hreflang "x-default". مشخص کردن زبان یا منطقه پیش فرض یک صفحه، اطمینان از ایندکس صحیح برای کاربرانی که با هیچ ارزش خاصی از تگ hreflang مطابقت ندارند.
 
 ERROR_HREFLANG_SELF_REFERENCE: Missing hreflang self-reference
-ERROR_HREFLANG_SELF_REFERENCE_DESC: Including a self-reference in hreflang tags is crucial to specify the language or region of the current page, preventing potential confusion for search engines.
+ERROR_HREFLANG_SELF_REFERENCE_DESC: گنجاندن یک مرجع خود در برچسب‌های hreflang بسیار مهم است تا زبان یا منطقه صفحه فعلی مشخص شود و از سردرگمی احتمالی برای موتورهای جستجو جلوگیری کند.
 
 ERROR_HREFLANG_MISMATCHING_LANG: Mismatching language
-ERROR_HREFLANG_MISMATCHING_LANG_DESC: Using different language codes in the HTML lang attribute and the hreflang self-referencing value can confuse search engines and negatively impact SEO by misinterpreting the language or region of the page.
+ERROR_HREFLANG_MISMATCHING_LANG_DESC: استفاده از کدهای زبانی مختلف در ویژگی lang HTML و ارزش خود مرجع hreflang می‌تواند موتورهای جستجو را سردرگم کند و به طور منفی بر سئو تأثیر بگذارد، زیرا ممکن است زبان یا منطقه صفحه را نادرست تفسیر کنند.
 
 ERROR_HREFLANG_RELATIVE_URL: Hreflang values with relative URLs
-ERROR_HREFLANG_RELATIVE_URL_DESC: Pages that are using relative URLs in the hreflang values. Alternate URLs in the hreflang tags must be absolute. Replace them to avoid crawlabality issues and improper language detection of the page.
+ERROR_HREFLANG_RELATIVE_URL_DESC: صفحات که از URL های نسبی در مقادیر hreflang استفاده می‌کنند. URL های جایگزین در تگ‌های hreflang باید مطلق باشند. آنها را تغییر دهید تا از مشکلات کاوش و تشخیص نادرست زبان صفحه جلوگیری کنید.
 
 ERROR_CANONICAL_MISMATCH: Canonical mismatch
-ERROR_CANONICAL_MISMATCH_DESC: Pages with different canonical URLs in the HTML code and HTTP headers. Setting different canonical URLs in the HTML code and HTTP headers creates inconsistency and can confuse search engines, which may result in reduced search engine rankings and visibility.
+ERROR_CANONICAL_MISMATCH_DESC: صفحات با URL های کانوونیکال مختلف در کد HTML و هدرهای HTTP. تنظیم URL های کانوونیکال مختلف در کد HTML و هدرهای HTTP موجب عدم سازگاری می‌شود و می‌تواند موتورهای جستجو را سردرگم کند، که ممکن است منجر به کاهش رتبه‌بندی و visibility در موتورهای جستجو شود.
 
 ERROR_MISSING_HSTS: Missing HSTS header
-ERROR_MISSING_HSTS_DESC: Pages without HSTS header. Missing HTTP Strict Transport Security header makes sites more vulnerable to security threats which may impact SEO in terms of user security and trustworthiness.
+ERROR_MISSING_HSTS_DESC: صفحات بدون هدر HSTS. عدم وجود هدر HTTP Strict Transport Security باعث می‌شود که سایت‌ها نسبت به تهدیدات امنیتی آسیب‌پذیرتر باشند و این موضوع می‌تواند به لحاظ امنیت و اعتماد کاربران بر سئو تاثیر بگذارد.
 
 ERROR_MISSING_CSP: Missing content security policy
-ERROR_MISSING_CSP_DESC: Pages missing the CSP (Content Security Policy) HTML meta tag or HTTP header increase vulnerability to security threats, potentially leading to malicious content or compromised user experiences, which search engines may penalize.
+ERROR_MISSING_CSP_DESC: صفحات فاقد تگ متا HTML یا هدر HTTP مربوط به سیاست امنیت محتوای CSP (Content Security Policy) در معرض تهدیدات امنیتی بیشتری قرار دارند، که ممکن است منجر به محتوای مخرب یا تجارب کاربری مختل شده شود و موتورهای جستجو ممکن است به این صفحات جریمه اعمال کنند.
 
 ERROR_CONTENT_TYPE_OPTIONS: Missing content type options
-ERROR_CONTENT_TYPE_OPTIONS_DESC: Pages missing X-Content-Type-Options header exposing the website to content type security risks, leading to potential SEO penalties and unsafe user experiences.
+ERROR_CONTENT_TYPE_OPTIONS_DESC: صفحات بدون هدر X-Content-Type-Options که وب‌سایت را در معرض خطرات امنیتی نوع محتوا قرار می‌دهد، که می‌تواند به جریمه‌های SEO و تجربه‌های ناامن برای کاربران منجر شود.
 
 ERROR_LARGE_IMAGE: Large images
-ERROR_LARGE_IMAGE_DESC: Large images can slow down a web page's loading speed, negatively affecting the user experience and SEO rankings due to increased load times. Consider using large images only when essential and optimize them to a reasonable size.
+ERROR_LARGE_IMAGE_DESC: تصاویر بزرگ می‌توانند سرعت بارگذاری یک صفحه وب را کند کرده و به طور منفی بر تجربه کاربر و رتبه‌های سئو تأثیر بگذارند به دلیل زمان‌های بارگذاری بیشتر. در نظر داشته باشید که تنها در صورت ضرورت از تصاویر بزرگ استفاده کنید و آن‌ها را به اندازه معقولی بهینه‌سازی کنید.
 
 ERROR_LONG_ALT_TEXT: Images with long Alt text
-ERROR_LONG_ALT_TEXT_DESC: Pages that have images with long text in the alt attribute. Having a long text in the alt attribute of an image can make it harder to understand the image's content and purpose. Try to keep the alt text short and to the point.
+ERROR_LONG_ALT_TEXT_DESC: صفحات دارای تصاویری با متن طولانی در ویژگی alt. داشتن متن طولانی در ویژگی alt یک تصویر می‌تواند فهم محتوای تصویر و هدف آن را دشوارتر کند. سعی کنید متن alt را کوتاه و خلاصه نگه دارید.
 
 ERROR_MULTIPLE_TITLES: Multiple title tags
-ERROR_MULTIPLE_TITLES_DESC: Pages with more than one title tag in the header section. Having multiple title tags in the HTML header can hurt SEO by confusing search engines, as it can make it more difficult to understand the page's content.
+ERROR_MULTIPLE_TITLES_DESC: صفحات با بیش از یک تگ عنوان در بخش هدر. داشتن چندین تگ عنوان در هدر HTML می‌تواند به سئوی سایت آسیب برساند زیرا ممکن است موتورهای جستجو را گیج کند و درک محتوای صفحه را سخت‌تر کند.
 
 ERROR_MULTIPLE_DESCRIPTIONS: Multiple description meta tags
-ERROR_MULTIPLE_DESCRIPTIONS_DESC: Pages with more than one description meta tag in the header section. Having multiple description meta tags in the HTML header can hurt SEO by confusing search engines, as it can make it more difficult to understand the page's content.
+ERROR_MULTIPLE_DESCRIPTIONS_DESC: صفحات دارای بیش از یک تگ متا توصیف در بخش هدر. داشتن چندین تگ متا توصیف در هدر HTML می‌تواند به سئو آسیب بزند زیرا ممکن است باعث سردرگمی موتورهای جستجو شود و درک محتوای صفحه را دشوارتر کند.
 
 ERROR_PAGE_DEPTH: High depth
-ERROR_PAGE_DEPTH_DESC: Pages with high depth can negatively impact SEO and user experience because they are challenging for both search engines and users to access, potentially leading to decreased visibility in search results and a less intuitive browsing experience.
+ERROR_PAGE_DEPTH_DESC: صفحات با عمق بالا می‌توانند به طور منفی بر سئو و تجربه کاربری تأثیر بگذارند زیرا برای موتورهای جستجو و کاربران دسترسی به آنها دشوار است و این می‌تواند منجر به کاهش دیده‌شدن در نتایج جستجو و تجربه مرور کمتر شهودی شود.
 
 ERROR_MULTIPLE_LANG_REFERENCE: Multiple languages reference
-ERROR_MULTIPLE_LANG_REFERENCE_DESC: Pages with multiple languages referenced in hreflang tags can confuse search engines, leading to incorrect language indexing, which can negatively impact SEO and user experience.
+ERROR_MULTIPLE_LANG_REFERENCE_DESC: صفحات با زبان‌های متعدد اشاره شده در تگ‌های hreflang می‌توانند موتورهای جستجو را گیج کنند و منجر به فهرست‌برداری نادرست زبان شوند که می‌تواند به سئو و تجربه کاربری آسیب بزند.
 
 ERROR_DUPLICATED_CONTENT: Duplicated content
-ERROR_DUPLICATED_CONTENT_DESC: Pages with the exact same content may confuse search engines and make them struggle to determine the most relevant page, leading to indexing issues, diluted ranking, and a waste of crawl budget.
+ERROR_DUPLICATED_CONTENT_DESC: صفحات با محتوای دقیقاً مشابه ممکن است موتورهای جستجو را گیج کرده و باعث شوند نتوانند صفحه مرتبط‌تر را تعیین کنند، که منجر به مشکلات ایندکسینگ، کاهش رتبه و هدر رفتن بودجه کاوش می‌شود.
 
 ERROR_EXTERNAL_LINK_REDIRECT: Pages with external links to redirect URLs
-ERROR_EXTERNAL_LINK_REDIRECT_DESC: External links to redirected pages won't affect your site's search engine rankings, but it can affect user experience. To fix it, replace the links with their final destinations.
+ERROR_EXTERNAL_LINK_REDIRECT_DESC: لینک‌های خارجی به صفحات منتقل شده بر رتبه‌بندی موتور جستجوی سایت شما تأثیر نخواهند گذاشت، اما می‌توانند تجربه کاربری را تحت تأثیر قرار دهند. برای اصلاح آن، لینک‌ها را با مقاصد نهایی آنها تعویض کنید.
 
 ERROR_EXTERNAL_LINK_BROKEN: Pages with broken external links
-ERROR_EXTERNAL_LINK_BROKEN_DESC: Broken external links don't impact your site's search engine rankings, but they can frustrate users by leading them to non-existent pages. Fix this by removing or updating the link with the correct URL.
+ERROR_EXTERNAL_LINK_BROKEN_DESC: لینک‌های خارجی شکسته تأثیری بر رتبه‌بندی سایت شما در موتورهای جستجو ندارند، اما می‌توانند کاربران را با هدایت به صفحات غیرموجود ناامید کنند. این مشکل را با حذف یا به‌روزرسانی لینک با URL صحیح برطرف کنید.
 
 ERROR_TIMEOUT: Timeout
-ERROR_TIMEOUT_DESC: Pages that timed out when our crawler attempted to access them. When this happens, search engine crawlers may fail to access and index the content, suggesting potential server issues or temporary problems hindering visibility in search results.
+ERROR_TIMEOUT_DESC: صفحاتی که هنگام تلاش کاوش ما برای دسترسی به آن‌ها با زمان‌سنجی پایان‌یافته (timeout) مواجه شدند. در چنین مواردی، کاوش‌های موتور جستجو ممکن است نتوانند به محتوای صفحه دسترسی پیدا کرده و آن را ایندکس کنند، که می‌تواند نشان‌دهنده مشکلات احتمالی سرور یا اختلالات موقتی باشد که مانع دیده‌شدن صفحات در نتایج جستجو می‌شوند.
 
 ERROR_UNDERSCORE_URL: URLs with underscore characters
-ERROR_UNDERSCORE_URL_DESC: It is usually not recommended to use underscore characters in URLs, as some search engines will ignore them and treat that part as a single word. Use a dash instead as a word separator character.
+ERROR_UNDERSCORE_URL_DESC: معمولاً استفاده از کاراکتر زیرخط (underscore) در URL توصیه نمی‌شود، زیرا برخی موتورهای جستجو آن را نادیده می‌گیرند و آن بخش را به‌عنوان یک کلمه‌ی واحد در نظر می‌گیرند. به‌جای آن، بهتر است از خط تیره (dash) برای جدا کردن کلمات استفاده شود.
 
 ERROR_SLOW_TTFB: Slow Time to First Byte
-ERROR_SLOW_TTFB_DESC: A slow time to first byte can negatively impact the user experience and hurt SEO by causing longer page load times, as some search engines take page speed into consideration as a ranking factor.
+ERROR_SLOW_TTFB_DESC: یک زمان کند برای اولین بایت می‌تواند به طور منفی بر تجربه کاربری تأثیر بگذارد و با افزایش زمان بارگذاری صفحات، SEO را آسیب بزند، زیرا برخی از موتورهای جستجو سرعت بارگذاری صفحه را به عنوان یک عامل رتبه‌بندی در نظر می‌گیرند.
 
 ERROR_HTTP_FORM: Forms on HTTP pages
-ERROR_HTTP_FORM_DESC: HTTP pages with forms. Having a form on an HTTP URL compromises security, reducing user trust and SEO rankings. Make sure your forms are on HTTPS pages.
+ERROR_HTTP_FORM_DESC: صفحات HTTP با فرم‌ها. وجود یک فرم در یک URL HTTP باعث می‌شود امنیت به خطر بیفتد، اعتماد کاربران و رتبه‌بندی سئو کاهش یابد. اطمینان حاصل کنید که فرم‌های شما در صفحات HTTPS قرار دارند.
 
 ERROR_INSECURE_FORM: Insecure forms
-ERROR_INSECURE_FORM_DESC: Pages that have forms with HTTP action URLs. A form with an HTTP action URL exposes data to interception, reduces trust, triggers browser warnings, and negatively impacts SEO rankings.
+ERROR_INSECURE_FORM_DESC: صفحات دارای فرم‌هایی با URLهای عمل HTTP. یک فرم با URL عمل HTTP داده‌ها را در معرض شنود قرار می‌دهد، اعتماد به آن را کاهش می‌دهد، هشدارهای مرورگر را فعال می‌کند و به طور منفی بر رتبه‌های SEO تأثیر می‌گذارد.
 
 ERROR_SPACE_URL: URLs that contain a space
-ERROR_SPACE_URL_DESC: Having a space character in the URL can cause indexing issues and broken links, negatively affecting SEO and user experience. Hyphens should be used as a word separator instead of spaces.
+ERROR_SPACE_URL_DESC: وجود کاراکتر فاصله (space) در URL می‌تواند باعث بروز مشکلات در ایندکس شدن و لینک‌های شکسته شود که تأثیر منفی بر سئو و تجربه کاربری دارد. به‌جای فاصله، باید از خط تیره (hyphen) برای جدا کردن کلمات استفاده شود.
 
 ERROR_MULTIPLE_SLASHES: URLS with multiple slashes in the path
-ERROR_MULTIPLE_SLASHES_DESC: URLS with multiple consecutive forward slashes in the path. This can create confusion for search engines and users, potentially leading to indexing issues and a less clean, professional appearance.
+ERROR_MULTIPLE_SLASHES_DESC: URLهایی با چندین اسلش متوالی در مسیر. این می‌تواند برای موتورهای جستجو و کاربران سردرگمی ایجاد کند و احتمالاً به مشکلات نمایه‌سازی و ظاهری کمتر تمیز و حرفه‌ای منجر شود.
 
 ERROR_NOIMAGEINDEX: Pages with the noimageindex rule
-ERROR_NOIMAGEINDEX_DESC: The noimageindex rule in the robots meta tag prevents images to be indexed by search engines. Reveiew these pages to ensure the images in this pages shouldn't be indexed.
+ERROR_NOIMAGEINDEX_DESC: قانون noimageindex در تگ متا ربات‌ها از ایندکس شدن تصاویر توسط موتورهای جستجو جلوگیری می‌کند. این صفحات را بررسی کنید تا از عدم ایندکس شدن تصاویر در این صفحات اطمینان حاصل کنید.
 
 ERROR_PICTURE_MISSONG_IMG: Pages with pictures missing the img element
-ERROR_PICTURE_MISSONG_IMG_DESC: Pages that are using a picture HTML element which is missing the img element. This can cause images to not be properly displayed in the browser and cause search engine image indexation issues.
+ERROR_PICTURE_MISSONG_IMG_DESC: صفحاتی که از عنصر HTML ‌picture استفاده می‌کنند اما عنصر img در آن وجود ندارد، ممکن است باعث شوند تصاویر به درستی در مرورگر نمایش داده نشوند و مشکلاتی در ایندکس شدن تصاویر توسط موتورهای جستجو ایجاد شود.
 
 ERROR_METAS_IN_BODY: Pages with meta tags in the document's body
-ERROR_METAS_IN_BODY_DESC: Pages that have meta tags in the document's body. The meta tags must be placed in the head section of the document, otherwise they may get ignored by browsers as well as search engines, causing indexability issues.
+ERROR_METAS_IN_BODY_DESC: صفحات که دارای تگ‌های متا در بدنه سند هستند. تگ‌های متا باید در بخش هدر سند قرار بگیرند، در غیر این صورت ممکن است توسط مرورگرها و همچنین موتورهای جستجو نادیده گرفته شوند و باعث بروز مشکلات فهرست‌بندی شوند.
 
 ERROR_NOSNIPPET: Pages with the nosnippet directive
-ERROR_NOSNIPPET_DESC: The nosnippet or max-snippet:0 directives tell search engines not to display a text snippet or video preview in the search results. Review these pages to make sure this is the wanted behavior.
+ERROR_NOSNIPPET_DESC: دستورالعمل‌های nosnippet یا max-snippet:0 به موتورهای جستجو می‌گویند که یک قطعه متنی یا پیش‌نمایش ویدئو را در نتایج جستجو نمایش ندهند. این صفحات را مرور کنید تا مطمئن شوید که این رفتار مورد نظر است.
 
 ERROR_IMG_SIZE_ATTR: Pages containing images missing size attributes
-ERROR_IMG_SIZE_ATTR_DESC: Not setting the size attributes for images can cause layout shifts as the page loads, which can negatively impact user experience as well as SEO. Make sure your images have the corresponding size attributes in place.
+ERROR_IMG_SIZE_ATTR_DESC: تنظیم نکردن ویژگی‌های اندازه برای تصاویر می‌تواند به جابجایی‌های چیدمان در حین بارگذاری صفحه منجر شود، که می‌تواند تأثیر منفی بر تجربه کاربر و همچنین سئو داشته باشد. اطمینان حاصل کنید که تصاویر شما دارای ویژگی‌های اندازه مربوطه هستند.
 
 ERROR_INCORRECT_MEDIA_TYPE: URLs with incorrect media type
-ERROR_INCORRECT_MEDIA_TYPE_DESC: Having URLs with incorrect MIME types can hurt SEO by causing browsers to misinterpret or fail to render content, which can impact user experience and search engine indexing.
+ERROR_INCORRECT_MEDIA_TYPE_DESC: داشتن URLهایی با نوع MIME نادرست می‌تواند به SEO آسیب بزند زیرا باعث می‌شود مرورگرها محتوا را به اشتباه تفسیر کنند یا نتوانند آن را نمایش دهند، که این می‌تواند بر تجربه کاربر و ایندکس‌سازی موتور جستجو تأثیر بگذارد.
 
 ERROR_DUPLICATED_ID: Pages containing elements with duplicated IDs
-ERROR_DUPLICATED_ID_DESC: Having elements with duplicate IDs confuses assistive technologies and JavaScript, leading to navigation issues and unpredictable behavior. This could impact user experience and SEO. Make sure IDs are unique.
+ERROR_DUPLICATED_ID_DESC: داشتن عناصری با شناسه‌های تکراری به فناوری‌های کمکی و جاوا اسکریپت سردرگمی ایجاد می‌کند و منجر به مشکلات ناوبری و رفتارهای غیرقابل پیش‌بینی می‌شود. این موضوع می‌تواند بر تجربه کاربری و سئو تأثیر بگذارد. مطمئن شوید که شناسه‌ها منحصر به فرد هستند.
 
 ERROR_MISSING_VIEWPORT: Pages missing the viewport meta tag
-ERROR_MISSING_VIEWPORT_DESC: A webpage missing the viewport meta tag won't display properly on mobile devices, leading to a bad user experience and lower rankings in search engine results.
+ERROR_MISSING_VIEWPORT_DESC: یک وب‌سایت که تگ متا viewport را نداشته باشد به درستی در دستگاه‌های موبایل نمایش داده نمی‌شود، که منجر به تجربه کاربری نامطلوب و رتبه‌های پایین‌تر در نتایج موتورهای جستجو خواهد شد.
 
 ERROR_DOM_SIZE: HTML documents with an excessive DOM size
-ERROR_DOM_SIZE_DESC: Pages with a high DOM size can slow down page loading times and make it harder for search engines to crawl and index the content efficiently. Simplify your HTML structure by removing unnecessary elements and minimizing the use of nested tags.
+ERROR_DOM_SIZE_DESC: صفحات با اندازه DOM بالا می‌توانند زمان بارگذاری صفحات را کند کنند و باعث شوند که موتورهای جستجو نتوانند محتوای آن‌ها را به‌طور مؤثر جستجو و ایندکس کنند. ساختار HTML خود را با حذف عناصر غیر ضروری و به حداقل رساندن استفاده از تگ‌های تو در تو ساده کنید.
 
 ERROR_PAGINATION_LINKS: Pagination URL not linked
-ERROR_PAGINATION_LINKS_DESC: Having link rel="next" and link rel="prev" tags without corresponding links in the body confuses search engines, leading to poor indexing and a frustrating navigation experience.
+ERROR_PAGINATION_LINKS_DESC: داشتن تگ‌های link rel="next" و link rel="prev" بدون لینک‌های متناظر در محتوای صفحه، موتورهای جستجو را سردرگم می‌کند، که این موضوع منجر به ایندکس ضعیف و تجربه ناوبری آزاردهنده می‌شود.
 
 ERROR_LOCALHOST_LINKS: Webpages with links to localhost
-ERROR_LOCALHOST_LINKS_DESC: Links to localhost or 127.0.0.1 are inaccessible to users and search engines, causing errors and poor SEO. To fix this, replace these links with the correct public URLs pointing to your live website.
+ERROR_LOCALHOST_LINKS_DESC: لینک‌ها به localhost یا 127.0.0.1 برای کاربران و موتورهای جستجو قابل دسترسی نیستند و باعث بروز خطاها و بهینه‌سازی نامناسب SEO می‌شوند. برای رفع این مشکل، این لینک‌ها را با URLهای عمومی صحیح که به وب‌سایت زنده شما اشاره دارند، جایگزین کنید.

@@ -52,8 +52,12 @@ func NewInternalNoFollowLinksReporter() *models.PageIssueReporter {
 			return false
 		}
 
-		for _, l := range pageReport.Links {
-			if l.NoFollow {
+		if pageReport.Nofollow && len(pageReport.InternalLinks) > 0 {
+			return true
+		}
+
+		for _, l := range pageReport.InternalLinks {
+			if l.Link.NoFollow {
 				return true
 			}
 		}
@@ -81,6 +85,10 @@ func NewExternalLinkWitoutNoFollowReporter() *models.PageIssueReporter {
 		}
 
 		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
+			return false
+		}
+
+		if pageReport.Nofollow {
 			return false
 		}
 

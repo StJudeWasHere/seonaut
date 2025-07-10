@@ -94,7 +94,7 @@ func TestInternalNoFollowLinksIssues(t *testing.T) {
 		StatusCode: 200,
 	}
 
-	pageReport.Links = append(pageReport.Links, models.Link{NoFollow: true})
+	pageReport.InternalLinks = append(pageReport.InternalLinks, models.InternalLink{Link: models.Link{NoFollow: true}})
 
 	reporter := page.NewInternalNoFollowLinksReporter()
 	if reporter.ErrorType != errors.ErrorInternalNoFollow {
@@ -105,6 +105,33 @@ func TestInternalNoFollowLinksIssues(t *testing.T) {
 
 	if reportsIssue == false {
 		t.Errorf("TestInternalNoFollowLinksIssues: reportsIssue should be true")
+	}
+}
+
+// Test the InternalNoFollowLinks reporter with a pageReport that has the
+// nofollow meta tag and links without. The reporter should take the links
+// as nofollow links and report the issue.
+func TestInternalNoFollowMetaLinksIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+		Nofollow:   true, // PageReport is nofollow
+	}
+
+	// The link should be reported as nofollow even if it doesn't have
+	// the nofollow attribute because the pageReport itself is nofollow.
+	pageReport.InternalLinks = append(pageReport.InternalLinks, models.InternalLink{})
+
+	reporter := page.NewInternalNoFollowLinksReporter()
+	if reporter.ErrorType != errors.ErrorInternalNoFollow {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == false {
+		t.Errorf("reportsIssue should be true")
 	}
 }
 
@@ -151,6 +178,30 @@ func TestExternalLinkWitoutNoFollowIssues(t *testing.T) {
 
 	if reportsIssue == false {
 		t.Errorf("TestExternalLinkWitoutNoFollowIssues: reportsIssue should be true")
+	}
+}
+
+// Test the ExternalLinkWitoutNoFollow reporter with a pageReport that has the nofollow
+// meta tag and links without the nofollow attribute. The reporter should not report the issue.
+func TestExternalLinkNoFollowMetaNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:    true,
+		MediaType:  "text/html",
+		StatusCode: 200,
+		Nofollow:   true,
+	}
+
+	pageReport.ExternalLinks = append(pageReport.ExternalLinks, models.Link{})
+
+	reporter := page.NewExternalLinkWitoutNoFollowReporter()
+	if reporter.ErrorType != errors.ErrorExternalWithoutNoFollow {
+		t.Errorf("TestNoIssues: error type is not correct")
+	}
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("reportsIssue should be false")
 	}
 }
 

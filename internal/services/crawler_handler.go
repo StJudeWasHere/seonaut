@@ -295,7 +295,7 @@ func (s *CrawlerHandler) updateStatus(crawl *models.Crawl, pageReport *models.Pa
 	}
 
 	for _, link := range pageReport.Links {
-		if link.NoFollow {
+		if link.NoFollow || pageReport.Nofollow {
 			crawl.InternalNoFollowLinks++
 		} else {
 			crawl.InternalFollowLinks++
@@ -303,7 +303,7 @@ func (s *CrawlerHandler) updateStatus(crawl *models.Crawl, pageReport *models.Pa
 	}
 
 	for _, link := range pageReport.ExternalLinks {
-		if link.NoFollow {
+		if link.NoFollow || pageReport.Nofollow {
 			crawl.ExternalNoFollowLinks++
 		} else {
 			crawl.ExternalFollowLinks++

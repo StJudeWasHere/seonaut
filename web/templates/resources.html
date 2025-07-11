@@ -559,28 +559,38 @@
 
 	{{ if eq .Tab "internal" }}
 		{{ if .PageReportView.PageReport.InternalLinks }}
-				{{ range .PageReportView.PageReport.InternalLinks }}
-					<div class="box">
-						<div class="col col-main">
-							<div class="content">
-							{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
-							{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
-							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
-								{{ .Link.URL }}
-							</a>
-							{{ if .Link.NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
-							</div>
+			{{ if .PageReportView.PageReport.Nofollow }}
+				<div class="box bg-alert">
+					<div class="col col-main">
+						<div class="content">
+							This page has the nofollow meta tag. <br>
+							Links in this page are considered nofollow even if the do not have the nofollow attribute.
 						</div>
-
-						{{ if .PageReport.Crawled }}
-						<div class="col col-actions">
-							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
-								View details
-							</a>
-						</div>
-						{{ end }}
 					</div>
-				{{ end }}
+				</div>
+			{{ end }}
+			{{ range .PageReportView.PageReport.InternalLinks }}
+				<div class="box">
+					<div class="col col-main">
+						<div class="content">
+						{{ if .Link.Text }}{{ .Link.Text }}<br/>{{ end }}
+						{{ if .PageReport.Title }}{{ .PageReport.Title }}<br/>{{ end }}
+						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
+							{{ .Link.URL }}
+						</a>
+						{{ if .Link.NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
+						</div>
+					</div>
+
+					{{ if .PageReport.Crawled }}
+					<div class="col col-actions">
+						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
+							View details
+						</a>
+					</div>
+					{{ end }}
+				</div>
+			{{ end }}
 		{{ else }}
 			<div class="box">
 				<div class="content">
@@ -620,24 +630,35 @@
 
 	{{ if eq .Tab "external" }}
 		{{ if .PageReportView.PageReport.ExternalLinks }}
-			{{ range .PageReportView.PageReport.ExternalLinks }}
-					<div class="box">
-						<div class="col col-main">
-							<div class="content">
-								{{ if .Text }}{{ .Text }} <br> {{ end }}
-								<span class="url">{{ .URL }}</span>
-								{{ if not .NoFollow }}<br><span class="alert">follow</span>{{ end }}
-								{{ if .Sponsored }}<span class="alert"><small>sponsored</small></span>{{ end }}
-								{{ if .UGC }}<span class="alert"><small>ugc</small></span>{{ end }}
-								{{ if gt .StatusCode 299 }}<span class="alert"><small>Status Code {{ .StatusCode }}</small></span>{{ end }}
-								{{ if lt .StatusCode 0 }}<span class="alert"><small>Broken Link</small></span>{{ end }}
-							</div>
+			{{ if .PageReportView.PageReport.Nofollow }}
+				<div class="box bg-alert">
+					<div class="col col-main">
+						<div class="content">
+							This page has the nofollow meta tag. <br>
+							Links in this page are considered nofollow even if the do not have the nofollow attribute.
 						</div>
 					</div>
-				{{ end }}
-			{{ else }}
-				<div class="box"><div class="content">There are no external links in this page.</div></div>
+				</div>
 			{{ end }}
+			{{ $external_nofollow := .PageReportView.PageReport.Nofollow }}
+			{{ range .PageReportView.PageReport.ExternalLinks }}
+				<div class="box">
+					<div class="col col-main">
+						<div class="content">
+							{{ if .Text }}{{ .Text }} <br> {{ end }}
+							<span class="url">{{ .URL }}</span>
+							{{ if and (not .NoFollow) (not $external_nofollow ) }}<br><span class="alert">follow</span>{{ end }}
+							{{ if .Sponsored }}<span class="alert"><small>sponsored</small></span>{{ end }}
+							{{ if .UGC }}<span class="alert"><small>ugc</small></span>{{ end }}
+							{{ if gt .StatusCode 299 }}<span class="alert"><small>Status Code {{ .StatusCode }}</small></span>{{ end }}
+							{{ if lt .StatusCode 0 }}<span class="alert"><small>Broken Link</small></span>{{ end }}
+						</div>
+					</div>
+				</div>
+			{{ end }}
+		{{ else }}
+			<div class="box"><div class="content">There are no external links in this page.</div></div>
+		{{ end }}
 		
 		<div class="box pagination">
 			<div class="col prev">

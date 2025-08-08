@@ -118,7 +118,7 @@ func (s *CrawlerHandler) responseCallback(crawl *models.Crawl, p *models.Project
 		var cssURLs []*url.URL
 
 		// htmlquery panics if htmlNode is of type html.ErroNode
-		if strings.HasPrefix(strings.ToLower(pageReport.ContentType), "text/html") && htmlNode.Type != html.ErrorNode {
+		if strings.HasPrefix(strings.ToLower(pageReport.ContentType), "text/html") {
 			// Check preload links to add the urls to the crawler's queue.
 			preload, err := htmlquery.QueryAll(htmlNode, "//head/link[@rel=\"preload\"]/@href")
 			if err != nil {
@@ -233,7 +233,7 @@ func (s *CrawlerHandler) buildPageReport(r *crawler.ResponseMessage) (*models.Pa
 			Timeout:   true,
 			URL:       r.URL.String(),
 			ParsedURL: r.URL,
-		}, &html.Node{}, nil
+		}, &html.Node{Type: html.DocumentNode}, nil
 	}
 
 	// Create a new PageReport from the response. If there's a context.DeadlineExceeded

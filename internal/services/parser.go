@@ -29,7 +29,7 @@ func newParser(url *url.URL, headers *http.Header, body []byte) (*Parser, error)
 		return &Parser{
 			ParsedURL: url,
 			Headers:   headers,
-			doc:       &html.Node{},
+			doc:       &html.Node{Type: html.DocumentNode},
 		}, nil
 	}
 

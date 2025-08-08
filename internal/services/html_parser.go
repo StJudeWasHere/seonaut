@@ -31,7 +31,7 @@ func NewFromHTTPResponse(r *http.Response) (*models.PageReport, *html.Node, erro
 	var bodyCopy bytes.Buffer
 	_, err := io.Copy(&bodyCopy, r.Body)
 	if err != nil {
-		return &models.PageReport{}, &html.Node{}, err
+		return &models.PageReport{}, &html.Node{Type: html.DocumentNode}, err
 	}
 
 	r.Body = io.NopCloser(bytes.NewReader(bodyCopy.Bytes()))
@@ -41,7 +41,7 @@ func NewFromHTTPResponse(r *http.Response) (*models.PageReport, *html.Node, erro
 
 	b, err := io.ReadAll(bodyReader)
 	if err != nil {
-		return &models.PageReport{}, &html.Node{}, err
+		return &models.PageReport{}, &html.Node{Type: html.DocumentNode}, err
 	}
 
 	return NewHTMLParser(r.Request.URL, r.StatusCode, &r.Header, b, r.ContentLength)
@@ -52,7 +52,7 @@ func NewHTMLParser(u *url.URL, status int, headers *http.Header, body []byte, co
 	parser, err := newParser(u, headers, body)
 	if err != nil {
 		log.Println("newParser error!")
-		return &models.PageReport{}, &html.Node{}, err
+		return &models.PageReport{}, &html.Node{Type: html.DocumentNode}, err
 	}
 
 	size := int64(len(body))

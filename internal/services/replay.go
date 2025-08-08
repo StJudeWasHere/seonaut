@@ -59,18 +59,15 @@ func (r *ReplayService) RewriteHTML(htmlContent []byte, rewriteFunc rewriteURL) 
 	}
 
 	// Rewrite urls in inline css
-	// htmlquery panics if htmlNode is of type html.ErroNode
-	if doc.Type != html.ErrorNode {
-		inlineStyleElements, err := htmlquery.QueryAll(doc, "//*[@style]")
-		if err != nil {
-			log.Printf("error getting elements with style attribute: %v", err)
-		}
+	inlineStyleElements, err := htmlquery.QueryAll(doc, "//*[@style]")
+	if err != nil {
+		log.Printf("error getting elements with style attribute: %v", err)
+	}
 
-		for _, inlineStyleElement := range inlineStyleElements {
-			for i, attr := range inlineStyleElement.Attr {
-				if attr.Key == "style" {
-					inlineStyleElement.Attr[i].Val = r.RewriteCSS(attr.Val, rewriteFunc)
-				}
+	for _, inlineStyleElement := range inlineStyleElements {
+		for i, attr := range inlineStyleElement.Attr {
+			if attr.Key == "style" {
+				inlineStyleElement.Attr[i].Val = r.RewriteCSS(attr.Val, rewriteFunc)
 			}
 		}
 	}

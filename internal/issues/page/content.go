@@ -125,10 +125,6 @@ func NewDOMSizeReporter(size int) *models.PageIssueReporter {
 			return false
 		}
 
-		if htmlNode.Type == html.ErrorNode {
-			return false
-		}
-
 		nodes := htmlquery.Find(htmlNode, "//*")
 
 		return len(nodes) > size

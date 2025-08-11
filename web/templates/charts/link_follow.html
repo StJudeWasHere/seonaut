@@ -6,8 +6,8 @@
 		followChart.setOption({
 			legend: {
 				data: [
-					'Follow',
-					'Nofollow',
+					'{{ trans "FOLLOW" }}',
+					'{{ trans "NOFOLLOW" }}',
 				]
 			},
 			textStyle: {
@@ -35,7 +35,7 @@
 			color: ['#F7E497', '#2C7D91'],
 			series: [
 			{
-				name: 'Internal',
+				name: '{{ trans "INTERNAL" }}',
 				type: 'pie',
 				selectedMode: 'single',
 				radius: ['0%', '35%'],
@@ -46,12 +46,12 @@
 					show: false
 				},
 				data: [
-					{ value: {{ .ProjectView.Crawl.InternalFollowLinks }}, name: "Follow"},
-					{ value: {{ .ProjectView.Crawl.InternalNoFollowLinks }}, name: "Nofollow"},
+					{ value: {{ .ProjectView.Crawl.InternalFollowLinks }}, name: "{{ trans "FOLLOW" }}"},
+					{ value: {{ .ProjectView.Crawl.InternalNoFollowLinks }}, name: "{{ trans "NOFOLLOW" }}"},
 				]
 			},
 			{
-				name: 'External',
+				name: '{{ trans "EXTERNAL" }}',
 				type: 'pie',
 				radius: ['40%', '75%'],
 				label: {
@@ -63,8 +63,8 @@
 					length: 20,
 				},
 				data: [
-					{ value: {{ .ProjectView.Crawl.ExternalFollowLinks }}, name: "Follow"},
-					{ value: {{ .ProjectView.Crawl.ExternalNoFollowLinks }}, name: "Nofollow"},
+					{ value: {{ .ProjectView.Crawl.ExternalFollowLinks }}, name: "{{ trans "FOLLOW" }}"},
+					{ value: {{ .ProjectView.Crawl.ExternalNoFollowLinks }}, name: "{{ trans "NOFOLLOW" }}"},
 				]
 			}]
 		});

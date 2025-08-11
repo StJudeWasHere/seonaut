@@ -6,7 +6,7 @@
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
-					<h2>Live Crawling</h2>
+					<h2>{{ trans "HTTP_BASIC_AUTH" }}</h2>
 				</div>
 			</div>
 		</div>
@@ -23,8 +23,8 @@
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<p>This project uses HTTP Basic Authentication. You must provide the credentials before the crawl starts.</p>
-				<p><i>Credentials are not stored on the server, and they will be requested every time you want to crawl this project.</i></p>
+				<p>{{ trans "HTTP_BASIC_AUTH_MESSAGE" }}</p>
+				<p><i>{{ trans "HTTP_BASIC_AUTH_PRIVACY" }}</i></p>
 			</div>
 		</div>
 	</div>
@@ -33,7 +33,7 @@
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
-					<label for="username">Username:</label>
+					<label for="username">{{ trans "USERNAME" }}</label>
 					<input type="username" name="username" autofocus>
 				</div>
 			</div>
@@ -42,7 +42,7 @@
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
-					<label for="password">Password:</label>
+					<label for="password">{{ trans "PASSWORD" }}</label>
 					<input type="password" name="password" autofocus>
 				</div>
 			</div>
@@ -52,7 +52,7 @@
 			<div class="col col-main">
 				<div class="content-s">
 
-					<input type="submit" value="Crawl Now" class="inline"> or <a href="/">cancel</a>.
+					<input type="submit" value="{{ trans "CRAWL_NOW" }}" class="inline"> <a href="/" class="button">{{ trans "CANCEL" }}</a>
 
 				</div>
 			</div>

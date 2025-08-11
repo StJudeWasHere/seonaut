@@ -1,6 +1,6 @@
 {{ define "head_credentials" }}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ .Lang }}">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,6 +10,6 @@
 	</title>
 	<link rel="stylesheet" href="/resources/style.css">
 </head>
-<body>
+<body{{ if (is_rtl .Lang) }} class="rtl"{{ end }}>
 <div id="main" class="credentials borderless">
 {{ end }}

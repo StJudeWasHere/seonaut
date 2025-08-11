@@ -1,6 +1,6 @@
 {{ define "head" }}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ .Lang }}">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -13,7 +13,7 @@
 	</title>
 	<link rel="stylesheet" href="/resources/style.css">
 </head>
-<body>
+<body{{ if (is_rtl .Lang) }} class="rtl"{{ end }}>
 <div id="main">
 	<div id="header">
 		<div class="box borderless">
@@ -26,9 +26,9 @@
 		<div class="content">
 			{{ if .User.Id }}
 				<span class="menu">
-					<a href="/">Projects</a>
-					<a href="/account">Account</a>
-					<a href="/signout">Logout</a>
+					<a href="/">{{ trans "PROJECTS" }}</a>
+					<a href="/account">{{ trans "ACCOUNT" }}</a>
+					<a href="/signout">{{ trans "LOGOUT" }}</a>
 				</span>
 			{{ end }}
 		</div>

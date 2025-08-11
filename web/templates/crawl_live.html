@@ -6,7 +6,7 @@
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
-					<h2>Live Crawling</h2>
+					<h2>{{ trans "LIVE_CRAWLING" }}</h2>
 				</div>
 			</div>
 		</div>
@@ -33,10 +33,10 @@
 
 		<div class="col col-actions borderless highlight">
 				<a class="progress-stop" id="progress-stop" href="/crawl/stop?pid={{ .Data.Project.Id }}">
-					Stop Crawler
+					{{ trans "STOP_CRAWLER" }}
 				</a>
 				<div class="progress-stopping" id="progress-stopping">
-					<span>Stopping Crawler...</span>
+					<span>{{ trans "STOPPING_CRAWLER" }}</span>
 				</div>
 		</div>
 	</div>
@@ -44,7 +44,7 @@
 	<noscript>
 		<div id="crawl-start-msg" class="box box-highlight">
 			<div class="content content-centered">
-				Live crawl is not availabel for your browser. Javascript support is needed.
+				{{ trans "LIVE_CRAWL_JAVASCRIPT_ERROR" }}
 			</div>
 		</div>
 	</noscript>
@@ -144,12 +144,12 @@
 		}
 
 		if (!window["WebSocket"]) {
-			addMesg("Live crawl is not availabel for your browser. Websocket support is needed.")
+			addMesg("{{ trans "LIVE_CRAWL_WEBSOCKET_ERROR" }}")
 
 			return
 		}
 
-		addMsg("Connecting to the server, please wait...")
+		addMsg("{{ trans "CONNECTING_TO_SERVER" }}")
 
 		const protocol = {{ if .Data.Secure }}"wss://" {{ else }}"ws://"{{ end }}
 		let conn = new WebSocket(protocol + document.location.host + "/crawl/ws?pid={{ .Data.Project.Id }}")
@@ -183,7 +183,7 @@
 				if (data.Crawled > 1) {
 					p += "s"
 				}
-				counter.textContent = data.Crawled + " " + p + " crawled"
+				counter.textContent = data.Crawled + " " + p + " " + "{{ trans "CRAWLED" }}"
 
 				t.querySelector(".url").textContent = data.URL
 				container.prepend(t)
@@ -196,7 +196,7 @@
 
 				break
 			case 'IssuesInit':
-				addMsg("Crawl completed. Creating the report, please wait...")
+				addMsg("{{ trans "CRAWL_COMPLETED" }}")
 				break
 			case 'CrawlEnd':
 				conn.close()

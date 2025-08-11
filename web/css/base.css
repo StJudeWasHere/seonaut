@@ -96,7 +96,7 @@ input {
 	line-height: calc(var(--line-height) - 2px);
 }
 
-input[type="submit"] {
+input[type="submit"], .button {
 	background: var(--secondary-color);
 	border-top: 1px solid var(--primary-color);
 	border-left: 1px solid var(--primary-color);
@@ -115,7 +115,7 @@ input[type="submit"] {
 	line-height: calc(var(--line-height) - 3px);
 }
 
-input[type="submit"]:hover {
+input[type="submit"]:hover, .button:hover {
 	box-shadow: 2px 2px 0 black;
 	background-color: var(--highlight-color);
 }
@@ -165,8 +165,12 @@ summary:hover {
 	box-shadow: 2px 2px 0 black;
 }
 
+details[open] {
+	z-index: 1;
+}
+
 details[open] > summary {
-		border-bottom-color: transparent;
+	border-bottom-color: transparent;
 }
 
 details {

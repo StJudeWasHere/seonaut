@@ -8,7 +8,7 @@
 		<div class="col col-main">
 			<div class="content">
 				<div>
-					<h2>Site Issues</h2>
+					<h2>{{ trans "SITE_ISSUES" }}</h2>
 				</div>
 			</div>
 		</div>
@@ -27,9 +27,9 @@
 	{{ if and (eq .ProjectView.Crawl.CriticalIssues 0) (and (eq .ProjectView.Crawl.WarningIssues 0) (eq .ProjectView.Crawl.AlertIssues 0)) }}
 		<div class="box box-highlight">
 			<div class="col col-main ">
-				<div class="content aligned mint-intro">
-					Your site is <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M15.787 7.531c-5.107 2.785-12.72 9.177-15.787 15.469h2.939c.819-2.021 2.522-4.536 3.851-5.902 8.386 3.747 17.21-2.775 17.21-11.343 0-1.535-.302-3.136-.92-4.755-2.347 3.119-5.647 1.052-10.851 1.625-7.657.844-11.162 6.797-8.764 11.54 3.506-3.415 9.523-6.38 12.322-6.634z"/></svg> mint.
-					<p>SEOnaut didn't detect any issues on your site.</p>
+				<div class="content aligned">
+					{{ trans "NO_ISSUES" }}
+					<p>{{ trans "NO_ISSUES_MESSAGE" }}</p>
 				</div>
 			</div>
 		</div>
@@ -40,13 +40,9 @@
 			<div class="content issues-critical-title">
 				<h2>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x-octagon"><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
-					{{ if ne .ProjectView.Crawl.CriticalIssues 0 }}
-						{{ .ProjectView.Crawl.CriticalIssues }} Critical
-					{{ else }}
-						{{ .ProjectView.Crawl.CriticalIssues }} Critical
-					{{ end }}
+					{{ trans "CRITICALS" .ProjectView.Crawl.CriticalIssues }}
 				</h2>
-				<p>Fix these first. They're likely hurting your rankings.</p>
+				<p>{{ trans "CRITICAL_MESSAGE" }}</p>
 			</div>
 		</div>
 		{{ range .IssueCount.CriticalIssues }}
@@ -72,13 +68,9 @@
 			<div class="content issues-alert-title">
 				<h2>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-alert-triangle"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg> 
-					{{ if ne .ProjectView.Crawl.AlertIssues 0 }}
-						{{ .ProjectView.Crawl.AlertIssues }} Alerts
-					{{ else }}
-						{{ .ProjectView.Crawl.AlertIssues }} Alerts
-					{{ end }}
+					{{ trans "ALERTS" .ProjectView.Crawl.AlertIssues }}
 				</h2>
-				<p>Fixing these can help improve your site's SEO performance.</p>
+				<p>{{ trans "ALERTS_MESSAGE" }}</p>
 			</div>
 		</div>
 		{{ range .IssueCount.AlertIssues }}
@@ -104,13 +96,9 @@
 			<div class="content issues-warning-title">
 				<h2>
 					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-list"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
-					{{ if ne .ProjectView.Crawl.WarningIssues 0 }}
-						{{ .ProjectView.Crawl.WarningIssues }} Warnings
-					{{ else }}
-						{{ .ProjectView.Crawl.WarningIssues }} Warnings
-					{{ end }}
+					{{ trans "WARNINGS" .ProjectView.Crawl.WarningIssues }}
 				</h2>
-				<p>These issues may not be significant depending on your goals, but they're worth monitoring.</p>
+				<p>{{ trans "WARNINGS_MESSAGE" }}</p>
 			</div>
 		</div>
 		{{ range .IssueCount.WarningIssues }}
@@ -137,9 +125,9 @@
 		<div class="content issues-passed-title">
 			<h2>
 				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg>
-				Passed Issue Checks
+				{{ trans "PASSED_CHECKS" }}
 			</h2>
-			<p>Your site has successfully passed the following checks.</p>
+			<p>{{ trans "PASSED_CHECKS_MESSAGE" }}</p>
 		</div>
 	</div>
 	{{ range .IssueCount.PassedIssues }}

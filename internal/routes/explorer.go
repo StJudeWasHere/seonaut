@@ -56,6 +56,7 @@ func (h *explorerHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		Data:      view,
 		User:      *user,
 		PageTitle: "EXPLORER_PAGE_TITLE",

@@ -24,7 +24,7 @@
 				top: 'top',
 				left: 'left',
 				orient: 'vertical',
-				data:  ['Canonical', 'Non Canonical'],
+				data:  ['{{ trans "CANONICAL" }}', '{{ trans "NON_CANONICAL" }}'],
 			},
 			textStyle: {
 				fontFamily: "Fira Code",
@@ -41,11 +41,11 @@
 						show: false
 					},
 					radius: ['0%', '65%'],
-					name: 'Canonical URLs',
+					name: '{{ trans "CANONICAL_URLS" }}',
 					type: 'pie',
 					data: [
-						{ value: {{ .CanonicalCount.Canonical }}, name: 'Canonical' },
-						{ value: {{ .CanonicalCount.NonCanonical }}, name: 'Non Canonical' },
+						{ value: {{ .CanonicalCount.Canonical }}, name: '{{ trans "CANONICAL" }}' },
+						{ value: {{ .CanonicalCount.NonCanonical }}, name: '{{ trans "NON_CANONICAL" }}' },
 					],
 				}
 			]

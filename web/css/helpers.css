@@ -112,7 +112,9 @@
 .url {
 	word-wrap: break-word;
 	font-weight: 300;
-	overflow:hidden;
+	overflow: hidden;
+	direction: ltr;
+	unicode-bidi: embed;
 }
 
 .menu {
@@ -120,7 +122,6 @@
 }
 
 .menu a {
-	font-decoration: none;
 	color: var(--primary-color);
 	margin-left: 1rem;
 }
@@ -143,6 +144,15 @@
 	height: 100%;
 	box-sizing: border-box;
 	text-align: center;
+}
+
+.external_link {
+	display: flex;
+	align-items: center;
+}
+
+.external_link a {
+	margin-left: .5rem;
 }
 
 @keyframes spin {

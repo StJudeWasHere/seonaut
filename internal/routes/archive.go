@@ -81,6 +81,7 @@ func (h *archiveHandler) archiveHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	pageView := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		Data:      data,
 		User:      *user,
 		PageTitle: "ARCHIVE_VIEW_PAGE_TITLE",

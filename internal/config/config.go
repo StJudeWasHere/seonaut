@@ -27,11 +27,17 @@ type DBConfig struct {
 	Name   string `mapstructure:"database"`
 }
 
+// UIConfig stores the UI settings.
+type UIConfig struct {
+	Language string `mapstrcuture:"language"`
+}
+
 // Config stores the configuration for the application.
 type Config struct {
 	Crawler    *CrawlerConfig    `mapstructure:"crawler"`
 	HTTPServer *HTTPServerConfig `mapstructure:"server"`
 	DB         *DBConfig         `mapstructure:"database"`
+	UIConfig   *UIConfig         `mapstructure:"UI"`
 }
 
 // NewConfig loads the configuration from the specified file and path.

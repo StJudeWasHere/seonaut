@@ -59,6 +59,7 @@ func (h *dashboardHandler) indexHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	pageView := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		Data:      data,
 		User:      *user,
 		PageTitle: "PROJECT_DASHBOARD_PAGE_TITLE",

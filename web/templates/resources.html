@@ -14,12 +14,12 @@
 		<div class="col col-main">
 			<div class="content">
 				{{ if .Eid }}
-					<a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a> 
+					<a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ trans "SITE_ISSUES" }}</a> 
 					/ 
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a>
 					{{ $parameters = printf "%s&eid=%s" $parameters .Eid }}
 				{{ else if .Ep }}
-					<a href="/explorer?pid={{ .ProjectView.Project.Id }}">Page Details</a>
+					<a href="/explorer?pid={{ .ProjectView.Project.Id }}">{{ trans "PAGE_DETAILS_LINK" }}</a>
 					{{ $parameters = printf "%s&ep=%s" $parameters .Ep }}
 				{{ end }}
 
@@ -39,17 +39,17 @@
 	<div class="box box-highlight soft">
 		<div class="col col-main">
 			<div class="content">
-				{{ if eq .Tab "details" }} General details about the URL. {{ end }}
-				{{ if eq .Tab "inlinks" }} Inlinks are links to this URL from other pages on this website. {{ end }}
-				{{ if eq .Tab "internal" }} Internal links are the links found in this URL's HTML code that point to other pages on this website. {{ end }}
-				{{ if eq .Tab "external"}} External links are the links found in this URL's HTML code pointing to other websites. {{ end }}
-				{{ if eq .Tab "redirections" }} Redirections are the URLs from this website that are redirected to this URL. {{ end }}
-				{{ if eq .Tab "images" }} Images that are found in this URL's HTML code. Note that images shown using CSS are not included here. {{ end }}
-				{{ if eq .Tab "audios" }} Audio files that are found in this URL's HTML code. {{ end }}
-				{{ if eq .Tab "videos" }} Video files that are found in this URL's HTML code. {{ end }}
-				{{ if eq .Tab "iframes" }} Iframes that are found in this URL's HTML code. {{ end }}
-				{{ if eq .Tab "scripts" }} Script files that are found in this URL's code. {{ end }}
-				{{ if eq .Tab "styles" }} CSS files that are found in this URL's HTML code. {{ end }}
+				{{ if eq .Tab "details" }} {{ trans "DETAILS_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "inlinks" }} {{ trans "INLINKS_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "internal" }} {{ trans "INTERNAL_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "external"}} {{ trans "EXTERNAL_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "redirections" }} {{ trans "REDIRECTIONS_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "images" }} {{ trans "IMAGES_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "audios" }} {{ trans "AUDIOS_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "videos" }} {{ trans "VIDEOS_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "iframes" }} {{ trans "IFRAMES_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "scripts" }} {{ trans "SCRIPTS_TAB_INFO" }} {{ end }}
+				{{ if eq .Tab "styles" }} {{ trans "STYLES_TAB_INFO" }} {{ end }}
 			</div>
 		</div>
 
@@ -58,62 +58,62 @@
 
 				<details>
 					<summary>
-						{{ if eq .Tab "details" }} Details {{ end }}
-						{{ if eq .Tab "inlinks" }} Inlinks {{ end }}
-						{{ if eq .Tab "internal" }} Internal links {{ end }}
-						{{ if eq .Tab "external"}} External links {{ end }}
-						{{ if eq .Tab "redirections" }} Redirections {{ end }}
-						{{ if eq .Tab "images" }} Images {{ end }}
-						{{ if eq .Tab "audios" }} Audios {{ end }}
-						{{ if eq .Tab "videos" }} Videos {{ end }}
-						{{ if eq .Tab "iframes" }} Iframes {{ end }}
-						{{ if eq .Tab "scripts" }} Scripts {{ end }}
-						{{ if eq .Tab "styles" }} Styles {{ end }}
+						{{ if eq .Tab "details" }} {{ trans "DETAILS_TAB" }} {{ end }}
+						{{ if eq .Tab "inlinks" }} {{ trans "INLINKS_TAB" }} {{ end }}
+						{{ if eq .Tab "internal" }} {{ trans "INTERNAL_TAB" }} {{ end }}
+						{{ if eq .Tab "external"}} {{ trans "EXTERNAL_TAB" }} {{ end }}
+						{{ if eq .Tab "redirections" }} {{ trans "REDIRECTIONS_TAB" }} {{ end }}
+						{{ if eq .Tab "images" }} {{ trans "IMAGES_TAB" }} {{ end }}
+						{{ if eq .Tab "audios" }} {{ trans "AUDIOS_TAB" }} {{ end }}
+						{{ if eq .Tab "videos" }} {{ trans "VIDEOS_TAB" }} {{ end }}
+						{{ if eq .Tab "iframes" }} {{ trans "IFRAMES_TAB" }} {{ end }}
+						{{ if eq .Tab "scripts" }} {{ trans "SCRIPTS_TAB" }} {{ end }}
+						{{ if eq .Tab "styles" }} {{ trans "STYLES_TAB" }} {{ end }}
 					</summary>
 
 					<ul>
 						<li>
-							<a href="/resources{{ printf "%s&t=details" $parameters }}">Details</a>
+							<a href="/resources{{ printf "%s&t=details" $parameters }}">{{ trans "DETAILS_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=inlinks" $parameters }}">Inlinks</a>
+							<a href="/resources{{ printf "%s&t=inlinks" $parameters }}">{{ trans "INLINKS_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=internal" $parameters }}">Internal links</a>
+							<a href="/resources{{ printf "%s&t=internal" $parameters }}">{{ trans "INTERNAL_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=external" $parameters }}">External links</a>
+							<a href="/resources{{ printf "%s&t=external" $parameters }}">{{ trans "EXTERNAL_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=redirections" $parameters }}">Redirections</a>
+							<a href="/resources{{ printf "%s&t=redirections" $parameters }}">{{ trans "REDIRECTIONS_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=audios" $parameters }}">Audios</a>
+							<a href="/resources{{ printf "%s&t=images" $parameters }}">{{ trans "IMAGES_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=videos" $parameters }}">Videos</a>
+							<a href="/resources{{ printf "%s&t=audios" $parameters }}">{{ trans "AUDIOS_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=images" $parameters }}">Images</a>
+							<a href="/resources{{ printf "%s&t=videos" $parameters }}">{{ trans "VIDEOS_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=iframes" $parameters }}">Iframes</a>
+							<a href="/resources{{ printf "%s&t=iframes" $parameters }}">{{ trans "IFRAMES_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=scripts" $parameters }}">Scripts</a>
+							<a href="/resources{{ printf "%s&t=scripts" $parameters }}">{{ trans "SCRIPTS_TAB" }}</a>
 						</li>
 
 						<li>
-							<a href="/resources{{ printf "%s&t=styles" $parameters }}">Styles</a>
+							<a href="/resources{{ printf "%s&t=styles" $parameters }}">{{ trans "STYLES_TAB" }}</a>
 						</li>
 					</ul>
 				</details>
@@ -129,9 +129,17 @@
 	{{ $parameters = printf "%s&t=%s" $parameters .Tab }}
 
 	<div class="box">
-		<div class="col col-main highlight">
+		<div class="col col-main highlight borderless">
 			<div class="content content-s">
-				<b>URL:</b> {{ .PageReportView.PageReport.URL }} <a class="borderless" href="{{ .PageReportView.PageReport.URL }}" target="_blank">↗</a>
+				<b>{{ trans "URL" }}</b> 
+			</div>
+		</div>
+		<div class="col highlight">
+			<div class="content content-s">
+				<div class="external_link">
+					<span class="url">{{ .PageReportView.PageReport.URL }}</span>
+					<a class="borderless" href="{{ .PageReportView.PageReport.URL }}" target="_blank">↗</a>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -143,7 +151,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Status Code</b>
+							<b>{{ trans "STATUS_CODE" }}</b>
 						</div>
 					</div>
 					
@@ -157,7 +165,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Content Type</b>
+							<b>{{ trans "CONTENT_TYPE" }}</b>
 						</div>
 					</div>
 
@@ -171,7 +179,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Title</b>
+							<b>{{ trans "TITLE" }}</b>
 						</div>
 					</div>
 
@@ -185,7 +193,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Description</b>
+							<b>{{ trans "DESCRIPTION" }}</b>
 						</div>
 					</div>
 
@@ -199,7 +207,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>H1</b>
+							<b>{{ trans "H1" }}</b>
 						</div>
 					</div>
 
@@ -211,7 +219,7 @@
 				</div>
 
 				<div class="box soft">
-					<div class="col borderless"><div class="content"><b>H2</b></div></div>
+					<div class="col borderless"><div class="content"><b>{{ trans "H2" }}</b></div></div>
 					<div class="col borderless"><div class="content">
 						{{ if .H2 }}{{ .H2 }}{{ else }} - {{ end }}
 					</div></div>
@@ -220,13 +228,17 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Blocked</b>
+							<b>{{ trans "BLOCKED" }}</b>
 						</div>
 					</div>
 
 					<div class="col">
 						<div class="content">
-							{{ if .BlockedByRobotstxt }}Blocked{{ else }}Not blocked{{ end }} by robots.txt
+							{{ if .BlockedByRobotstxt }}
+								{{ trans "URL_BLOCKED" }}
+							{{ else }}
+								{{ trans "URL_NOT_BLOCKED" }}
+							{{ end }}
 						</div>
 					</div>
 				</div>
@@ -235,13 +247,17 @@
 					<div class="box soft">
 						<div class="col borderless">
 							<div class="content">
-								<b>Sitemap</b>
+								<b>{{ trans "SITEMAP" }}</b>
 							</div>
 						</div>
 
 						<div class="col">
 							<div class="content">
-								The URL {{ if .InSitemap }}is{{ else }}is not{{ end }} in the sitemap
+								{{ if .InSitemap }}
+									{{ trans "URL_IN_SITEMAP" }}
+								{{ else }}
+									{{ trans "URL_NOT_IN_SITEMAP" }}
+								{{ end }}
 							</div>
 						</div>
 					</div>
@@ -250,7 +266,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Size</b>
+							<b>{{ trans "SIZE" }}</b>
 						</div>
 					</div>
 
@@ -264,7 +280,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Robots</b>
+							<b>{{ trans "ROBOTS" }}</b>
 						</div>
 					</div>
 
@@ -278,13 +294,13 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Redirect URL</b>
+							<b>{{ trans "REDIRECT_URL" }}</b>
 						</div>
 					</div>
 
 					<div class="col">
 						<div class="content">
-							{{ if .RedirectURL }}{{ .RedirectURL }}{{ else }} - {{ end }}
+							{{ if .RedirectURL }}<span class="url">{{ .RedirectURL }}</span>{{ else }} - {{ end }}
 						</div>
 					</div>
 				</div>
@@ -292,13 +308,13 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Refresh</b>
+							<b>{{ trans "REFRESH" }}</b>
 						</div>
 					</div>
 
 					<div class="col">
 						<div class="content">
-							{{ if .Refresh }}{{ .Refresh }}{{ else }} - {{ end }}
+							{{ if .Refresh }}<span class="url">{{ .Refresh }}</span>{{ else }} - {{ end }}
 						</div>
 					</div>
 				</div>
@@ -306,13 +322,13 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Canonical</b>
+							<b>{{ trans "CANONICAL" }}</b>
 						</div>
 					</div>
 
 					<div class="col">
 						<div class="content">
-							{{ if .Canonical }}{{ .Canonical }}{{ else }} - {{ end }}
+							{{ if .Canonical }}<span class="url">{{ .Canonical }}</span>{{ else }} - {{ end }}
 						</div>
 					</div>
 				</div>
@@ -320,7 +336,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Language</b>
+							<b>{{ trans "LANGUAGE" }}</b>
 						</div>
 					</div>
 
@@ -334,7 +350,7 @@
 				<div class="box soft">
 					<div class="col borderless">
 						<div class="content">
-							<b>Hreflang</b>
+							<b>{{ trans "HREFLANG" }}</b>
 						</div>
 					</div>
 
@@ -343,14 +359,14 @@
 							{{ if .Hreflangs }}
 
 							<div>
-								<span>Language</span>
-								<span>URL</span>
+								<span>{{ trans "LANGUAGE" }}</span>
+								<span>{{ trans "URL" }}</span>
 							</div>
 
 								{{ range .Hreflangs }}
 								<div>
 									<span>{{ if .Lang }}{{ .Lang }}{{ end }}</span>
-									<span>{{ .URL }}</span>
+									<span class="url">{{ .URL }}</span>
 								</div>
 								{{ end }}
 
@@ -364,7 +380,7 @@
 					<div class="box soft">
 						<div class="col borderless">
 							<div class="content">
-								<b>Words</b>
+								<b>{{ trans "WORDS" }}</b>
 							</div>
 						</div>
 
@@ -378,7 +394,7 @@
 					<div class="box soft">
 						<div class="col borderless">
 							<div class="content">
-								<b>Depth</b>
+								<b>{{ trans "DEPTH" }}</b>
 							</div>
 						</div>
 
@@ -392,7 +408,7 @@
 					<div class="box soft">
 						<div class="col borderless">
 							<div class="content">
-								<b>TTFB</b>
+								<b>{{ trans "TTFB" }}</b>
 							</div>
 						</div>
 
@@ -407,7 +423,7 @@
 					<div class="box soft">
 						<div class="col borderless">
 							<div class="content">
-								<b>WACZ Archive</b>
+								<b>{{ trans "WACZ_ARCHIVE" }}</b>
 							</div>
 						</div>
 
@@ -415,9 +431,9 @@
 							<div class="content">
 								{{ if $archived }}
 								<ul>
-									<li><a href="/archive{{ $parameters }}">View archived response</a></li>
+									<li><a href="/archive{{ $parameters }}">{{ trans "VIEW_ARCHIVE" }}</a></li>
 									{{ if $IsHTML }}
-										<li><a href="/replay?pid={{ $projectId }}&url={{ .URL }}" target="_blank">Open in browser</a></li>
+										<li><a href="/replay?pid={{ $projectId }}&url={{ .URL }}" target="_blank">{{ trans "OPEN_IN_BROWSER" }}</a></li>
 									{{ end }}
 								</ul>
 								{{ else }}
@@ -430,7 +446,7 @@
 					<div class="box bg-alert">
 						<div class="col borderless">
 							<div class="content">
-								<b>Issues</b>
+								<b>{{ trans "ISSUES" }}</b>
 							</div>
 						</div>
 
@@ -466,28 +482,28 @@
 							<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
 								{{ .PageReport.URL }}
 							</a>
-							{{ if .Link.NoFollow }}<p><span class="alert">nofollow</span></p>{{ end }}
+							{{ if .Link.NoFollow }}<p><span class="alert">{{ trans "NOFOLLOW" }}</span></p>{{ end }}
 						</div>
 					</div>
 
 					<div class="col col-actions">
 						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
-							View details
+							{{ trans "VIEW_DETAILS" }}
 						</a>
 					</div>
 				</div>
 				{{ end }}
 			{{ else }}
-				<div class="box"><div class="content">There are no links to this page.</div></div>
+				<div class="box"><div class="content">{{ trans "NO_LINKS" }}</div></div>
 			{{ end }}
 
 		<div class="box pagination">
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
+					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">{{ trans "PREV" }}</a>
 					{{ else }}
-						← prev
+						{{ trans "PREV" }}
 					{{ end }}
 				</div>
 			</div>
@@ -501,9 +517,9 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">{{ trans "NEXT" }}</a>
 					{{ else }}
-						next →
+						{{ trans "NEXT" }}
 					{{ end }}
 				</div>	
 			</div>
@@ -522,13 +538,13 @@
 					</div>
 
 					<div class="col col-actions">
-						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&ep=1">View Details</a>
+						<a href="/resources?pid={{ $pid }}&rid={{ .Id }}&ep=1">{{ trans "VIEW_DETAILS" }}</a>
 					</div>
 				</div>
 			{{ end }}
 		{{ else }}
 			<div class="box">
-				<div class="content">There are no redirects to this page.</div>
+				<div class="content">{{ trans "NO_REDIRECTS" }}</div>
 			</div>
 		{{ end }}
 		
@@ -536,9 +552,9 @@
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-					<a href="/resources?{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
+					<a href="/resources?{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">{{ trans "PREV" }}</a>
 					{{ else }}
-						← prev
+						{{ trans "PREV" }}
 					{{ end }}
 				</div>
 			</div>
@@ -548,9 +564,9 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">{{ trans "NEXT" }}</a>
 					{{ else }}
-						next →
+						{{ trans "NEXT" }}
 					{{ end }}
 				</div>
 			</div>
@@ -563,8 +579,8 @@
 				<div class="box bg-alert">
 					<div class="col col-main">
 						<div class="content">
-							This page has the nofollow meta tag. <br>
-							Links in this page are considered nofollow even if the do not have the nofollow attribute.
+							{{ trans "PAGE_HAS_NOFOLLOW" }} <br>
+							{{ trans "PAGE_LINKS_ARE_NOFOLLOW" }}
 						</div>
 					</div>
 				</div>
@@ -578,14 +594,14 @@
 						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="url">
 							{{ .Link.URL }}
 						</a>
-						{{ if .Link.NoFollow }}<br><span class="alert">nofollow</span>{{ end }}
+						{{ if .Link.NoFollow }}<br><span class="alert">{{ trans "NOFOLLOW" }}</span>{{ end }}
 						</div>
 					</div>
 
 					{{ if .PageReport.Crawled }}
 					<div class="col col-actions">
 						<a href="/resources?pid={{ $pid }}&rid={{ .PageReport.Id }}&ep=1" class="highlight">
-							View details
+							{{ trans "VIEW_DETAILS" }}
 						</a>
 					</div>
 					{{ end }}
@@ -594,7 +610,7 @@
 		{{ else }}
 			<div class="box">
 				<div class="content">
-					There are no internal links in this page.
+					{{ trans "NO_INTERNAL_LINKS" }}
 				</div>
 			</div>
 		{{ end }}
@@ -603,9 +619,9 @@
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">{{ trans "PREV" }}</a>
 					{{ else }}
-						← prev
+						{{ trans "PREV" }}
 					{{ end }}
 				</div>
 			</div>
@@ -619,9 +635,9 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
+						<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">{{ trans "NEXT" }}</a>
 					{{ else }}
-						next →
+						{{ trans "NEXT" }}
 					{{ end }}
 				</div>
 			</div>
@@ -634,8 +650,8 @@
 				<div class="box bg-alert">
 					<div class="col col-main">
 						<div class="content">
-							This page has the nofollow meta tag. <br>
-							Links in this page are considered nofollow even if the do not have the nofollow attribute.
+							{{ trans "PAGE_HAS_NOFOLLOW" }} <br>
+							{{ trans "PAGE_LINKS_ARE_NOFOLLOW" }}
 						</div>
 					</div>
 				</div>
@@ -647,26 +663,26 @@
 						<div class="content">
 							{{ if .Text }}{{ .Text }} <br> {{ end }}
 							<span class="url">{{ .URL }}</span>
-							{{ if and (not .NoFollow) (not $external_nofollow ) }}<br><span class="alert">follow</span>{{ end }}
-							{{ if .Sponsored }}<span class="alert"><small>sponsored</small></span>{{ end }}
-							{{ if .UGC }}<span class="alert"><small>ugc</small></span>{{ end }}
-							{{ if gt .StatusCode 299 }}<span class="alert"><small>Status Code {{ .StatusCode }}</small></span>{{ end }}
-							{{ if lt .StatusCode 0 }}<span class="alert"><small>Broken Link</small></span>{{ end }}
+							{{ if and (not .NoFollow) (not $external_nofollow ) }}<br><span class="alert">{{ trans "FOLLOW" }}</span>{{ end }}
+							{{ if .Sponsored }}<span class="alert"><small>{{ trans "SPONSORED" }}</small></span>{{ end }}
+							{{ if .UGC }}<span class="alert"><small>{{ trans "UGC" }}</small></span>{{ end }}
+							{{ if gt .StatusCode 299 }}<span class="alert"><small>{{ trans "STATUS_CODE" }} {{ .StatusCode }}</small></span>{{ end }}
+							{{ if lt .StatusCode 0 }}<span class="alert"><small>{{ trans "BROKEN_LINK" }}</small></span>{{ end }}
 						</div>
 					</div>
 				</div>
 			{{ end }}
 		{{ else }}
-			<div class="box"><div class="content">There are no external links in this page.</div></div>
+			<div class="box"><div class="content">{{ trans "NO_EXTERNAL_LINKS" }}</div></div>
 		{{ end }}
 		
 		<div class="box pagination">
 			<div class="col prev">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.CurrentPage 1) }}
-					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">← prev</a>
+					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.PreviousPage }}">{{ trans "PREV" }}</a>
 					{{ else }}
-						← prev
+						{{ trans "PREV" }}
 					{{ end }}
 				</div>
 			</div>
@@ -676,9 +692,9 @@
 			<div class="col next">
 				<div class="content">
 					{{ if (gt .PageReportView.Paginator.TotalPages .PageReportView.Paginator.CurrentPage) }}
-					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">next →</a>
+					<a href="/resources{{ printf "%s&p=%d" $parameters .PageReportView.Paginator.NextPage }}">{{ trans "NEXT" }}</a>
 					{{ else }}
-						next →
+						{{ trans "NEXT" }}
 					{{ end }}
 				</div>
 			</div>
@@ -693,13 +709,13 @@
 						<div class="content">
 							{{ if .Alt}}{{ .Alt }}<br>{{ end }}
 							<span class="url">{{ .URL }}</span>
-							{{ if not .Alt}}<br><span class="alert">No alt attribute</span>{{ end }}
+							{{ if not .Alt}}<br><span class="alert">{{ trans "NO_ALT_ATTRIBUTE" }}</span>{{ end }}
 						</div>
 					</div>
 				</div>
 				{{ end }}
 			{{ else }}
-				<div class="box"><div class="content aligned">There are no images in this page.</div></div>
+				<div class="box"><div class="content aligned">{{ trans "NO_IMAGES" }}</div></div>
 			{{ end }}
 	{{ end }}
 
@@ -715,7 +731,7 @@
 				</div>
 				{{ end }}
 			{{ else }}
-				<div class="box"><div class="content aligned">There are no iframes in this page.</div></div>
+				<div class="box"><div class="content aligned">{{ trans "NO_IFRAMES" }}</div></div>
 			{{ end }}
 	{{ end }}
 
@@ -731,7 +747,7 @@
 				</div>
 				{{ end }}
 			{{ else }}
-				<div class="box"><div class="content aligned">There are no audios in this page.</div></div>
+				<div class="box"><div class="content aligned">{{ trans "NO_AUDIOS" }}</div></div>
 			{{ end }}
 	{{ end }}
 
@@ -742,13 +758,13 @@
 					<div class="col col-main">
 						<div class="content">
 							<span class="url">{{ .URL }}</span><br>
-							<small>Poster: {{ if (.Poster) }} {{.Poster }} {{ else }} - {{ end }}</small>
+							<small>{{ trans "POSTER_LABEL" }} {{ if (.Poster) }} {{.Poster }} {{ else }} - {{ end }}</small>
 						</div>
 					</div>
 				</div>
 			{{ end }}
 		{{ else }}
-			<div class="box"><div class="content aligned">There are no videos in this page.</div></div>
+			<div class="box"><div class="content aligned">{{ trans "NO_VIDEOS" }}</div></div>
 			{{ end }}
 	{{ end }}
 
@@ -764,7 +780,7 @@
 				</div>		
 				{{ end }}
 			{{ else }}
-				<div class="box"><div class="content aligned">There are no scripts in this page.</div></div>
+				<div class="box"><div class="content aligned">{{ trans "NO_SCRIPTS" }}</div></div>
 			{{ end }}
 	{{ end }}
 	
@@ -780,7 +796,7 @@
 				</div>
 			{{ end }}
 		{{ else }}
-			<div class="box"><div class="content aligned">There are no styles in this page.</div></div>
+			<div class="box"><div class="content aligned">{{ trans "NO_STYLES" }}</div></div>
 		{{ end }}
 	{{ end }}
 

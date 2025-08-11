@@ -11,6 +11,7 @@ import (
 
 // PageView is the data structure used to render the html templates.
 type PageView struct {
+	Lang      string
 	PageTitle string
 	User      models.User
 	Data      interface{}

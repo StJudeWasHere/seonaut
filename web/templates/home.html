@@ -6,15 +6,15 @@
 		<div class="col col-main">
 			<div class="content">
 				<div>
-					<h2>Welcome to SEOnaut</h2>
+					<h2>{{ trans "WELCOME" }}</h2>
 					<p>
 						{{ $projects := len .Data.Projects }}
 						{{ if eq $projects 0 }}
-							You don't have any project yet.
+							{{ trans "NO_PROJECTS" }}
 						{{ else if eq $projects 1}}
-							You currently have one project.
+							{{ trans "ONE_PROJECT" }}
 						{{ else }}
-							You currently have {{ $projects }} projects.
+							{{ trans "YOU_HAVE_PROJECTS" $projects }}
 						{{ end }}
 					</p>
 				</div>
@@ -26,7 +26,7 @@
 				<div class="content">
 					<a class="icon-text borderless" href="/project/add">
 						<p class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M11 11v-11h1v11h11v1h-11v11h-1v-11h-11v-1h11z"/></svg></p>
-						<p>Add Project</p>
+						<p>{{ trans "ADD_PROJECT" }}</p>
 					</a>
 				</div>
 			</div>
@@ -37,10 +37,8 @@
 		<div class="box box-highlight">
 			<div class="col col-main ">
 				<div class="content aligned intro">
-					We
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 4.419c-2.826-5.695-11.999-4.064-11.999 3.27 0 7.27 9.903 10.938 11.999 15.311 2.096-4.373 12-8.041 12-15.311 0-7.327-9.17-8.972-12-3.27z"/></svg> 
-					Crawlable Websites
-					<p><a href="/project/add">Add your first project</a> to gain insights about your website.</p>
+					{{ trans "WE_LOVE_CRAWLABLE_WEBSITES" }}
+					<p><a href="/project/add">{{ trans "ADD_FIRST_PROJECT" }}</a> {{ trans "GAIN_INSIGHTS" }}</p>
 				</div>
 			</div>
 		</div>
@@ -59,10 +57,10 @@
 
 					<div class="content">
 						{{ if .Project.Deleting }}
-							<p>Deleting project.<br> This can take a few minutes, please wait...</p>
+							<p>{{ trans "DELETING_PROJECT" }}<br> {{ trans "DELETING_PLEASE_WAIT" }}</p>
 						{{ else if (and .Crawl.Id (not .Crawl.Crawling)) }}
 							{{ if eq .Crawl.TotalURLs 0 }}
-								<p class="error">The SEOnaut bot was unable to access your website. Check that the URL is correct and not blocked by the Robots settings or Basic HTTP Authentication.</p>
+								<p class="error">{{ trans "CANT_ACCESS_SITE" }}</p>
 							{{ end }}
 						{{ end }}
 					</div>
@@ -82,7 +80,7 @@
 			{{ if (and (not .Project.Deleting) (and .Crawl.Id (not .Crawl.Crawling))) }}
 				<div class="box borderless">
 					<div class="content-s">
-						<span style="opacity:.5; padding: 5px 10px;border-top-left-radius: 10px;border-top-right-radius: 10px;"><i>Crawled on {{ .Crawl.Start.Format "Jan 02, 2006" }}.</i></span>
+						<span style="opacity:.5; padding: 5px 10px;border-top-left-radius: 10px;border-top-right-radius: 10px;"><i>{{ trans "CRAWLED_ON" (.Crawl.Start.Format "Jan 02, 2006") }}.</i></span>
 					</div>
 				</div>
 			{{ end }}
@@ -93,20 +91,20 @@
 		<div class="col col-actions">
 			{{ if gt .Crawl.TotalURLs 0 }}
 				{{ if (and .Crawl.Id (not .Crawl.Crawling)) }}
-					<a href="/dashboard?pid={{ .Project.Id }}">Dashboard</a>
-					<a href="/issues?pid={{ .Project.Id }}">Site Issues</a>
-					<a href="/explorer?pid={{ .Project.Id }}">Page Details</a>
-					<a href="/export?pid={{ .Project.Id }}">Data Export</a>
+					<a href="/dashboard?pid={{ .Project.Id }}">{{ trans "DASHBOARD" }}</a>
+					<a href="/issues?pid={{ .Project.Id }}">{{ trans "SITE_ISSUES_LINK" }}</a>
+					<a href="/explorer?pid={{ .Project.Id }}">{{ trans "PAGE_DETAILS_LINK" }}</a>
+					<a href="/export?pid={{ .Project.Id }}">{{ trans "ANALYZE_DATA_LINK" }}</a>
 				{{ end }}
 			{{ end }}
 
 			{{ if (or (not .Crawl.Id) (and .Crawl.Id (not .Crawl.Crawling))) }}
 				<a class="icon-text project-crawl " href="{{ if .Project.BasicAuth }}/crawl/auth?pid={{ .Project.Id }}{{ else }}/crawl/start?pid={{ .Project.Id }}{{ end }}">
 					<p class="icon"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M2.598 9h-1.055c1.482-4.638 5.83-8 10.957-8 6.347 0 11.5 5.153 11.5 11.5s-5.153 11.5-11.5 11.5c-5.127 0-9.475-3.362-10.957-8h1.055c1.443 4.076 5.334 7 9.902 7 5.795 0 10.5-4.705 10.5-10.5s-4.705-10.5-10.5-10.5c-4.568 0-8.459 2.923-9.902 7zm12.228 3l-4.604-3.747.666-.753 6.112 5-6.101 5-.679-.737 4.608-3.763h-14.828v-1h14.826z"/></svg></p>
-					<p>Crawl Now</p>
+					<p>{{ trans "CRAWL_NOW" }}</p>
 				</a>
 			{{ else if (and .Crawl.Id .Crawl.Crawling) }}
-				<a href="/crawl/live?pid={{ .Project.Id }}">Crawling...</a>
+				<a href="/crawl/live?pid={{ .Project.Id }}">{{ trans "CRAWLING" }}</a>
 			{{ end }}
 
 		</div>

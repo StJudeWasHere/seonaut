@@ -44,6 +44,7 @@ func (h *issueHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		Data:      ig,
 		User:      *user,
 		PageTitle: "ISSUES_VIEW_PAGE_TITLE",
@@ -98,6 +99,7 @@ func (h *issueHandler) viewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		Data:      data,
 		User:      *user,
 		PageTitle: "ISSUES_DETAIL_PAGE_TITLE",

@@ -8,7 +8,7 @@
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
-					<h2>Edit Project</h2>
+					<h2>{{ trans "EDIT_PROJECT" }}</h2>
 				</div>
 			</div>
 		</div>
@@ -27,7 +27,7 @@
 		<div class="col col-main">
 			<div class="content">
 				<p class="error">
-					An error occurred and the project could not be saved.
+					{{ trans "EDIT_ERROR" }}
 				</p>
 			</div>
 		</div>
@@ -44,11 +44,9 @@
 							<input type="checkbox" value="1" name="ignore_robotstxt"{{ if .Project.IgnoreRobotsTxt }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label" >Ignore robots.txt</span>
+						<span class="label">{{ trans "IGNORE_ROBOTS_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the crawler will bypass any restriction you have set in your robots file.
-					</span>
+					<span class="toggle-help">{{ trans "IGNORE_ROBOTS_HELP" }}</span>
 
 				</div>
 			</div>
@@ -63,11 +61,9 @@
 							<input type="checkbox" value="1" name="follow_nofollow"{{ if .Project.FollowNofollow }} checked{{ end }}>
 								<span class="slider"></span>
 							</label>
-							<span class="label">Follow <i>nofollow</i> internal links</span>
+							<span class="label">{{ trans "FOLLOW_NOFOLLOW_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag.
-					</span>
+					<span class="toggle-help">{{ trans "FOLLOW_NOFOLLOW_HELP" }}</span>
 
 				</div>
 			</div>	
@@ -82,12 +78,9 @@
 							<input type="checkbox" value="1" name="include_noindex"{{ if .Project.IncludeNoindex }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label">Include <i>noindex</i> pages in the report</span>
+						<span class="label">{{ trans "INCLUDE_NOINDEX_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the pages with the <i>noindex</i> attribute will also be included in the report.
-					</span>
-
+					<span class="toggle-help">{{ trans "INCLUDE_NOINDEX_HELP" }}</span>
 
 				</div>
 			</div>	
@@ -102,11 +95,9 @@
 							<input type="checkbox" value="1" name="crawl_sitemap"{{ if .Project.CrawlSitemap }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label">Crawl sitemap</span>
+						<span class="label">{{ trans "CRAWL_SITEMAP_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the URLs in the sitemap.xml will also be crawled.
-					</span>
+					<span class="toggle-help">{{ trans "CRAWL_SITEMAP_HELP" }}</span>
 				</div>
 			</div>	
 		</div>
@@ -119,11 +110,9 @@
 							<input type="checkbox" value="1" name="allow_subdomains"{{ if .Project.AllowSubdomains }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label">Allow subdomains</span>
+						<span class="label">{{ trans "ALLOW_SUBDOMAINS_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the crawler will also crawl URLs from subdomains.
-					</span>
+					<span class="toggle-help">{{ trans "ALLOW_SUBDOMAINS_HELP" }}</span>
 				</div>
 			</div>
 		</div>
@@ -137,11 +126,9 @@
 							<input type="checkbox" value="1" name="check_external_links"{{ if .Project.CheckExternalLinks }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label">Check External Links</span>
+						<span class="label">{{ trans "CHECK_EXTERNAL_LINKS_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the crawler will look for broken external links.
-					</span>
+					<span class="toggle-help">{{ trans "CHECK_EXTERNAL_LINKS_HELP" }}</span>
 
 				</div>
 			</div>
@@ -156,11 +143,9 @@
 							<input type="checkbox" value="1" name="archive"{{ if .Project.Archive }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label">Create WACZ archive</span>
+						<span class="label">{{ trans "CREATE_WACZ_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked a WACZ archive will be created and available as an export option.
-					</span>
+					<span class="toggle-help">{{ trans "CREATE_WACZ_HELP" }}</span>
 
 				</div>
 			</div>
@@ -174,11 +159,9 @@
 							<input type="checkbox" value="1" name="basic_auth"{{ if .Project.BasicAuth }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label">Use HTTP Basic Authentication</span>
+						<span class="label">{{ trans "USE_AUTH_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						Check this option if your site is password protected with HTTP Basic Auth.
-					</span>
+					<span class="toggle-help">{{ trans "USE_AUTH_HELP" }}</span>
 				</div>
 			</div>
 		</div>
@@ -191,15 +174,15 @@
 							<input type="checkbox" value="1" name="custom_user_agent" id="custom_user_agent"{{ if .CustomUserAgent }} checked{{ end }}>
 							<span class="slider"></span>
 						</label>
-						<span class="label">Custom User-Agent</span>
+						<span class="label">{{ trans "CUSTOM_USERAGENT_LABEL" }}</span>
 					</div>
 					<div class="toggle-help">
-						<p>Set a custom User-Agent for SEOnaut's crawler when fetching URLs.</p>
+						<p>{{ trans "CUSTOM_USERAGENT_HELP" }}</p>
 						<div id="user_agent_input">
-							<label for="custom_user_agent_text">Enter your custom User-Agent string:</label>
+							<label for="custom_user_agent_text">{{ trans "ENTER_USERAGENT_LABEL" }}</label>
 							<input type="text" name="custom_user_agent_text" value="{{ .Project.UserAgent }}" maxlength="255" required>
 							{{ if .UserAgentError }}
-								<p class="error">The User-Agent is not valid.</p>
+								<p class="error">{{ trans "USERAGENT_NOT_VALID" }}</p>
 							{{ end }}
 						</div>	
 					</div>
@@ -211,7 +194,7 @@
 			<div class="col col-main">
 				<div class="content-s">
 
-					<input type="submit" value="Save" class="inline"> or <a href="/">cancel</a>.
+					<input type="submit" value="{{ trans "SAVE" }}" class="inline"> <a href="/" class="button">{{ trans "CANCEL" }}</a>
 
 				</div>
 			</div>	
@@ -223,13 +206,13 @@
 		<div class="col col-main">
 			<div class="content">
 				<a href="/project/delete?pid={{ .Project.Id }}">
-					Delete Project
+					{{ trans "DELETE_PROJECT" }}
 				</a>
 				<p>
-					This action will delete the {{ .Project.Host }} project and all its related data. <br>
-					Deleting a project can take a few minutes and can not be undone.
+					{{ trans "DELETE_PROJECT_MESSAGE" .Project.Host }}<br>
+					{{ trans "DELETE_CANT_BE_UNDONE" }}
 				</p>
-			</div>		
+			</div>
 		</div>
 	</div>
 

@@ -6,7 +6,7 @@
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
-					<h2>Add Project</h2>
+					<h2>{{ trans "ADD_PROJECT" }}</h2>
 				</div>
 			</div>
 		</div>
@@ -16,11 +16,11 @@
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
-					<label for="url">URL:</label>
+					<label for="url">{{ trans "URL_LABEL" }}</label>
 					<input type="url" name="url" required autofocus>
-					Full project URL including <i>http://</i> or <i>https://</i>
+					{{ trans "URL_LABEL_MESSAGE" }}
 					{{ if .Data.URLError }}
-						<p class="error">The URL is not valid.</p>
+						<p class="error">{{ trans "URL_NOT_VALID" }}</p>
 					{{ end }}
 				</div>
 			</div>
@@ -35,10 +35,10 @@
 							<input type="checkbox" value="1" name="ignore_robotstxt">
 							<span class="slider"></span>
 						</label>
-						<span class="label" >Ignore robots.txt</span>
+						<span class="label">{{ trans "IGNORE_ROBOTS_LABEL" }}</span>
 					</div>
 					<span class="toggle-help">
-						If checked the crawler will bypass any restriction you have set in your robots file.
+						{{ trans "IGNORE_ROBOTS_HELP" }}
 					</span>
 					
 				</div>
@@ -54,11 +54,9 @@
 							<input type="checkbox" value="1" name="follow_nofollow">
 								<span class="slider"></span>
 							</label>
-							<span class="label">Follow <i>nofollow</i> internal links</span>
+							<span class="label">{{ trans "FOLLOW_NOFOLLOW_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the crawler will ignore the <i>nofollow</i> attribute in links and robots meta tag.
-					</span>
+					<span class="toggle-help">{ trans "FOLLOW_NOFOLLOW_HELP" }</span>
 			
 			</div>
 		</div>
@@ -73,11 +71,9 @@
 							<input type="checkbox" value="1" name="include_noindex">
 							<span class="slider"></span>
 						</label>
-						<span class="label">Include <i>noindex</i> pages in the report</span>
+						<span class="label">{{ trans "INCLUDE_NOINDEX_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the pages with the <i>noindex</i> attribute will also be included in the report.
-					</span>
+					<span class="toggle-help">{{ trans "INCLUDE_NOINDEX_HELP" }}</span>
 
 				</div>
 			</div>
@@ -92,11 +88,9 @@
 							<input type="checkbox" value="1" name="crawl_sitemap">
 							<span class="slider"></span>
 						</label>
-						<span class="label">Crawl sitemap</span>
+						<span class="label">{{ trans "CRAWL_SITEMAP_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the URLs in the sitemap.xml will also be crawled.
-					</span>
+					<span class="toggle-help">{{ trans "CRAWL_SITEMAP_HELP" }}</span>
 
 				</div>
 			</div>
@@ -111,11 +105,9 @@
 							<input type="checkbox" value="1" name="allow_subdomains">
 							<span class="slider"></span>
 						</label>
-						<span class="label">Allow subdomains</span>
+						<span class="label">{{ trans "ALLOW_SUBDOMAINS_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the crawler will also crawl URLs from subdomains.
-					</span>
+					<span class="toggle-help">{{ trans "ALLOW_SUBDOMAINS_HELP" }}</span>
 
 				</div>
 			</div>
@@ -130,11 +122,9 @@
 							<input type="checkbox" value="1" name="check_external_links">
 							<span class="slider"></span>
 						</label>
-						<span class="label">Check External Links</span>
+						<span class="label">{{ trans "CHECK_EXTERNAL_LINKS_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked the crawler will look for broken external links.
-					</span>
+					<span class="toggle-help">{{ trans "CHECK_EXTERNAL_LINKS_HELP" }}</span>
 
 				</div>
 			</div>
@@ -148,11 +138,9 @@
 							<input type="checkbox" value="1" name="archive">
 							<span class="slider"></span>
 						</label>
-						<span class="label">Create WACZ archive</span>
+						<span class="label">{{ trans "CREATE_WACZ_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						If checked a WACZ archive will be created and available as an export option.
-					</span>
+					<span class="toggle-help">{{ trans "CREATE_WACZ_HELP" }}</span>
 				</div>
 			</div>
 		</div>
@@ -165,11 +153,9 @@
 							<input type="checkbox" value="1" name="basic_auth">
 							<span class="slider"></span>
 						</label>
-						<span class="label">Use HTTP Basic Authentication</span>
+						<span class="label">{{ trans "USE_AUTH_LABEL" }}</span>
 					</div>
-					<span class="toggle-help">
-						Check this option if your site is password protected with HTTP Basic Auth.
-					</span>
+					<span class="toggle-help">{{ trans "USE_AUTH_HELP" }}</span>
 				</div>
 			</div>
 		</div>
@@ -182,15 +168,15 @@
 							<input type="checkbox" value="1" name="custom_user_agent" id="custom_user_agent">
 							<span class="slider"></span>
 						</label>
-						<span class="label">Custom User-Agent</span>
+						<span class="label">{{ trans "CUSTOM_USERAGENT_LABEL" }}</span>
 					</div>
 					<div class="toggle-help">
-						<p>Set a custom User-Agent for SEOnaut's crawler when fetching URLs.</p>
+						<p>{{ trans "CUSTOM_USERAGENT_HELP" }}</p>
 						<div id="user_agent_input">
-							<label for="custom_user_agent_text">Enter your custom User-Agent string:</label>
+							<label for="custom_user_agent_text">{{ trans "ENTER_USERAGENT_LABEL" }}</label>
 							<input type="text" name="custom_user_agent_text" value="{{ .Data.UserAgent }}" maxlength="255" required>
 							{{ if .Data.UserAgentError }}
-								<p class="error">The User-Agent is not valid.</p>
+								<p class="error">{{ trans "USERAGENT_NOT_VALID" }}</p>
 							{{ end }}
 						</div>	
 					</div>
@@ -202,7 +188,7 @@
 			<div class="col col-main">
 				<div class="content-s">
 
-					<input type="submit" value="Save" class="inline"> or <a href="/">cancel</a>.
+					<input type="submit" value="{{ trans "SAVE" }}" class="inline"> <a href="/" class="button">{{ trans "CANCEL" }}</a>
 
 				</div>
 			</div>

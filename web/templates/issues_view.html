@@ -7,7 +7,7 @@
 	<div class="box box-first">
 		<div class="col col-main">
 			<div class="content">
-				<a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a>
+				<a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ trans "SITE_ISSUES" }}</a>
 			</div>
 		</div>
 
@@ -33,7 +33,7 @@
 		<div class="col col-actions">
 			<a class="icon-text highlight borderless main" href="/export/csv?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">
 				<p class="icon"><svg xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M16.965 2.381c3.593 1.946 6.035 5.749 6.035 10.119 0 6.347-5.153 11.5-11.5 11.5s-11.5-5.153-11.5-11.5c0-4.37 2.442-8.173 6.035-10.119l.608.809c-3.353 1.755-5.643 5.267-5.643 9.31 0 5.795 4.705 10.5 10.5 10.5s10.5-4.705 10.5-10.5c0-4.043-2.29-7.555-5.643-9.31l.608-.809zm-4.965-2.381v14.826l3.747-4.604.753.666-5 6.112-5-6.101.737-.679 3.763 4.608v-14.828h1z"/></svg></p>
-				<p>Download URLs</p>
+				<p>{{ trans "DOWNLOAD_URLS" }}</p>
 			</a>
 		</div>
 	</div>
@@ -55,7 +55,7 @@
 			</div>
 
 			<div class="col col-actions">
-				<a class="icon-text highlight borderless main" href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">View Details</a>
+				<a class="icon-text highlight borderless main" href="/resources?pid={{ $pid }}&rid={{ .Id }}&eid={{ $eid }}">{{ trans "VIEW_DETAILS" }}</a>
 			</div>
 		</div>
 
@@ -70,12 +70,12 @@
 					{{ if .PaginatorView.Paginator.PreviousPage }}
 
 						<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.PreviousPage }}">
-							← prev
+							{{ trans "PREV" }}
 						</a>
 
 					{{ else }}
 
-						← prev
+						{{ trans "PREV" }}
 
 					{{ end }}
 
@@ -94,12 +94,12 @@
 					{{ if .PaginatorView.Paginator.NextPage }}
 
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}&p={{ .PaginatorView.Paginator.NextPage }}">
-						next →
+						{{ trans "NEXT" }}
 					</a>
 
 					{{ else }}
 
-						next →
+						{{ trans "NEXT" }}
 
 					{{ end }}
 
@@ -111,7 +111,7 @@
 
 		{{ else }}
 
-			<p><b>Everything is ok</b></p>
+			<p><b>{{ trans "NO_ISSUES" }}</b></p>
 
 		{{ end }}
 

@@ -9,15 +9,15 @@
 		<div class="col col-main">
 			<div class="content">
 				{{ if .Eid }}
-					<a href="/issues?pid={{ .ProjectView.Project.Id }}">Site Issues</a> 
+					<a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ trans "SITE_ISSUES" }}</a> 
 					/ 
 					<a href="/issues/view?pid={{ .ProjectView.Project.Id }}&eid={{ .Eid }}">{{ trans .Eid }}</a>
 					/
-					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}">Details</a>	
+					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&eid={{ .Eid }}">{{ trans "DETAILS" }}</a>	
 				{{ else if .Ep }}
-					<a href="/explorer?pid={{ .ProjectView.Project.Id }}">Page Details</a>
+					<a href="/explorer?pid={{ .ProjectView.Project.Id }}">{{ trans "PAGE_DETAILS" }}</a>
 					/
-					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&ep=1">Details</a>	
+					<a href="/resources?pid={{ .ProjectView.Project.Id }}&rid={{ .PageReportView.PageReport.Id }}&ep=1">{{ trans "DETAILS" }}</a>	
 				{{ end }}
 			</div>
 		</div>
@@ -48,18 +48,18 @@
 	<div class="box box-highlight">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Headers</h2>
-				<p>This block shows the response headers as received by the crawler.</p>
+				<h2>{{ trans "HEADERS" }}</h2>
+				<p>{{ trans "HEADERS_MESSAGE" }}</p>
 				<pre class="archive"><code>{{ range $key, $values := .ArchiveRecord.Headers }}{{ $key }}: {{ range $values }} {{ . }}<br>{{ end }}{{ end }}</code></pre>
 
 				{{ if and .ArchiveRecord.Body .IsText }}
-				<h2>Body</h2>
-				<p>This block shows the response body as received by the crawler.</p>
+				<h2>{{ trans "BODY" }}</h2>
+				<p>{{ trans "BODY_MESSAGE" }}</p>
 				<pre class="archive"><code>{{ .ArchiveRecord.Body }}</code></pre>
 				{{ end }}
 
 				{{ $parameters := printf "?pid=%d&rid=%d" .ProjectView.Project.Id .PageReportView.PageReport.Id }}
-				<a href="/archive/download{{ $parameters }}">Download</a>
+				<a href="/archive/download{{ $parameters }}">{{ trans "DOWNLOAD" }}</a>
 			</div>
 		</div>
 	</div>

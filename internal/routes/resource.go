@@ -86,6 +86,7 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		Data:      data,
 		User:      *user,
 		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab) + "_PAGE_TITLE",

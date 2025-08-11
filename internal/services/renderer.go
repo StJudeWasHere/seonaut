@@ -40,6 +40,7 @@ func NewRenderer(config *RendererConfig, translator RendererTranslator) (*Render
 		"total_time": r.totalTime,
 		"add":        r.add,
 		"to_kb":      r.toKByte,
+		"is_rtl":     r.isRTL,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("renderer initialisation failed: %w", err)
@@ -69,6 +70,25 @@ func (r *Renderer) add(i ...int) int {
 	}
 
 	return total
+}
+
+// isRTL takes a language code as a parameter and returns true if it is a RTL language.
+// Otherwise it returns false.
+func (r *Renderer) isRTL(lang string) bool {
+	rtlLangs := []string{
+		"ar",
+		"he",
+		"fa",
+		"ur",
+	}
+
+	for _, l := range rtlLangs {
+		if lang == l {
+			return true
+		}
+	}
+
+	return false
 }
 
 // toKByte is a helper function that returns an int64 formated as KB.

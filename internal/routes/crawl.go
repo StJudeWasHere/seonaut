@@ -125,6 +125,7 @@ func (h *crawlHandler) authGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		PageTitle: "CRAWL_AUTH_VIEW_PAGE_TITLE",
 		Data:      struct{ Project models.Project }{Project: p},
 	}
@@ -210,6 +211,7 @@ func (h *crawlHandler) liveCrawlHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	v := &PageView{
+		Lang: h.Container.Config.UIConfig.Language,
 		Data: struct {
 			Project models.Project
 			Secure  bool

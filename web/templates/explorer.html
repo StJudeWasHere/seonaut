@@ -7,7 +7,7 @@
 	<div class="box box-first">
 		<div class="col col-main highlight">
 			<div class="content">
-				<h2>Page Details</h2>
+				<h2>{{ trans "URL_EXPLORER" }}</h2>
 			</div>
 		</div>
 
@@ -24,11 +24,11 @@
 		<div class="col col-main borderless">
 			<div class="content">
 				<form action="/explorer" method="GET">
-					<label for="term">Search term:</label>
+					<label for="term">{{ trans "SEARCH_TERM" }}</label>
 					<input type="hidden" name="p" value="1">
 					<input type="hidden" name="pid" value="{{ .ProjectView.Project.Id }}">
 					<input type="text" name="term" value="{{ .Term }}"> 
-					<input type="submit" value="Search">
+					<input type="submit" value="{{ trans "SEARCH" }}">
 				</form>		
 			</div>
 		</div>
@@ -51,10 +51,10 @@
 				</div>
 
 				<div class="col col-actions">
-					<a href="{{ .URL }}" target="_blank">Open URL</a>
+					<a href="{{ .URL }}" target="_blank">{{ trans "OPEN_URL" }}</a>
 					<a class="icon-text highlight borderless main" href="/resources?pid={{ $pid }}&ep=1&rid={{ .Id }}">
 						<p class="icon"><svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M12.01 20c-5.065 0-9.586-4.211-12.01-8.424 2.418-4.103 6.943-7.576 12.01-7.576 5.135 0 9.635 3.453 11.999 7.564-2.241 4.43-6.726 8.436-11.999 8.436zm-10.842-8.416c.843 1.331 5.018 7.416 10.842 7.416 6.305 0 10.112-6.103 10.851-7.405-.772-1.198-4.606-6.595-10.851-6.595-6.116 0-10.025 5.355-10.842 6.584zm10.832-4.584c2.76 0 5 2.24 5 5s-2.24 5-5 5-5-2.24-5-5 2.24-5 5-5zm0 1c2.208 0 4 1.792 4 4s-1.792 4-4 4-4-1.792-4-4 1.792-4 4-4z"/></svg></p>
-						<p>View Details</p>
+						<p>{{ trans "VIEW_DETAILS" }}</p>
 					</a>
 				</div>
 			</div>
@@ -68,12 +68,12 @@
 				{{ if .PaginatorView.Paginator.PreviousPage }}
 
 					<a href="/explorer?pid={{ .ProjectView.Project.Id }}&p={{ .PaginatorView.Paginator.PreviousPage }}&term={{ .Term }}">
-						← prev
+						{{ trans "PREV" }}
 					</a>
 
 				{{ else }}
 
-					← prev
+					{{ trans "PREV" }}
 
 				{{ end }}
 
@@ -92,12 +92,12 @@
 				{{ if .PaginatorView.Paginator.NextPage }}
 
 				<a href="/explorer?pid={{ .ProjectView.Project.Id }}&p={{ .PaginatorView.Paginator.NextPage }}&term={{ .Term }}">
-					next →
+					{{ trans "NEXT" }}
 				</a>
 
 				{{ else }}
 
-					next →
+					{{ trans "NEXT" }}
 
 				{{ end }}
 
@@ -109,7 +109,7 @@
 			<div class="box box-highlight">
 				<div class="col col-main borderless">
 					<div class="content">
-						No URLs found
+						{{ trans "NO_URLS_FOUND" }}
 					</div>
 				</div>
 			</div>

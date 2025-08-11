@@ -7,7 +7,7 @@
 	<div class="box box-highlight box-first"> 
 		<div class="col col-main">
 			<div class="content">
-				<h2>Data Export</h2>
+				<h2>{{ trans "DATA_EXPORT" }}</h2>
 			</div>
 		</div>
 			
@@ -23,156 +23,156 @@
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export sitemap.xml</h2>
-				<p>Download a sitemap.xml file with all the canonical pages in your site.</p>
+				<h2>{{ trans "EXPORT_SITEMAP" }}</h2>
+				<p>{{ trans "EXPORT_SITEMAP_MESSAGE" }}</p>
 			</div>
 		</div>
 	
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/sitemap?pid={{ .Project.Id }}">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/sitemap?pid={{ .Project.Id }}">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 	
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export as CSV</h2>
-				<p>Export all crawled URLs in CSV format, including all mime types and with additional information such as status code and size.</p>
+				<h2>{{ trans "EXPORT_CVS" }}</h2>
+				<p>{{ trans "EXPORT_CVS_MESSAGE" }}</p>
 			</div>
 		</div>
 	
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/csv?pid={{ .Project.Id }}">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/csv?pid={{ .Project.Id }}">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export internal links</h2>
-				<p>Export all the internal links in the website. Including origin, destination and anchor text.</p>
+				<h2>{{ trans "EXPORT_INTERNAL_LINKS" }}</h2>
+				<p>{{ trans "EXPORT_INTERNAL_LINKS_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=internal">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=internal">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export external links</h2>
-				<p>Export all the external links in the website. Including origin, destination and anchor text.</p>
+				<h2>{{ trans "EXPORT_EXTERNAL_LINKS" }}</h2>
+				<p>{{ trans "EXPORT_EXTERNAL_LINKS_MESSAGE" }}</p>
 			</div>
 		</div>
 		
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=external">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=external">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export images</h2>
-				<p>Export all the image URLs in the website, including origin, image URLs and alt text.</p>
+				<h2>{{ trans "EXPORT_IMAGES" }}</h2>
+				<p>{{ trans "EXPORT_IMAGES_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=images">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=images">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export scripts</h2>
-				<p>Export all the script URLs in the website, including origin and script URLs.</p>
+				<h2>{{ trans "EXPORT_SCRIPTS" }}</h2>
+				<p>{{ trans "EXPORT_SCRIPTS_MESSAGE" }}</p>
 			</div>
 		</div>
 		
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=scripts">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=scripts">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export styles</h2>
-				<p>Export all the CSS stylesheet URLs in the website, including origin and style URLs.</p>
+				<h2>{{ trans "EXPORT_STYLES" }}</h2>
+				<p>{{ trans "EXPORT_STYLES_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=styles">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=styles">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export iframes</h2>
-				<p>Export all the iframe URLs in the website, including origin and iframe URLs.</p>
+				<h2>{{ trans "EXPORT_IFRAMES" }}</h2>
+				<p>{{ trans "EXPORT_IFRAMES_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=iframes">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=iframes">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export audios</h2>
-				<p>Export all audio URLs in the website, including origin and audio URLs.</p>
+				<h2>{{ trans "EXPORT_AUDIOS" }}</h2>
+				<p>{{ trans "EXPORT_AUDIOS_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=audios">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=audios">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export videos</h2>
-				<p>Export all video URLs in the website, including origin and video URLs.</p>
+				<h2>{{ trans "EXPORT_VIDEOS" }}</h2>
+				<p>{{ trans "EXPORT_VIDEOS_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=videos">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=videos">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export Hreflangs</h2>
-				<p>Export all hreflang URLs in the website, including origin URL and language as well as hreflang URL and language.</p>
+				<h2>{{ trans "EXPORT_HREFLANGS" }}</h2>
+				<p>{{ trans "EXPORT_HREFLANGS_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=hreflangs">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=hreflangs">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
 	<div class="box">
 		<div class="col col-main">
 			<div class="content">
-				<h2>Export all issues</h2>
-				<p>Export all the issues with the affected URLs, issue type and priority.</p>
+				<h2>{{ trans "EXPORT_ALL" }}</h2>
+				<p>{{ trans "EXPORT_ALL_MESSAGE" }}</p>
 			</div>
 		</div>
 
 		<div class="col col-actions">
-			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=issues">Download</a>
+			<a class="icon-text highlight borderless main" href="/export/resources?pid={{ .Project.Id }}&t=issues">{{ trans "DOWNLOAD" }}</a>
 		</div>
 	</div>
 
@@ -180,13 +180,13 @@
 		<div class="box">
 			<div class="col col-main">
 				<div class="content">
-					<h2>Export WACZ Archive</h2>
-					<p>Export your project's crawled data as a WACZ file for archival or replaying.</p>
+					<h2>{{ trans "EXPORT_WACZ" }}</h2>
+					<p>{{ trans "EXPORT_WACZ_MESSAGE" }}</p>
 				</div>
 			</div>
 
 			<div class="col col-actions">
-				<a class="icon-text highlight borderless main" href="/export/wazc?pid={{ .Project.Id }}">Download</a>
+				<a class="icon-text highlight borderless main" href="/export/wazc?pid={{ .Project.Id }}">{{ trans "DOWNLOAD" }}</a>
 			</div>
 		</div>
 	{{ end }}

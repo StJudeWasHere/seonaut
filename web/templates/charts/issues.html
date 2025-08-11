@@ -26,18 +26,18 @@
 			},
 			series: [
 				{
-					name: 'Issues',
+					name: '{{ trans "ISSUES" }}',
 					type: 'pie',
 					center: ['50%', '50%'],
 					data: [
 						{{ if .ProjectView.Crawl.CriticalIssues }}
-							{ value: {{ .ProjectView.Crawl.CriticalIssues }}, name: 'Critical Error', itemStyle: {color: '#FD7B6A'}},
+							{ value: {{ .ProjectView.Crawl.CriticalIssues }}, name: '{{ trans "CRITICAL" }}', itemStyle: {color: '#FD7B6A'}},
 						{{ end }}
 						{{ if .ProjectView.Crawl.AlertIssues }}
-							{ value: {{ .ProjectView.Crawl.AlertIssues }}, name: 'Alert', itemStyle: {color: '#F7E497'}},
+							{ value: {{ .ProjectView.Crawl.AlertIssues }}, name: '{{ trans "ALERT" }}', itemStyle: {color: '#F7E497'}},
 						{{ end }}
 						{{ if .ProjectView.Crawl.WarningIssues }}
-							{ value: {{ .ProjectView.Crawl.WarningIssues }}, name: 'Warning', itemStyle: {color: '#2C7D91'}},
+							{ value: {{ .ProjectView.Crawl.WarningIssues }}, name: '{{ trans "WARNING" }}', itemStyle: {color: '#2C7D91'}},
 						{{ end }}
 					].sort(function (a, b) {
 						return a.value - b.value;

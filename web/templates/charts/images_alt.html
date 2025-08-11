@@ -23,7 +23,7 @@
 				top: 'top',
 				left: 'left',
 				orient: 'vertical',
-				data:  ['With alt', 'Without alt'],
+				data:  ['{{ trans "WITH_ALT" }}', '{{ trans "WITHOUT_ALT" }}'],
 			},
 			textStyle: {
 				fontFamily: "Fira Code",
@@ -40,11 +40,11 @@
 						show: false
 					},
 					radius: ['0%', '65%'],
-					name: 'Images alt',
+					name: '{{ trans "IMAGES_ALT" }}',
 					type: 'pie',
 					data: [
-						{ value: {{ .AltCount.Alt }}, name: 'With alt' },
-						{ value: {{ .AltCount.NonAlt }}, name: 'Without alt' },
+						{ value: {{ .AltCount.Alt }}, name: '{{ trans "WITH_ALT" }}' },
+						{ value: {{ .AltCount.NonAlt }}, name: '{{ trans "WITHOUT_ALT" }}' },
 					],
 				}
 			]

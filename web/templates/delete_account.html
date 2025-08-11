@@ -6,7 +6,7 @@
 		<div class="col col-main">
 			<div class="content content-centered">
 				<div>
-					<h2>Delete Account</h2>
+					<h2>{{ trans "DELETE_ACCOUNT" }}</h2>
 				</div>
 			</div>
 		</div>
@@ -17,8 +17,8 @@
 		<div class="col col-main">
 			<div class="content">
 				<p>
-					One or more of your projects are being crawled or deleted.<br>
-					Please wait for the process to finish before deleting your account.
+					{{ trans "PROJECT_CRAWLING" }}<br>
+					{{ trans "WAIT_BEFORE_DELETING" }}
 				</p>
 			</div>
 		</div>
@@ -27,9 +27,9 @@
 	<div class="box box-highlight">
 		<div class="col col-main">
 			<div class="content">
-				<p>By deleting your user account, you'll also be saying goodbye to all your projects data and crawl history.<br>
-				<strong>This action is permanent</strong>, so once it's done, there's no turning back.<br>
-				Are you sure you want to proceed?</p>
+				<p>{{ trans "DELETE_ACCOUNT_WARNING" }}<br>
+				<strong>{{ trans "THIS_IS_PERMANENT" }}</strong> {{ trans "NO_TURNING_BACK" }}<br>
+				{{ trans "ARE_YOU_SURE" }}</p>
 			</div>
 		</div>
 	</div>
@@ -38,7 +38,7 @@
 		<div class="col col-main">
 			<div class="content-s">
 				<form method="POST">
-					<input type="submit" value="Delete" class="inline"> or <a href="/">cancel</a>.
+					<input type="submit" value="{{ trans "DELETE" }}" class="inline"> <a href="/" class="button">{{ trans "CANCEL" }}</a>.
 				</form>
 			</div>
 		</div>	

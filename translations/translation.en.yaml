@@ -1,3 +1,174 @@
+# UI
+
+VIEW_DETAILS: View Details
+DOWNLOAD: "Download"
+CRAWLED_ON: Crawled on %1%
+CRAWLED: crawled
+
+# PAGINATION
+
+PREV: ← prev
+NEXT: next →
+
+## EDIT ACCOUNT
+EDIT_ACCOUNT: Edit Account
+CURRENT_PASSWORD: "Current password:"
+NEW_PASSWORD: "New Password:"
+DELETE_ACCOUNT_MESSAGE: "If you no longer wish to continue using SEOnaut, you can delete your account here."
+DELETE_ACCOUNT_MESSAGE_CONFIRMATION: "Confirmation will be asked before continuing."
+
+## ARCHIVE
+
+DETAILS: "Details"
+PAGE_DETAILS: "Page Details"
+HEADERS: "Headers"
+HEADERS_MESSAGE: "This block shows the response headers as received by the crawler."
+BODY: "Body"
+BODY_MESSAGE: "This block shows the response body as received by the crawler."
+
+## CRAWL AUTH
+
+HTTP_BASIC_AUTH: HTTP Basic Authentication
+HTTP_BASIC_AUTH_MESSAGE: "This project uses HTTP Basic Authentication. You must provide the credentials before the crawl starts."
+HTTP_BASIC_AUTH_PRIVACY: "Credentials are not stored on the server, and they will be requested every time you want to crawl this project."
+USERNAME: "Username:"
+PASSWORD: "Password:"
+
+## CRAWL LIVE
+
+LIVE_CRAWLING: Live Crawling
+STOP_CRAWLER: Stop Crawler
+STOPPING_CRAWLER: "Stopping Crawler..."
+LIVE_CRAWL_JAVASCRIPT_ERROR: "Live crawl is not availabel for your browser. Javascript support is needed."
+LIVE_CRAWL_WEBSOCKET_ERROR: "Live crawl is not availabel for your browser. Websocket support is needed."
+CONNECTING_TO_SERVER: "Connecting to the server, please wait..."
+CRAWL_COMPLETED: "Crawl completed. Creating the report, please wait..."
+
+## HEAD
+
+PROJECTS: Projects
+ACCOUNT: Account
+LOGOUT: Logout
+
+## FOOTER
+
+SUPPORT: ❤️ Show some love
+OFFICIAL_WEBSITE: SEOnaut's Website
+
+## REPLAY BANNER
+
+REPLAY_BANNER: You're viewing an archived version of this page
+
+## SITE ISSUES
+
+SITE_ISSUES: Site Issues
+DOWNLOAD_URLS: Download URLs
+NO_ISSUES: Everything is ok
+
+## EXPLORER
+
+URL_EXPLORER: URL Explorer
+SEARCH_TERM: "Search term:"
+OPEN_URL: Open URL
+NO_URLS_FOUND: No URLs found
+SEARCH: Search
+
+## DELETE ACCOUNT
+DELETE_ACCOUNT: Delete Account
+DELETE_ACCOUNT_WARNING: By deleting your user account, you'll also be saying goodbye to all your projects data and crawl history.
+THIS_IS_PERMANENT: This action is permanent.
+NO_TURNING_BACK: Once it's done, there's no turning back.
+ARE_YOU_SURE: Are you sure you want to proceed?
+PROJECT_CRAWLING: One or more of your projects are being crawled or deleted.
+WAIT_BEFORE_DELETING: Please wait for the process to finish before deleting your account.
+
+## ISSUES
+
+NO_ISSUES_MESSAGE: SEOnaut didn't detect any issues on your site.
+CRITICALS: "%1% Critical"
+CRITICAL_MESSAGE: "Fix these first. They're likely hurting your rankings."
+ALERTS: "%1% Alerts"
+ALERTS_MESSAGE: Fixing these can help improve your site's SEO performance.
+WARNINGS: "%1% Warnings"
+WARNINGS_MESSAGE: These issues may not be significant depending on your goals, but they're worth monitoring.
+PASSED_CHECKS: Passed Issue Checks
+PASSED_CHECKS_MESSAGE: Your site has successfully passed the following checks.
+
+## SIGNIN
+
+SIGN_IN: Sign in to your account
+EMAIL_LABEL: "Email:" 
+PASSWORD_LABEL: "Password:"
+SIGIN_ERROR: The email address or password is not valid.
+NEW_USER: New to SEOnaut?
+NEW_USER_SIGNUP: Sign up
+SIGNIN_MESSAGE: Welcome back! Sign in to access detailed reports and uncover opportunities to improve your website's crawlability and boost your rankings.
+
+## SIGN UP
+
+SIGN_UP: Sign Up
+CREATE_ACCOUNT: Create your SEOnaut account
+HAVE_ACCOUNT: Already have an account?
+SIGNIN_LINK: Sign in
+SIGNUP_MESSAGE: SEOnaut allows you to scan your site for issues, prioritize fixes by impact, and provide recommendations to enhance your online visibility. Sign up to start optimizing your website!
+
+## DASHBOARD
+
+DASHBOARD: Dashboard
+CRAWL_HISTORY: Crawl history
+ISSUES_HISTORY: Issues history
+ISSUE_TYPES: Issue types
+CURRENT_CRAWL: Current Crawl
+CRAWL_DURATION: Crawl duration was %1%
+FOLLOWING_LINKS: Following internal nofollow links.
+NOT_FOLLOWING_LINKS: Not following nofollow links.
+INCLUDING_NOINDEX: Including noindex pages.
+NOT_INCLUDING_NOINDEX: Not including noindex pages.
+CRAWLING_SITEMAP: Crawling URLs in sitemap
+NOT_CRAWLING_SITEMAP: Not crawling URLs in sitemap
+SITEMAP_BLOCKED: Sitemap blocked.
+SITEMAP_FOUND: Sitemap found.
+SITEMAP_NOT_FOUND: Sitemap not found.
+IGNORING_ROBOTS: Ignoring the robots.txt file.
+RESPECTING_ROBOTS: Respecting robots.txt file.
+ROBOTS_FOUND: Robots.txt found.
+ROBOTS_NOT_FOUND: Robots.txt not found.
+LINKS: Links
+CANONICAL_URLS: Canonical URLs
+IMAGES_ALT: Images alt
+HTTPS: HTTPS
+MEDIA_TYPE: Media type
+STATUS_CODE: Status code
+STATUS_BY_DEPTH: Status code by depth
+NEXT_ACTIONS: Next Actions
+EXPLORE_ISSUES: Explore Site Issues
+EXPLORE_ISSUES_MESSAGE: Uncover issues impacting your website's performance.
+SITE_ISSUES_LINK: Site Issues
+DIVE_INTO_DETAILS: Dive into Page Details
+DIVE_INTO_DETAILS_MESSAGE: Get detailed insights into specific URLs.
+PAGE_DETAILS_LINK: Page Details
+ANALYZE_DATA: Analyze Raw Data
+ANALYZE_DATA_MESSAGE: Export your data for further analysis and reporting.
+ANALYZE_DATA_LINK: Data Export
+URL_CRAWLED: 1 URL crawled.
+URLS_CRAWLED: "%1% URLs crawled."
+
+
+## HOME
+
+WELCOME: Welcome to SEOnaut
+WE_LOVE_CRAWLABLE_WEBSITES: We ❤️ Crawlable Websites
+NO_PROJECTS: You don't have any project yet.
+ONE_PROJECT: You currently have one project.
+YOU_HAVE_PROJECTS: You currently have %1% projects.
+ADD_FIRST_PROJECT: Add your first project.
+GAIN_INSIGHTS: Gain insights about your website.
+DELETING_PROJECT: Deleting project.
+DELETING_PLEASE_WAIT: This can take a few minutes, please wait...
+CANT_ACCESS_SITE: The SEOnaut bot was unable to access your website. Check that the URL is correct and not blocked by the Robots settings or Basic HTTP Authentication.
+CRAWL_NOW: Crawl Now
+CRAWLING: Crawling...
+
 # PAGE TITLES
 PROJECTS_VIEW_PAGE_TITLE: Projects
 ADD_PROJECT_PAGE_TITLE: Add project
@@ -26,6 +197,162 @@ EXPLORER_PAGE_TITLE: URL Explorer
 DELETE_ACCOUNT_VIEW_PAGE_TITLE: Delete Account
 ARCHIVE_VIEW_PAGE_TITLE: Archive Source Code
 SUPPORT_SEONAUT_VIEW_PAGE_TITLE: SEOnaut Project
+
+## EXPORT
+
+DATA_EXPORT: Data Export
+EXPORT_SITEMAP: Export sitemap.xml
+EXPORT_SITEMAP_MESSAGE: Download a sitemap.xml file with all the canonical pages in your site.
+EXPORT_CVS: Export as CSV
+EXPORT_CVS_MESSAGE: Export all crawled URLs in CSV format, including all mime types and with additional information such as status code and size.
+EXPORT_INTERNAL_LINKS: Export internal links
+EXPORT_INTERNAL_LINKS_MESSAGE: Export all the internal links in the website. Including origin, destination and anchor text.
+EXPORT_EXTERNAL_LINKS: Export external links
+EXPORT_EXTERNAL_LINKS_MESSAGE: Export all the external links in the website. Including origin, destination and anchor text.
+EXPORT_IMAGES: Export images
+EXPORT_IMAGES_MESSAGE: Export all the image URLs in the website, including origin, image URLs and alt text.
+EXPORT_SCRIPTS: Export scripts
+EXPORT_SCRIPTS_MESSAGE: Export all the script URLs in the website, including origin and script URLs.
+EXPORT_STYLES: Export styles
+EXPORT_STYLES_MESSAGE: Export all the CSS stylesheet URLs in the website, including origin and style URLs.
+EXPORT_IFRAMES: Export iframes
+EXPORT_IFRAMES_MESSAGE: Export all the iframe URLs in the website, including origin and iframe URLs.
+EXPORT_AUDIOS: Export audios
+EXPORT_AUDIOS_MESSAGE: Export all audio URLs in the website, including origin and audio URLs.
+EXPORT_VIDEOS: Export videos
+EXPORT_VIDEOS_MESSAGE: Export all video URLs in the website, including origin and video URLs.
+EXPORT_HREFLANGS: Export Hreflangs
+EXPORT_HREFLANGS_MESSAGE: Export all hreflang URLs in the website, including origin URL and language as well as hreflang URL and language.
+EXPORT_ALL: Export all issues
+EXPORT_ALL_MESSAGE: Export all the issues with the affected URLs, issue type and priority.
+EXPORT_WACZ: Export WACZ Archive
+EXPORT_WACZ_MESSAGE: Export your project's crawled data as a WACZ file for archival or replaying.
+
+## PROJECT_ADD: 
+ADD_PROJECT: Add Project
+URL_LABEL: "URL:"
+URL_LABEL_MESSAGE: Full project URL including http:// or https://
+URL_NOT_VALID: The URL is not valid.
+IGNORE_ROBOTS_LABEL: Ignore robots.txt
+IGNORE_ROBOTS_HELP: If checked the crawler will bypass any restriction you have set in your robots file.
+FOLLOW_NOFOLLOW_LABEL: Follow nofollow internal links
+FOLLOW_NOFOLLOW_HELP: If checked the crawler will ignore the nofollow attribute in links and robots meta tag.
+INCLUDE_NOINDEX_LABEL: Include noindex pages in the report
+INCLUDE_NOINDEX_HELP: If checked the pages with the noindex attribute will also be included in the report.
+CRAWL_SITEMAP_LABEL: Crawl sitemap
+CRAWL_SITEMAP_HELP: If checked the URLs in the sitemap.xml will also be crawled.
+ALLOW_SUBDOMAINS_LABEL: Allow subdomains
+ALLOW_SUBDOMAINS_HELP: If checked the crawler will also crawl URLs from subdomains.
+CHECK_EXTERNAL_LINKS_LABEL: Check External Links
+CHECK_EXTERNAL_LINKS_HELP: If checked the crawler will look for broken external links.
+CREATE_WACZ_LABEL: Create WACZ archive
+CREATE_WACZ_HELP: If checked a WACZ archive will be created and available as an export option.
+USE_AUTH_LABEL: Use HTTP Basic Authentication
+USE_AUTH_HELP: Check this option if your site is password protected with HTTP Basic Auth.
+CUSTOM_USERAGENT_LABEL: Custom User-Agent
+CUSTOM_USERAGENT_HELP: Set a custom User-Agent for SEOnaut's crawler when fetching URLs.
+ENTER_USERAGENT_LABEL: "Enter your custom User-Agent string:"
+USERAGENT_NOT_VALID: The User-Agent is not valid.
+DELETE_PROJECT: Delete Project
+DELETE_PROJECT_MESSAGE: This action will delete the %1% project and all its related data.
+DELETE_CANT_BE_UNDONE: Deleting a project can take a few minutes and can not be undone.
+
+## PROJECT EDIT
+
+EDIT_PROJECT: Edit Project
+EDIT_ERROR: An error occurred and the project could not be saved.
+
+## CHARTS
+
+CANONICAL: Canonical
+NON_CANONICAL: Non Canonical
+INDEX: Index
+NOINDEX: Noindex
+BLOCKED: Blocked
+WITH_ALT: With alt
+WITHOUT_ALT: Without alt
+CRITICAL: Critical
+ALERT: Alert
+WARNING: Warning
+ISSUES: Issues
+FOLLOW: Follow
+NOFOLLOW: Nofollow
+INTERNAL: Internal
+EXTERNAL: External
+TOTAL: Total
+SPONSORED: Sponsored
+UGC: UGC
+SCHEME: Scheme
+
+
+## RESOUCES
+
+DETAILS_TAB: Details
+DETAILS_TAB_INFO: General details about the URL.
+INLINKS_TAB: Inlinks
+INLINKS_TAB_INFO: Inlinks are links to this URL from other pages on this website.
+INTERNAL_TAB: Internal links
+INTERNAL_TAB_INFO: Internal links are the links found in this URL's HTML code that point to other pages on this website.
+EXTERNAL_TAB: External links
+EXTERNAL_TAB_INFO: External links are the links found in this URL's HTML code pointing to other websites.
+REDIRECTIONS_TAB: Redirections
+REDIRECTIONS_TAB_INFO: Redirections are the URLs from this website that are redirected to this URL. 
+IMAGES_TAB: Images
+IMAGES_TAB_INFO: Images that are found in this URL's HTML code. Note that images shown using CSS are not included here.
+AUDIOS_TAB: Audios
+AUDIOS_TAB_INFO: Audio files that are found in this URL's HTML code.
+VIDEOS_TAB: Videos
+VIDEOS_TAB_INFO: Video files that are found in this URL's HTML code.
+IFRAMES_TAB: Iframes
+IFRAMES_TAB_INFO: Iframes that are found in this URL's HTML code.
+SCRIPTS_TAB: Scripts
+SCRIPTS_TAB_INFO: Script files that are found in this URL's code.
+STYLES_TAB: Styles
+STYLES_TAB_INFO: CSS files that are found in this URL's HTML code.
+
+CONTENT_TYPE: Content Type
+TITLE: Title
+DESCRIPTION: Description
+H1: H1
+H2: H2
+URL_BLOCKED: The URL is blocked by robots.txt
+URL_NOT_BLOCKED: The URL is not blocked by robots.txt
+SITEMAP: Sitemap
+URL_IN_SITEMAP: The URL is in the sitemap
+URL_NOT_IN_SITEMAP: The URL is not in the sitemap
+SIZE: Size
+ROBOTS: Robots
+REDIRECT_URL: Redirect URL
+REFRESH: Refresh
+LANGUAGE: Language
+HREFLANG: Hreflang
+URL: URL
+WORDS: Words
+DEPTH: Depth
+TTFB: TTFB
+WACZ_ARCHIVE: WACZ Archive
+VIEW_ARCHIVE: View archived response
+OPEN_IN_BROWSER: Open in browser
+
+NO_LINKS: There are no links to this page.
+NO_REDIRECTS: There are no redirects to this page.
+PAGE_HAS_NOFOLLOW: This page has the nofollow meta tag.
+PAGE_LINKS_ARE_NOFOLLOW: Links in this page are considered nofollow even if the do not have the nofollow attribute.
+NO_INTERNAL_LINKS: There are no internal links in this page.
+BROKEN_LINK: Broken Link
+NO_EXTERNAL_LINKS: There are no external links in this page.
+NO_ALT_ATTRIBUTE: No alt attribute
+NO_IMAGES: There are no images in this page.
+NO_IFRAMES: There are no iframes in this page.
+NO_AUDIOS: There are no audios in this page.
+POSTER_LABEL: "Poster:"
+NO_VIDEOS: There are no videos in this page.
+NO_SCRIPTS: There are no scripts in this page.
+NO_STYLES: There are no styles in this page.
+
+SAVE: Save
+DELETE: Delete
+CANCEL: Cancel
 
 # ISSUE TYPES
 ERROR_50x: URLs returning status code 50x

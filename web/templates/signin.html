@@ -11,29 +11,29 @@
 	
 				<div class="form-container">
 					<div class="content">
-						<h1>Sign in to your account</h1>
+						<h1>{{ trans "SIGN_IN" }}</h1>
 						<form method="POST">
-							<label for="email">Email:</label>
+							<label for="email">{{ trans "EMAIL_LABEL" }}</label>
 							<input type="email" name="email" value="{{ .Data.Email }}" required autofocus>
-							<label for="password">Password:</label>
+							<label for="password">{{ trans "PASSWORD_LABEL" }}</label>
 							<input type="password" name="password" required>
-							<input type="submit" value="Sign In">
+							<input type="submit" value="{{ trans "SIGN_IN" }}">
 						</form>
 
 						{{ if .Data.Error }}
-							<p class="error">The email address or password is not valid.</p>
+							<p class="error">{{ trans "SIGIN_ERROR" }}</p>
 						{{ end }}
 					</div>
 
 					<div class="box-footer">
 						<div class="content">
-							New to SEOnaut? <a href="/signup">Sign up</a>
+							{{ trans "NEW_USER" }} <a href="/signup">{{ trans "NEW_USER_SIGNUP" }}</a>
 						</div>
 					</div>
 				</div>
 
 				<div class="credentials-text">
-					<small>Welcome back! Sign in to access detailed reports and uncover opportunities to improve your website's crawlability and boost your rankings.</small>
+					<small>{{ trans "SIGNIN_MESSAGE" }}</small>
 				</div>
 			</div>
 		</div>

@@ -19,6 +19,7 @@ func (h *supportHandler) handleSupportSEOnaut(w http.ResponseWriter, r *http.Req
 	}
 
 	pageView := &PageView{
+		Lang:      h.Container.Config.UIConfig.Language,
 		User:      *user,
 		PageTitle: "SUPPORT_SEONAUT_VIEW_PAGE_TITLE",
 	}

@@ -86,10 +86,6 @@ func NewServer(container *services.Container) {
 	http.HandleFunc("POST /account/delete", container.CookieSession.Auth((userHandler.deletePostHandler)))
 	http.HandleFunc("GET /signout", container.CookieSession.Auth(userHandler.signoutHandler))
 
-	// Support SEOnaut
-	supportHandler := supportHandler{container}
-	http.HandleFunc("GET /support-seonaut", container.CookieSession.Auth(supportHandler.handleSupportSEOnaut))
-
 	// Replay routes
 	replayHandler := replayHandler{container}
 	http.HandleFunc("GET /replay", container.CookieSession.Auth(replayHandler.proxyHandler))

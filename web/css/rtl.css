@@ -1,116 +1,70 @@
-html[lang|="ar"],
-html[lang|="he"],
-html[lang|="fa"],
-html[lang|="ur"] 
-{
+.rtl {
     direction: rtl;
     text-align: right;
 }
 
-html[lang|="ar"] .box .col,
-html[lang|="he"] .box .col,
-html[lang|="fa"] .box .col,
-html[lang|="ur"] .box .col {
+.rtl .box .col {
     border-left: 1px dotted var(--primary-color);
     border-right: none;
 }
 
-html[lang|="ar"] .box .col:last-child,
-html[lang|="he"] .box .col:last-child,
-html[lang|="fa"] .box .col:last-child,
-html[lang|="ur"] .box .col:last-child {
+.rtl .box .col:last-child {
     border-left: none;
 }
 
-html[lang|="ar"] .menu,
-html[lang|="he"] .menu,
-html[lang|="fa"] .menu,
-html[lang|="ur"] .menu {
+.rtl .menu {
     float: left;
 }
 
-html[lang|="ar"] .project-title h2,
-html[lang|="he"] .project-title h2,
-html[lang|="fa"] .project-title h2,
-html[lang|="ur"] .project-title h2 {
+.rtl .project-title h2 {
     margin-left: none;
     margin-right: 1rem; 
 }
 
-html[lang|="ar"] .crawler-item span,
-html[lang|="he"] .crawler-item span,
-html[lang|="fa"] .crawler-item span,
-html[lang|="ur"] .crawler-item span {
+.rtl .crawler-item span {
 	margin-left: 0;
     margin-right: 1rem;
 }
 
-html[lang|="ar"] .col.borderless ,
-html[lang|="he"] .col.borderless ,
-html[lang|="fa"] .col.borderless ,
-html[lang|="ur"] .col.borderless {
+.rtl .col.borderless {
     border: none;
 }
 
-html[lang|="ar"] .label,
-html[lang|="he"] .label,
-html[lang|="fa"] .label,
-html[lang|="ur"] .label {
+.rtl .label {
     margin-right: 1rem;
     margin-left: none;
 }
 
-html[lang|="ar"] .issues-critical-title,
-html[lang|="he"] .issues-critical-title,
-html[lang|="fa"] .issues-critical-title,
-html[lang|="ur"] .issues-critical-title {
+.rtl .issues-critical-title {
 	border-right: 1rem solid var(--issues-critical-highlight);
     border-left: none;
 }
 
-html[lang|="ar"] .issues-alert-title,
-html[lang|="he"] .issues-alert-title,
-html[lang|="fa"] .issues-alert-title,
-html[lang|="ur"] .issues-alert-title {
+.rtl .issues-alert-title {
 	border-right: 1rem solid var(--issues-alert-highlight);
     border-left: none;
 }
 
-html[lang|="ar"] .issues-warning-title,
-html[lang|="he"] .issues-warning-title,
-html[lang|="fa"] .issues-warning-title,
-html[lang|="ur"] .issues-warning-title {
+.rtl .issues-warning-title {
 	border-right: 1rem solid var(--issues-warning-highlight);
     border-left: none;
 }
 
-html[lang|="ar"] .issues-passed-title,
-html[lang|="he"] .issues-passed-title,
-html[lang|="fa"] .issues-passed-title,
-html[lang|="ur"] .issues-passed-title {
+.rtl .issues-passed-title {
     border-left: none;
     border-right: 1rem solid var(--issues-passed-highlight);
 }
 
 
-html[lang|="ar"] .project-title svg,
-html[lang|="he"] .project-title svg,
-html[lang|="fa"] .project-title svg,
-html[lang|="ur"] .project-title svg {
+.rtl .project-title svg {
     transform: scaleX(-1); 
 }
 
-html[lang|="ar"] .project-crawl svg,
-html[lang|="he"] .project-crawl svg,
-html[lang|="fa"] .project-crawl svg,
-html[lang|="ur"] .project-crawl svg {
+.rtl .project-crawl svg {
     transform: scaleX(-1);
 }
 
-html[lang|="ar"] .external_link a,
-html[lang|="he"] .external_link a,
-html[lang|="fa"] .external_link a,
-html[lang|="ur"] .external_link a {
+.rtl .external_link a {
     margin-left: 0;
     margin-right: .5rem;
     transform: scaleX(-1);

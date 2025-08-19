@@ -63,6 +63,8 @@ REPLAY_BANNER: You're viewing an archived version of this page
 
 SITE_ISSUES: Site Issues
 VIEW_ISSUES: View Issues
+URL_AFFECTED: "1 URL affected"
+URLS_AFFECTED: "%1% URLs affected"
 ISSUES_MESSAGE: "%1% critical issues and %2% alerts have been detected on this site."
 DOWNLOAD_URLS: Download URLs
 NO_ISSUES: Everything is ok

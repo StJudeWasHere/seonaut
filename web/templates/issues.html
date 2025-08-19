@@ -50,14 +50,14 @@
 				<div class="col col-main issues-critical">
 					<div class="content">
 						<details class="issue-details">
-							<summary> {{ trans .ErrorType }}</summary>
+							<summary> {{ trans .ErrorType }} <br> <small>{{ if eq .Count 1 }} {{ trans "URL_AFFECTED" }} {{ else }} {{ trans "URLS_AFFECTED" .Count }} {{end }} </small></summary>
 							<p>{{ trans (print .ErrorType "_DESC") }}</p>
 						</details>
 					</div>
 				</div>
 
 				<div class="col col-actions highlight">
-					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
+					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ trans "VIEW_ISSUES" }}</a>
 				</div>
 			</div>
 		{{ end }}
@@ -78,14 +78,14 @@
 				<div class="col col-main issues-alert">
 					<div class="content">
 						<details class="issue-details">
-							<summary> {{ trans .ErrorType }}</summary>
+							<summary> {{ trans .ErrorType }} <br> <small>{{ if eq .Count 1 }} {{ trans "URL_AFFECTED" }} {{ else }} {{ trans "URLS_AFFECTED" .Count }} {{end }} </small></summary>
 							<p>{{ trans (print .ErrorType "_DESC") }}</p>
 						</details>
 					</div>
 				</div>
 
 				<div class="col col-actions highlight">
-					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
+					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ trans "VIEW_ISSUES" }}</a>
 				</div>
 			</div>
 		{{ end }}
@@ -106,14 +106,14 @@
 				<div class="col col-main issues-warning">
 					<div class="content">
 						<details class="issue-details">
-							<summary> {{ trans .ErrorType }}</summary>
+							<summary> {{ trans .ErrorType }} <br> <small>{{ if eq .Count 1 }} {{ trans "URL_AFFECTED" }} {{ else }} {{ trans "URLS_AFFECTED" .Count }} {{end }} </small></summary>
 							<p>{{ trans (print .ErrorType "_DESC") }}</p>
 						</details>
 					</div>
 				</div>
 
 				<div class="col col-actions highlight">
-					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ .Count }} {{ if eq .Count 1 }}URL{{ else }}URLs{{end }}</a>
+					<a class="icon-text highlight borderless main" href="/issues/view?pid={{ $pid }}&eid={{ .ErrorType }}">{{ trans "VIEW_ISSUES" }}</a>
 				</div>
 			</div>
 		{{ end }}

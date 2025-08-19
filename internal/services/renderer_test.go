@@ -3,6 +3,7 @@ package services_test
 import (
 	"bytes"
 	"testing"
+	"time"
 
 	"github.com/stjudewashere/seonaut/internal/services"
 )
@@ -11,6 +12,10 @@ type TestTranslator struct{}
 
 func (t *TestTranslator) Trans(s string, args ...interface{}) string {
 	return s
+}
+
+func (t *TestTranslator) TransDate(d time.Time, f string) string {
+	return d.Format(f)
 }
 
 func TestRenderer(t *testing.T) {

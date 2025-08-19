@@ -44,7 +44,7 @@
 					type: 'category',
 					data: [
 						{{ range .Crawls }}
-						'{{ .Start.Format "Jan 02" }}',
+						'{{ trans_date .Start "Jan 02" }}',
 						{{ end }}
 					]
 			}],

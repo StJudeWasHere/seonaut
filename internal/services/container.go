@@ -219,9 +219,7 @@ func (c *Container) InitDashboardService() {
 // Create The translator.
 func (c *Container) InitTranslator() {
 	var err error
-	c.Translator, err = NewTranslator(&TranslatorConfig{
-		TranslationsFile: "translations/translation." + c.Config.UIConfig.Language + ".yaml",
-	})
+	c.Translator, err = NewTranslator("translations", c.Config.UIConfig.Language)
 	if err != nil {
 		log.Fatal(err)
 	}

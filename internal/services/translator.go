@@ -5,24 +5,26 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/goodsign/monday"
 	"gopkg.in/yaml.v3"
 )
 
 type (
-	TranslatorConfig struct {
-		TranslationsFile string
-	}
-
 	Translator struct {
 		translationMap map[string]interface{}
-		config         *TranslatorConfig
+		TimeLanguage   monday.Locale
 	}
 )
 
+var timeLocales = map[string]monday.Locale{
+	"en": monday.LocaleEnUS,
+}
+
 // NewTranslator will load a translation file and return a new template renderer.
-func NewTranslator(config *TranslatorConfig) (*Translator, error) {
-	translation, err := os.ReadFile(config.TranslationsFile)
+func NewTranslator(path string, lang string) (*Translator, error) {
+	translation, err := os.ReadFile(path + "/translation." + lang + ".yaml")
 	if err != nil {
 		return nil, err
 	}
@@ -35,7 +37,7 @@ func NewTranslator(config *TranslatorConfig) (*Translator, error) {
 
 	return &Translator{
 		translationMap: m,
-		config:         config,
+		TimeLanguage:   getTimeLocale(lang),
 	}, nil
 }
 
@@ -53,4 +55,20 @@ func (r *Translator) Trans(s string, args ...interface{}) string {
 		result = strings.ReplaceAll(result, placeholder, fmt.Sprintf("%v", arg))
 	}
 	return result
+}
+
+// TransDate returns a translated date with the specified format.
+func (r *Translator) TransDate(d time.Time, f string) string {
+	return monday.Format(d, f, r.TimeLanguage)
+}
+
+// getTimeLocale returns the monday.Locale corresponding to lang.
+// If lang is not supported by monday, it returns the monday.LocaleEnUS locale.
+func getTimeLocale(lang string) monday.Locale {
+	if locale, ok := timeLocales[lang]; ok {
+		return locale
+	}
+
+	log.Printf("Monday: locale %q not supported, using default (en_US)", lang)
+	return monday.LocaleEnUS
 }

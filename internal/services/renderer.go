@@ -14,6 +14,7 @@ import (
 type (
 	RendererTranslator interface {
 		Trans(s string, args ...interface{}) string
+		TransDate(d time.Time, f string) string
 	}
 
 	RendererConfig struct {
@@ -37,6 +38,7 @@ func NewRenderer(config *RendererConfig, translator RendererTranslator) (*Render
 	var err error
 	r.templates, err = findAndParseTemplates(config.TemplatesFolder, template.FuncMap{
 		"trans":      r.translator.Trans,
+		"trans_date": r.translator.TransDate,
 		"total_time": r.totalTime,
 		"add":        r.add,
 		"to_kb":      r.toKByte,

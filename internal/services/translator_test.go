@@ -8,9 +8,7 @@ import (
 
 // Test the translator's Trans method
 func TestTrans(t *testing.T) {
-	translator, err := services.NewTranslator(&services.TranslatorConfig{
-		TranslationsFile: "./testdata/translations.test.yaml",
-	})
+	translator, err := services.NewTranslator("./testdata", "test")
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
@@ -24,9 +22,7 @@ func TestTrans(t *testing.T) {
 
 // Test the translator's Trans method with parameters
 func TestTransParameters(t *testing.T) {
-	translator, err := services.NewTranslator(&services.TranslatorConfig{
-		TranslationsFile: "./testdata/translations.test.yaml",
-	})
+	translator, err := services.NewTranslator("./testdata", "test")
 	if err != nil {
 		t.Fatalf("%v", err)
 	}

@@ -80,7 +80,7 @@
 			{{ if (and (not .Project.Deleting) (and .Crawl.Id (not .Crawl.Crawling))) }}
 				<div class="box borderless">
 					<div class="content-s">
-						<span style="opacity:.5; padding: 5px 10px;border-top-left-radius: 10px;border-top-right-radius: 10px;"><i>{{ trans "CRAWLED_ON" (.Crawl.Start.Format "Jan 02, 2006") }}.</i></span>
+						<span style="opacity:.5; padding: 5px 10px;border-top-left-radius: 10px;border-top-right-radius: 10px;"><i>{{ trans "CRAWLED_ON" (trans_date .Crawl.Start "Jan 02, 2006") }}.</i></span>
 					</div>
 				</div>
 			{{ end }}

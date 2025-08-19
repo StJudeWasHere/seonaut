@@ -47,6 +47,8 @@ REPLAY_BANNER: شما در حال مشاهده نسخه بایگانی شده ا
 ## SITE ISSUES
 SITE_ISSUES: مشکلات سایت
 VIEW_ISSUES: مشاهده مشکلات
+URL_AFFECTED: "1 لینک تحت تأثیر"
+URLS_AFFECTED: "%1% لینک تحت تأثیر"
 ISSUES_MESSAGE: "%1% مشکل بحرانی و %2% هشدار در این سایت شناسایی شده است."
 DOWNLOAD_URLS: دانلود لینک‌ها
 NO_ISSUES: همه چیز خوب است

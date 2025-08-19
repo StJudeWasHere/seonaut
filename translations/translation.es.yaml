@@ -1,0 +1,537 @@
+# =============================================
+# GLOBAL PARAMETERS GUIDE
+# =============================================
+# NOTE: Never translate placeholders like %1% or %2%.
+
+# =============================================
+# COMMON: Reusable UI elements (buttons, pagination, etc.)
+# =============================================
+VIEW_DETAILS: Ver detalles
+DOWNLOAD: Descargar
+CRAWLED_ON: "Rastreado el %1%"      # %1% will be replaced with a date
+CRAWLED: rastreado
+PREV: ← anterior                    # Pagination: link to previous page
+NEXT: siguiente →                   # Pagination: link to next page
+EMAIL_LABEL: "Correo electrónico:"  # Form label: used in the Sign in and Sign up pages
+PASSWORD_LABEL: "Contraseña:"       # Form label: used in the Sign in and Sign up pages
+SAVE: Guardar
+DELETE: Eliminar
+CANCEL: Cancelar
+
+# =============================================
+# CONTEXT: Sign in page
+# =============================================
+SIGN_IN: Inicia sesión en tu cuenta
+SIGIN_ERROR: El correo electrónico o la contraseña no son válidos.
+NEW_USER: ¿Nuevo en SEOnaut?
+NEW_USER_SIGNUP: Regístrate
+SIGNIN_MESSAGE: ¡Bienvenido de nuevo! Inicia sesión para acceder a informes detallados y descubrir oportunidades para mejorar la capacidad de rastreo de tu sitio web y potenciar tus rankings.
+
+# =============================================
+# CONTEXT: Sign up page
+# =============================================
+SIGN_UP: Regístrate
+CREATE_ACCOUNT: Crea tu cuenta de SEOnaut
+HAVE_ACCOUNT: ¿Ya tienes una cuenta?
+SIGNIN_LINK: Iniciar sesión
+SIGNUP_MESSAGE: SEOnaut te permite escanear tu sitio en busca de problemas, priorizar las correcciones por impacto y ofrecer recomendaciones para mejorar tu visibilidad en línea. ¡Regístrate para empezar a optimizar tu sitio web!
+
+# =============================================
+# CONTEXT: Edit user account page
+# =============================================
+EDIT_ACCOUNT: Editar cuenta
+CURRENT_PASSWORD: "Contraseña actual:"  # Form label
+NEW_PASSWORD: "Nueva contraseña:"       # Form label
+DELETE_ACCOUNT_MESSAGE: Si ya no deseas continuar usando SEOnaut, puedes eliminar tu cuenta aquí.
+DELETE_ACCOUNT_MESSAGE_CONFIRMATION: Se pedirá confirmación antes de continuar.
+
+# =============================================
+# CONTEXT: Delete user account page
+# =============================================
+DELETE_ACCOUNT: Eliminar cuenta
+DELETE_ACCOUNT_WARNING: Al eliminar tu cuenta de usuario, también dirás adiós a todos los datos de tus proyectos y al historial de rastreos.
+THIS_IS_PERMANENT: Esta acción es permanente.
+NO_TURNING_BACK: Una vez hecho, no hay vuelta atrás.
+ARE_YOU_SURE: ¿Estás seguro de que quieres proceder?
+PROJECT_CRAWLING: Uno o más de tus proyectos están siendo rastreados o eliminados.
+WAIT_BEFORE_DELETING: Espera a que el proceso finalice antes de eliminar tu cuenta.
+
+# =============================================
+# CONTEXT: Page header (navigation menu)
+# =============================================
+PROJECTS: Proyectos
+ACCOUNT: Cuenta
+LOGOUT: Cerrar sesión
+
+# =============================================
+# CONTEXT: Page footer (additional links)
+# =============================================
+SUPPORT: ❤️ Muestra tu apoyo
+OFFICIAL_WEBSITE: Sitio web de SEOnaut
+
+# =============================================
+# CONTEXT: Add project page. Contains the form to add new projects.
+#          The same fields are also used in the Edit project page.
+# =============================================
+ADD_PROJECT: Añadir proyecto
+URL_LABEL: "URL:"
+URL_LABEL_MESSAGE: URL completa del proyecto incluyendo http:// o https://
+URL_NOT_VALID: La URL no es válida.
+IGNORE_ROBOTS_CHECKBOX: Ignorar robots.txt
+IGNORE_ROBOTS_HELP: Si está marcado, el rastreador omitirá cualquier restricción que hayas configurado en tu archivo robots.
+FOLLOW_NOFOLLOW_CHECKBOX: Seguir enlaces internos nofollow
+FOLLOW_NOFOLLOW_HELP: Si está marcado, el rastreador ignorará el atributo nofollow en los enlaces y la metaetiqueta robots.
+INCLUDE_NOINDEX_CHECKBOX: Incluir páginas noindex en el informe
+INCLUDE_NOINDEX_HELP: Si está marcado, las páginas con el atributo noindex también se incluirán en el informe.
+CRAWL_SITEMAP_CHECKBOX: Rastrear sitemap
+CRAWL_SITEMAP_HELP: Si está marcado, las URLs del sitemap.xml también se rastrearán.
+ALLOW_SUBDOMAINS_CHECKBOX: Permitir subdominios
+ALLOW_SUBDOMAINS_HELP: Si está marcado, el rastreador también rastreará URLs de subdominios.
+CHECK_EXTERNAL_LINKS_CHECKBOX: Comprobar enlaces externos
+CHECK_EXTERNAL_LINKS_HELP: Si está marcado, el rastreador buscará enlaces externos rotos.
+CREATE_WACZ_CHECKBOX: Crear archivo WACZ
+CREATE_WACZ_HELP: Si está marcado, se creará un archivo WACZ y estará disponible como opción de exportación.
+USE_AUTH_CHECKBOX: Usar autenticación básica HTTP
+USE_AUTH_HELP: Marca esta opción si tu sitio está protegido con contraseña mediante autenticación básica HTTP.
+CUSTOM_USERAGENT_CHECKBOX: User-Agent personalizado
+CUSTOM_USERAGENT_HELP: Establece un User-Agent personalizado para el rastreador de SEOnaut al recuperar URLs.
+ENTER_USERAGENT_LABEL: "Introduce tu cadena de User-Agent personalizada:"
+USERAGENT_NOT_VALID: El User-Agent no es válido.
+
+# =============================================
+# CONTEXT: Edit project page. Contains the edit project form.
+#          The form uses the same fields as the Add project page.
+# =============================================
+EDIT_PROJECT: Editar proyecto
+EDIT_ERROR: Se ha producido un error y el proyecto no se ha podido guardar.
+DELETE_PROJECT: Eliminar proyecto
+DELETE_PROJECT_MESSAGE: Esta acción eliminará el proyecto %1% y todos sus datos relacionados.  # %1% will be replaced with the project's URL
+DELETE_CANT_BE_UNDONE: Eliminar un proyecto puede tardar unos minutos y no se puede deshacer.
+
+# =============================================
+# CONTEXT: Projects page. This is the homepage for logged in users.
+# =============================================
+WELCOME: Bienvenido a SEOnaut
+WE_LOVE_CRAWLABLE_WEBSITES: Nos ❤️ encantan los sitios web rastreables
+NO_PROJECTS: Todavía no tienes ningún proyecto.
+ONE_PROJECT: Actualmente tienes un proyecto.
+YOU_HAVE_PROJECTS: Actualmente tienes %1% proyectos.  # %1% will be replaced with a number greater than 1
+ADD_FIRST_PROJECT: Añade tu primer proyecto.
+GAIN_INSIGHTS: Obtén información sobre tu sitio web.
+DELETING_PROJECT: Eliminando proyecto.
+DELETING_PLEASE_WAIT: Esto puede tardar unos minutos, por favor espera...
+CANT_ACCESS_SITE: El bot de SEOnaut no ha podido acceder a tu sitio web. Comprueba que la URL es correcta y que no está bloqueada por la configuración de Robots o la autenticación básica HTTP.
+CRAWL_NOW: Rastrear ahora
+CRAWLING: Rastreando...
+
+# =============================================
+# CONTEXT: Project dashboard page (charts, crawl details, etc.)
+# =============================================
+DASHBOARD: Panel de control
+ISSUES_MESSAGE: "Se han detectado %1% problemas críticos y %2% alertas en este sitio."  # %1% and %2% will be replaced by numbers
+CRAWL_HISTORY: Historial de rastreos
+ISSUES_HISTORY: Historial de problemas
+ISSUE_TYPES: Tipos de problemas
+CURRENT_CRAWL: Rastreo actual
+CRAWL_DURATION: La duración del rastreo fue de %1%  # %1% will be replaced with the time duration of the crawl. Ex: 37s
+FOLLOWING_LINKS: Siguiendo enlaces internos nofollow.
+NOT_FOLLOWING_LINKS: No siguiendo enlaces nofollow.
+INCLUDING_NOINDEX: Incluyendo páginas noindex.
+NOT_INCLUDING_NOINDEX: No incluyendo páginas noindex.
+CRAWLING_SITEMAP: Rastreando URLs en el sitemap
+NOT_CRAWLING_SITEMAP: No rastreando URLs en el sitemap
+SITEMAP_BLOCKED: Sitemap bloqueado.
+SITEMAP_FOUND: Sitemap encontrado.
+SITEMAP_NOT_FOUND: Sitemap no encontrado.
+IGNORING_ROBOTS: Ignorando el archivo robots.txt.
+RESPECTING_ROBOTS: Respetando el archivo robots.txt.
+ROBOTS_FOUND: Archivo robots.txt encontrado.
+ROBOTS_NOT_FOUND: Archivo robots.txt no encontrado.
+LINKS: Enlaces
+CANONICAL_URLS: URLs canónicas
+IMAGES_ALT: Texto alternativo de imágenes
+HTTPS: HTTPS
+MEDIA_TYPE: Tipo de medio
+STATUS_CODE: Código de estado
+STATUS_BY_DEPTH: Código de estado por profundidad
+NEXT_ACTIONS: Próximas acciones
+EXPLORE_ISSUES: Explorar problemas del sitio
+EXPLORE_ISSUES_MESSAGE: Descubre problemas que afectan al rendimiento de tu sitio web.
+SITE_ISSUES_LINK: Problemas del sitio
+PAGE_DETAILS_LINK: Detalles de la página
+ANALYZE_DATA: Analizar datos en bruto
+ANALYZE_DATA_MESSAGE: Exporta tus datos para un análisis y informe más detallados.
+ANALYZE_DATA_LINK: Exportación de datos
+URL_CRAWLED: 1 URL rastreada.         # Singular
+URLS_CRAWLED: "%1% URLs rastreadas."  # Plural. %1% will be replaced with a number greater than 1
+CANONICAL: Canónica
+NON_CANONICAL: No canónica
+INDEX: Indexado
+NOINDEX: No indexado
+BLOCKED: Bloqueado
+WITH_ALT: Con texto alternativo
+WITHOUT_ALT: Sin texto alternativo
+CRITICAL: Crítico
+ALERT: Alerta
+WARNING: Advertencia
+ISSUES: Problemas
+FOLLOW: Follow
+NOFOLLOW: Nofollow
+INTERNAL: Interno
+EXTERNAL: Externo
+TOTAL: Total
+SPONSORED: Patrocinado
+UGC: UGC
+SCHEME: Esquema
+
+# =============================================
+# CONTEXT: Live crawler page.
+# =============================================
+LIVE_CRAWLING: Rastreo en vivo
+STOP_CRAWLER: Detener rastreo
+STOPPING_CRAWLER: Deteniendo rastreo...
+LIVE_CRAWL_JAVASCRIPT_ERROR: El rastreo en vivo no está disponible para tu navegador. Se necesita soporte para JavaScript.
+LIVE_CRAWL_WEBSOCKET_ERROR: El rastreo en vivo no está disponible para tu navegador. Se necesita soporte para WebSocket.
+CONNECTING_TO_SERVER: Conectando al servidor, por favor espera...
+CRAWL_COMPLETED: Rastreo completado. Creando el informe, por favor espera...
+
+# =============================================
+# CONTEXT: Crawl HTTP Basic auth page. (username and password form for HTTP Basic authentication)
+# =============================================
+HTTP_BASIC_AUTH: Autenticación básica HTTP
+HTTP_BASIC_AUTH_MESSAGE: Este proyecto usa autenticación básica HTTP. Debes proporcionar las credenciales antes de que comience el rastreo.
+HTTP_BASIC_AUTH_PRIVACY: Las credenciales no se almacenan en el servidor y se solicitarán cada vez que quieras rastrear este proyecto.
+HTTP_BASIC_USERNAME_LABEL: "Nombre de usuario:"
+HTTP_BASIC_PASSWORD_LABEL: "Contraseña:"
+
+# =============================================
+# CONTEXT: Issues index page.
+# =============================================
+NO_ISSUES_MESSAGE: SEOnaut no ha detectado ningún problema en tu sitio.
+CRITICAL_MESSAGE: "Soluciona estos primero. Es probable que estén perjudicando tus rankings."
+ALERTS_MESSAGE: Solucionar estos puede ayudar a mejorar el rendimiento SEO de tu sitio.
+WARNINGS_MESSAGE: Estos problemas pueden no ser significativos dependiendo de tus objetivos, pero vale la pena vigilarlos.
+PASSED_CHECKS: Comprobaciones superadas
+PASSED_CHECKS_MESSAGE: Tu sitio ha superado con éxito las siguientes comprobaciones.
+
+# =============================================
+# CONTEXT: Specific issue page.
+# =============================================
+SITE_ISSUES: Problemas del sitio
+VIEW_ISSUES: Ver problemas
+URL_AFFECTED: 1 URL afectada          # Singular
+URLS_AFFECTED: "%1% URLs afectadas"   # Plural. %1% will be replaced with a number greater than 1
+DOWNLOAD_URLS: Descargar URLs
+NO_ISSUES: Todo está bien
+
+# =============================================
+# CONTEXT: Data export page
+# =============================================
+DATA_EXPORT: Exportación de datos
+EXPORT_SITEMAP: Exportar sitemap.xml
+EXPORT_SITEMAP_MESSAGE: Descarga un archivo sitemap.xml con todas las páginas canónicas de tu sitio.
+EXPORT_CVS: Exportar como CSV
+EXPORT_CVS_MESSAGE: Exporta todas las URLs rastreadas en formato CSV, incluyendo todos los tipos MIME y con información adicional como el código de estado y el tamaño.
+EXPORT_INTERNAL_LINKS: Exportar enlaces internos
+EXPORT_INTERNAL_LINKS_MESSAGE: Exporta todos los enlaces internos del sitio web, incluyendo origen, destino y texto de anclaje.
+EXPORT_EXTERNAL_LINKS: Exportar enlaces externos
+EXPORT_EXTERNAL_LINKS_MESSAGE: Exporta todos los enlaces externos del sitio web, incluyendo origen, destino y texto de anclaje.
+EXPORT_IMAGES: Exportar imágenes
+EXPORT_IMAGES_MESSAGE: Exporta todas las URLs de imágenes del sitio web, incluyendo origen, URLs de imágenes y texto alternativo.
+EXPORT_SCRIPTS: Exportar scripts
+EXPORT_SCRIPTS_MESSAGE: Exporta todas las URLs de scripts del sitio web, incluyendo origen y URLs de scripts.
+EXPORT_STYLES: Exportar estilos
+EXPORT_STYLES_MESSAGE: Exporta todas las URLs de hojas de estilo CSS del sitio web, incluyendo origen y URLs de estilos.
+EXPORT_IFRAMES: Exportar iframes
+EXPORT_IFRAMES_MESSAGE: Exporta todas las URLs de iframes del sitio web, incluyendo origen y URLs de iframes.
+EXPORT_AUDIOS: Exportar audios
+EXPORT_AUDIOS_MESSAGE: Exporta todas las URLs de audio del sitio web, incluyendo origen y URLs de audio.
+EXPORT_VIDEOS: Exportar vídeos
+EXPORT_VIDEOS_MESSAGE: Exporta todas las URLs de vídeo del sitio web, incluyendo origen y URLs de vídeo.
+EXPORT_HREFLANGS: Exportar hreflangs
+EXPORT_HREFLANGS_MESSAGE: Exporta todas las URLs hreflang del sitio web, incluyendo la URL de origen y el idioma, así como la URL hreflang y el idioma.
+EXPORT_ALL: Exportar todos los problemas
+EXPORT_ALL_MESSAGE: Exporta todos los problemas con las URLs afectadas, el tipo de problema y la prioridad.
+EXPORT_WACZ: Exportar archivo WACZ
+EXPORT_WACZ_MESSAGE: Exporta los datos rastreados de tu proyecto como un archivo WACZ para archivo o reproducción.
+
+# =============================================
+# CONTEXT: Resources pages. It includes the tabs for images, links, scripts, etc...
+# =============================================
+DETAILS_TAB: Detalles
+DETAILS_TAB_INFO: Información general sobre la URL.
+INLINKS_TAB: Enlaces entrantes
+INLINKS_TAB_INFO: Los enlaces entrantes son enlaces a esta URL desde otras páginas de este sitio web.
+INTERNAL_TAB: Enlaces internos
+INTERNAL_TAB_INFO: Los enlaces internos son los enlaces encontrados en el código HTML de esta URL que apuntan a otras páginas de este sitio web.
+EXTERNAL_TAB: Enlaces externos
+EXTERNAL_TAB_INFO: Los enlaces externos son los enlaces encontrados en el código HTML de esta URL que apuntan a otros sitios web.
+REDIRECTIONS_TAB: Redirecciones
+REDIRECTIONS_TAB_INFO: Las redirecciones son las URLs de este sitio web que se redirigen a esta URL.
+IMAGES_TAB: Imágenes
+IMAGES_TAB_INFO: Imágenes encontradas en el código HTML de esta URL. Ten en cuenta que las imágenes mostradas mediante CSS no se incluyen aquí.
+AUDIOS_TAB: Audios
+AUDIOS_TAB_INFO: Archivos de audio encontrados en el código HTML de esta URL.
+VIDEOS_TAB: Vídeos
+VIDEOS_TAB_INFO: Archivos de vídeo encontrados en el código HTML de esta URL.
+IFRAMES_TAB: Iframes
+IFRAMES_TAB_INFO: Iframes encontrados en el código HTML de esta URL.
+SCRIPTS_TAB: Scripts
+SCRIPTS_TAB_INFO: Archivos de script encontrados en el código de esta URL.
+STYLES_TAB: Estilos
+STYLES_TAB_INFO: Archivos CSS encontrados en el código HTML de esta URL.
+CONTENT_TYPE: Tipo de contenido
+TITLE: Título
+DESCRIPTION: Descripción
+H1: H1
+H2: H2
+URL_BLOCKED: La URL está bloqueada por robots.txt
+URL_NOT_BLOCKED: La URL no está bloqueada por robots.txt
+SITEMAP: Sitemap
+URL_IN_SITEMAP: La URL está en el sitemap
+URL_NOT_IN_SITEMAP: La URL no está en el sitemap
+SIZE: Tamaño
+ROBOTS: Robots
+REDIRECT_URL: URL de redirección
+REFRESH: Actualizar
+LANGUAGE: Idioma
+HREFLANG: Hreflang
+URL: URL
+WORDS: Palabras
+DEPTH: Profundidad
+TTFB: TTFB
+WACZ_ARCHIVE: Archivo WACZ
+VIEW_ARCHIVE: Ver respuesta archivada
+OPEN_IN_BROWSER: Abrir en el navegador
+NO_LINKS: No hay enlaces a esta página.
+NO_REDIRECTS: No hay redirecciones a esta página.
+PAGE_HAS_NOFOLLOW: Esta página tiene la metaetiqueta nofollow.
+PAGE_LINKS_ARE_NOFOLLOW: Los enlaces de esta página se consideran nofollow aunque no tengan el atributo nofollow.
+NO_INTERNAL_LINKS: No hay enlaces internos en esta página.
+BROKEN_LINK: Enlace roto
+NO_EXTERNAL_LINKS: No hay enlaces externos en esta página.
+NO_ALT_ATTRIBUTE: Sin atributo alt
+NO_IMAGES: No hay imágenes en esta página.
+NO_IFRAMES: No hay iframes en esta página.
+NO_AUDIOS: No hay audios en esta página.
+POSTER_LABEL: "Póster:"
+NO_VIDEOS: No hay vídeos en esta página.
+NO_SCRIPTS: No hay scripts en esta página.
+NO_STYLES: No hay estilos en esta página.
+
+# =============================================
+# CONTEXT: URL explorer page.
+# =============================================
+URL_EXPLORER: Explorador de URLs
+SEARCH_TERM_LABEL: "Término de búsqueda:"  # Form label
+OPEN_URL: Abrir URL
+NO_URLS_FOUND: No se han encontrado URLs.
+SEARCH: Buscar
+
+# =============================================
+# CONTEXT: Archive page.
+# =============================================
+DETAILS: Detalles
+PAGE_DETAILS: Detalles de la página
+HEADERS: Encabezados
+HEADERS_MESSAGE: Este bloque muestra los encabezados de respuesta recibidos por el rastreador.
+BODY: Cuerpo
+BODY_MESSAGE: Este bloque muestra el cuerpo de la respuesta recibido por el rastreador.
+
+# =============================================
+# CONTEXT: Replay banner. This banner is shown when browsing an archived page.
+# =============================================
+REPLAY_BANNER: Estás viendo una versión archivada de esta página
+
+# =============================================
+# CONTEXT: Page titles used in the <title> HTML tags.
+# =============================================
+PROJECTS_VIEW_PAGE_TITLE: Proyectos
+ADD_PROJECT_PAGE_TITLE: Añadir proyecto
+EDIT_PROJECT_PAGE_TITLE: Editar proyecto
+ISSUES_VIEW_PAGE_TITLE: Problemas del proyecto
+ISSUES_DETAIL_PAGE_TITLE: Detalles del problema
+RESOURCES_VIEW_DETAILS_PAGE_TITLE: Detalles del recurso URL
+RESOURCES_VIEW_INLINKS_PAGE_TITLE: Enlaces entrantes de la URL
+RESOURCES_VIEW_INTERNAL_PAGE_TITLE: Enlaces internos de la URL
+RESOURCES_VIEW_EXTERNAL_PAGE_TITLE: Enlaces externos de la URL
+RESOURCES_VIEW_REDIRECTIONS_PAGE_TITLE: Redirecciones de la URL
+RESOURCES_VIEW_IMAGES_PAGE_TITLE: Imágenes de la URL
+RESOURCES_VIEW_SCRIPTS_PAGE_TITLE: Scripts de la URL
+RESOURCES_VIEW_STYLES_PAGE_TITLE: Estilos de la URL
+RESOURCES_VIEW_IFRAMES_PAGE_TITLE: Iframes de la URL
+RESOURCES_VIEW_AUDIOS_PAGE_TITLE: Audios de la URL
+RESOURCES_VIEW_VIDEOS_PAGE_TITLE: Vídeos de la URL
+SIGNUP_VIEW_PAGE_TITLE: Registro
+SIGNIN_VIEW_PAGE_TITLE: Iniciar sesión
+ACCOUNT_VIEW_PAGE_TITLE: Editar cuenta
+PROJECT_DASHBOARD_PAGE_TITLE: Panel de control del proyecto
+CRAWL_LIVE_PAGE_TITLE: Rastreando proyecto
+EXPORT_VIEW_PAGE_TITLE: Exportar
+CRAWL_AUTH_VIEW_PAGE_TITLE: Autenticación básica HTTP del proyecto
+EXPLORER_PAGE_TITLE: Explorador de URLs
+DELETE_ACCOUNT_VIEW_PAGE_TITLE: Eliminar cuenta
+ARCHIVE_VIEW_PAGE_TITLE: Código fuente archivado
+SUPPORT_SEONAUT_VIEW_PAGE_TITLE: Proyecto SEOnaut
+
+# =============================================
+# CONTEXT: Issue types. Name and description of the issue types. Displayed in the issue index page.
+# =============================================
+ERROR_50x: URLs que devuelven código de estado 50x
+ERROR_50x_DESC: Este tipo de errores suelen ocurrir debido a un error o mala configuración del servidor. Las páginas afectadas no se cargan correctamente y muestran una página de error, asustando a los usuarios y molestando a los motores de búsqueda.
+ERROR_40x: URLs que devuelven código de estado 40x
+ERROR_40x_DESC: Estas páginas no existen y tanto tus usuarios como los motores de búsqueda se pierden. Puede indicar a los motores de búsqueda que tu sitio no está bien mantenido. Con el tiempo, demasiados enlaces rotos pueden afectar la eficiencia del rastreo y diluir la autoridad de tu sitio.
+ERROR_30x: URLs que devuelven código de estado 30x
+ERROR_30x_DESC: Las URLs que causan redirecciones envían a los usuarios y a los motores de búsqueda a una página diferente. Las redirecciones pueden ralentizar la carga de la página, confundir a los usuarios y desperdiciar el presupuesto de rastreo del motor de búsqueda.
+ERROR_REDIRECT_CHAIN: URLs que causan una cadena de redirecciones
+ERROR_REDIRECT_CHAIN_DESC: Las cadenas de redirecciones son URLs que redirigen a otras URLs que también redirigen a otro lugar, creando una cadena de redirecciones. Las cadenas de redirecciones frustran a los usuarios y dificultan que los motores de búsqueda rastreen e indexen tu contenido de manera eficiente.
+ERROR_REDIRECT_LOOP: URLs que causan un bucle de redirección
+ERROR_REDIRECT_LOOP_DESC: Los bucles de redirección son un par de URLs que se redirigen entre sí, creando un bucle infinito de redirecciones. Los bucles de redirección impiden que los usuarios y los motores de búsqueda lleguen nunca al destino. Esto lleva a una mala experiencia de usuario, navegación rota y bloquea que los motores de búsqueda rastreen e indexen correctamente tu sitio.
+ERROR_DUPLICATED_TITLE: Páginas con título duplicado
+ERROR_DUPLICATED_TITLE_DESC: La etiqueta de título se considera uno de los elementos más importantes para el SEO en la página. Si varias páginas tienen el mismo título, competirán por una consulta de búsqueda determinada, confundiendo a los motores de búsqueda.
+ERROR_LONG_TITLE: Páginas con título largo
+ERROR_LONG_TITLE_DESC: Los títulos largos no afectarán a tu SEO en la página, pero suelen truncarse en los resultados de búsqueda y tienden a recibir menos clics.
+ERROR_SHORT_TITLE: Páginas con título corto
+ERROR_SHORT_TITLE_DESC: Estas páginas tienen títulos demasiado cortos. Los motores de búsqueda estarán más contentos si proporcionas títulos más largos.
+ERROR_EMPTY_TITLE: Páginas sin título
+ERROR_EMPTY_TITLE_DESC: Los títulos de las páginas ayudan a los motores de búsqueda a entender de qué trata una página y suelen mostrarse en los resultados de búsqueda. Sin un título, tu página puede posicionarse más bajo, ser pasada por alto por los usuarios y parecer poco profesional o incompleta.
+ERROR_EMPTY_DESCRIPTION: Páginas sin meta descripción
+ERROR_EMPTY_DESCRIPTION_DESC: La descripción de la página no es un factor de clasificación para los motores de búsqueda, pero a menudo la usan para mostrar fragmentos en los resultados de búsqueda.
+ERROR_SHORT_DESCRIPTION: Páginas con meta descripción corta
+ERROR_SHORT_DESCRIPTION_DESC: La descripción de la página no es un factor de clasificación para los motores de búsqueda, pero a menudo la usan para mostrar fragmentos en los resultados de búsqueda.
+ERROR_LONG_DESCRIPTION: Páginas con meta descripción larga
+ERROR_LONG_DESCRIPTION_DESC: Las etiquetas de descripción no son un factor de clasificación para los motores de búsqueda, pero tener descripciones de buena calidad proporcionará información más precisa en los resultados de búsqueda. Las descripciones largas suelen truncarse, haciéndolas menos atractivas para los usuarios.
+ERROR_DUPLICATED_DESCRIPTION: Páginas con meta descripción duplicada
+ERROR_DUPLICATED_DESCRIPTION_DESC: Se recomienda tener descripciones únicas para cada página para que los motores de búsqueda puedan entender mejor tu página.
+ERROR_LITTLE_CONTENT: Páginas con poco contenido
+ERROR_LITTLE_CONTENT_DESC: Las páginas con poco contenido no son realmente útiles para los usuarios ni para los motores de búsqueda. Considera añadir más contenido a tus páginas.
+ERROR_IMAGES_NO_ALT: Páginas que contienen imágenes sin atributo alt
+ERROR_IMAGES_NO_ALT_DESC: El atributo alt de las imágenes mejora la accesibilidad de tu sitio y también ayuda a los motores de búsqueda a entender mejor tus imágenes.
+ERROR_NO_H1: Páginas sin encabezado H1
+ERROR_NO_H1_DESC: La etiqueta H1 describe el tema principal de la página. Sin ella, tanto tus usuarios como los motores de búsqueda tendrán más dificultad para entender de qué trata la página.
+ERROR_NO_LANG: Páginas sin atributo de idioma
+ERROR_NO_LANG_DESC: El atributo de idioma es particularmente útil para los lectores de pantalla y se recomienda usarlo. Algunos motores de búsqueda lo usan para mostrar la página apropiada a los usuarios según su idioma, pero no afecta a tu clasificación en los motores de búsqueda.
+ERROR_HTTP_LINKS: URLs HTTPS con enlaces a URLs HTTP
+ERROR_HTTP_LINKS_DESC: Enlaces desde páginas seguras HTTPS a páginas no seguras HTTP. Tener un sitio web completamente seguro posiciona mejor que aquellos sin HTTPS, además de hacer más felices a tus usuarios.
+ERROR_HREFLANG_RETURN: Páginas sin hreflang de retorno
+ERROR_HREFLANG_RETURN_DESC: Al referenciar una página con hreflang, esa página también debe hacer referencia con una etiqueta hreflang. Sin esta referencia bidireccional, los motores de búsqueda pueden ignorar las anotaciones hreflang, lo que lleva a que se muestren versiones incorrectas del idioma en los resultados de búsqueda.
+ERROR_TOO_MANY_LINKS: Páginas con demasiados enlaces
+ERROR_TOO_MANY_LINKS_DESC: El "link juice" SEO se divide entre todos los enlaces de la página. Cuantos más enlaces haya en una página, menor será la cantidad de "jugos" que se pase a cada uno. Asegúrate de que todos los enlaces sean relevantes, elimina los que no lo sean o usa el atributo nofollow.
+ERROR_INTERNAL_NOFOLLOW: Enlaces internos nofollow
+ERROR_INTERNAL_NOFOLLOW_DESC: Los enlaces internos, en general, no deben usar el atributo nofollow a menos que enlacen a páginas que no quieras que sean indexadas por los motores de búsqueda. Revisa los enlaces internos y asegúrate de que las páginas importantes estén enlazadas sin el atributo nofollow.
+ERROR_EXTERNAL_WITHOUT_NOFOLLOW: Páginas con enlaces externos follow
+ERROR_EXTERNAL_WITHOUT_NOFOLLOW_DESC: Los enlaces follow pasan autoridad SEO a sitios externos. Es posible que quieras vigilarlos para evitar spam de enlaces en comentarios y contenido generado por usuarios.
+ERROR_CANONICALIZED_NON_CANONICAL: Canonicalizadas a URL no canónica
+ERROR_CANONICALIZED_NON_CANONICAL_DESC: Páginas canonicalizadas a una URL no canónica. Las páginas canonicalizadas deben apuntar a una página canónica. Reemplaza la URL del enlace canónico en estas páginas para que apunten a una canónica.
+ERROR_NOT_VALID_HEADINGS: Páginas con orden de encabezados no válido
+ERROR_NOT_VALID_HEADINGS_DESC: Las etiquetas de encabezado en estas páginas no siguen el orden correcto. Los encabezados deben comenzar con un H1 y seguir una jerarquía clara (H2, H3, etc.). Una estructura adecuada ayuda a los motores de búsqueda a entender tu contenido y mejora la accesibilidad para los lectores de pantalla.
+ERROR_HREFLANG_TO_NON_CANONICAL: Hreflang a página no canónica
+ERROR_HREFLANG_TO_NON_CANONICAL_DESC: Las etiquetas hreflang indican a los motores de búsqueda dónde encontrar contenido en idiomas específicos. Enlazar etiquetas hreflang a páginas no canónicas confunde a los motores de búsqueda.
+ERROR_NOFOLLOW_INDEXABLE: Enlaces internos nofollow a páginas indexables
+ERROR_NOFOLLOW_INDEXABLE_DESC: Los enlaces internos que usan el atributo nofollow indican a los motores de búsqueda que no rastreen ese enlace. Para que funcione correctamente, la URL de destino debe usar la etiqueta noindex; de lo contrario, los motores de búsqueda aún pueden indexar la URL enlazada.
+ERROR_NO_INDEXABLE: Páginas no indexables
+ERROR_NO_INDEXABLE_DESC: Las páginas que usan el atributo noindex no serán indexadas por los motores de búsqueda. Esto suele añadirse a páginas no importantes que no queremos que aparezcan en los resultados de búsqueda. Vale la pena revisarlas para asegurarse de que las páginas importantes no usen este atributo.
+ERROR_HREFLANG_NO_INDEXABLE: Hreflang a una página no indexable
+ERROR_HREFLANG_NO_INDEXABLE_DESC: Los hreflangs deben enlazar a páginas indexables. Enlazarlos a páginas que usan el atributo noindex confundirá a los motores de búsqueda.
+ERROR_BLOCKED: URLs bloqueadas por robots.txt
+ERROR_BLOCKED_DESC: Las páginas bloqueadas por robots.txt no serán rastreadas por los motores de búsqueda. Vigila esta lista para asegurarte de que las páginas importantes no estén siendo bloqueadas.
+ERROR_ORPHAN: Páginas huérfanas
+ERROR_ORPHAN_DESC: Páginas que no están enlazadas en ningún lugar de tu sitio, lo que significa que ningún visitante puede acceder a ellas y puede llevar a un desperdicio de rastreo.
+NO_INDEX_IN_SITEMAP: Páginas no indexables incluidas en el sitemap
+NO_INDEX_IN_SITEMAP_DESC: Las páginas no indexables no deben incluirse en un sitemap, ya que esto envía una señal mixta a los motores de búsqueda. También pueden ralentizar el proceso de rastreo y llevar a una indexación incorrecta.
+BLOCKED_IN_SITEMAP: Páginas bloqueadas incluidas en el sitemap
+BLOCKED_IN_SITEMAP_DESC: Las páginas bloqueadas por el archivo robots.txt no deben incluirse en el sitemap, ya que esto envía una señal mixta a los motores de búsqueda. También pueden ralentizar el proceso de rastreo y llevar a una indexación incorrecta.
+NON_CANONICAL_IN_SITEMAP: Páginas no canónicas incluidas en el sitemap
+NON_CANONICAL_IN_SITEMAP_DESC: Las páginas no canónicas no deben incluirse en un sitemap, ya que pueden inducir a error a los motores de búsqueda, desperdiciar tiempo y recursos, y llevar a una indexación incorrecta.
+INCOMING_FOLLOW_NOFOLLOW: Páginas con enlaces entrantes follow y nofollow
+INCOMING_FOLLOW_NOFOLLOW_DESC: Tener páginas con enlaces entrantes internos follow y nofollow puede diluir las señales de autoridad y relevancia, confundiendo a los motores de búsqueda y haciendo que sea menos probable que ocupen un lugar destacado en los resultados de búsqueda.
+INVALID_LANG: Páginas con atributo de idioma no válido
+INVALID_LANG_DESC: Las páginas con un atributo de idioma no válido pueden causar problemas tanto para los motores de búsqueda como para los usuarios. Los motores de búsqueda pueden tener dificultades para identificar el idioma del contenido, mientras que los usuarios pueden tener problemas para entenderlo o usar tecnologías de asistencia.
+HTTP_SCHEME: Páginas que usan el esquema HTTP
+HTTP_SCHEME_DESC: Páginas que usan HTTP en lugar de HTTPS. Usar HTTPS es importante, ya que puede proporcionar un sitio web más seguro y confiable, lo que puede llevar a una mejor participación del usuario y rankings en los motores de búsqueda.
+DEAD_END: Páginas sin salida
+DEAD_END_DESC: Una página sin salida es una página web que no tiene ningún enlace que apunte a otras páginas. Esto significa que los usuarios y los motores de búsqueda no tienen forma de navegar más allá de la página actual, lo que dificulta la exploración del sitio y afecta tanto a la experiencia del usuario como a la capacidad de rastreo del sitio.
+ERROR_CANONICALIZED_NON_INDEXABLE: Canonicalizadas a páginas no indexables
+ERROR_CANONICALIZED_NON_INDEXABLE_DESC: Páginas canonicalizadas a otras páginas no indexables. Esto esencialmente le dice a los motores de búsqueda que la página no indexable es la versión preferida del contenido, lo que puede llevar a confusión y hacer que el contenido sea menos probable de ser descubierto por los usuarios.
+ERROR_HREFLANG_REDIRECT: Hreflang a redirección
+ERROR_HREFLANG_REDIRECT_DESC: Páginas que tienen enlaces hreflang a páginas que se redirigen con códigos de estado en el rango 30x. Esto puede crear confusión para los motores de búsqueda, que pueden tener dificultades para entender la relación entre la página original y la página redirigida.
+ERROR_CANONICAL_REDIRECT: Canonicalizadas a redirección
+ERROR_CANONICAL_REDIRECT_DESC: Páginas que están canonicalizadas a URLs redirigidas en lugar de apuntar a la versión preferida real de la página. Esto puede confundir a los motores de búsqueda que intentan navegar y entender tu sitio web.
+ERROR_HREFLANG_ERROR: Hreflang a error
+ERROR_HREFLANG_ERROR_DESC: Páginas que tienen etiquetas hreflang que apuntan a URLs que devuelven errores con códigos de estado en el rango 40x o 50x. Esto hace imposible que los motores de búsqueda indexen correctamente las diferentes versiones de tu página, lo que puede afectar tu ranking en los motores de búsqueda.
+ERROR_CANONICAL_ERROR: Canonicalizadas a error
+ERROR_CANONICAL_ERROR_DESC: Páginas que están canonicalizadas a URLs que devuelven errores con códigos de estado en el rango 40x o 50x. Esto puede confundir a los motores de búsqueda, que no podrán rastrear tu versión preferida de la página.
+ERROR_MULTIPLE_CANONICAL_TAGS: Múltiples etiquetas canónicas
+ERROR_MULTIPLE_CANONICAL_TAGS_DESC: Páginas que contienen más de una etiqueta canónica en la sección de encabezado. Tener más de una canónica confunde a los motores de búsqueda sobre la versión preferida de la página, lo que puede llevar a problemas de indexación y ranking.
+ERROR_RELATIVE_CANONICAL_URL: Canónica con URL relativa
+ERROR_RELATIVE_CANONICAL_URL_DESC: Páginas que usan URLs relativas en la etiqueta canónica. Aunque algunas rutas relativas son compatibles con algunos motores de búsqueda, pueden causar problemas a largo plazo, como una indexación y ranking inadecuados de la página. Considera usar URLs absolutas como mejor práctica.
+ERROR_HREFLANG_XDEFAULT: Falta la etiqueta de idioma predeterminado
+ERROR_HREFLANG_XDEFAULT_DESC: Páginas a las que les falta el valor "x-default" de hreflang. Indicar el idioma o región predeterminada de una página asegura una indexación adecuada para los usuarios que no coinciden con ningún valor específico de hreflang.
+ERROR_HREFLANG_SELF_REFERENCE: Falta la autorreferencia hreflang
+ERROR_HREFLANG_SELF_REFERENCE_DESC: Incluir una autorreferencia en las etiquetas hreflang es crucial para especificar el idioma o región de la página actual, evitando una posible confusión para los motores de búsqueda.
+ERROR_HREFLANG_MISMATCHING_LANG: Idioma no coincidente
+ERROR_HREFLANG_MISMATCHING_LANG_DESC: Usar diferentes códigos de idioma en el atributo lang de HTML y el valor de autorreferencia hreflang puede confundir a los motores de búsqueda y afectar negativamente al SEO al interpretar incorrectamente el idioma o región de la página.
+ERROR_HREFLANG_RELATIVE_URL: Valores hreflang con URLs relativas
+ERROR_HREFLANG_RELATIVE_URL_DESC: Páginas que usan URLs relativas en los valores hreflang. Las URLs alternativas en las etiquetas hreflang deben ser absolutas. Reemplázalas para evitar problemas de rastreo e identificación incorrecta del idioma de la página.
+ERROR_CANONICAL_MISMATCH: Desajuste canónico
+ERROR_CANONICAL_MISMATCH_DESC: Páginas con diferentes URLs canónicas en el código HTML y los encabezados HTTP. Establecer diferentes URLs canónicas en el código HTML y los encabezados HTTP crea inconsistencias y puede confundir a los motores de búsqueda, lo que puede resultar en una reducción de los rankings y la visibilidad en los motores de búsqueda.
+ERROR_MISSING_HSTS: Falta el encabezado HSTS
+ERROR_MISSING_HSTS_DESC: Páginas sin encabezado HSTS. La falta del encabezado HTTP Strict Transport Security hace que los sitios sean más vulnerables a amenazas de seguridad, lo que puede impactar en el SEO en términos de seguridad del usuario y confiabilidad.
+ERROR_MISSING_CSP: Falta la política de seguridad de contenido
+ERROR_MISSING_CSP_DESC: Páginas a las que les falta la metaetiqueta o encabezado HTTP de CSP (Content Security Policy) aumentan la vulnerabilidad a amenazas de seguridad, lo que potencialmente puede llevar a contenido malicioso o experiencias de usuario comprometidas, que los motores de búsqueda pueden penalizar.
+ERROR_CONTENT_TYPE_OPTIONS: Falta las opciones de tipo de contenido
+ERROR_CONTENT_TYPE_OPTIONS_DESC: Páginas a las que les falta el encabezado X-Content-Type-Options, exponiendo el sitio web a riesgos de seguridad de tipo de contenido, lo que puede llevar a penalizaciones de SEO y experiencias de usuario inseguras.
+ERROR_LARGE_IMAGE: Imágenes grandes
+ERROR_LARGE_IMAGE_DESC: Las imágenes grandes pueden ralentizar la velocidad de carga de una página web, afectando negativamente la experiencia del usuario y los rankings de SEO debido a los tiempos de carga aumentados. Considera usar imágenes grandes solo cuando sean esenciales y optimízalas a un tamaño razonable.
+ERROR_LONG_ALT_TEXT: Imágenes con texto alternativo largo
+ERROR_LONG_ALT_TEXT_DESC: Páginas que tienen imágenes con texto largo en el atributo alt. Tener un texto largo en el atributo alt de una imagen puede hacer que sea más difícil entender el contenido y propósito de la imagen. Intenta mantener el texto alternativo corto y al punto.
+ERROR_MULTIPLE_TITLES: Múltiples etiquetas de título
+ERROR_MULTIPLE_TITLES_DESC: Páginas con más de una etiqueta de título en la sección de encabezado. Tener múltiples etiquetas de título en el encabezado HTML puede perjudicar el SEO al confundir a los motores de búsqueda, ya que puede hacer que sea más difícil entender el contenido de la página.
+ERROR_MULTIPLE_DESCRIPTIONS: Múltiples metaetiquetas de descripción
+ERROR_MULTIPLE_DESCRIPTIONS_DESC: Páginas con más de una metaetiqueta de descripción en la sección de encabezado. Tener múltiples metaetiquetas de descripción en el encabezado HTML puede perjudicar el SEO al confundir a los motores de búsqueda, ya que puede hacer que sea más difícil entender el contenido de la página.
+ERROR_PAGE_DEPTH: Profundidad alta
+ERROR_PAGE_DEPTH_DESC: Las páginas con una profundidad alta pueden impactar negativamente el SEO y la experiencia del usuario, ya que son difíciles de acceder tanto para los motores de búsqueda como para los usuarios, lo que potencialmente lleva a una menor visibilidad en los resultados de búsqueda y una experiencia de navegación menos intuitiva.
+ERROR_MULTIPLE_LANG_REFERENCE: Referencias a múltiples idiomas
+ERROR_MULTIPLE_LANG_REFERENCE_DESC: Páginas con múltiples idiomas referenciados en las etiquetas hreflang pueden confundir a los motores de búsqueda, llevando a una indexación incorrecta del idioma, lo que puede afectar negativamente al SEO y la experiencia del usuario.
+ERROR_DUPLICATED_CONTENT: Contenido duplicado
+ERROR_DUPLICATED_CONTENT_DESC: Páginas con el mismo contenido exacto pueden confundir a los motores de búsqueda y hacer que les resulte difícil determinar la página más relevante, lo que lleva a problemas de indexación, ranking diluido y un desperdicio del presupuesto de rastreo.
+ERROR_EXTERNAL_LINK_REDIRECT: Páginas con enlaces externos a URLs redirigidas
+ERROR_EXTERNAL_LINK_REDIRECT_DESC: Los enlaces externos a páginas redirigidas no afectarán los rankings de tu sitio en los motores de búsqueda, pero pueden afectar la experiencia del usuario. Para solucionarlo, reemplaza los enlaces con sus destinos finales.
+ERROR_EXTERNAL_LINK_BROKEN: Páginas con enlaces externos rotos
+ERROR_EXTERNAL_LINK_BROKEN_DESC: Los enlaces externos rotos no impactan en los rankings de tu sitio en los motores de búsqueda, pero pueden frustrar a los usuarios al llevarlos a páginas inexistentes. Soluciona esto eliminando o actualizando el enlace con la URL correcta.
+ERROR_TIMEOUT: Tiempo de espera agotado
+ERROR_TIMEOUT_DESC: Páginas que agotaron el tiempo de espera cuando nuestro rastreador intentó acceder a ellas. Cuando esto ocurre, los rastreadores de los motores de búsqueda pueden fallar al acceder e indexar el contenido, sugiriendo posibles problemas del servidor o problemas temporales que obstaculizan la visibilidad en los resultados de búsqueda.
+ERROR_UNDERSCORE_URL: URLs con caracteres de guión bajo
+ERROR_UNDERSCORE_URL_DESC: Generalmente no se recomienda usar caracteres de guión bajo en las URLs, ya que algunos motores de búsqueda los ignoran y tratan esa parte como una sola palabra. Usa un guión como carácter separador de palabras.
+ERROR_SLOW_TTFB: Tiempo hasta el primer byte lento
+ERROR_SLOW_TTFB_DESC: Un tiempo hasta el primer byte lento puede impactar negativamente en la experiencia del usuario y perjudicar el SEO al causar tiempos de carga de página más largos, ya que algunos motores de búsqueda consideran la velocidad de la página como un factor de ranking.
+ERROR_HTTP_FORM: Formularios en páginas HTTP
+ERROR_HTTP_FORM_DESC: Páginas HTTP con formularios. Tener un formulario en una URL HTTP compromete la seguridad, reduciendo la confianza del usuario y los rankings de SEO. Asegúrate de que tus formularios estén en páginas HTTPS.
+ERROR_INSECURE_FORM: Formularios inseguros
+ERROR_INSECURE_FORM_DESC: Páginas que tienen formularios con URLs de acción HTTP. Un formulario con una URL de acción HTTP expone los datos a la interceptación, reduce la confianza, activa advertencias del navegador y afecta negativamente los rankings de SEO.
+ERROR_SPACE_URL: URLs que contienen un espacio
+ERROR_SPACE_URL_DESC: Tener un carácter de espacio en la URL puede causar problemas de indexación y enlaces rotos, afectando negativamente al SEO y la experiencia del usuario. Deben usarse guiones como separador de palabras en lugar de espacios.
+ERROR_MULTIPLE_SLASHES: URLs con múltiples barras en la ruta
+ERROR_MULTIPLE_SLASHES_DESC: URLs con múltiples barras consecutivas en la ruta. Esto puede crear confusión para los motores de búsqueda y los usuarios, lo que potencialmente lleva a problemas de indexación y una apariencia menos limpia y profesional.
+ERROR_NOIMAGEINDEX: Páginas con la regla noimageindex
+ERROR_NOIMAGEINDEX_DESC: La regla noimageindex en la metaetiqueta robots impide que las imágenes sean indexadas por los motores de búsqueda. Revisa estas páginas para asegurarte de que las imágenes en ellas no deban ser indexadas.
+ERROR_PICTURE_MISSONG_IMG: Páginas con elementos picture que faltan la etiqueta img
+ERROR_PICTURE_MISSONG_IMG_DESC: Páginas que usan un elemento HTML picture al que le falta la etiqueta img. Esto puede hacer que las imágenes no se muestren correctamente en el navegador y causar problemas de indexación de imágenes en los motores de búsqueda.
+ERROR_METAS_IN_BODY: Páginas con metaetiquetas en el cuerpo del documento
+ERROR_METAS_IN_BODY_DESC: Páginas que tienen metaetiquetas en el cuerpo del documento. Las metaetiquetas deben colocarse en la sección head del documento; de lo contrario, pueden ser ignoradas por los navegadores y los motores de búsqueda, causando problemas de indexabilidad.
+ERROR_NOSNIPPET: Páginas con la directiva nosnippet
+ERROR_NOSNIPPET_DESC: Las directivas nosnippet o max-snippet:0 indican a los motores de búsqueda que no muestren un fragmento de texto o vista previa de vídeo en los resultados de búsqueda. Revisa estas páginas para asegurarte de que este sea el comportamiento deseado.
+ERROR_IMG_SIZE_ATTR: Páginas que contienen imágenes sin atributos de tamaño
+ERROR_IMG_SIZE_ATTR_DESC: No establecer los atributos de tamaño para las imágenes puede causar cambios de diseño a medida que se carga la página, lo que puede afectar negativamente la experiencia del usuario y el SEO. Asegúrate de que tus imágenes tengan los atributos de tamaño correspondientes.
+ERROR_INCORRECT_MEDIA_TYPE: URLs con tipo de medio incorrecto
+ERROR_INCORRECT_MEDIA_TYPE_DESC: Tener URLs con tipos MIME incorrectos puede perjudicar el SEO al hacer que los navegadores interpreten mal o no logren renderizar el contenido, lo que puede impactar la experiencia del usuario y la indexación de los motores de búsqueda.
+ERROR_DUPLICATED_ID: Páginas que contienen elementos con IDs duplicados
+ERROR_DUPLICATED_ID_DESC: Tener elementos con IDs duplicados confunde a las tecnologías de asistencia y a JavaScript, lo que lleva a problemas de navegación y comportamientos impredecibles. Esto podría afectar la experiencia del usuario y el SEO. Asegúrate de que los IDs sean únicos.
+ERROR_MISSING_VIEWPORT: Páginas sin la metaetiqueta viewport
+ERROR_MISSING_VIEWPORT_DESC: Una página web sin la metaetiqueta viewport no se mostrará correctamente en dispositivos móviles, lo que lleva a una mala experiencia de usuario y rankings más bajos en los resultados de los motores de búsqueda.
+ERROR_DOM_SIZE: Documentos HTML con un tamaño de DOM excesivo
+ERROR_DOM_SIZE_DESC: Páginas con un tamaño de DOM alto pueden ralentizar los tiempos de carga y dificultar que los motores de búsqueda rastreen e indexen el contenido de manera eficiente. Simplifica la estructura de tu HTML eliminando elementos innecesarios y minimizando el uso de etiquetas anidadas.
+ERROR_PAGINATION_LINKS: URL de paginación no enlazada
+ERROR_PAGINATION_LINKS_DESC: Tener etiquetas link rel="next" y link rel="prev" sin enlaces correspondientes en el cuerpo confunde a los motores de búsqueda, lo que lleva a una indexación deficiente y una experiencia de navegación frustrante.
+ERROR_LOCALHOST_LINKS: Páginas web con enlaces a localhost
+ERROR_LOCALHOST_LINKS_DESC: Los enlaces a localhost o 127.0.0.1 son inaccesibles para los usuarios y los motores de búsqueda, causando errores y un mal SEO. Para solucionarlo, reemplaza estos enlaces con las URLs públicas correctas que apunten a tu sitio web en vivo.

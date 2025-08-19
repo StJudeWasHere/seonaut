@@ -20,6 +20,7 @@ type (
 
 var timeLocales = map[string]monday.Locale{
 	"en": monday.LocaleEnUS,
+	"es": monday.LocaleEsES,
 }
 
 // NewTranslator will load a translation file and return a new template renderer.

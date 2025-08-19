@@ -36,6 +36,19 @@
 			</div>
 		</div>
 
+		<div class="box">
+			<div class="col col-main">
+				<div class="content">
+					<h2>{{ trans "SITE_ISSUES" }}</h2>
+					<p>{{ TRANS "ISSUES_MESSAGE" .ProjectView.Crawl.CriticalIssues .ProjectView.Crawl.AlertIssues }}</p>
+				</div>
+			</div>
+
+			<div class="col col-actions">
+				<a class="icon-text highlight borderless main" href="/issues?pid={{ .ProjectView.Project.Id }}">{{ trans "VIEW_ISSUES" }}</a>
+			</div>
+		</div>
+
 		<div class="box box-highlight soft">
 			<div class="col">
 				<div class="content">
@@ -226,14 +239,6 @@
 					<h2>{{ trans "EXPLORE_ISSUES" }}</h2>
 					<p>{{ trans "EXPLORE_ISSUES_MESSAGE" }} </p>
 					<p><a href="/issues?pid={{ .ProjectView.Project.Id }}">{{ trans "SITE_ISSUES_LINK" }}</a></p>
-				</div>
-			</div>
-
-			<div class="col">
-				<div class="content">
-					<h2>{{ trans "DIVE_INTO_DETAILS" }}</h2>
-					<p>{{ trans "DIVE_INTO_DETAILS_MESSAGE" }}</p>
-					<p><a href="/explorer?pid={{ .ProjectView.Project.Id }}">{{ trans "PAGE_DETAILS_LINK" }}</a></p>
 				</div>
 			</div>
 

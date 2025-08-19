@@ -62,6 +62,8 @@ REPLAY_BANNER: You're viewing an archived version of this page
 ## SITE ISSUES
 
 SITE_ISSUES: Site Issues
+VIEW_ISSUES: View Issues
+ISSUES_MESSAGE: "%1% critical issues and %2% alerts have been detected on this site."
 DOWNLOAD_URLS: Download URLs
 NO_ISSUES: Everything is ok
 
@@ -85,11 +87,8 @@ WAIT_BEFORE_DELETING: Please wait for the process to finish before deleting your
 ## ISSUES
 
 NO_ISSUES_MESSAGE: SEOnaut didn't detect any issues on your site.
-CRITICALS: "%1% Critical"
 CRITICAL_MESSAGE: "Fix these first. They're likely hurting your rankings."
-ALERTS: "%1% Alerts"
 ALERTS_MESSAGE: Fixing these can help improve your site's SEO performance.
-WARNINGS: "%1% Warnings"
 WARNINGS_MESSAGE: These issues may not be significant depending on your goals, but they're worth monitoring.
 PASSED_CHECKS: Passed Issue Checks
 PASSED_CHECKS_MESSAGE: Your site has successfully passed the following checks.
@@ -144,8 +143,6 @@ NEXT_ACTIONS: Next Actions
 EXPLORE_ISSUES: Explore Site Issues
 EXPLORE_ISSUES_MESSAGE: Uncover issues impacting your website's performance.
 SITE_ISSUES_LINK: Site Issues
-DIVE_INTO_DETAILS: Dive into Page Details
-DIVE_INTO_DETAILS_MESSAGE: Get detailed insights into specific URLs.
 PAGE_DETAILS_LINK: Page Details
 ANALYZE_DATA: Analyze Raw Data
 ANALYZE_DATA_MESSAGE: Export your data for further analysis and reporting.
@@ -233,23 +230,23 @@ ADD_PROJECT: Add Project
 URL_LABEL: "URL:"
 URL_LABEL_MESSAGE: Full project URL including http:// or https://
 URL_NOT_VALID: The URL is not valid.
-IGNORE_ROBOTS_LABEL: Ignore robots.txt
+IGNORE_ROBOTS_CHECKBOX: Ignore robots.txt
 IGNORE_ROBOTS_HELP: If checked the crawler will bypass any restriction you have set in your robots file.
-FOLLOW_NOFOLLOW_LABEL: Follow nofollow internal links
+FOLLOW_NOFOLLOW_CHECKBOX: Follow nofollow internal links
 FOLLOW_NOFOLLOW_HELP: If checked the crawler will ignore the nofollow attribute in links and robots meta tag.
-INCLUDE_NOINDEX_LABEL: Include noindex pages in the report
+INCLUDE_NOINDEX_CHECKBOX: Include noindex pages in the report
 INCLUDE_NOINDEX_HELP: If checked the pages with the noindex attribute will also be included in the report.
-CRAWL_SITEMAP_LABEL: Crawl sitemap
+CRAWL_SITEMAP_CHECKBOX: Crawl sitemap
 CRAWL_SITEMAP_HELP: If checked the URLs in the sitemap.xml will also be crawled.
-ALLOW_SUBDOMAINS_LABEL: Allow subdomains
+ALLOW_SUBDOMAINS_CHECKBOX: Allow subdomains
 ALLOW_SUBDOMAINS_HELP: If checked the crawler will also crawl URLs from subdomains.
-CHECK_EXTERNAL_LINKS_LABEL: Check External Links
+CHECK_EXTERNAL_LINKS_CHECKBOX: Check External Links
 CHECK_EXTERNAL_LINKS_HELP: If checked the crawler will look for broken external links.
-CREATE_WACZ_LABEL: Create WACZ archive
+CREATE_WACZ_CHECKBOX: Create WACZ archive
 CREATE_WACZ_HELP: If checked a WACZ archive will be created and available as an export option.
-USE_AUTH_LABEL: Use HTTP Basic Authentication
+USE_AUTH_CHECKBOX: Use HTTP Basic Authentication
 USE_AUTH_HELP: Check this option if your site is password protected with HTTP Basic Auth.
-CUSTOM_USERAGENT_LABEL: Custom User-Agent
+CUSTOM_USERAGENT_CHECKBOX: Custom User-Agent
 CUSTOM_USERAGENT_HELP: Set a custom User-Agent for SEOnaut's crawler when fetching URLs.
 ENTER_USERAGENT_LABEL: "Enter your custom User-Agent string:"
 USERAGENT_NOT_VALID: The User-Agent is not valid.

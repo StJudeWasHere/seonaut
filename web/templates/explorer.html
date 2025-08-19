@@ -24,7 +24,7 @@
 		<div class="col col-main borderless">
 			<div class="content">
 				<form action="/explorer" method="GET">
-					<label for="term">{{ trans "SEARCH_TERM" }}</label>
+					<label for="term">{{ trans "SEARCH_TERM_LABEL" }}</label>
 					<input type="hidden" name="p" value="1">
 					<input type="hidden" name="pid" value="{{ .ProjectView.Project.Id }}">
 					<input type="text" name="term" value="{{ .Term }}"> 

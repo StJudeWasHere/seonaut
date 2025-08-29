@@ -12,12 +12,13 @@
 }
 
 .logo a {
-	color: var(--secondary-color);
+	color: var(--main-bg-color);
 	text-decoration: none;
 	font-size: 1rem;
 	font-weight: 600;
 	border: none;
 }
+
 .logo a:hover {
 	text-decoration: none;
 }

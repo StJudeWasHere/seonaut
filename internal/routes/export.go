@@ -49,6 +49,7 @@ func (h *exportHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	h.Renderer.RenderTemplate(w, "export", &PageView{
 		User:      *user,
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		PageTitle: "EXPORT_VIEW_PAGE_TITLE",
 		Data: struct {
 			Project       models.Project

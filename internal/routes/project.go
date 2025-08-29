@@ -37,7 +37,8 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	refresh := h.ProjectViewService.UserIsProcessingProjects(user.Id)
 
 	v := &PageView{
-		Lang: user.Lang,
+		Lang:  user.Lang,
+		Theme: user.Theme,
 		Data: struct {
 			Projects []models.ProjectView
 		}{
@@ -62,6 +63,7 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		User:      *user,
 		PageTitle: "ADD_PROJECT_PAGE_TITLE",
 		Data: &struct {
@@ -158,6 +160,7 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		pageView := &PageView{
 			Lang:      user.Lang,
+			Theme:     user.Theme,
 			User:      *user,
 			PageTitle: "ADD_PROJECT_PAGE_TITLE",
 			Data: &struct {
@@ -238,6 +241,7 @@ func (h *projectHandler) editGetHandler(w http.ResponseWriter, r *http.Request) 
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		User:      *user,
 		PageTitle: "EDIT_PROJECT_PAGE_TITLE",
 		Data:      data,
@@ -330,6 +334,7 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		pageView := &PageView{
 			Lang:      user.Lang,
+			Theme:     user.Theme,
 			User:      *user,
 			PageTitle: "EDIT_PROJECT_PAGE_TITLE",
 			Data: &struct {

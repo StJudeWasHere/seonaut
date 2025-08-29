@@ -87,6 +87,7 @@ func (h *resourceHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		Data:      data,
 		User:      *user,
 		PageTitle: "RESOURCES_VIEW_" + strings.ToUpper(tab) + "_PAGE_TITLE",

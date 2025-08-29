@@ -46,6 +46,7 @@ LANGUAGE_LABEL: "زبان:"
 CHANGE_PASSWORD: تغییر رمز عبور
 DELETE_ACCOUNT_MESSAGE: "اگر دیگر تمایلی به استفاده از SEOnaut ندارید، می‌توانید حساب کاربری خود را در اینجا حذف کنید."
 DELETE_ACCOUNT_MESSAGE_CONFIRMATION: "قبل از ادامه، تأییدیه درخواست خواهد شد."
+THEME_LABEL: "تم:"
 
 # =============================================
 # CONTEXT: Delete user account page

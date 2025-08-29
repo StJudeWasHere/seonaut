@@ -10,6 +10,6 @@
 	</title>
 	<link rel="stylesheet" href="/resources/style.css">
 </head>
-<body{{ if (is_rtl .Lang) }} class="rtl"{{ end }}>
+<body class="{{ .Theme }}{{ if (is_rtl .Lang) }} rtl{{ end }}">
 <div id="main" class="credentials borderless">
 {{ end }}

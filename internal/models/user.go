@@ -5,4 +5,5 @@ type User struct {
 	Email    string
 	Password string
 	Lang     string
+	Theme    string
 }

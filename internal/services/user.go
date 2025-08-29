@@ -33,12 +33,12 @@ type (
 	DeleteHook func(user *models.User)
 
 	UserServiceRepository interface {
-		UserSignup(email, hashedPassword, lang string) (*models.User, error)
+		UserSignup(email, hashedPassword, lang, theme string) (*models.User, error)
 		FindUserByEmail(email string) (*models.User, error)
 		UserUpdatePassword(email, hashedPassword string) error
 		DeleteUser(user *models.User) error
 		DisableUser(user *models.User) error
-		UserUpdateLang(user *models.User, lang string) error
+		UserUpdateSettings(user *models.User, lang, theme string) error
 	}
 
 	TranslatorService interface {
@@ -61,7 +61,7 @@ func NewUserService(r UserServiceRepository, t TranslatorService) *UserService {
 
 // SignUp validates the user email and password, if they are both valid creates a password hash
 // before storing it. If succesful, it returns the new user, otherwise an error is returned.
-func (s *UserService) SignUp(email, password, lang string) (*models.User, error) {
+func (s *UserService) SignUp(email, password, lang, theme string) (*models.User, error) {
 	_, err := s.repository.FindUserByEmail(email)
 	if err == nil {
 		return nil, ErrUserExists
@@ -81,7 +81,11 @@ func (s *UserService) SignUp(email, password, lang string) (*models.User, error)
 		return nil, err
 	}
 
-	return s.repository.UserSignup(email, string(hashedPassword), lang)
+	if theme != "dark" {
+		theme = "light"
+	}
+
+	return s.repository.UserSignup(email, string(hashedPassword), lang, theme)
 }
 
 // SignIn validates the provided email and password combination for user authentication.
@@ -126,12 +130,16 @@ func (s *UserService) UpdatePassword(user *models.User, currentPassword, newPass
 
 // UpdatePassword updates the password for the user with the given email.
 // It validates the new password and generates a hashed password using bcrypt before storing it.
-func (s *UserService) UpdateLang(user *models.User, lang string) error {
+func (s *UserService) UpdateUserSettings(user *models.User, lang, theme string) error {
 	if !s.translator.LangIsSupported(lang) {
 		return ErrInvalidLang
 	}
 
-	err := s.repository.UserUpdateLang(user, lang)
+	if theme != "dark" {
+		theme = "light"
+	}
+
+	err := s.repository.UserUpdateSettings(user, lang, theme)
 	if err != nil {
 		return err
 	}

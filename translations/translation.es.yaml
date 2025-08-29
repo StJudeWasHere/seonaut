@@ -156,7 +156,7 @@ HTTPS: HTTPS
 MEDIA_TYPE: Tipo de medio
 STATUS_CODE: Código de estado
 STATUS_BY_DEPTH: Código de estado por profundidad
-NEXT_ACTIONS: Próximas acciones
+NEXT_ACTIONS: Siguientes acciones
 EXPLORE_ISSUES: Explorar problemas del sitio
 EXPLORE_ISSUES_MESSAGE: Descubre problemas que afectan al rendimiento de tu sitio web.
 SITE_ISSUES_LINK: Problemas del sitio
@@ -168,8 +168,8 @@ URL_CRAWLED: 1 URL rastreada.         # Singular
 URLS_CRAWLED: "%1% URLs rastreadas."  # Plural. %1% will be replaced with a number greater than 1
 CANONICAL: Canónica
 NON_CANONICAL: No canónica
-INDEX: Indexado
-NOINDEX: No indexado
+INDEX: Index
+NOINDEX: Noindex
 BLOCKED: Bloqueado
 WITH_ALT: Con texto alternativo
 WITHOUT_ALT: Sin texto alternativo
@@ -182,7 +182,7 @@ NOFOLLOW: Nofollow
 INTERNAL: Interno
 EXTERNAL: Externo
 TOTAL: Total
-SPONSORED: Patrocinado
+SPONSORED: Sponsored
 UGC: UGC
 SCHEME: Esquema
 

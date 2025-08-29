@@ -25,7 +25,7 @@ type (
 	}
 
 	ExportTranslator interface {
-		Trans(s string, args ...interface{}) string
+		Trans(lang, s string, args ...interface{}) string
 	}
 	Exporter struct {
 		repository ExportRepository
@@ -240,7 +240,7 @@ func (e *Exporter) ExportHreflangs(f io.Writer, crawl *models.Crawl) {
 }
 
 // Export all issues as a CSV file. It includes the URL, issue type and priority
-func (e *Exporter) ExportAllIssues(f io.Writer, crawl *models.Crawl) {
+func (e *Exporter) ExportAllIssues(lang string, f io.Writer, crawl *models.Crawl) {
 	w := csv.NewWriter(f)
 
 	w.Write([]string{
@@ -262,7 +262,7 @@ func (e *Exporter) ExportAllIssues(f io.Writer, crawl *models.Crawl) {
 
 		w.Write([]string{
 			v.Url,
-			e.translator.Trans(v.Type),
+			e.translator.Trans(lang, v.Type),
 			priority,
 		})
 	}

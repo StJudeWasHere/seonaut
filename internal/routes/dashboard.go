@@ -59,11 +59,11 @@ func (h *dashboardHandler) indexHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	pageView := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		Data:      data,
 		User:      *user,
 		PageTitle: "PROJECT_DASHBOARD_PAGE_TITLE",
 	}
 
-	h.Renderer.RenderTemplate(w, "dashboard", pageView)
+	h.Renderer.RenderTemplate(w, "dashboard", pageView, user.Lang)
 }

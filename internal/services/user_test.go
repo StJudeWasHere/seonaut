@@ -21,6 +21,12 @@ var testUser = &models.User{
 	Password: "$2a$10$REKj9zUr.reKqlKETKpq3OGGBhzyhQ2TQ3wOVnToroO.Qh3nuWziK",
 }
 
+type testTranslator struct{}
+
+func (ft *testTranslator) LangIsSupported(l string) bool {
+	return true
+}
+
 // Create a mock repository for the user service.
 // The repository only contains the testUSer.
 type userTestRepository struct {
@@ -36,7 +42,7 @@ func (s *userTestRepository) UserUpdatePassword(email, hashedPassword string) er
 
 	return nil
 }
-func (s *userTestRepository) UserSignup(e, p string) (*models.User, error) {
+func (s *userTestRepository) UserSignup(e, p, l string) (*models.User, error) {
 	return &models.User{}, nil
 }
 func (s *userTestRepository) FindUserByEmail(e string) (*models.User, error) {
@@ -56,8 +62,11 @@ func (s *userTestRepository) DeleteUser(u *models.User) error {
 func (s *userTestRepository) DisableUser(*models.User) error {
 	return nil
 }
+func (s *userTestRepository) UserUpdateLang(user *models.User, lang string) error {
+	return nil
+}
 
-var userService = services.NewUserService(&userTestRepository{})
+var userService = services.NewUserService(&userTestRepository{}, &testTranslator{})
 
 // TestSignup tests the SignUp method of the user service.
 // It verifies the behavior of the SignUp function for different input scenarios.
@@ -68,17 +77,18 @@ func TestSignup(t *testing.T) {
 	m := []struct {
 		email    string
 		password string
+		lang     string
 		err      error
 	}{
-		{"new_user@example.com", "valid_password", nil},               // Valid email and password. Expects no error.
-		{"new_user@example.com", "", services.ErrInvalidPassword},     // Empty password. Expects an error.
-		{"", "valid_password", services.ErrInvalidEmail},              // Empty email. Expects an error.
-		{"invalid_email", "valid_password", services.ErrInvalidEmail}, // Invalid email. Expects an error.
-		{email, password, services.ErrUserExists},                     // Email that already exists. Expects an error.
+		{"new_user@example.com", "valid_password", "en", nil},               // Valid email and password. Expects no error.
+		{"new_user@example.com", "", "en", services.ErrInvalidPassword},     // Empty password. Expects an error.
+		{"", "valid_password", "en", services.ErrInvalidEmail},              // Empty email. Expects an error.
+		{"invalid_email", "valid_password", "en", services.ErrInvalidEmail}, // Invalid email. Expects an error.
+		{email, password, "en", services.ErrUserExists},                     // Email that already exists. Expects an error.
 	}
 
 	for _, v := range m {
-		_, err := userService.SignUp(v.email, v.password)
+		_, err := userService.SignUp(v.email, v.password, v.lang)
 		if err != v.err {
 			t.Errorf("Signup '%s' password '%s' should error '%v': '%v'", v.email, v.password, v.err, err)
 		}

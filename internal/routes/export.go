@@ -48,7 +48,7 @@ func (h *exportHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	archiveExists := h.Container.ArchiveService.ArchiveExists(&pv.Project)
 	h.Renderer.RenderTemplate(w, "export", &PageView{
 		User:      *user,
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		PageTitle: "EXPORT_VIEW_PAGE_TITLE",
 		Data: struct {
 			Project       models.Project
@@ -57,7 +57,7 @@ func (h *exportHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 			Project:       pv.Project,
 			ArchiveExists: archiveExists,
 		},
-	})
+	}, user.Lang)
 }
 
 // csvHandler exports the pagereports of a specific project as a CSV file by issue type.
@@ -162,7 +162,9 @@ func (h *exportHandler) resourcesHandler(w http.ResponseWriter, r *http.Request)
 		"audios":    h.ExportService.ExportAudios,
 		"videos":    h.ExportService.ExportVideos,
 		"hreflangs": h.ExportService.ExportHreflangs,
-		"issues":    h.ExportService.ExportAllIssues,
+		"issues": func(w io.Writer, c *models.Crawl) {
+			h.ExportService.ExportAllIssues(user.Lang, w, c)
+		},
 	}
 
 	e, ok := m[t]

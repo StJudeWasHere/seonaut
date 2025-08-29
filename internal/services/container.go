@@ -53,11 +53,11 @@ func NewContainer(configFile string) *Container {
 	c.InitIssueService()
 	c.InitReportService()
 	c.InitReportManager()
+	c.InitTranslator()
 	c.InitUserService()
 	c.InitDashboardService()
 	c.InitProjectService()
 	c.InitProjectViewService()
-	c.InitTranslator()
 	c.InitExportService()
 	c.InitCrawlerService()
 	c.InitRenderer()
@@ -152,7 +152,7 @@ func (c *Container) InitReportManager() {
 
 // Create the user service.
 func (c *Container) InitUserService() {
-	c.UserService = NewUserService(c.userRepository)
+	c.UserService = NewUserService(c.userRepository, c.Translator)
 }
 
 // Create the Project service.

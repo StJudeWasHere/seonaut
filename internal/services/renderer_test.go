@@ -10,11 +10,11 @@ import (
 
 type TestTranslator struct{}
 
-func (t *TestTranslator) Trans(s string, args ...interface{}) string {
+func (t *TestTranslator) Trans(lang, s string, args ...interface{}) string {
 	return s
 }
 
-func (t *TestTranslator) TransDate(d time.Time, f string) string {
+func (t *TestTranslator) TransDate(lang string, d time.Time, f string) string {
 	return d.Format(f)
 }
 
@@ -28,8 +28,8 @@ func TestRenderer(t *testing.T) {
 
 	eb := new(bytes.Buffer)
 	e := "Page Title: Test Title"
-
-	r.RenderTemplate(eb, "test", &struct{ PageTitle string }{PageTitle: "Test Title"})
+	lang := "en"
+	r.RenderTemplate(eb, "test", &struct{ PageTitle string }{PageTitle: "Test Title"}, lang)
 	if eb.String() != e {
 		t.Errorf("renderer %s != %s", eb.String(), e)
 	}

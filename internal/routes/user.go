@@ -24,7 +24,7 @@ func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
 		}{},
 	}
 
-	h.Renderer.RenderTemplate(w, "signup", pageView)
+	h.Renderer.RenderTemplate(w, "signup", pageView, pageView.Lang)
 }
 
 // signupPostHandler handles the POST request of the signup form.
@@ -40,8 +40,9 @@ func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) 
 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
+	lang := h.Container.Config.UIConfig.Language
 
-	u, err := h.UserService.SignUp(email, password)
+	u, err := h.UserService.SignUp(email, password, lang)
 	if err != nil {
 		errorMsg := "The email address or password is not valid."
 		switch err {
@@ -53,7 +54,7 @@ func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) 
 			log.Printf("sign up error: %v", err)
 		}
 		pageView := &PageView{
-			Lang:      h.Container.Config.UIConfig.Language,
+			Lang:      lang,
 			PageTitle: "SIGNUP_VIEW_PAGE_TITLE",
 			Data: &struct {
 				Email        string
@@ -66,7 +67,7 @@ func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) 
 			},
 		}
 
-		h.Renderer.RenderTemplate(w, "signup", pageView)
+		h.Renderer.RenderTemplate(w, "signup", pageView, pageView.Lang)
 		return
 	}
 
@@ -85,7 +86,7 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		PageTitle: "DELETE_ACCOUNT_VIEW_PAGE_TITLE",
 		User:      *user,
 		Data: &struct {
@@ -95,7 +96,7 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	h.Renderer.RenderTemplate(w, "delete_account", pageView)
+	h.Renderer.RenderTemplate(w, "delete_account", pageView, user.Lang)
 }
 
 // deletePostHandler handles the POST request to delete an account.
@@ -134,7 +135,7 @@ func (h *userHandler) signinGetHandler(w http.ResponseWriter, r *http.Request) {
 		}{},
 	}
 
-	h.Renderer.RenderTemplate(w, "signin", pageView)
+	h.Renderer.RenderTemplate(w, "signin", pageView, pageView.Lang)
 }
 
 // signinGetHandler handles the HTTP POST request for the sign-in functionality.
@@ -166,7 +167,7 @@ func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) 
 			},
 		}
 
-		h.Renderer.RenderTemplate(w, "signin", pageView)
+		h.Renderer.RenderTemplate(w, "signin", pageView, pageView.Lang)
 		return
 	}
 
@@ -184,7 +185,7 @@ func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 		User:      *user,
 		Data: &struct {
@@ -193,7 +194,7 @@ func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
 		}{},
 	}
 
-	h.Renderer.RenderTemplate(w, "account", pageView)
+	h.Renderer.RenderTemplate(w, "account", pageView, user.Lang)
 }
 
 // editPostHandler handles the HTTP POST request for the account edit page.
@@ -201,6 +202,77 @@ func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
 // updating it with a new one.
 // In case of error the data's Error and ErrorMessage are populated for the template.
 func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	err := r.ParseForm()
+	if err != nil {
+		http.Redirect(w, r, "/signin", http.StatusSeeOther)
+		return
+	}
+
+	formLang := r.FormValue("language")
+
+	err = h.UserService.UpdateLang(user, formLang)
+	if err != nil {
+		errorMsg := "An error occurred. Please try again."
+		switch err {
+		case services.ErrInvalidLang:
+			errorMsg = "New password is not valid."
+		default:
+			log.Printf("update password user id %d error: %v", user.Id, err)
+		}
+
+		pageView := &PageView{
+			Lang:      user.Lang,
+			PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
+			User:      *user,
+			Data: &struct {
+				Error        bool
+				ErrorMessage string
+			}{
+				Error:        true,
+				ErrorMessage: errorMsg,
+			},
+		}
+
+		h.Renderer.RenderTemplate(w, "account", pageView, user.Lang)
+		return
+	}
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
+}
+
+// changePasswordGetHandler handles the HTTP GET request for the password change page.
+// It renders the password management form with the appropriate data.
+func (h *userHandler) changePasswordGetHandler(w http.ResponseWriter, r *http.Request) {
+	user, ok := h.CookieSession.GetUser(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	pageView := &PageView{
+		Lang:      user.Lang,
+		PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
+		User:      *user,
+		Data: &struct {
+			Error        bool
+			ErrorMessage string
+		}{},
+	}
+
+	h.Renderer.RenderTemplate(w, "change_password", pageView, user.Lang)
+}
+
+// changePasswordPostHandler handles the HTTP POST request for the password change page.
+// It allows users to change their credentials by verifying the current password and
+// updating it with a new one.
+// In case of error the data's Error and ErrorMessage are populated for the template.
+func (h *userHandler) changePasswordPostHandler(w http.ResponseWriter, r *http.Request) {
 	user, ok := h.CookieSession.GetUser(r.Context())
 	if !ok {
 		http.Redirect(w, r, "/signout", http.StatusSeeOther)
@@ -229,7 +301,7 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 		pageView := &PageView{
-			Lang:      h.Container.Config.UIConfig.Language,
+			Lang:      user.Lang,
 			PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 			User:      *user,
 			Data: &struct {
@@ -241,7 +313,7 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 			},
 		}
 
-		h.Renderer.RenderTemplate(w, "account", pageView)
+		h.Renderer.RenderTemplate(w, "change_password", pageView, user.Lang)
 		return
 	}
 

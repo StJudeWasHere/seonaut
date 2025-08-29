@@ -81,13 +81,13 @@ func (h *archiveHandler) archiveHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	pageView := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		Data:      data,
 		User:      *user,
 		PageTitle: "ARCHIVE_VIEW_PAGE_TITLE",
 	}
 
-	h.Renderer.RenderTemplate(w, "archive", pageView)
+	h.Renderer.RenderTemplate(w, "archive", pageView, user.Lang)
 }
 
 // downloadHandler allows to download an archived resource. It loads the data from the

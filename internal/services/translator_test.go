@@ -8,12 +8,13 @@ import (
 
 // Test the translator's Trans method
 func TestTrans(t *testing.T) {
-	translator, err := services.NewTranslator("./testdata", "test")
+	lang := "en"
+	translator, err := services.NewTranslator("./testdata", lang)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	got := translator.Trans("TEST")
+	got := translator.Trans(lang, "TEST")
 	want := "test translation"
 	if got != want {
 		t.Errorf("renderer %s != %s", got, want)
@@ -22,12 +23,13 @@ func TestTrans(t *testing.T) {
 
 // Test the translator's Trans method with parameters
 func TestTransParameters(t *testing.T) {
-	translator, err := services.NewTranslator("./testdata", "test")
+	lang := "en"
+	translator, err := services.NewTranslator("./testdata", lang)
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
 
-	got := translator.Trans("TEST_PARAMETERS", "Lev", 2)
+	got := translator.Trans(lang, "TEST_PARAMETERS", "Lev", 2)
 	want := "Hello Lev. You are user number 2 with username Lev"
 	if got != want {
 		t.Errorf("renderer %s != %s", got, want)

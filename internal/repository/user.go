@@ -12,12 +12,12 @@ type UserRepository struct {
 
 // UserSignup inserts a new user with the provided email and password into the database.
 // It returns the inserted user and an error if the user could not be inserted.
-func (ds *UserRepository) UserSignup(email, password string) (*models.User, error) {
-	query := `INSERT INTO users (email, password, created) VALUES (?, ?, NOW())`
+func (ds *UserRepository) UserSignup(email, password, lang string) (*models.User, error) {
+	query := `INSERT INTO users (email, password, lang, created) VALUES (?, ?, ?, NOW())`
 	stmt, _ := ds.DB.Prepare(query)
 	defer stmt.Close()
 
-	_, err := stmt.Exec(email, password)
+	_, err := stmt.Exec(email, password, lang)
 	if err != nil {
 		return nil, err
 	}
@@ -34,12 +34,13 @@ func (ds *UserRepository) FindUserByEmail(email string) (*models.User, error) {
 		SELECT
 			id,
 			email,
-			password
+			password,
+			lang
 		FROM users
 		WHERE email = ? AND deleting = 0`
 
 	row := ds.DB.QueryRow(query, email)
-	err := row.Scan(&u.Id, &u.Email, &u.Password)
+	err := row.Scan(&u.Id, &u.Email, &u.Password, &u.Lang)
 	if err != nil {
 		return u, err
 	}
@@ -56,6 +57,19 @@ func (ds *UserRepository) UserUpdatePassword(email, hashedPassword string) error
 	`
 
 	_, err := ds.DB.Exec(query, hashedPassword, email)
+
+	return err
+}
+
+// UserUpdateLang updates the user's language.
+func (ds *UserRepository) UserUpdateLang(user *models.User, lang string) error {
+	query := `
+		UPDATE users
+		SET lang = ?
+		WHERE id = ?
+	`
+
+	_, err := ds.DB.Exec(query, lang, user.Id)
 
 	return err
 }

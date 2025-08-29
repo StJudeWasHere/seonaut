@@ -82,6 +82,8 @@ func NewServer(container *services.Container) {
 	http.HandleFunc("POST /signin", userHandler.signinPostHandler)
 	http.HandleFunc("GET /account", container.CookieSession.Auth(userHandler.editGetHandler))
 	http.HandleFunc("POST /account", container.CookieSession.Auth(userHandler.editPostHandler))
+	http.HandleFunc("GET /account/password", container.CookieSession.Auth(userHandler.changePasswordGetHandler))
+	http.HandleFunc("POST /account/password", container.CookieSession.Auth(userHandler.changePasswordPostHandler))
 	http.HandleFunc("GET /account/delete", container.CookieSession.Auth((userHandler.deleteGetHandler)))
 	http.HandleFunc("POST /account/delete", container.CookieSession.Auth((userHandler.deletePostHandler)))
 	http.HandleFunc("GET /signout", container.CookieSession.Auth(userHandler.signoutHandler))

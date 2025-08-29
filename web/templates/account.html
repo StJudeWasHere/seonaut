@@ -1,5 +1,6 @@
 {{ template "head" . }}
 
+{{ $userLang := .User.Lang }}
 {{ with .Data }}
 
 <div class="panel">
@@ -31,22 +32,15 @@
 			<div class="col col-main">
 				<div class="content">
 
-					<label for="password">{{ trans "CURRENT_PASSWORD" }}</label>
-					<input type="password" name="password" required autofocus>		
+					<label for="language">{{ trans "LANGUAGE_LABEL" }}</label>
+					<select name="language" id="language">
+						<option value="en"{{ if eq $userLang "en" }} selected{{ end }}>English</option>
+						<option value="fa"{{ if eq $userLang "fa" }} selected{{ end }}>فارسی</option>
+						<option value="es"{{ if eq $userLang "es" }} selected{{ end }}>Español</option>
+					</select>
 
 				</div>
 			</div>
-		</div>
-		
-		<div class="box soft">
-			<div class="col col-main">
-				<div class="content">
-
-					<label for="password">{{ trans "NEW_PASSWORD" }}</label>
-					<input type="password" name="new_password" required>		
-
-				</div>
-			</div>	
 		</div>
 
 		<div class="box box-highlight">
@@ -60,7 +54,15 @@
 		</div>
 
 	</form>
-		
+
+	<div class="box box-highlight">
+		<div class="col col-main">
+			<div class="content-s">
+				<a href="/account/password">{{ trans "CHANGE_PASSWORD" }}</a>
+			</div>
+		</div>
+	</div>
+
 	<div class="box bg-alert">
 		<div class="col col-main">
 			<div class="content">

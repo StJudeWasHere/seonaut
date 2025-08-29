@@ -44,13 +44,13 @@ func (h *issueHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		Data:      ig,
 		User:      *user,
 		PageTitle: "ISSUES_VIEW_PAGE_TITLE",
 	}
 
-	h.Renderer.RenderTemplate(w, "issues", v)
+	h.Renderer.RenderTemplate(w, "issues", v, user.Lang)
 }
 
 // viewHandler handles the view of the project's issues by an specific type.
@@ -99,11 +99,11 @@ func (h *issueHandler) viewHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	v := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		Data:      data,
 		User:      *user,
 		PageTitle: "ISSUES_DETAIL_PAGE_TITLE",
 	}
 
-	h.Renderer.RenderTemplate(w, "issues_view", v)
+	h.Renderer.RenderTemplate(w, "issues_view", v, user.Lang)
 }

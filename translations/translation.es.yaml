@@ -42,6 +42,8 @@ SIGNUP_MESSAGE: SEOnaut te permite escanear tu sitio en busca de problemas, prio
 EDIT_ACCOUNT: Editar cuenta
 CURRENT_PASSWORD: "Contraseña actual:"  # Form label
 NEW_PASSWORD: "Nueva contraseña:"       # Form label
+LANGUAGE_LABEL: "Idioma:"               # Form label
+CHANGE_PASSWORD: Cambiar contraseña
 DELETE_ACCOUNT_MESSAGE: Si ya no deseas continuar usando SEOnaut, puedes eliminar tu cuenta aquí.
 DELETE_ACCOUNT_MESSAGE_CONFIRMATION: Se pedirá confirmación antes de continuar.
 

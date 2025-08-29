@@ -13,8 +13,8 @@ import (
 
 type (
 	RendererTranslator interface {
-		Trans(s string, args ...interface{}) string
-		TransDate(d time.Time, f string) string
+		Trans(lang, s string, args ...interface{}) string
+		TransDate(lang string, d time.Time, f string) string
 	}
 
 	RendererConfig struct {
@@ -35,15 +35,17 @@ func NewRenderer(config *RendererConfig, translator RendererTranslator) (*Render
 		config:     config,
 	}
 
-	var err error
-	r.templates, err = findAndParseTemplates(config.TemplatesFolder, template.FuncMap{
-		"trans":      r.translator.Trans,
-		"trans_date": r.translator.TransDate,
+	commonFuncMap := template.FuncMap{
 		"total_time": r.totalTime,
 		"add":        r.add,
 		"to_kb":      r.toKByte,
 		"is_rtl":     r.isRTL,
-	})
+		"trans":      func(s string, args ...interface{}) string { return s },   // This gets replaced with the user lang in the RenderTemplate
+		"trans_date": func(d time.Time, f string) string { return d.Format(f) }, // This gets replaced with the user lang in the RenderTemplate
+	}
+
+	var err error
+	r.templates, err = findAndParseTemplates(config.TemplatesFolder, commonFuncMap)
 	if err != nil {
 		return nil, fmt.Errorf("renderer initialisation failed: %w", err)
 	}
@@ -52,8 +54,21 @@ func NewRenderer(config *RendererConfig, translator RendererTranslator) (*Render
 }
 
 // Render a template with the specified PageView data.
-func (r *Renderer) RenderTemplate(w io.Writer, t string, v interface{}) {
-	err := r.templates.ExecuteTemplate(w, t+".html", v)
+func (r *Renderer) RenderTemplate(w io.Writer, t string, v interface{}, lang string) {
+	// Replace the translation functions so they use the translator with the user language.
+	funcMap := template.FuncMap{
+		"trans": func(s string, args ...interface{}) string {
+			return r.translator.Trans(lang, s, args...)
+		},
+		"trans_date": func(d time.Time, f string) string {
+			return r.translator.TransDate(lang, d, f)
+		},
+	}
+
+	tmpl := template.Must(r.templates.Clone())
+	tmpl.Funcs(funcMap)
+
+	err := tmpl.ExecuteTemplate(w, t+".html", v)
 	if err != nil {
 		log.Printf("RenderTemplate: %v\n", err)
 	}

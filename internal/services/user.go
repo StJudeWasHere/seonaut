@@ -24,34 +24,44 @@ var (
 
 	// Error returned when trying to create a user that is already signed up.
 	ErrUserExists = errors.New("user service: user already exists")
+
+	// Error returned when trying to set a language that is not supported.
+	ErrInvalidLang = errors.New("user service: lang not valid")
 )
 
 type (
 	DeleteHook func(user *models.User)
 
 	UserServiceRepository interface {
-		UserSignup(email, hashedPassword string) (*models.User, error)
+		UserSignup(email, hashedPassword, lang string) (*models.User, error)
 		FindUserByEmail(email string) (*models.User, error)
 		UserUpdatePassword(email, hashedPassword string) error
 		DeleteUser(user *models.User) error
 		DisableUser(user *models.User) error
+		UserUpdateLang(user *models.User, lang string) error
+	}
+
+	TranslatorService interface {
+		LangIsSupported(lang string) bool
 	}
 
 	UserService struct {
 		repository  UserServiceRepository
+		translator  TranslatorService
 		deleteHooks []DeleteHook
 	}
 )
 
-func NewUserService(r UserServiceRepository) *UserService {
+func NewUserService(r UserServiceRepository, t TranslatorService) *UserService {
 	return &UserService{
 		repository: r,
+		translator: t,
 	}
 }
 
 // SignUp validates the user email and password, if they are both valid creates a password hash
 // before storing it. If succesful, it returns the new user, otherwise an error is returned.
-func (s *UserService) SignUp(email, password string) (*models.User, error) {
+func (s *UserService) SignUp(email, password, lang string) (*models.User, error) {
 	_, err := s.repository.FindUserByEmail(email)
 	if err == nil {
 		return nil, ErrUserExists
@@ -71,7 +81,7 @@ func (s *UserService) SignUp(email, password string) (*models.User, error) {
 		return nil, err
 	}
 
-	return s.repository.UserSignup(email, string(hashedPassword))
+	return s.repository.UserSignup(email, string(hashedPassword), lang)
 }
 
 // SignIn validates the provided email and password combination for user authentication.
@@ -107,6 +117,21 @@ func (s *UserService) UpdatePassword(user *models.User, currentPassword, newPass
 	}
 
 	err = s.repository.UserUpdatePassword(user.Email, string(hashedPassword))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// UpdatePassword updates the password for the user with the given email.
+// It validates the new password and generates a hashed password using bcrypt before storing it.
+func (s *UserService) UpdateLang(user *models.User, lang string) error {
+	if !s.translator.LangIsSupported(lang) {
+		return ErrInvalidLang
+	}
+
+	err := s.repository.UserUpdateLang(user, lang)
 	if err != nil {
 		return err
 	}

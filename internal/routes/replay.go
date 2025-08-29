@@ -138,11 +138,13 @@ func (h *replayHandler) proxyHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	lang := user.Lang
+
 	eb := new(bytes.Buffer)
-	h.Container.Renderer.RenderTemplate(eb, "replay_banner", data)
+	h.Container.Renderer.RenderTemplate(eb, "replay_banner", data, lang)
 
 	es := new(bytes.Buffer)
-	h.Container.Renderer.RenderTemplate(es, "replay_scripts", data)
+	h.Container.Renderer.RenderTemplate(es, "replay_scripts", data, lang)
 
 	finalHTML, err := h.Container.ReplayService.InjectHTML(rewrittenHTML, es.String(), eb.String())
 	if err != nil {

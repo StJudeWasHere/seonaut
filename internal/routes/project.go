@@ -37,7 +37,7 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 	refresh := h.ProjectViewService.UserIsProcessingProjects(user.Id)
 
 	v := &PageView{
-		Lang: h.Container.Config.UIConfig.Language,
+		Lang: user.Lang,
 		Data: struct {
 			Projects []models.ProjectView
 		}{
@@ -48,7 +48,7 @@ func (h *projectHandler) indexHandler(w http.ResponseWriter, r *http.Request) {
 		Refresh:   refresh,
 	}
 
-	h.Renderer.RenderTemplate(w, "home", v)
+	h.Renderer.RenderTemplate(w, "home", v, user.Lang)
 }
 
 // addGetHandler displays the form for adding a new project.
@@ -61,7 +61,7 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		User:      *user,
 		PageTitle: "ADD_PROJECT_PAGE_TITLE",
 		Data: &struct {
@@ -71,7 +71,7 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 		}{UserAgent: h.Config.Crawler.Agent},
 	}
 
-	h.Renderer.RenderTemplate(w, "project_add", pageView)
+	h.Renderer.RenderTemplate(w, "project_add", pageView, user.Lang)
 }
 
 // addPostHandler handles the POST request to add a project.
@@ -157,7 +157,7 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 	err = h.ProjectService.SaveProject(project, user.Id)
 	if err != nil {
 		pageView := &PageView{
-			Lang:      h.Container.Config.UIConfig.Language,
+			Lang:      user.Lang,
 			User:      *user,
 			PageTitle: "ADD_PROJECT_PAGE_TITLE",
 			Data: &struct {
@@ -170,7 +170,7 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 				UserAgent:      h.Config.Crawler.Agent,
 			},
 		}
-		h.Renderer.RenderTemplate(w, "project_add", pageView)
+		h.Renderer.RenderTemplate(w, "project_add", pageView, user.Lang)
 		return
 	}
 
@@ -237,13 +237,13 @@ func (h *projectHandler) editGetHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	pageView := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		User:      *user,
 		PageTitle: "EDIT_PROJECT_PAGE_TITLE",
 		Data:      data,
 	}
 
-	h.Renderer.RenderTemplate(w, "project_edit", pageView)
+	h.Renderer.RenderTemplate(w, "project_edit", pageView, user.Lang)
 }
 
 // editPostHandler handles project edits.
@@ -329,7 +329,7 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 	err = h.ProjectService.UpdateProject(&p)
 	if err != nil {
 		pageView := &PageView{
-			Lang:      h.Container.Config.UIConfig.Language,
+			Lang:      user.Lang,
 			User:      *user,
 			PageTitle: "EDIT_PROJECT_PAGE_TITLE",
 			Data: &struct {
@@ -345,7 +345,7 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 			},
 		}
 
-		h.Renderer.RenderTemplate(w, "project_edit", pageView)
+		h.Renderer.RenderTemplate(w, "project_edit", pageView, user.Lang)
 		return
 	}
 

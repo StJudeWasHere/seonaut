@@ -125,12 +125,12 @@ func (h *crawlHandler) authGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageView := &PageView{
-		Lang:      h.Container.Config.UIConfig.Language,
+		Lang:      user.Lang,
 		PageTitle: "CRAWL_AUTH_VIEW_PAGE_TITLE",
 		Data:      struct{ Project models.Project }{Project: p},
 	}
 
-	h.Renderer.RenderTemplate(w, "crawl_auth", pageView)
+	h.Renderer.RenderTemplate(w, "crawl_auth", pageView, user.Lang)
 }
 
 // Handle the BasicAuth form. Once it is submitted a crawler with BasicAuth is started.
@@ -211,7 +211,7 @@ func (h *crawlHandler) liveCrawlHandler(w http.ResponseWriter, r *http.Request) 
 	}
 
 	v := &PageView{
-		Lang: h.Container.Config.UIConfig.Language,
+		Lang: user.Lang,
 		Data: struct {
 			Project models.Project
 			Secure  bool
@@ -223,7 +223,7 @@ func (h *crawlHandler) liveCrawlHandler(w http.ResponseWriter, r *http.Request) 
 		PageTitle: "CRAWL_LIVE_PAGE_TITLE",
 	}
 
-	h.Renderer.RenderTemplate(w, "crawl_live", v)
+	h.Renderer.RenderTemplate(w, "crawl_live", v, user.Lang)
 }
 
 // wsHandler handles the live crawling of a project using websockets.

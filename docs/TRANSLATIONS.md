@@ -8,12 +8,18 @@ This document explains how SEOnaut's how translation files are organized, and ho
 
 SEOnaut supports multiple languages for its user interface. The default language is English (`en`), but additional languages can be added following the guidelines below.
 
-The application language is configured in the main configuration file (`config`) using the `language` parameter under the `[UI]` section:
+The application's default language is configured in the main configuration file (`config`) using the `language` parameter under the `[UI]` section:
 
 ```ini
 [UI]
 language = "en"  # ISO 639-1 language code (e.g., "es", "fr", "fa")
 ```
+
+This setting defines the default language for all users when they first access the application.
+
+### User Language Customization
+
+While the default language is set globally, users can change their preferred language in their account settings. They can select any of the available languages supported by the application.
 
 ---
 

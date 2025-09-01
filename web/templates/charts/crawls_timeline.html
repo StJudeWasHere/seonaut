@@ -2,8 +2,9 @@
 <div id="crawl-chart" class="chart crawl-chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let crawlChart = echarts.init(document.getElementById('crawl-chart'));
+		let crawlChart = echarts.init(document.getElementById('crawl-chart'), getTheme());
 		crawlChart.setOption({
+			backgroundColor: 'transparent',
 			color: ["#2C7D91", "#EAB791", "#FD7B6A"],
 			textStyle: {
 				fontFamily: "Fira Code",

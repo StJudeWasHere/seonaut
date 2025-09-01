@@ -2,8 +2,9 @@
 <div id="mediachart" class="chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let mediaChart = echarts.init(document.getElementById('mediachart'));
+		let mediaChart = echarts.init(document.getElementById('mediachart'), getTheme());
 		mediaChart.setOption({
+			backgroundColor: 'transparent',
 			color: ['#F7E497', '#FD7B6A', '#EAB791','#2C7D91'],
 			toolbox: {
 				show: true,

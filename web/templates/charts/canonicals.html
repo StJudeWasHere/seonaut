@@ -3,8 +3,9 @@
 <div id="canonical-chart" class="chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let canonicalChart = echarts.init(document.getElementById('canonical-chart'));
+		let canonicalChart = echarts.init(document.getElementById('canonical-chart'), getTheme());
 		canonicalChart.setOption({
+			backgroundColor: 'transparent',
 			color: ['#F7E497', '#FD7B6A'],
 			toolbox: {
 				show: true,

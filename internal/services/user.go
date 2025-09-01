@@ -29,6 +29,11 @@ var (
 	ErrInvalidLang = errors.New("user service: lang not valid")
 )
 
+const (
+	LightTheme = "light"
+	DarkTheme  = "dark"
+)
+
 type (
 	DeleteHook func(user *models.User)
 
@@ -81,9 +86,7 @@ func (s *UserService) SignUp(email, password, lang, theme string) (*models.User,
 		return nil, err
 	}
 
-	if theme != "dark" {
-		theme = "light"
-	}
+	theme = s.getValidatedTheme(theme)
 
 	return s.repository.UserSignup(email, string(hashedPassword), lang, theme)
 }
@@ -135,9 +138,7 @@ func (s *UserService) UpdateUserSettings(user *models.User, lang, theme string) 
 		return ErrInvalidLang
 	}
 
-	if theme != "dark" {
-		theme = "light"
-	}
+	theme = s.getValidatedTheme(theme)
 
 	err := s.repository.UserUpdateSettings(user, lang, theme)
 	if err != nil {
@@ -171,4 +172,14 @@ func (s *UserService) AddDeleteHook(hook DeleteHook) {
 // Validate the password to make sure it follows certain criteria.
 func (s *UserService) validPassword(password string) bool {
 	return len(password) > 1
+}
+
+// getValidatedTheme returns a valid theme. If the user theme is "dark" it
+// returns "dark" otherwise return "light".
+func (s *UserService) getValidatedTheme(theme string) string {
+	if theme == DarkTheme {
+		return DarkTheme
+	}
+
+	return LightTheme
 }

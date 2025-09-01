@@ -16,6 +16,9 @@
 		});
 		window.scriptReadyQueue = [];
 	};
+	function getTheme() {
+		return document.body.classList.contains('dark')? 'dark' : 'light';
+	}
 </script>
 {{ with .Data }}
 	<div class="panel">

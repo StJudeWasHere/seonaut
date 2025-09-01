@@ -2,8 +2,9 @@
 <div id="issues-chart" class="chart issues-chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let issuesChart = echarts.init(document.getElementById('issues-chart'));
+		let issuesChart = echarts.init(document.getElementById('issues-chart'), getTheme());
 		issuesChart.setOption({
+			backgroundColor: 'transparent',
 			color: ['#FD7B6A','#F7E497', '#2C7D91'],
 			tooltip: {
 				trigger: 'item'

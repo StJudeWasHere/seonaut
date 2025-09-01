@@ -2,8 +2,9 @@
 <div id="alt-chart" class="chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let altChart = echarts.init(document.getElementById('alt-chart'));
+		let altChart = echarts.init(document.getElementById('alt-chart'), getTheme());
 		altChart.setOption({
+			backgroundColor: 'transparent',
 			color: ['#F7E497', '#FD7B6A'],
 			toolbox: {
 				show: true,

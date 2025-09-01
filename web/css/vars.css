@@ -61,3 +61,7 @@
 	
 	--line-height: 1.625rem;
 }
+
+.dark svg {
+	stroke: var(--primary-color);
+}

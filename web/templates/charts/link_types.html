@@ -2,8 +2,9 @@
 <div id="links-chart" class="links-chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let linksChart = echarts.init(document.getElementById('links-chart'));
+		let linksChart = echarts.init(document.getElementById('links-chart'), getTheme());
 		linksChart.setOption({
+			backgroundColor: 'transparent',
 			textStyle: {
 				fontFamily: "Fira Code",
 				fontSize: "1rem",

@@ -279,7 +279,3 @@ details.issue-details summary:hover {
 details[open].issue-details > summary {
 	margin-bottom: var(--line-height);
 }
-
-svg {
-	stroke: var(--primary-color);
-}

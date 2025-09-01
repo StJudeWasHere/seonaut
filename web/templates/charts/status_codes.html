@@ -2,8 +2,9 @@
 <div id="statuschart" class="chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let statusChart = echarts.init(document.getElementById('statuschart'));
+		let statusChart = echarts.init(document.getElementById('statuschart'), getTheme());
 		statusChart.setOption({
+			backgroundColor: 'transparent',
 			color: ['#F7E497', '#FD7B6A', '#EAB791','#2C7D91'],
 			tooltip: {
 				trigger: 'item'

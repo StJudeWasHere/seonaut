@@ -2,8 +2,9 @@
 <div id="follow-chart" class="follow-chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let followChart = echarts.init(document.getElementById('follow-chart'));
+		let followChart = echarts.init(document.getElementById('follow-chart'), getTheme());
 		followChart.setOption({
+			backgroundColor: 'transparent',
 			legend: {
 				data: [
 					'{{ trans "FOLLOW" }}',

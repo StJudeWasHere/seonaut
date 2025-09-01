@@ -15,3 +15,4 @@ agent = "Mozilla/5.0 (compatible; SEOnautBot/1.0; +https://seonaut.org/bot)"
 
 [UI]
 language = "en"
+theme = "dark"

@@ -60,6 +60,7 @@ func (h *dashboardHandler) indexHandler(w http.ResponseWriter, r *http.Request) 
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		Data:      data,
 		User:      *user,
 		PageTitle: "PROJECT_DASHBOARD_PAGE_TITLE",

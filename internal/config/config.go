@@ -30,6 +30,7 @@ type DBConfig struct {
 // UIConfig stores the UI settings.
 type UIConfig struct {
 	Language string `mapstrcuture:"language"`
+	Theme    string `mapstructure:"theme"`
 }
 
 // Config stores the configuration for the application.

@@ -1,6 +1,7 @@
 {{ template "head" . }}
 
 {{ $userLang := .User.Lang }}
+{{ $userTheme := .User.Theme }}
 {{ with .Data }}
 
 <div class="panel">
@@ -37,6 +38,20 @@
 						<option value="en"{{ if eq $userLang "en" }} selected{{ end }}>English</option>
 						<option value="es"{{ if eq $userLang "es" }} selected{{ end }}>Español</option>
 						<option value="fa"{{ if eq $userLang "fa" }} selected{{ end }}>فارسی</option>
+					</select>
+
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
+
+					<label for="theme">{{ trans "THEME_LABEL" }}</label>
+					<select name="theme" id="theme">
+						<option value="light"{{ if eq $userTheme "light" }} selected{{ end }}>Light</option>
+						<option value="dark"{{ if eq $userTheme "dark" }} selected{{ end }}>Dark</option>
 					</select>
 
 				</div>

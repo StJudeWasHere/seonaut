@@ -2,8 +2,9 @@
 <div id="issues-timeline" class="chart issues-timeline-chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let issuesTimelineChart = echarts.init(document.getElementById('issues-timeline'));
+		let issuesTimelineChart = echarts.init(document.getElementById('issues-timeline'), getTheme());
 		issuesTimelineChart.setOption({
+			backgroundColor: 'transparent',
 			color: ['#FD7B6A', '#F7E497', '#2C7D91'],
 				textStyle: {
 					fontFamily: "Fira Code",

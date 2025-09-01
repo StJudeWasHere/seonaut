@@ -2,8 +2,9 @@
 <div id="status-depth-chart" class="status-depth-chart"></div>
 <script type="text/javascript">
 	addToQueue(function() {
-		let statusByDepthChart = echarts.init(document.getElementById('status-depth-chart'));
+		let statusByDepthChart = echarts.init(document.getElementById('status-depth-chart'), getTheme());
 		statusByDepthChart.setOption({
+			backgroundColor: 'transparent',
 			color: ['#F7E497', '#EAB791', '#FD7B6A', '#2C7D91'],
 			textStyle: {
 				fontFamily: "Fira Code",
@@ -61,9 +62,7 @@
 			series: [
 				{
 					showBackground: true,
-					backgroundStyle: {
-						color: 'rgb(234, 234, 234)',
-					},
+
 					name: '200',
 					type: 'bar',
 					stack: 'total',

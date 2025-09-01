@@ -82,6 +82,7 @@ func (h *archiveHandler) archiveHandler(w http.ResponseWriter, r *http.Request) 
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		Data:      data,
 		User:      *user,
 		PageTitle: "ARCHIVE_VIEW_PAGE_TITLE",

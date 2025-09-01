@@ -4,10 +4,8 @@
 	--primary-color: black;
 	--primary-light-color: #777;
 	--secondary-color: white;
-	--border-color: #ccc;
 	--highlight-color: #e6f4f7;
 	--alert-color: #E17E56;
-	--succes-color: #648560;
 	--dark-opacity-color: rgba(0, 0, 0, .15);
 	--main-section-color: #F7E497;
 	--secondary-section-color: #2C7D91;
@@ -30,4 +28,40 @@
 	--secondary-fontfamily: "Raleway", Helvetica, Arial, sans-serif;
 	
 	--line-height: 1.625rem;
+}
+
+.dark {
+	--main-bg-color: #373D39;
+	--light-bg-color: #2b302c;
+	--primary-color: #FBF9E6;
+	--primary-light-color: rgba(251, 249, 230, .35);
+	--secondary-color: #2b302c;
+	--highlight-color: #BF7F67;
+	--alert-color: #E17E56;
+	--dark-opacity-color: rgba(251, 249, 230,.35);
+	--main-section-color: #9B7F82;
+	--secondary-section-color: #D3A962;
+	--tertiary-section-color: #FD7B6A;
+	--crawler-section-color: #FBF9E6;
+	--crawler-section-secondary-color: #373D39;
+	--row-issue-color: #29373C;
+
+	--issues-critical-highlight: #E17E56;
+	--issues-alert-highlight: #f3d660;
+	--issues-warning-highlight: #509198;
+	--issues-passed-highlight: #648560;
+
+	--issues-critical: #373D39;
+	--issues-alert: #373D39;
+	--issues-warning: #373D39;
+	--issues-passed: #373D39;
+
+	--main-fontfamily: 'Fira Code', monospace, monospace;
+	--secondary-fontfamily: "Raleway", Helvetica, Arial, sans-serif;
+	
+	--line-height: 1.625rem;
+}
+
+.dark svg {
+	stroke: var(--primary-color);
 }

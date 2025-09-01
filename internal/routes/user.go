@@ -16,6 +16,7 @@ type userHandler struct {
 func (h *userHandler) signupGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
 		Lang:      h.Container.Config.UIConfig.Language,
+		Theme:     h.Container.Config.UIConfig.Theme,
 		PageTitle: "SIGNUP_VIEW_PAGE_TITLE",
 		Data: &struct {
 			Email        string
@@ -41,8 +42,9 @@ func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) 
 	email := r.FormValue("email")
 	password := r.FormValue("password")
 	lang := h.Container.Config.UIConfig.Language
+	theme := h.Container.Config.UIConfig.Theme
 
-	u, err := h.UserService.SignUp(email, password, lang)
+	u, err := h.UserService.SignUp(email, password, lang, theme)
 	if err != nil {
 		errorMsg := "The email address or password is not valid."
 		switch err {
@@ -55,6 +57,7 @@ func (h *userHandler) signupPostHandler(w http.ResponseWriter, r *http.Request) 
 		}
 		pageView := &PageView{
 			Lang:      lang,
+			Theme:     theme,
 			PageTitle: "SIGNUP_VIEW_PAGE_TITLE",
 			Data: &struct {
 				Email        string
@@ -87,6 +90,7 @@ func (h *userHandler) deleteGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		PageTitle: "DELETE_ACCOUNT_VIEW_PAGE_TITLE",
 		User:      *user,
 		Data: &struct {
@@ -127,6 +131,7 @@ func (h *userHandler) deletePostHandler(w http.ResponseWriter, r *http.Request) 
 func (h *userHandler) signinGetHandler(w http.ResponseWriter, r *http.Request) {
 	pageView := &PageView{
 		Lang:      h.Container.Config.UIConfig.Language,
+		Theme:     h.Container.Config.UIConfig.Theme,
 		PageTitle: "SIGNIN_VIEW_PAGE_TITLE",
 		Data: &struct {
 			Email        string
@@ -157,6 +162,7 @@ func (h *userHandler) signinPostHandler(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		pageView := &PageView{
 			Lang:      h.Container.Config.UIConfig.Language,
+			Theme:     h.Container.Config.UIConfig.Theme,
 			PageTitle: "SIGNIN_VIEW_PAGE_TITLE",
 			Data: &struct {
 				Email string
@@ -186,6 +192,7 @@ func (h *userHandler) editGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 		User:      *user,
 		Data: &struct {
@@ -215,8 +222,9 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	formLang := r.FormValue("language")
+	formTheme := r.FormValue("theme")
 
-	err = h.UserService.UpdateLang(user, formLang)
+	err = h.UserService.UpdateUserSettings(user, formLang, formTheme)
 	if err != nil {
 		errorMsg := "An error occurred. Please try again."
 		switch err {
@@ -228,6 +236,7 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 
 		pageView := &PageView{
 			Lang:      user.Lang,
+			Theme:     user.Theme,
 			PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 			User:      *user,
 			Data: &struct {
@@ -257,6 +266,7 @@ func (h *userHandler) changePasswordGetHandler(w http.ResponseWriter, r *http.Re
 
 	pageView := &PageView{
 		Lang:      user.Lang,
+		Theme:     user.Theme,
 		PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 		User:      *user,
 		Data: &struct {
@@ -302,6 +312,7 @@ func (h *userHandler) changePasswordPostHandler(w http.ResponseWriter, r *http.R
 
 		pageView := &PageView{
 			Lang:      user.Lang,
+			Theme:     user.Theme,
 			PageTitle: "ACCOUNT_VIEW_PAGE_TITLE",
 			User:      *user,
 			Data: &struct {

@@ -9,6 +9,7 @@ body {
 	font-size: 1rem;
 	padding: 0;
 	background-color: var(--main-bg-color);
+	color: var(--primary-color);
 	margin:0;
 	text-rendering: optimizeLegibility;
 	cursor: crosshair;
@@ -53,9 +54,7 @@ a:hover {
 }
 
 a.icon-link {
-	opacity: .5;
 	display: inline-block;
-	background-color: white;
 	padding: calc(calc(var(--line-height) / 2) - 2px);
 	border: 1px dotted var(--primary-color);
 	border-radius: 50px;
@@ -63,6 +62,7 @@ a.icon-link {
 }
 
 a.icon-link:hover {
+	border: 1px solid var(--primary-color);
 	opacity: 1;
 	background-color: var(--highlight-color);
 }
@@ -94,6 +94,7 @@ input {
 	background-color: var(--light-bg-color);
 	border-radius: 0;
 	line-height: calc(var(--line-height) - 2px);
+	color: inherit;
 }
 
 input[type="submit"], .button {
@@ -203,7 +204,8 @@ details ul li a:hover {
 }
 
 select {
-    background-color: white;
+    background-color: inherit;
+	color: inherit;
     border: 1px solid var(--primary-color);
     display: inline-block;
     font: inherit;

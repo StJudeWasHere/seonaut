@@ -226,12 +226,12 @@ func (h *userHandler) editPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = h.UserService.UpdateUserSettings(user, formLang, formTheme)
 	if err != nil {
-		errorMsg := "An error occurred. Please try again."
+		errorMsg := "GENERIC_ERROR"
 		switch err {
 		case services.ErrInvalidLang:
-			errorMsg = "New password is not valid."
+			errorMsg = "INVALID_LANG_ERROR"
 		default:
-			log.Printf("update password user id %d error: %v", user.Id, err)
+			log.Printf("edit post handler user id %d error: %v", user.Id, err)
 		}
 
 		pageView := &PageView{
@@ -300,12 +300,12 @@ func (h *userHandler) changePasswordPostHandler(w http.ResponseWriter, r *http.R
 
 	err = h.UserService.UpdatePassword(user, currentPassword, newPassword)
 	if err != nil {
-		errorMsg := "An error occurred. Please try again."
+		errorMsg := "GENERIC_ERROR"
 		switch err {
 		case services.ErrInvalidPassword:
-			errorMsg = "New password is not valid."
+			errorMsg = "NEW_PASSWORD_IS_INVALID"
 		case services.ErrIncorrectPassword:
-			errorMsg = "Current password is incorrect."
+			errorMsg = "CURRENT_PASSWORD_INCORRECT"
 		default:
 			log.Printf("update password user id %d error: %v", user.Id, err)
 		}

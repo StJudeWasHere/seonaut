@@ -47,6 +47,10 @@ CHANGE_PASSWORD: Cambiar contraseña
 DELETE_ACCOUNT_MESSAGE: Si ya no deseas continuar usando SEOnaut, puedes eliminar tu cuenta aquí.
 DELETE_ACCOUNT_MESSAGE_CONFIRMATION: Se pedirá confirmación antes de continuar.
 THEME_LABEL: "Tema:"
+GENERIC_ERROR: Ha ocurrido un error. Por favor, inténtalo de nuevo.
+INVALID_LANG_ERROR: El idioma no está soportado.
+NEW_PASSWORD_IS_INVALID: La nueva contraseña no es válida.
+CURRENT_PASSWORD_INCORRECT: La contraseña actual es incorrecta.
 
 # =============================================
 # CONTEXT: Delete user account page

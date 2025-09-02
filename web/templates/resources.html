@@ -432,7 +432,7 @@
 								{{ if $archived }}
 								<ul>
 									<li><a href="/archive{{ $parameters }}">{{ trans "VIEW_ARCHIVE" }}</a></li>
-									{{ if $IsHTML }}
+									{{ if and $IsHTML (eq .StatusCode 200) }}
 										<li><a href="/replay?pid={{ $projectId }}&url={{ .URL }}" target="_blank">{{ trans "OPEN_IN_BROWSER" }}</a></li>
 									{{ end }}
 								</ul>

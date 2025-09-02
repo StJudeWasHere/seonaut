@@ -10,7 +10,7 @@ jobs:
   test:
     strategy:
       matrix:
-        go: [1.24.x]
+        go: [1.25.x]
         os: [ubuntu-latest, macos-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     env:
@@ -18,12 +18,12 @@ jobs:
 
     steps:
     - name: Set up Go
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v5
       with:
         go-version: ${{ matrix.go }}
 
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v5
 
     - name: Test
       run: go test -race -parallel 1 -short ./internal/...

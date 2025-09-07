@@ -275,7 +275,7 @@ INTERNAL_TAB_INFO: Internal links are the links found in this URL's HTML code th
 EXTERNAL_TAB: External links
 EXTERNAL_TAB_INFO: External links are the links found in this URL's HTML code pointing to other websites.
 REDIRECTIONS_TAB: Redirections
-REDIRECTIONS_TAB_INFO: Redirections are the URLs from this website that are redirected to this URL. 
+REDIRECTIONS_TAB_INFO: Redirections are the URLs from this website that are redirected to this URL.
 IMAGES_TAB: Images
 IMAGES_TAB_INFO: Images that are found in this URL's HTML code. Note that images shown using CSS are not included here.
 AUDIOS_TAB: Audios
@@ -406,15 +406,15 @@ ERROR_DUPLICATED_TITLE_DESC: The title tag is considered one of the most importa
 ERROR_LONG_TITLE: Pages with long title
 ERROR_LONG_TITLE_DESC: Long titles won't affect your on-page SEO, but they are usually cut off on search results and tend to get fewer clicks.
 
-ERROR_SHORT_TITLE: Pages short title
+ERROR_SHORT_TITLE: Pages with short title
 ERROR_SHORT_TITLE_DESC: These pages have titles that are too short. Search engines will be happier if you provide longer titles.
-  
+
 ERROR_EMPTY_TITLE: Pages with missing title
 ERROR_EMPTY_TITLE_DESC: Page titles help search engines understand what a page is about and are often shown in search results. Without a title, your page may rank lower, get overlooked by users, and appear unprofessional or incomplete.
 
 ERROR_EMPTY_DESCRIPTION: Pages with missing meta description
 ERROR_EMPTY_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
-  
+
 ERROR_SHORT_DESCRIPTION: Pages with short meta description
 ERROR_SHORT_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
 
@@ -454,9 +454,9 @@ ERROR_EXTERNAL_WITHOUT_NOFOLLOW_DESC: Follow links will pass SEO authority to ex
 ERROR_CANONICALIZED_NON_CANONICAL: Canonicalized to non canonical
 ERROR_CANONICALIZED_NON_CANONICAL_DESC: Pages canonicalized to a non canonical URL. Canonicalized pages should point to a canonical page, replace the canonical link URL in this pages so they point to a canonical one.
 
-ERROR_NOT_VALID_HEADINGS: Pages with not valid headings order
+ERROR_NOT_VALID_HEADINGS: Pages without valid headings order
 ERROR_NOT_VALID_HEADINGS_DESC: The heading tags in this pages don't follow the correct order. Headings should start with an H1 and follow a clear hierarchy (H2, H3, etc.). Proper structure helps search engines understand your content and improves accessibility for screen readers.
-  
+
 ERROR_HREFLANG_TO_NON_CANONICAL: Hreflang to non canonical page
 ERROR_HREFLANG_TO_NON_CANONICAL_DESC: Hreflang tags tell search engines where to find content in specific languages, linking hreflang tags to non canonical pages confuses search engines.
 

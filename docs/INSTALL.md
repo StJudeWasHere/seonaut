@@ -32,7 +32,7 @@ Before installing SEOnaut, ensure the following are installed on your system:
 3. **Build and Run Docker Containers**  
    Run docker-compose to build and start the containers:
 
-   `docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build`
+   `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build`
 
    Or use the provided Makefile to build and start the Docker containers:
 

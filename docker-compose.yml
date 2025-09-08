@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   db:
     image: mysql:8.0
@@ -22,7 +20,7 @@ services:
     command: sh -c "/bin/wait && /app/seonaut"
     environment:
       - WAIT_HOSTS=db:3306
-      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=30
       - WAIT_HOST_CONNECT_TIMEOUT=30
     networks:

@@ -13,7 +13,7 @@ services:
     - seonaut_network
 
   app:
-    build: .
+    image: ghcr.io/eksrha/seonaut:latest
     container_name: "SEOnaut-app"
     ports:
       - "${SEONAUT_PORT:-9000}:9000"
@@ -22,7 +22,7 @@ services:
     command: sh -c "/bin/wait && /app/seonaut"
     environment:
       - WAIT_HOSTS=db:3306
-      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=30
       - WAIT_HOST_CONNECT_TIMEOUT=30
     networks:

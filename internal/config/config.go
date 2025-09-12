@@ -2,6 +2,7 @@ package config
 
 import (
 	"path/filepath"
+	"strings"
 
 	"github.com/spf13/viper"
 )
@@ -29,7 +30,7 @@ type DBConfig struct {
 
 // UIConfig stores the UI settings.
 type UIConfig struct {
-	Language string `mapstrcuture:"language"`
+	Language string `mapstructure:"language"`
 	Theme    string `mapstructure:"theme"`
 }
 
@@ -46,6 +47,11 @@ func NewConfig(configFile string) (*Config, error) {
 	viper.AddConfigPath(filepath.Dir(configFile))
 	viper.SetConfigName(filepath.Base(configFile))
 	viper.SetConfigType("toml")
+
+	// Enable environment variable support
+	viper.AutomaticEnv()
+	viper.SetEnvPrefix("SEONAUT") // Optional: prefix for env vars
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	if err := viper.ReadInConfig(); err != nil {
 		return nil, err

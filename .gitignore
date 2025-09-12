@@ -38,11 +38,6 @@ go.work.sum
 
 config.local
 
-# Ignore any file in the bin folder except .gitignore
-
-bin/*
-!bin/.gitignore
-
 # Ignore any file in the web/static folder except favicon.ico and robots.txt
 # The frontend build will copy fonts and styles into this folder.
 

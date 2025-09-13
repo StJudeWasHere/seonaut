@@ -18,6 +18,11 @@ docker:
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d --build
 .PHONY: docker
 
+# Clean Docker builder cache
+clean:
+	docker builder prune -f
+.PHONY: clean
+
 # Watch frontend files to run esbuild on any change
 watch:
 	esbuild ./web/css/style.css \

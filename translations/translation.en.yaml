@@ -414,7 +414,7 @@ ERROR_EMPTY_TITLE_DESC: Page titles help search engines understand what a page i
 
 ERROR_EMPTY_DESCRIPTION: Pages with missing meta description
 ERROR_EMPTY_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
-  
+
 ERROR_SHORT_DESCRIPTION: Pages with short meta description
 ERROR_SHORT_DESCRIPTION_DESC: Page description is not a ranking factor for search engines, but they often use it to show snippets on search results.
 

@@ -28,7 +28,7 @@ func NewFormOnHTTPReporter() *models.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
 			return false
 		}
 
@@ -59,7 +59,7 @@ func NewInsecureFormReporter() *models.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
 			return false
 		}
 

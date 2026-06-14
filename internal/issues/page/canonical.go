@@ -25,7 +25,7 @@ func NewCanonicalMultipleTagsReporter() *models.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
 			return false
 		}
 
@@ -56,7 +56,7 @@ func NewCanonicalRelativeURLReporter() *models.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
 			return false
 		}
 
@@ -92,7 +92,7 @@ func NewCanonicalMismatchReporter() *models.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
 			return false
 		}
 

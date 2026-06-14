@@ -23,7 +23,7 @@ func NewViewportTagReporter() *models.PageIssueReporter {
 			return false
 		}
 
-		if pageReport.StatusCode < 200 && pageReport.StatusCode >= 300 {
+		if pageReport.StatusCode < 200 || pageReport.StatusCode >= 300 {
 			return false
 		}
 

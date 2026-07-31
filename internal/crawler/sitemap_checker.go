@@ -55,6 +55,11 @@ func (sc *SitemapChecker) ParseSitemaps(URLs []string, callback func(u string)) 
 			// Each sitemap is parsed in its own Go routine
 			// If the sitemap limit is hit the parser function returns an error to stop the process
 			go func(s string) {
+				// wg.Done is deferred so the WaitGroup is always decremented,
+				// including when the sitemap request fails and the goroutine
+				// returns early. Otherwise wg.Wait below blocks forever.
+				defer wg.Done()
+
 				resp, err := sc.client.Get(s)
 				if err != nil {
 					return
@@ -74,8 +79,6 @@ func (sc *SitemapChecker) ParseSitemaps(URLs []string, callback func(u string)) 
 
 					return nil
 				})
-
-				wg.Done()
 			}(s)
 		}
 	}

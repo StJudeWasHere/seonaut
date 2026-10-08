@@ -24,7 +24,7 @@ Using docker is the recommended way of running SEOnaut. As you need to provide a
 ```yml
 services:
   db:
-    image: mysql:8.4
+    image: mysql:8.4.10
     container_name: "SEOnaut-db"
     environment:
       - MYSQL_ROOT_PASSWORD=root

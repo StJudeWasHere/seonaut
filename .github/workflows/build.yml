@@ -1,6 +1,20 @@
 name: Build and Push Docker Image
 
 on:
+  workflow_dispatch:
+    inputs:
+      manual_tag:
+        description: "Optional tag to publish for this manual run (for example: manual-20260623)"
+        required: false
+        type: string
+      platforms:
+        description: "Platforms to build for this manual run"
+        required: false
+        default: linux/amd64
+        type: choice
+        options:
+          - linux/amd64
+          - linux/amd64,linux/arm64
   push:
     branches: [main, develop]
   pull_request:
@@ -13,12 +27,14 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
 
       - name: Set up Go
-        uses: actions/setup-go@v6
+        uses: actions/setup-go@4a3601121dd01d1626a1e23e37211e3254c1c06c
         with:
           go-version-file: go.mod
 
@@ -37,21 +53,51 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd
+
+      - name: Determine build platform selection
+        id: platform
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            platforms="${{ github.event.inputs.platforms }}"
+          elif [ "${{ github.event_name }}" = "pull_request" ]; then
+            platforms="linux/amd64"
+          elif [ "${{ github.ref_name }}" = "${{ github.event.repository.default_branch }}" ]; then
+            platforms="linux/amd64,linux/arm64"
+          else
+            platforms="linux/amd64"
+          fi
+
+          echo "platforms=$platforms" >> "$GITHUB_OUTPUT"
+
+          if [[ "$platforms" == *"linux/arm64"* ]]; then
+            echo "needs_qemu=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needs_qemu=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up QEMU
+        if: steps.platform.outputs.needs_qemu == 'true'
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3
+        with:
+          platforms: arm64
+          cache-image: false
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5
 
       - name: Log in to Container Registry
-        uses: docker/login-action@v3
+        if: github.event_name == 'workflow_dispatch' || (github.event_name != 'pull_request' && !github.event.repository.fork)
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GHCR_TOKEN != '' && github.repository_owner || github.actor }}
+          password: ${{ secrets.GHCR_TOKEN || secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
@@ -59,18 +105,24 @@ jobs:
             type=ref,event=pr
             type=sha,prefix={{branch}}-,format=short,enable={{is_default_branch}}
             type=raw,value=latest,enable={{is_default_branch}}
+            type=raw,value=manual-${{ github.run_number }}-${{ github.run_attempt }},enable=${{ github.event_name == 'workflow_dispatch' }}
+            type=raw,value=${{ github.event.inputs.manual_tag }},enable=${{ github.event_name == 'workflow_dispatch' && github.event.inputs.manual_tag != '' }}
+          annotations: |
+            index:org.opencontainers.image.description=SEOnaut is an open-source SEO auditing tool for scanning websites and generating SEO reports.
+            manifest:org.opencontainers.image.description=SEOnaut is an open-source SEO auditing tool for scanning websites and generating SEO reports.
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v6
+      - name: Build and optionally push Docker image
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf
         with:
           context: .
-          platforms: linux/amd64
-          push: ${{ github.event_name != 'pull_request' }}
+          platforms: ${{ steps.platform.outputs.platforms }}
+          push: ${{ github.event_name == 'workflow_dispatch' || (github.event_name != 'pull_request' && !github.event.repository.fork) }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          annotations: ${{ steps.meta.outputs.annotations }}
+          cache-from: type=gha,scope=${{ github.workflow }}-${{ github.job }}
+          cache-to: type=gha,mode=max,scope=${{ github.workflow }}-${{ github.job }},ignore-error=true
           build-args: |
             VERSION=${{ github.ref_name }}
             COMMIT_HASH=${{ github.sha }}
-            BUILD_DATE=${{ github.event.head_commit.timestamp }}
+            BUILD_DATE=${{ github.event.head_commit.timestamp || github.run_started_at }}

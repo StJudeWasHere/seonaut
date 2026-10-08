@@ -12,7 +12,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
     CGO_ENABLED=0 GOOS=linux \
     go build -o seonaut cmd/server/main.go
 
-FROM node:18-alpine3.18 AS front
+FROM node:24-alpine3.22 AS front
 
 WORKDIR /home/node
 COPY ./web ./app/web
@@ -28,6 +28,8 @@ RUN --mount=type=cache,target=/root/.npm \
 	--loader:.woff2=file
 
 FROM alpine:latest AS production
+
+LABEL org.opencontainers.image.description="SEOnaut is an open-source SEO auditing tool for scanning websites and generating SEO reports."
 
 COPY --from=builder /app/seonaut /app/seonaut
 COPY --from=front /home/node/app /app/

@@ -88,6 +88,10 @@ SCHEDULE_DAILY: Щодня
 SCHEDULE_WEEKLY: Щотижня
 SCHEDULE_HELP: Автоматично сканувати цей проєкт із зазначеним інтервалом. Проєкти з BasicAuth не скануються автоматично.
 SCHEDULE_NOT_VALID: Розклад сканування недійсний.
+# Webhook URL for crawl completion notifications
+WEBHOOK_LABEL: "URL вебхука сповіщень:"
+WEBHOOK_HELP: Надсилати JSON-підсумок сканування на цю URL після кожного сканування. Залиште порожнім, щоб вимкнути.
+WEBHOOK_NOT_VALID: URL вебхука недійсний.
 
 ADD_PROJECT: Додати проєкт
 URL_LABEL: "URL:"

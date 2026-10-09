@@ -7,7 +7,7 @@ SEOnaut categorizes issues into three levels of severity: critical, high, and lo
 
 A hosted version of SEOnaut is available at [seonaut.org](https://seonaut.org).
 
-Projects can be crawled on demand or on a recurring schedule (hourly, daily or weekly), configured per project when it is created or edited. While the server is running, a scheduler starts a new crawl for every scheduled project at its configured interval (see [INSTALL.md](docs/INSTALL.md#scheduled-crawls)).
+Projects can be crawled on demand or on a recurring schedule (hourly, daily or weekly), configured per project when it is created or edited. While the server is running, a scheduler starts a new crawl for every scheduled project at its configured interval (see [INSTALL.md](docs/INSTALL.md#scheduled-crawls)). Each project can also have a notification webhook URL: after every crawl a JSON summary is POSTed to it, so scheduled monitoring can feed external tools (see [INSTALL.md](docs/INSTALL.md#crawl-notifications)).
 
 ![seonaut](https://github.com/user-attachments/assets/6184b418-bd54-4456-9266-fcfd4ce5726d)
 

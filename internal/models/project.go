@@ -19,6 +19,8 @@ type Project struct {
 	CheckExternalLinks bool
 	Archive            bool
 	UserAgent          string
+	WebhookURL         string     // POST JSON crawl summary here after each crawl. Empty disables notifications.
 	ScheduleInterval   string     // Recrawl interval: "", "hourly", "daily" or "weekly".
 	NextRun            *time.Time // Next time the scheduler will start a crawl for this project.
+	Scheduled          bool       // Transient: set by the scheduler when it starts a run. Not persisted.
 }

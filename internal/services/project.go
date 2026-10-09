@@ -39,6 +39,9 @@ var (
 
 	// Error returned when the project's crawl schedule is not valid.
 	ErrSchedule = errors.New("schedule not valid")
+
+	// Error returned when the project's webhook URL is not valid.
+	ErrWebhookURL = errors.New("webhook URL not valid")
 )
 
 func NewProjectService(r ProjectServiceRepository, a ArchiveRemover) *ProjectService {
@@ -150,6 +153,11 @@ func (s *ProjectService) validateProject(p *models.Project) error {
 
 	if _, ok := ScheduleIntervals[p.ScheduleInterval]; !ok && p.ScheduleInterval != "" {
 		return ErrSchedule
+	}
+
+	p.WebhookURL = strings.TrimSpace(p.WebhookURL)
+	if err := validateWebhookURL(p.WebhookURL); err != nil {
+		return ErrWebhookURL
 	}
 
 	return nil

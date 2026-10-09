@@ -83,8 +83,11 @@ func (s *SchedulerService) RunOnce() {
 			// BasicAuth credentials are only provided interactively, they
 			// are not stored, so projects using BasicAuth cannot be scheduled.
 			log.Printf("Scheduler: skipping project %d (%s), it uses BasicAuth", p.Id, p.URL)
-		} else if err := s.crawlStarter.StartCrawler(p, models.BasicAuth{}); err != nil {
-			log.Printf("Scheduler: error starting crawl for project %d (%s): %v", p.Id, p.URL, err)
+		} else {
+			p.Scheduled = true
+			if err := s.crawlStarter.StartCrawler(p, models.BasicAuth{}); err != nil {
+				log.Printf("Scheduler: error starting crawl for project %d (%s): %v", p.Id, p.URL, err)
+			}
 		}
 
 		s.repository.UpdateProjectNextRun(&p, s.now().Add(interval))

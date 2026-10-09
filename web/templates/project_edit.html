@@ -53,6 +53,16 @@
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
+					<label for="webhook_url">{{ trans "WEBHOOK_LABEL" }}</label>
+					<input type="url" name="webhook_url" id="webhook_url" value="{{ .Project.WebhookURL }}" placeholder="https://hooks.example.com/seonaut">
+					<p class="toggle-help">{{ trans "WEBHOOK_HELP" }}</p>
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
 
 					<div class="toggle-container">
 						<label class="toggle" >

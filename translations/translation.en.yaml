@@ -88,6 +88,10 @@ SCHEDULE_DAILY: Every day
 SCHEDULE_WEEKLY: Every week
 SCHEDULE_HELP: Automatically crawl this project at the given interval. BasicAuth projects are not crawled automatically.
 SCHEDULE_NOT_VALID: The crawl schedule is not valid.
+# Webhook URL for crawl completion notifications
+WEBHOOK_LABEL: "Notification webhook URL:"
+WEBHOOK_HELP: POST a JSON crawl summary to this URL after every crawl. Leave empty to disable.
+WEBHOOK_NOT_VALID: The webhook URL is not valid.
 
 ADD_PROJECT: Add Project
 URL_LABEL: "URL:"

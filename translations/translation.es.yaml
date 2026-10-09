@@ -88,6 +88,10 @@ SCHEDULE_DAILY: Cada día
 SCHEDULE_WEEKLY: Cada semana
 SCHEDULE_HELP: Rastrear este proyecto automáticamente en el intervalo indicado. Los proyectos con BasicAuth no se rastrean automáticamente.
 SCHEDULE_NOT_VALID: La programación del rastreo no es válida.
+# Webhook URL for crawl completion notifications
+WEBHOOK_LABEL: "URL del webhook de notificación:"
+WEBHOOK_HELP: Envía un resumen del rastreo en JSON a esta URL después de cada rastreo. Deja vacío para desactivar.
+WEBHOOK_NOT_VALID: La URL del webhook no es válida.
 
 ADD_PROJECT: Añadir proyecto
 URL_LABEL: "URL:"

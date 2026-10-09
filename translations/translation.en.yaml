@@ -80,6 +80,15 @@ OFFICIAL_WEBSITE: SEOnaut's Website
 # CONTEXT: Add project page. Contains the form to add new projects.
 #          The same fields are also used in the Edit project page.
 # =============================================
+# Schedule interval for automatic recrawls
+SCHEDULE_LABEL: "Crawl schedule:"
+SCHEDULE_OFF: No schedule (manual)
+SCHEDULE_HOURLY: Every hour
+SCHEDULE_DAILY: Every day
+SCHEDULE_WEEKLY: Every week
+SCHEDULE_HELP: Automatically crawl this project at the given interval. BasicAuth projects are not crawled automatically.
+SCHEDULE_NOT_VALID: The crawl schedule is not valid.
+
 ADD_PROJECT: Add Project
 URL_LABEL: "URL:"
 URL_LABEL_MESSAGE: Full project URL including http:// or https://

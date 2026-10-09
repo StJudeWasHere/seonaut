@@ -80,6 +80,15 @@ OFFICIAL_WEBSITE: Sitio web de SEOnaut
 # CONTEXT: Add project page. Contains the form to add new projects.
 #          The same fields are also used in the Edit project page.
 # =============================================
+# Schedule interval for automatic recrawls
+SCHEDULE_LABEL: "Programación del rastreo:"
+SCHEDULE_OFF: Sin programación (manual)
+SCHEDULE_HOURLY: Cada hora
+SCHEDULE_DAILY: Cada día
+SCHEDULE_WEEKLY: Cada semana
+SCHEDULE_HELP: Rastrear este proyecto automáticamente en el intervalo indicado. Los proyectos con BasicAuth no se rastrean automáticamente.
+SCHEDULE_NOT_VALID: La programación del rastreo no es válida.
+
 ADD_PROJECT: Añadir proyecto
 URL_LABEL: "URL:"
 URL_LABEL_MESSAGE: URL completa del proyecto incluyendo http:// o https://

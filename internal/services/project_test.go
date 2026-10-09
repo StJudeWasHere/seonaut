@@ -130,9 +130,46 @@ func TestUpdateProject(t *testing.T) {
 
 	for _, tt := range table {
 		t.Run(tt.name, func(t *testing.T) {
-			err := service.UpdateProject(tt.project)
+			err := service.UpdateProject(tt.project, "")
 			if (err != nil) != tt.wantError {
 				t.Errorf("SaveProject() want error %v got %v", tt.wantError, err)
+			}
+		})
+	}
+}
+
+// Test the crawl schedule validation and the next run time computation.
+func TestSchedule(t *testing.T) {
+	table := []struct {
+		name      string
+		interval  string
+		wantError bool
+	}{
+		{name: "No schedule", interval: "", wantError: false},
+		{name: "Hourly schedule", interval: services.ScheduleHourly, wantError: false},
+		{name: "Daily schedule", interval: services.ScheduleDaily, wantError: false},
+		{name: "Weekly schedule", interval: services.ScheduleWeekly, wantError: false},
+		{name: "Not valid schedule", interval: "fortnightly", wantError: true},
+	}
+
+	for _, tt := range table {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &models.Project{URL: projectURL, UserAgent: userAgent, ScheduleInterval: tt.interval}
+			err := service.SaveProject(p, guid)
+			if (err != nil) != tt.wantError {
+				t.Errorf("SaveProject() want error %v got %v", tt.wantError, err)
+			}
+
+			if tt.wantError {
+				return
+			}
+
+			if tt.interval == "" && p.NextRun != nil {
+				t.Errorf("SaveProject() next_run should be nil, got %v", p.NextRun)
+			}
+
+			if tt.interval != "" && p.NextRun == nil {
+				t.Errorf("SaveProject() next_run should be set for interval %q", tt.interval)
 			}
 		})
 	}

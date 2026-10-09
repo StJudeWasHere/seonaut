@@ -80,6 +80,15 @@ OFFICIAL_WEBSITE: وبسایت SEOnaut
 # CONTEXT: Add project page. Contains the form to add new projects.
 #          The same fields are also used in the Edit project page.
 # =============================================
+# Schedule interval for automatic recrawls
+SCHEDULE_LABEL: "برنامه خزش:"
+SCHEDULE_OFF: بدون برنامه (دستی)
+SCHEDULE_HOURLY: هر ساعت
+SCHEDULE_DAILY: هر روز
+SCHEDULE_WEEKLY: هر هفته
+SCHEDULE_HELP: این پروژه به‌طور خودکار در بازه مشخص خزش می‌شود. پروژه‌های BasicAuth به‌طور خودکار خزش نمی‌شوند.
+SCHEDULE_NOT_VALID: برنامه خزش معتبر نیست.
+
 ADD_PROJECT: اضافه کردن پروژه
 URL_LABEL: "URL:"
 URL_LABEL_MESSAGE: URL کامل پروژه شامل http:// یا https://

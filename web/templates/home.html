@@ -53,6 +53,8 @@
 					<div class="project-title">
 						<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M21.883 12l-7.527 6.235.644.765 9-7.521-9-7.479-.645.764 7.529 6.236h-21.884v1h21.883z"/></svg>
 						<h2>{{ .Project.URL }}</h2>
+						{{ if .Project.ScheduleInterval }}<span style="font-size:.75em;font-weight:normal;opacity:.7;margin-left:8px;white-space:nowrap;">●
+							{{ if eq .Project.ScheduleInterval "hourly" }}{{ trans "SCHEDULE_HOURLY" }}{{ else if eq .Project.ScheduleInterval "daily" }}{{ trans "SCHEDULE_DAILY" }}{{ else if eq .Project.ScheduleInterval "weekly" }}{{ trans "SCHEDULE_WEEKLY" }}{{ else }}{{ .Project.ScheduleInterval }}{{ end }}{{ if .Project.NextRun }} · {{ trans_date .Project.NextRun "Jan 02 15:04" }}{{ end }}</span>{{ end }}
 					</div>
 
 					<div class="content">

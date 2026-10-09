@@ -34,12 +34,18 @@ type UIConfig struct {
 	Theme    string `mapstructure:"theme"`
 }
 
+// SchedulerConfig stores the configuration for the scheduled crawls.
+type SchedulerConfig struct {
+	Enabled bool `mapstructure:"enabled"`
+}
+
 // Config stores the configuration for the application.
 type Config struct {
 	Crawler    *CrawlerConfig    `mapstructure:"crawler"`
 	HTTPServer *HTTPServerConfig `mapstructure:"server"`
 	DB         *DBConfig         `mapstructure:"database"`
 	UIConfig   *UIConfig         `mapstructure:"UI"`
+	Scheduler  *SchedulerConfig  `mapstructure:"scheduler"`
 }
 
 // NewConfig loads the configuration from the specified file and path.

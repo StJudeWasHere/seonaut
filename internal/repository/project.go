@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"log"
+	"time"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -25,9 +26,11 @@ func (ds *ProjectRepository) SaveProject(project *models.Project, uid int) {
 			user_id,
 			check_external_links,
 			archive,
-			user_agent
+			user_agent,
+			schedule_interval,
+			next_run
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	stmt, _ := ds.DB.Prepare(query)
@@ -44,6 +47,8 @@ func (ds *ProjectRepository) SaveProject(project *models.Project, uid int) {
 		project.CheckExternalLinks,
 		project.Archive,
 		project.UserAgent,
+		project.ScheduleInterval,
+		project.NextRun,
 	)
 	if err != nil {
 		log.Printf("saveProject: %v\n", err)
@@ -67,7 +72,9 @@ func (ds *ProjectRepository) FindProjectsByUser(uid int) []models.Project {
 			created,
 			check_external_links,
 			archive,
-			user_agent
+			user_agent,
+			schedule_interval,
+			next_run
 		FROM projects
 		WHERE user_id = ?
 		ORDER BY url ASC`
@@ -80,6 +87,7 @@ func (ds *ProjectRepository) FindProjectsByUser(uid int) []models.Project {
 
 	for rows.Next() {
 		p := models.Project{}
+		var nextRun sql.NullTime
 		err := rows.Scan(
 			&p.Id,
 			&p.URL,
@@ -94,10 +102,17 @@ func (ds *ProjectRepository) FindProjectsByUser(uid int) []models.Project {
 			&p.CheckExternalLinks,
 			&p.Archive,
 			&p.UserAgent,
+			&p.ScheduleInterval,
+			&nextRun,
 		)
 		if err != nil {
 			log.Println(err)
 			continue
+		}
+
+		if nextRun.Valid {
+			t := nextRun.Time
+			p.NextRun = &t
 		}
 
 		projects = append(projects, p)
@@ -122,13 +137,16 @@ func (ds *ProjectRepository) FindProjectById(id int, uid int) (models.Project, e
 			created,
 			check_external_links,
 			archive,
-			user_agent
+			user_agent,
+			schedule_interval,
+			next_run
 		FROM projects
 		WHERE id = ? AND user_id = ?`
 
 	row := ds.DB.QueryRow(query, id, uid)
 
 	p := models.Project{}
+	var nextRun sql.NullTime
 	err := row.Scan(
 		&p.Id,
 		&p.URL,
@@ -143,10 +161,17 @@ func (ds *ProjectRepository) FindProjectById(id int, uid int) (models.Project, e
 		&p.CheckExternalLinks,
 		&p.Archive,
 		&p.UserAgent,
+		&p.ScheduleInterval,
+		&nextRun,
 	)
 	if err != nil {
 		log.Println(err)
 		return p, err
+	}
+
+	if nextRun.Valid {
+		t := nextRun.Time
+		p.NextRun = &t
 	}
 
 	return p, nil
@@ -183,7 +208,9 @@ func (ds *ProjectRepository) UpdateProject(p *models.Project) error {
 			basic_auth = ?,
 			check_external_links = ?,
 			archive = ?,
-			user_agent = ?
+			user_agent = ?,
+			schedule_interval = ?,
+			next_run = ?
 		WHERE id = ?
 	`
 	_, err := ds.DB.Exec(
@@ -197,8 +224,84 @@ func (ds *ProjectRepository) UpdateProject(p *models.Project) error {
 		p.CheckExternalLinks,
 		p.Archive,
 		p.UserAgent,
+		p.ScheduleInterval,
+		p.NextRun,
 		p.Id,
 	)
+
+	return err
+}
+
+// FindScheduledProjects returns all the projects with a crawl schedule.
+func (ds *ProjectRepository) FindScheduledProjects() []models.Project {
+	var projects []models.Project
+	query := `
+		SELECT
+			id,
+			url,
+			ignore_robotstxt,
+			follow_nofollow,
+			include_noindex,
+			crawl_sitemap,
+			allow_subdomains,
+			basic_auth,
+			deleting,
+			created,
+			check_external_links,
+			archive,
+			user_agent,
+			schedule_interval,
+			next_run
+		FROM projects
+		WHERE schedule_interval != '' AND deleting = 0
+		ORDER BY id ASC`
+
+	rows, err := ds.DB.Query(query)
+	if err != nil {
+		log.Println(err)
+		return projects
+	}
+
+	for rows.Next() {
+		p := models.Project{}
+		var nextRun sql.NullTime
+		err := rows.Scan(
+			&p.Id,
+			&p.URL,
+			&p.IgnoreRobotsTxt,
+			&p.FollowNofollow,
+			&p.IncludeNoindex,
+			&p.CrawlSitemap,
+			&p.AllowSubdomains,
+			&p.BasicAuth,
+			&p.Deleting,
+			&p.Created,
+			&p.CheckExternalLinks,
+			&p.Archive,
+			&p.UserAgent,
+			&p.ScheduleInterval,
+			&nextRun,
+		)
+		if err != nil {
+			log.Println(err)
+			continue
+		}
+
+		if nextRun.Valid {
+			t := nextRun.Time
+			p.NextRun = &t
+		}
+
+		projects = append(projects, p)
+	}
+
+	return projects
+}
+
+// UpdateProjectNextRun sets the next time a scheduled crawl will run for a project.
+func (ds *ProjectRepository) UpdateProjectNextRun(p *models.Project, nextRun time.Time) error {
+	query := `UPDATE projects SET next_run = ? WHERE id = ?`
+	_, err := ds.DB.Exec(query, nextRun, p.Id)
 
 	return err
 }

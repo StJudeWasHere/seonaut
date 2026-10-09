@@ -29,6 +29,24 @@
 		<div class="box soft">
 			<div class="col col-main">
 				<div class="content">
+					<label for="schedule_interval">{{ trans "SCHEDULE_LABEL" }}</label>
+					<select name="schedule_interval" id="schedule_interval">
+						<option value="">{{ trans "SCHEDULE_OFF" }}</option>
+						<option value="hourly"{{ if eq .Data.Schedule "hourly" }} selected{{ end }}>{{ trans "SCHEDULE_HOURLY" }}</option>
+						<option value="daily"{{ if eq .Data.Schedule "daily" }} selected{{ end }}>{{ trans "SCHEDULE_DAILY" }}</option>
+						<option value="weekly"{{ if eq .Data.Schedule "weekly" }} selected{{ end }}>{{ trans "SCHEDULE_WEEKLY" }}</option>
+					</select>
+					<p class="toggle-help">{{ trans "SCHEDULE_HELP" }}</p>
+					{{ if .Data.ScheduleError }}
+						<p class="error">{{ trans "SCHEDULE_NOT_VALID" }}</p>
+					{{ end }}
+				</div>
+			</div>
+		</div>
+
+		<div class="box soft">
+			<div class="col col-main">
+				<div class="content">
 
 					<div class="toggle-container">
 						<label class="toggle" >

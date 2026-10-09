@@ -19,4 +19,6 @@ type Project struct {
 	CheckExternalLinks bool
 	Archive            bool
 	UserAgent          string
+	ScheduleInterval   string     // Recrawl interval: "", "hourly", "daily" or "weekly".
+	NextRun            *time.Time // Next time the scheduler will start a crawl for this project.
 }

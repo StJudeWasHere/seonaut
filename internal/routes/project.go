@@ -69,7 +69,9 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 		Data: &struct {
 			URLError       bool
 			UserAgentError bool
+			ScheduleError  bool
 			UserAgent      string
+			Schedule       string
 		}{UserAgent: h.Config.Crawler.Agent},
 	}
 
@@ -154,6 +156,7 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 		CheckExternalLinks: checkExternalLinks,
 		Archive:            archive,
 		UserAgent:          userAgent,
+		ScheduleInterval:   r.FormValue("schedule_interval"),
 	}
 
 	err = h.ProjectService.SaveProject(project, user.Id)
@@ -166,11 +169,15 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 			Data: &struct {
 				URLError       bool
 				UserAgentError bool
+				ScheduleError  bool
 				UserAgent      string
+				Schedule       string
 			}{
 				URLError:       errors.Is(err, services.ErrProtocolNotSupported),
 				UserAgentError: errors.Is(err, services.ErrUserAgent),
+				ScheduleError:  errors.Is(err, services.ErrSchedule),
 				UserAgent:      h.Config.Crawler.Agent,
+				Schedule:       project.ScheduleInterval,
 			},
 		}
 		h.Renderer.RenderTemplate(w, "project_add", pageView, user.Lang)
@@ -273,6 +280,9 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Keep track of the stored schedule interval to detect schedule changes.
+	oldInterval := p.ScheduleInterval
+
 	err = r.ParseForm()
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -330,7 +340,9 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 		p.UserAgent = h.Config.Crawler.Agent
 	}
 
-	err = h.ProjectService.UpdateProject(&p)
+	p.ScheduleInterval = r.FormValue("schedule_interval")
+
+	err = h.ProjectService.UpdateProject(&p, oldInterval)
 	if err != nil {
 		pageView := &PageView{
 			Lang:      user.Lang,

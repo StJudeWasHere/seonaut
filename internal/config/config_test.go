@@ -43,4 +43,8 @@ func TestLoadConfig(t *testing.T) {
 			t.Errorf("%s != %s\n", v.input, v.want)
 		}
 	}
+
+	if !config.Scheduler.Enabled {
+		t.Errorf("scheduler.enabled should be true, got %v\n", config.Scheduler.Enabled)
+	}
 }

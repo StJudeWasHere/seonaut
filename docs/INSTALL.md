@@ -169,6 +169,9 @@ The application uses a configuration file named `config`, located in the root di
     [crawler]
     agent = "Mozilla/5.0 (compatible; SEOnautBot/1.0; +https://seonaut.org/bot)"
 
+    [scheduler]
+    enabled = true
+
 ### Key Configuration Options
 
 - **[server]**
@@ -185,6 +188,37 @@ The application uses a configuration file named `config`, located in the root di
 
 - **[crawler]**
   - `agent`: User agent string for the crawler.
+
+- **[scheduler]**
+  - `enabled`: Enable the automatic crawl scheduler (default: `true`). Can be disabled with the `SEONAUT_SCHEDULER_ENABLED` environment variable set to `false`.
+
+### Scheduled crawls
+
+Each project can have a crawl schedule (hourly, daily or weekly), selected when the project is created or edited. While the server is running, a scheduler checks every minute for scheduled projects whose next run time has passed and starts a new crawl for each of them. The next run time is recalculated from the current time after every scheduled crawl starts, including when a crawl fails to start, so a failing project never blocks the schedule. Projects using HTTP Basic auth are skipped, as their credentials are only provided interactively and are not stored.
+
+Restarting the server never triggers a burst of catch-up crawls: a project whose scheduled time passed while the server was down runs at most once on the next scheduler tick, then resumes its normal interval.
+
+### Crawl notifications
+
+Each project can have a notification webhook URL, entered when the project is created or edited. After every crawl finishes — manual or scheduled — a JSON summary is POSTed to that URL:
+
+```json
+{
+  "project_id": 1,
+  "url": "https://example.com",
+  "crawl_id": 42,
+  "scheduled": true,
+  "start": "2026-10-09T12:00:00Z",
+  "end": "2026-10-09T12:05:00Z",
+  "total_urls": 120,
+  "total_issues": 15,
+  "critical_issues": 1,
+  "alert_issues": 4,
+  "warning_issues": 10
+}
+```
+
+The `scheduled` flag tells whether the crawl was started by the scheduler or manually. Delivery failures are logged by the server and never fail the crawl. The URL must be an absolute `http` or `https` URL; leaving it empty disables notifications. The payload is plain JSON, so any receiver that accepts JSON POSTs works; services expecting their own payload shape (Slack `text`, Discord `content`, ...) need a small transform, e.g. a Zapier/n8n webhook step.
 
 ---
 

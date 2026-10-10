@@ -45,6 +45,7 @@ type CrawlerService struct {
 	broker         *Broker
 	reportManager  *ReportManager
 	crawlerHandler *CrawlerHandler
+	webhook        *WebhookService
 	ArchiveService *ArchiveService
 	crawlers       map[int64]*crawler.Crawler
 	lock           *sync.RWMutex
@@ -57,6 +58,7 @@ func NewCrawlerService(r CrawlerServiceRepository, s CrawlerServicesContainer) *
 		config:         s.Config,
 		reportManager:  s.ReportManager,
 		crawlerHandler: s.CrawlerHandler,
+		webhook:        NewWebhookService(),
 		ArchiveService: s.ArchiveService,
 		crawlers:       make(map[int64]*crawler.Crawler),
 		lock:           &sync.RWMutex{},
@@ -135,6 +137,10 @@ func (s *CrawlerService) StartCrawler(p models.Project, b models.BasicAuth) erro
 		s.repository.UpdateCrawl(crawl)
 		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
 		log.Printf("Crawled %d urls in %s", crawl.TotalURLs, p.URL)
+
+		// Notify the project's webhook, if one is configured. Delivery
+		// failures are logged by the webhook service and never fail the crawl.
+		s.webhook.Notify(p, *crawl, p.Scheduled)
 	}()
 
 	return nil

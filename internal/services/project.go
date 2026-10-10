@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/stjudewashere/seonaut/internal/models"
 )
@@ -35,6 +36,12 @@ var (
 
 	// Error returned when the project's user agent is empty.
 	ErrUserAgent = errors.New("user agent string must not be empty")
+
+	// Error returned when the project's crawl schedule is not valid.
+	ErrSchedule = errors.New("schedule not valid")
+
+	// Error returned when the project's webhook URL is not valid.
+	ErrWebhookURL = errors.New("webhook URL not valid")
 )
 
 func NewProjectService(r ProjectServiceRepository, a ArchiveRemover) *ProjectService {
@@ -54,6 +61,8 @@ func (s *ProjectService) SaveProject(p *models.Project, userId int) error {
 	if err != nil {
 		return err
 	}
+
+	p.NextRun = nextRun(p.ScheduleInterval, time.Now())
 
 	s.repository.SaveProject(p, userId)
 
@@ -92,7 +101,9 @@ func (s *ProjectService) DeleteProject(p *models.Project) {
 
 // UpdateProject updates the project details. It first validates the project, then if the
 // project's archive option is false it deletes any existing archive.
-func (s *ProjectService) UpdateProject(p *models.Project) error {
+// The crawl schedule's next run time is only recomputed when the schedule interval
+// changed, so editing other options doesn't reset the schedule.
+func (s *ProjectService) UpdateProject(p *models.Project, oldInterval string) error {
 	err := s.validateProject(p)
 	if err != nil {
 		return err
@@ -100,6 +111,10 @@ func (s *ProjectService) UpdateProject(p *models.Project) error {
 
 	if !p.Archive {
 		s.archiveRemover.DeleteArchive(p)
+	}
+
+	if p.ScheduleInterval != oldInterval {
+		p.NextRun = nextRun(p.ScheduleInterval, time.Now())
 	}
 
 	return s.repository.UpdateProject(p)
@@ -118,7 +133,8 @@ func (s *ProjectService) DeleteAllUserProjects(user *models.User) {
 	}
 }
 
-// validateProject checks the project's URL and User-Agent to make sure they are valid.
+// validateProject checks the project's URL, User-Agent and crawl schedule
+// to make sure they are valid.
 // It is called when a project is saved or updated.
 func (s *ProjectService) validateProject(p *models.Project) error {
 	parsedURL, err := url.Parse(p.URL)
@@ -135,5 +151,26 @@ func (s *ProjectService) validateProject(p *models.Project) error {
 		return ErrUserAgent
 	}
 
+	if _, ok := ScheduleIntervals[p.ScheduleInterval]; !ok && p.ScheduleInterval != "" {
+		return ErrSchedule
+	}
+
+	p.WebhookURL = strings.TrimSpace(p.WebhookURL)
+	if err := validateWebhookURL(p.WebhookURL); err != nil {
+		return ErrWebhookURL
+	}
+
 	return nil
+}
+
+// nextRun returns the next time a scheduled crawl should run for the given
+// interval, or nil when the interval is empty (schedule disabled).
+func nextRun(interval string, now time.Time) *time.Time {
+	d, ok := ScheduleIntervals[interval]
+	if !ok {
+		return nil
+	}
+
+	t := now.Add(d)
+	return &t
 }

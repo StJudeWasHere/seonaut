@@ -27,6 +27,7 @@ type Container struct {
 	ProjectViewService *ProjectViewService
 	ExportService      *Exporter
 	CrawlerService     *CrawlerService
+	SchedulerService   *SchedulerService
 	Translator         *Translator
 	Renderer           *Renderer
 	CookieSession      *CookieSession
@@ -60,6 +61,7 @@ func NewContainer(configFile string) *Container {
 	c.InitProjectViewService()
 	c.InitExportService()
 	c.InitCrawlerService()
+	c.InitSchedulerService()
 	c.InitRenderer()
 	c.InitCookieSession()
 	c.InitReplayService()
@@ -214,6 +216,11 @@ func (c *Container) InitCrawlerService() {
 // Create the dashboCallbackBuilderard service.
 func (c *Container) InitDashboardService() {
 	c.DashboardService = NewDashboardService(c.dashboardRepository)
+}
+
+// Create the scheduler service that starts scheduled crawls.
+func (c *Container) InitSchedulerService() {
+	c.SchedulerService = NewSchedulerService(c.projectRepository, c.CrawlerService)
 }
 
 // Create The translator.

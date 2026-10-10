@@ -93,6 +93,11 @@ func NewServer(container *services.Container) {
 	replayHandler := replayHandler{container}
 	http.HandleFunc("GET /replay", container.CookieSession.Auth(replayHandler.proxyHandler))
 
+	// Start the crawl scheduler.
+	if container.Config.Scheduler.Enabled {
+		go container.SchedulerService.Start(make(chan struct{}))
+	}
+
 	fmt.Printf("Starting server at %s on port %d...\n", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port)
 	err := http.ListenAndServe(fmt.Sprintf("%s:%d", container.Config.HTTPServer.Server, container.Config.HTTPServer.Port), nil)
 	if err != nil {

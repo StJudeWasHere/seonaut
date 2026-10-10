@@ -69,7 +69,11 @@ func (h *projectHandler) addGetHandler(w http.ResponseWriter, r *http.Request) {
 		Data: &struct {
 			URLError       bool
 			UserAgentError bool
+			ScheduleError  bool
+			WebhookError   bool
 			UserAgent      string
+			Schedule       string
+			WebhookURL     string
 		}{UserAgent: h.Config.Crawler.Agent},
 	}
 
@@ -154,6 +158,8 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 		CheckExternalLinks: checkExternalLinks,
 		Archive:            archive,
 		UserAgent:          userAgent,
+		ScheduleInterval:   r.FormValue("schedule_interval"),
+		WebhookURL:         r.FormValue("webhook_url"),
 	}
 
 	err = h.ProjectService.SaveProject(project, user.Id)
@@ -166,11 +172,19 @@ func (h *projectHandler) addPostHandler(w http.ResponseWriter, r *http.Request) 
 			Data: &struct {
 				URLError       bool
 				UserAgentError bool
+				ScheduleError  bool
+				WebhookError   bool
 				UserAgent      string
+				Schedule       string
+				WebhookURL     string
 			}{
 				URLError:       errors.Is(err, services.ErrProtocolNotSupported),
 				UserAgentError: errors.Is(err, services.ErrUserAgent),
+				ScheduleError:  errors.Is(err, services.ErrSchedule),
+				WebhookError:   errors.Is(err, services.ErrWebhookURL),
 				UserAgent:      h.Config.Crawler.Agent,
+				Schedule:       project.ScheduleInterval,
+				WebhookURL:     project.WebhookURL,
 			},
 		}
 		h.Renderer.RenderTemplate(w, "project_add", pageView, user.Lang)
@@ -273,6 +287,9 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	// Keep track of the stored schedule interval to detect schedule changes.
+	oldInterval := p.ScheduleInterval
+
 	err = r.ParseForm()
 	if err != nil {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
@@ -330,7 +347,10 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 		p.UserAgent = h.Config.Crawler.Agent
 	}
 
-	err = h.ProjectService.UpdateProject(&p)
+	p.ScheduleInterval = r.FormValue("schedule_interval")
+	p.WebhookURL = r.FormValue("webhook_url")
+
+	err = h.ProjectService.UpdateProject(&p, oldInterval)
 	if err != nil {
 		pageView := &PageView{
 			Lang:      user.Lang,
@@ -341,11 +361,13 @@ func (h *projectHandler) editPostHandler(w http.ResponseWriter, r *http.Request)
 				Project         models.Project
 				Error           bool
 				UserAgentError  bool
+				WebhookError    bool
 				CustomUserAgent bool
 			}{
 				Project:         p,
 				Error:           true,
 				UserAgentError:  errors.Is(err, services.ErrUserAgent),
+				WebhookError:    errors.Is(err, services.ErrWebhookURL),
 				CustomUserAgent: h.Config.Crawler.Agent != p.UserAgent,
 			},
 		}

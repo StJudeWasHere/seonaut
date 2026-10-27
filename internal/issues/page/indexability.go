@@ -75,6 +75,10 @@ func NewNonCanonicalInSitemapReporter() *models.PageIssueReporter {
 			return false
 		}
 
+		if !pageReport.InSitemap {
+			return false
+		}
+
 		if pageReport.Canonical == "" || pageReport.Canonical == pageReport.URL {
 			return false
 		}

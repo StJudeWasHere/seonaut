@@ -206,6 +206,26 @@ func TestNonCanonicalInSitemapIssues(t *testing.T) {
 	}
 }
 
+// Test the NonCanonicalInSitemap reporter with PageReport that is not canonical
+// but is NOT included in the sitemap. The reporter should not report the issue.
+func TestNonCanonicalNotInSitemapNoIssues(t *testing.T) {
+	pageReport := &models.PageReport{
+		Crawled:   true,
+		InSitemap: false,
+		MediaType: "text/html",
+		URL:       "https://example.com/non-canonical",
+		Canonical: "https://example.com/canonical",
+	}
+
+	reporter := page.NewNonCanonicalInSitemapReporter()
+
+	reportsIssue := reporter.Callback(pageReport, &html.Node{}, &http.Header{})
+
+	if reportsIssue == true {
+		t.Errorf("TestNonCanonicalNotInSitemapNoIssues: reportsIssue should be false")
+	}
+}
+
 // Test the NewMetasInBodyReporter with PageReport that does not have metas in the document's body.
 // The reporter should not report the issue.
 func TestMetasInBodyNoIssues(t *testing.T) {

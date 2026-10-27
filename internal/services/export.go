@@ -293,6 +293,9 @@ func (e *Exporter) ExportPageReports(f io.Writer, prStream <-chan *models.PageRe
 		"Nº of words",
 		"Depth",
 		"TTFB",
+		"Incoming Links",
+		"Example Origin",
+		"Outgoing Links",
 	})
 
 	for r := range prStream {
@@ -314,6 +317,9 @@ func (e *Exporter) ExportPageReports(f io.Writer, prStream <-chan *models.PageRe
 			strconv.Itoa(r.Words),
 			fmt.Sprintf("%d", r.Depth),
 			fmt.Sprintf("%d ms", r.TTFB),
+			fmt.Sprintf("%d", r.IncomingLinks),
+			r.ExampleOrigin,
+			fmt.Sprintf("%d", r.OutgoingLinks),
 		})
 
 		writer.Flush()

@@ -41,4 +41,11 @@ type PageReport struct {
 	BodyHash           string
 	Timeout            bool
 	TTFB               int
+
+	// Link stats populated by the pagereport repository for the CSV export:
+	// number of internal links pointing at this URL, one example origin page
+	// linking to it, and the number of links found on the page itself.
+	IncomingLinks int
+	ExampleOrigin string
+	OutgoingLinks int
 }

@@ -341,7 +341,8 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 				in_sitemap,
 				depth,
 				body_hash,
-				ttfb
+				ttfb,
+` + linkStatsColumns + `
 			FROM pagereports
 			WHERE crawl_id = ?`
 
@@ -352,7 +353,8 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 
 		for rows.Next() {
 			p := &models.PageReport{}
-			err := rows.Scan(&p.Id,
+			dest := []interface{}{
+				&p.Id,
 				&p.URL,
 				&p.RedirectURL,
 				&p.Refresh,
@@ -375,7 +377,9 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 				&p.Depth,
 				&p.BodyHash,
 				&p.TTFB,
-			)
+			}
+			dest = append(dest, linkStatsScanFields(p)...)
+			err := rows.Scan(dest...)
 			if err != nil {
 				log.Println(err)
 				continue
@@ -386,6 +390,29 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlId(cid int64) <-chan *m
 	}()
 
 	return prStream
+}
+
+// linkStatsColumns returns the SQL select fragment that computes the link
+// statistics columns for the pagereports export: the number of internal
+// links pointing at the page, one example origin page that links to it,
+// and the number of links found on the page itself. The joins use the
+// url_hash columns, which are indexed on both tables.
+const linkStatsColumns = `
+				(SELECT COUNT(*) FROM links
+					WHERE links.url_hash = pagereports.url_hash
+					AND links.crawl_id = pagereports.crawl_id),
+				(SELECT COALESCE(MIN(origin.url), '') FROM links
+					LEFT JOIN pagereports origin ON origin.id = links.pagereport_id
+					WHERE links.url_hash = pagereports.url_hash
+					AND links.crawl_id = pagereports.crawl_id),
+				(SELECT COUNT(*) FROM links
+					WHERE links.pagereport_id = pagereports.id
+					AND links.crawl_id = pagereports.crawl_id)`
+
+// linkStatsScanFields returns the scan destinations for the link stats
+// columns appended by linkStatsColumns.
+func linkStatsScanFields(p *models.PageReport) []interface{} {
+	return []interface{}{&p.IncomingLinks, &p.ExampleOrigin, &p.OutgoingLinks}
 }
 
 // FindAllPageReportsByCrawlIdAndErrorType returns a channel of pagereports where it streams all the reports
@@ -420,7 +447,8 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlIdAndErrorType(cid int6
 				in_sitemap,
 				depth,
 				body_hash,
-				ttfb
+				ttfb,
+` + linkStatsColumns + `
 			FROM pagereports
 			WHERE crawl_id = ?
 			AND id IN (
@@ -438,7 +466,8 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlIdAndErrorType(cid int6
 
 		for rows.Next() {
 			p := &models.PageReport{}
-			err := rows.Scan(&p.Id,
+			dest := []interface{}{
+				&p.Id,
 				&p.URL,
 				&p.RedirectURL,
 				&p.Refresh,
@@ -461,7 +490,9 @@ func (ds *PageReportRepository) FindAllPageReportsByCrawlIdAndErrorType(cid int6
 				&p.Depth,
 				&p.BodyHash,
 				&p.TTFB,
-			)
+			}
+			dest = append(dest, linkStatsScanFields(p)...)
+			err := rows.Scan(dest...)
 			if err != nil {
 				log.Println(err)
 				continue

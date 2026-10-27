@@ -7,6 +7,16 @@ SEOnaut categorizes issues into three levels of severity: critical, high, and lo
 
 A hosted version of SEOnaut is available at [seonaut.org](https://seonaut.org).
 
+### CSV export columns
+
+The pagereports CSV export includes the following link statistics columns:
+
+- **Incoming Links**: count of internal links pointing at the URL
+- **Example Origin**: one page that links to it (for troubleshooting)
+- **Outgoing Links**: links found on the page itself
+
+These columns are added to each exported issue row via URL hash joins against the links table, with COALESCE for NULL-safe scanning.
+
 ![seonaut](https://github.com/user-attachments/assets/6184b418-bd54-4456-9266-fcfd4ce5726d)
 
 ## Technology

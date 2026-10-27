@@ -335,3 +335,46 @@ func (h *crawlHandler) wsHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 }
+
+// urlScanHandler handles the re-scan of a single URL belonging to the project.
+// It expects the query parameters "pid" containing the project id and "url"
+// containing the absolute URL to be scanned. The URL must belong to the
+// project's host. On success the user is redirected to the live crawl page.
+func (h *crawlHandler) urlScanHandler(w http.ResponseWriter, r *http.Request) {
+	pid, err := strconv.Atoi(r.URL.Query().Get("pid"))
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	user, ok := h.CookieSession.GetUser(r.Context())
+	if !ok {
+		http.Redirect(w, r, "/signout", http.StatusSeeOther)
+		return
+	}
+
+	p, err := h.ProjectService.FindProject(pid, user.Id)
+	if err != nil {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if p.BasicAuth {
+		http.Redirect(w, r, "/crawl/auth?id="+strconv.Itoa(pid), http.StatusSeeOther)
+		return
+	}
+
+	target := r.URL.Query().Get("url")
+	if target == "" {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	if err = h.CrawlerService.ScanURL(p, target); err != nil {
+		log.Printf("scan url for %s error: %v\n", p.URL, err)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	http.Redirect(w, r, "/crawl/live?pid="+strconv.Itoa(pid), http.StatusSeeOther)
+}

@@ -164,6 +164,87 @@ func (s *CrawlerService) StopCrawler(p models.Project) {
 	crawler.Stop()
 }
 
+// ScanURL crawls a single URL that belongs to the project's host. It is
+// intended for re-scanning problematic pages without a full-site crawl.
+// It creates a new crawl record, starts the crawl on the given URL only,
+// and respects the in-memory crawl lock.
+func (s *CrawlerService) ScanURL(p models.Project, targetURL string) error {
+	target, err := url.Parse(targetURL)
+	if err != nil {
+		return err
+	}
+
+	projectURL, err := url.Parse(p.URL)
+	if err != nil {
+		return err
+	}
+
+	// Only allow URLs on the same host (and www. variant)
+	mainHost := strings.TrimPrefix(projectURL.Host, "www.")
+	if target.Host != mainHost && target.Host != "www."+mainHost {
+		return errors.New("target URL host does not match project host")
+	}
+
+	if target.Path == "" {
+		target.Path = "/"
+	}
+
+	// Acquire lock and create crawler
+	c, err := s.addCrawler(target, &p, &models.BasicAuth{})
+	if err != nil {
+		return err
+	}
+
+	crawl, err := s.repository.SaveCrawl(p)
+	if err != nil {
+		s.removeCrawler(&p)
+		return err
+	}
+
+	go func() {
+		defer s.removeCrawler(&p)
+
+		callback := s.crawlerHandler.responseCallback(crawl, &p, c)
+
+		if p.Archive {
+			archiver, err := s.ArchiveService.GetArchiveWriter(&p)
+			if err != nil {
+				log.Printf("Failed to create archive: %v", err)
+			} else {
+				defer archiver.Close()
+				callback = s.crawlerHandler.archiveWrapper(callback, archiver)
+			}
+		}
+
+		c.OnResponse(callback)
+
+		// Crawl ONLY the single target URL
+		c.AddRequest(&crawler.RequestMessage{URL: target, Data: crawlerData{}})
+
+		c.Start()
+
+		crawl.RobotstxtExists = c.RobotstxtExists()
+		crawl.SitemapExists = c.SitemapExists()
+		crawl.SitemapIsBlocked = c.SitemapIsBlocked()
+		crawl.End = time.Now()
+
+		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "IssuesInit"})
+		s.reportManager.CreateMultipageIssues(crawl)
+
+		crawl.IssuesEnd = time.Now()
+		crawl.CriticalIssues = s.repository.CountIssuesByPriority(crawl.Id, Critical)
+		crawl.AlertIssues = s.repository.CountIssuesByPriority(crawl.Id, Alert)
+		crawl.WarningIssues = s.repository.CountIssuesByPriority(crawl.Id, Warning)
+		crawl.TotalIssues = crawl.CriticalIssues + crawl.AlertIssues + crawl.WarningIssues
+
+		s.repository.UpdateCrawl(crawl)
+		s.broker.Publish(fmt.Sprintf("crawl-%d", p.Id), &models.Message{Name: "CrawlEnd", Data: crawl.TotalURLs})
+		log.Printf("Scanned %s (crawl %d)", targetURL, crawl.Id)
+	}()
+
+	return nil
+}
+
 // AddCrawler creates a new project crawler and adds it to the crawlers map. It returns the crawler
 // on success otherwise it returns an error indicating the crawler already exists or there was an
 // error creating it.

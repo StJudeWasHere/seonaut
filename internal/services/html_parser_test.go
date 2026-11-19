@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"slices"
+	"strings"
 	"testing"
 
 	"github.com/stjudewashere/seonaut/internal/services"
@@ -476,6 +478,57 @@ func TestSrcset(t *testing.T) {
 	for n, i := range images {
 		if pageReport.Images[n].URL != i {
 			t.Errorf("pageReport image %d should be %s. Got: %s", n, i, pageReport.Images[n].URL)
+		}
+	}
+}
+
+// A srcset URL without a descriptor ends with a comma, which is not part of the URL.
+func TestSrcsetWithoutDescriptor(t *testing.T) {
+	u, err := url.Parse(testURL)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	images := []string{
+		"https://example.com/a.png",
+		"https://example.com/a.webp",
+		"https://example.com/b.webp",
+		"https://example.com/c.webp",
+	}
+	body := []byte(
+		`<html>
+		<head></head>
+		<body>
+			<picture>
+				<source srcset="` + images[1] + `, ` + images[2] + ` 2x" type="image/webp">
+				<img src="` + images[0] + `" srcset="` + images[3] + `,  ` + images[2] + ` 2x">
+			</picture>
+		</body>
+	</html>`)
+	statusCode := 200
+	headers := &http.Header{
+		"Content-Type": []string{"text/html"},
+	}
+
+	pageReport, _, err := services.NewHTMLParser(u, statusCode, headers, body, int64(len(body)))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	got := []string{}
+	for _, i := range pageReport.Images {
+		got = append(got, i.URL)
+	}
+
+	for _, want := range images {
+		if !slices.Contains(got, want) {
+			t.Errorf("pageReport images should contain %s. Got: %v", want, got)
+		}
+	}
+
+	for _, i := range got {
+		if strings.HasSuffix(i, ",") {
+			t.Errorf("pageReport image URL should not end with a comma. Got: %s", i)
 		}
 	}
 }

@@ -600,7 +600,14 @@ func (p *Parser) parseSrcSet(srcset string) []string {
 		if parsingURL {
 			if unicode.IsSpace(char) {
 				if currentURL.Len() > 0 {
-					parsingURL = false
+					// A URL that ends with a comma has no descriptor,
+					// so the next candidate starts right after it.
+					if u := strings.TrimRight(currentURL.String(), ","); len(u) < currentURL.Len() {
+						imageURLs = append(imageURLs, u)
+						currentURL.Reset()
+					} else {
+						parsingURL = false
+					}
 				}
 			} else if currentURL.Len() > 0 || char != ',' {
 				currentURL.WriteRune(char)
